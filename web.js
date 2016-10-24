@@ -12,13 +12,7 @@ var db_config = {
 var connection;
 
 app.get('/', function(request, response) {
-    connection.query('SELECT * from t_users', function(err, rows, fields) {
-        if (err) {
-            console.log('error: ', err);
-            throw err;
-        }
-        response.send(['Hello World!!!! HOLA MUNDO!!!!', rows]);
-    });
+    response.send('Hello World!!!! HOLA MUNDO!!!!');
 });
 
 var port = process.env.PORT || 5000;
