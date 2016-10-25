@@ -12,14 +12,14 @@ var app = express();
 app.get('/', function(request, response) {
     //connection.query("create table test (fname varchar(20), lname varchar(20));");
     //connection.query("insert into test values('Glenn','Wright');");
-    connection.query("show tables;", function(err, rows, fields) {
-      if (!!err) {
-        console.log("error: ", err);
-        throw err;
-      }
-      response.send("Hello world!", rows);
-    });
-    //response.send(connection.state);
+    //connection.query("show tables;", function(err, rows, fields) {
+    //  if (err) {
+    //    console.log("error: ", err);
+    //    throw err;
+    //  }
+    //  response.send("Hello world!", rows);
+    //});
+    response.send(connection.state);
     //response.send('Hello World!!!! HOLA MUNDO!!!!');
 });
 
