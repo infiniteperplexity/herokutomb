@@ -10,7 +10,7 @@ connection.connect();
 var app = express();
 
 app.get('/', function(request, response) {
-    response.send(Object.keys(connection));
+    response.send(connection.state);
     //response.send('Hello World!!!! HOLA MUNDO!!!!');
 });
 
