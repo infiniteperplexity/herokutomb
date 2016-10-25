@@ -10,6 +10,15 @@ connection.connect();
 var app = express();
 
 app.get('/', function(request, response) {
+    connection.query("create table test (fname varchar(20), lname varchar(20));");
+    //connection.query("insert into test values('Glenn','Wright');");
+    //connection.query("select * from test", function(err, rows, fields) {
+    //  if (err) {
+    //    console.log("error: ", err);
+    //    throw err;
+    //  }
+    //  response.send("Hello world!", rows);
+    //});
     response.send(connection.state);
     //response.send('Hello World!!!! HOLA MUNDO!!!!');
 });
@@ -18,3 +27,7 @@ var port = process.env.PORT || 5000;
 app.listen(port, function() {
     console.log("Listening on " + port);
 });
+
+
+REATE TABLE pet (name VARCHAR(20), owner VARCHAR(20),
+    -> species VARCHAR(20), sex CHAR(1), birth DATE, death DATE
