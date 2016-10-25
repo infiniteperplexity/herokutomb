@@ -10,8 +10,8 @@ connection.connect();
 var app = express();
 
 app.get('/', function(request, response) {
-    connection.query("create table test (fname varchar(20), lname varchar(20));");
-    //connection.query("insert into test values('Glenn','Wright');");
+    //connection.query("create table test (fname varchar(20), lname varchar(20));");
+    connection.query("insert into test values('Glenn','Wright');");
     //connection.query("select * from test", function(err, rows, fields) {
     //  if (err) {
     //    console.log("error: ", err);
