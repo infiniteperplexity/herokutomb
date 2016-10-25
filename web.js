@@ -10,7 +10,8 @@ connection.connect();
 var app = express();
 
 app.get('/', function(request, response) {
-    response.send('Hello World!!!! HOLA MUNDO!!!!');
+    response.send(JSON.stringify(connection));
+    //response.send('Hello World!!!! HOLA MUNDO!!!!');
 });
 
 var port = process.env.PORT || 5000;
