@@ -16,9 +16,8 @@ connection.connect();
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var path = "C:/Users/m543015/Desktop/GitHub/hellatomb";
-app.use(express.static('public'));
+//app.use(express.static('public'));
 app.use(bodyParser.json({limit: '50mb'}));
-console.log(__dirname);
 
 function serveFile(req, res) {
   console.log("Received GET request: " + req.url);
@@ -36,7 +35,7 @@ app.get('/*.json', function(req, res) {
     if (err) {
       return console.log(err);
     }
-    console.log(Objects.keys(data));
+    //console.log(Objects.keys(data));
     res.send(data);
   });
 });
