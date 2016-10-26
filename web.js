@@ -1,6 +1,6 @@
-//var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 //var port = 8080;
-var port = 8081;
+//var port = 8081;
 var express = require('express');
 var app = express();
 var mysql = require('mysql');
