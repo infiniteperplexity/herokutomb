@@ -59,7 +59,10 @@ HTomb = (function(HTomb) {
 
   Views.System.saveAs = function() {
     HTomb.Save.getDir(function(arg) {
-      let saves = JSON.parse(arg);
+      let saves = [];
+      if (arg!==" ") {
+        saves = JSON.parse(arg);
+      }
       var alpha = "abcdefghijklmnopqrstuvwxyz";
       var controls = {};
       for (let i=0; i<saves.length; i++) {
@@ -85,7 +88,10 @@ HTomb = (function(HTomb) {
   };
   Views.System.restore = function() {
     HTomb.Save.getDir(function(arg) {
-      let saves = JSON.parse(arg);
+      let saves = [];
+      if (arg!==" ") {
+        saves = JSON.parse(arg);
+      }
       var alpha = "abcdefghijklmnopqrstuvwxyz";
       var controls = {};
       for (let i=0; i<saves.length; i++) {

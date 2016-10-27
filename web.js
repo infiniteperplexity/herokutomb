@@ -31,33 +31,55 @@ app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
   console.log("Received GET request: " + req.url);
-  fs.readFile(__dirname + req.url, 'utf8', function(err, data) {
+  connection.query("SELECT * FROM saves WHERE filename = ?", req.url, function(err, rows, fields) {
     if (err) {
       return console.log(err);
     }
-    //console.log(Objects.keys(data));
-    res.send(data);
+    if (rows.length===0) {
+      throw new Error();
+      return;
+    }
+    res.send(rows[0].jsondata);
   });
 });
 app.get('/saves/', function(req, res) {
   console.log("Received GET request: " + req.url);
-  fs.readdir(__dirname + '/saves/', function(err, data) {
+  connection.query("SELECT filename FROM saves", function(err, rows, fields) {
     if (err) {
       return console.log(err);
     }
-    res.send(JSON.stringify(data));
+    if (rows.length===0) {
+      res.send(" ");
+    } else {
+      rows = rows.map(function(a,e,i) {return e.filename;});
+      res.send(JSON.stringify(rows));
+    }
   });
 });
 app.post('/saves/*.json', function (req, res) {
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
-  fs.writeFile("." + req.url, JSON.stringify(req.body), function(err) {
-    if(err) {
+  connection.query("SELECT filename FROM saves WHERE filename = ?", req.url, function(err, rows, fields) {
+    if (err) {
       return console.log(err);
+    }
+    if (rows.length>0) {
+      connection.query("UPDATE saves SET jsondata = ? WHERE filename = ?", JSON.stringify(req.body), req.url, function(err) {
+        if (err) {
+          return console.log(err);
+        }
+      });
+    } else {
+      connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, ?)", req.url, JSON.stringify(req.body), function(err) {
+        if (err) new Promise(function(resolve, reject) {
+          return console.log(err);
+        });
+      });
     }
   });
   console.log("Saved file "+req.url);
 });
+
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
 });
