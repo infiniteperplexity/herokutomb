@@ -67,7 +67,7 @@ app.get('/saves/', function(req, res) {
     }
     rows = rows.map(function(a,e,i) {return e.filename;});
     // clean the array
-    for (let i=0; i<rows.length; i++) {
+    for (var i=0; i<rows.length; i++) {
       if (rows[i]===null || rows[i]===undefined) {
         this.splice(i,1);
         i--;
