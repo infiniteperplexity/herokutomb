@@ -67,6 +67,7 @@ app.get('/saves/', function(req, res) {
       return console.log(err);
     }
     rows = rows.map(function(a,e,i) {return e.filename;});
+    console.log(rows);
     // clean the array
     for (var i=0; i<rows.length; i++) {
       if (rows[i]===null || rows[i]===undefined) {
@@ -74,6 +75,7 @@ app.get('/saves/', function(req, res) {
         i--;
       }
     }
+    console.log(rows);
     if (rows.length===0) {
       res.send(" ");
     } else {
