@@ -54,7 +54,7 @@ HTomb = (function(HTomb) {
   };
   // Send the XMLHTTP POST request to save game
   function postData(name, json) {
-    var file = 'saves/' + name + '.json';
+    var file = "/"+ name + '.json';
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST", file, true);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
