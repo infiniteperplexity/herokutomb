@@ -69,7 +69,7 @@ app.get('/saves/', function(req, res) {
     // clean the array
     for (var i=0; i<rows.length; i++) {
       if (rows[i]===null || rows[i]===undefined) {
-        this.splice(i,1);
+        rows.splice(i,1);
         i--;
       }
     }
