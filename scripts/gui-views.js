@@ -88,6 +88,8 @@ HTomb = (function(HTomb) {
   };
   Views.System.restore = function() {
     HTomb.Save.getDir(function(arg) {
+      console.log("type of arg is " + typeof(arg));
+      console.log("arg is " + arg);
       let saves = [];
       if (arg!==" ") {
         saves = JSON.parse(arg);
