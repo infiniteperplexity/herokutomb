@@ -94,6 +94,7 @@ app.post('/*.json', function (req, res) {
     console.log("length of stringified is "+stringified.length);
     console.log("filename is " + req.url.substr(1));
     //connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
+    handleDisconnect();
     connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, 'longtext')",[req.url.substr(1)],function(err) {
       if (err) {
         return console.log(err);
