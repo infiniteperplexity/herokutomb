@@ -48,27 +48,24 @@ app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
   console.log("Received GET request: " + req.url);
-  //connection.query("SELECT * FROM saves WHERE filename = ?", req.url, function(err, rows, fields) {
-  //  if (err) {
-  //    return console.log(err);
-  //  }
-  //  if (rows.length===0) {
-  //    throw new Error();
-  //    return;
-  //  }
-  //  res.send(rows[0].jsondata);
-  //});
+  connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
+    if (err) {
+      return console.log(err);
+    }
+    if (rows.length===0) {
+      throw new Error();
+      return;
+    }
+    res.send(rows[0].jsondata);
+  });
 });
 app.get('/saves/', function(req, res) {
   console.log("Received GET request: " + req.url);
   connection.query("SELECT filename FROM saves", function(err, rows, fields) {
-    console.log("pulled this many filenames: " + rows.length);
     if (err) {
       return console.log(err);
     }
-    console.log(rows);
     rows = rows.map(function(e,i,a) {return e.filename;});
-    console.log(rows);
     // clean the array
     for (var i=0; i<rows.length; i++) {
       if (rows[i]===null || rows[i]===undefined) {
@@ -76,7 +73,6 @@ app.get('/saves/', function(req, res) {
         i--;
       }
     }
-    console.log(rows);
     if (rows.length===0) {
       res.send(" ");
     } else {
@@ -88,21 +84,17 @@ app.post('/*.json', function (req, res) {
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url], function(err, rows) {
-    console.log("length of rows is " + rows.length);
     // for now, do not check for errors
+    connnection.ping();
     var stringified= JSON.stringify(req.body);
+    connection.ping();
     global.gc();
-    console.log("length of stringified is "+stringified.length);
-    console.log("filename is " + req.url.substr(1));
+    connection.ping();
     connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
-    //connection.connect(function(err) {
-    //connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, 'longtext')",[req.url.substr(1)],function(err) {
       if (err) {
         return console.log(err);
       }
-      console.log("probably those rows made it into there");
     });
-    //});
     setTimeout(function() {global.gc();},2000);
   });
   console.log("Saved file "+req.url);

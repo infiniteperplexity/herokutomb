@@ -168,7 +168,7 @@ HTomb = (function(HTomb) {
   function getData(name, callback) {
     name = name || currentGame;
     console.time("get request");
-    var file = 'saves/'+ name + '.json';
+    var file = '/'+ name + '.json';
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (xhttp.readyState == XMLHttpRequest.DONE) {
