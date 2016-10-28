@@ -4,14 +4,31 @@ var port = process.env.PORT || 5000;
 var express = require('express');
 var app = express();
 var mysql = require('mysql');
-var connection = mysql.createConnection({
+var dbinfo = {
   host: 'us-cdbr-iron-east-04.cleardb.net',
   user: 'bc8309dedbcac6',
   password: '5271b38e',
   database: 'heroku_d9a408c946dbc65'
-});
-connection.connect();
-
+};
+var connection;
+function handleDisconnect() {
+  connection = mysql.createConnection(dbinfo);
+  connection.connect(function(err) {
+    if (err) {
+      console.log("error when connecting to db: ", err);
+      setTimeout(handleDisconnect,2000);
+    }
+  });
+  connection.on("error", function(err) {
+    console.log("db error", err);
+    if (err.code==="PROTOCOL_CONNECTION_LOST") {
+      handleDisconnect();
+    } else {
+      throw err;
+    }
+  });
+}
+handleDisconnect();
 
 var fs = require('fs');
 var bodyParser = require('body-parser');
@@ -83,4 +100,3 @@ app.post('/saves/*.json', function (req, res) {
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
 });
-console.log("Can I actually see this?");
