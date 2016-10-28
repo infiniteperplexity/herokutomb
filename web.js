@@ -86,12 +86,13 @@ app.post('/saves/*.json', function (req, res) {
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url], function(err, rows) {
     console.log("length of rows is " + rows.length);
     // for now, do not check for errors
-    connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, ?)",[req.url, JSON.stringify(req.body)],function(err) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("probably those rows made it into there");
-    });
+    var testing = JSON.stringify(req.body);
+    //connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, ?)",[req.url, JSON.stringify(req.body)],function(err) {
+    //  if (err) {
+    //    return console.log(err);
+    //  }
+    //  console.log("probably those rows made it into there");
+    //});
   });
   console.log("Saved file "+req.url);
 });
