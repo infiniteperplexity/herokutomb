@@ -76,24 +76,16 @@ app.get('/saves/', function(req, res) {
 app.post('/saves/*.json', function (req, res) {
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
-  //connection.query("SELECT filename FROM saves WHERE filename = ?", req.url, function(err, rows, fields) {
-  //  if (err) {
-  //    return console.log(err);
-  //  }
-  //  if (rows.length>0) {
-  //    connection.query("UPDATE saves SET jsondata = ? WHERE filename = ?", JSON.stringify(req.body), req.url, function(err) {
-  //      if (err) {
-    //      return console.log(err);
-    //    }
-  //    });
-  //  } else {
-  //    connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, ?)", req.url, JSON.stringify(req.body), function(err) {
-    //    if (err) new Promise(function(resolve, reject) {
-    //      return console.log(err);
-    //    });
-    //  });
-  //  }
-  //});
+  connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url], function(err, rows) {
+    console.log("length of rows is " + rows.length);
+    // for now, do not check for errors
+    connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, ?)",[req.url, JSON.stringify(req.body)],function(err) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log("probably those rows made it into there");
+    });
+  });
   console.log("Saved file "+req.url);
 });
 
