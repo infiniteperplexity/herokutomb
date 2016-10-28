@@ -92,6 +92,7 @@ app.post('/saves/*.json', function (req, res) {
     var stringified= JSON.stringify(req.body);
     global.gc();
     console.log("length of stringified is "+stringified.length);
+    console.log("filename is " + req.url);
     connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url],function(err) {
       if (err) {
         return console.log(err);
