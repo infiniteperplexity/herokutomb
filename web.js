@@ -94,6 +94,7 @@ app.post('/saves/*.json', function (req, res) {
       }
       console.log("probably those rows made it into there");
     });
+    setTimeout(function() {global.gc();},2000);
   });
   console.log("Saved file "+req.url);
 });
