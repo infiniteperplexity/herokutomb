@@ -11,6 +11,7 @@ var connection = mysql.createConnection({
   database: 'heroku_d9a408c946dbc65'
 });
 connection.connect();
+console.log("Can I actually see this?");
 
 
 var fs = require('fs');
