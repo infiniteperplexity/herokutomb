@@ -83,7 +83,7 @@ app.get('/saves/', function(req, res) {
     }
   });
 });
-app.post('/saves/*.json', function (req, res) {
+app.post('/*.json', function (req, res) {
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url], function(err, rows) {
@@ -92,8 +92,8 @@ app.post('/saves/*.json', function (req, res) {
     var stringified= JSON.stringify(req.body);
     global.gc();
     console.log("length of stringified is "+stringified.length);
-    console.log("filename is " + req.url);
-    connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url],function(err) {
+    console.log("filename is " + req.url.substr(1));
+    connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
       if (err) {
         return console.log(err);
       }
