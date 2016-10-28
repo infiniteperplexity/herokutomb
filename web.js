@@ -62,6 +62,7 @@ app.get('/*.json', function(req, res) {
 app.get('/saves/', function(req, res) {
   console.log("Received GET request: " + req.url);
   connection.query("SELECT filename FROM saves", function(err, rows, fields) {
+    console.log("pulled this many filenames: " + rows.length);
     if (err) {
       return console.log(err);
     }
