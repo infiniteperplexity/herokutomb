@@ -97,7 +97,7 @@ app.post('/*.json', function (req, res) {
           return console.log(err);
         }
         console.log("successfully replaced row?");
-      }
+      });
     } else {
       connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
         if (err) {
