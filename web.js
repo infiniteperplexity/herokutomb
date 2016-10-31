@@ -49,6 +49,7 @@ app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
   console.log("Received GET request: " + req.url);
+  handleDisconnect();
   connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
     if (err) {
       return console.log(err);
@@ -63,6 +64,8 @@ app.get('/*.json', function(req, res) {
 
 app.get('/saves/', function(req, res) {
   console.log("Received GET request: " + req.url);
+  handleDisconnect();
+  global.gc();
   connection.query("SELECT filename FROM saves", function(err, rows, fields) {
     if (err) {
       return console.log(err);
@@ -78,12 +81,14 @@ app.get('/saves/', function(req, res) {
     if (rows.length===0) {
       res.send(" ");
     } else {
+      global.gc();
       res.send(JSON.stringify(rows));
     }
   });
 });
 
 app.post('/*.json', function (req, res) {
+  handleDisconnect();
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows) {
