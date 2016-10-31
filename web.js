@@ -49,7 +49,7 @@ app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
   console.log("Received GET request: " + req.url);
-  handleDisconnect();
+  connection.ping();
   connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
     if (err) {
       return console.log(err);
@@ -64,7 +64,7 @@ app.get('/*.json', function(req, res) {
 
 app.get('/saves/', function(req, res) {
   console.log("Received GET request: " + req.url);
-  handleDisconnect();
+  connection.ping();
   global.gc();
   connection.query("SELECT filename FROM saves", function(err, rows, fields) {
     if (err) {
@@ -88,7 +88,7 @@ app.get('/saves/', function(req, res) {
 });
 
 app.post('/*.json', function (req, res) {
-  handleDisconnect();
+  connection.ping();
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows) {
