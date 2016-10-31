@@ -123,4 +123,7 @@ app.post('/*.json', function (req, res) {
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
 });
-setInterval(function() {connection.ping();},10000);
+setInterval(function() {
+  connection.ping();
+  global.gc();
+},10000);
