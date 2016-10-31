@@ -59,6 +59,7 @@ app.get('/*.json', function(req, res) {
     res.send(rows[0].jsondata);
   });
 });
+
 app.get('/saves/', function(req, res) {
   console.log("Received GET request: " + req.url);
   connection.query("SELECT filename FROM saves", function(err, rows, fields) {
@@ -80,11 +81,13 @@ app.get('/saves/', function(req, res) {
     }
   });
 });
+
 app.post('/*.json', function (req, res) {
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url], function(err, rows) {
     // for now, do not check for errors
+    console.log("about to ping connection");
     connnection.ping();
     var stringified = JSON.stringify(req.body);
     connection.ping();
