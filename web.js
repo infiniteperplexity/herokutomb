@@ -88,13 +88,14 @@ app.post('/*.json', function (req, res) {
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url], function(err, rows) {
     // for now, do not check for errors
     console.log("about to ping connection");
-    connnection.ping();
+    console.log(connection.status);
+    //connnection.ping();
     console.log("just pinged connection");
     var stringified = JSON.stringify(req.body);
     console.log("just stringified body");
-    connection.ping();
+    //connection.ping();
     global.gc();
-    connection.ping();
+    //connection.ping();
     console.log("about to load rows");
     if (rows.length>0) {
       connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err) {
