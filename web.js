@@ -50,7 +50,7 @@ app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
   console.log("Received GET request: " + req.url);
   connection.ping();
-  global.gc();
+  //global.gc();
   connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
     if (err) {
       return console.log(err);
@@ -59,7 +59,7 @@ app.get('/*.json', function(req, res) {
       throw new Error();
       return;
     }
-    global.gc();
+    //global.gc();
     res.send(rows[0].jsondata);
   });
 });
@@ -67,7 +67,7 @@ app.get('/*.json', function(req, res) {
 app.get('/saves/', function(req, res) {
   console.log("Received GET request: " + req.url);
   connection.ping();
-  global.gc();
+  //global.gc();
   connection.query("SELECT filename FROM saves", function(err, rows, fields) {
     if (err) {
       return console.log(err);
@@ -83,7 +83,7 @@ app.get('/saves/', function(req, res) {
     if (rows.length===0) {
       res.send(" ");
     } else {
-      global.gc();
+      //global.gc();
       res.send(JSON.stringify(rows));
     }
   });
@@ -102,7 +102,7 @@ app.post('/*.json', function (req, res) {
     var stringified = JSON.stringify(req.body);
     console.log("just stringified body");
     //connection.ping();
-    global.gc();
+    //global.gc();
     //connection.ping();
     console.log("about to load rows");
     if (rows.length>0) {
@@ -122,7 +122,7 @@ app.post('/*.json', function (req, res) {
         console.log("successfully loaded row?");
       });
     }
-    setTimeout(function() {global.gc();},2000);
+    //setTimeout(function() {global.gc();},2000);
   });
   console.log("Saved file "+req.url);
 });
@@ -132,5 +132,5 @@ app.listen(port, function () {
 });
 setInterval(function() {
   connection.ping();
-  global.gc();
+  //global.gc();
 },10000);
