@@ -86,15 +86,26 @@ app.post('/*.json', function (req, res) {
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url], function(err, rows) {
     // for now, do not check for errors
     connnection.ping();
-    var stringified= JSON.stringify(req.body);
+    var stringified = JSON.stringify(req.body);
     connection.ping();
     global.gc();
     connection.ping();
-    connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
-      if (err) {
-        return console.log(err);
+    console.log("about to load rows");
+    if (rows.length>0) {
+      connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err)) {
+        if (err) {
+          return console.log(err);
+        }
+        console.log("successfully replaced row?");
       }
-    });
+    } else {
+      connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
+        if (err) {
+          return console.log(err);
+        }
+        console.log("successfully loaded row?");
+      });
+    }
     setTimeout(function() {global.gc();},2000);
   });
   console.log("Saved file "+req.url);
