@@ -86,7 +86,7 @@ app.get('/saves/', function(req, res) {
 app.post('/*.json', function (req, res) {
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
-  connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url], function(err, rows) {
+  connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows) {
     // for now, do not check for errors
     console.log("about to ping connection");
     console.log(connection.status);
