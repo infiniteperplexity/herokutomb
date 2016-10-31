@@ -50,6 +50,7 @@ app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
   console.log("Received GET request: " + req.url);
   connection.ping();
+  global.gc();
   connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
     if (err) {
       return console.log(err);
