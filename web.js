@@ -58,6 +58,7 @@ app.get('/*.json', function(req, res) {
       throw new Error();
       return;
     }
+    global.gc();
     res.send(rows[0].jsondata);
   });
 });
