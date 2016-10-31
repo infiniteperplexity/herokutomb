@@ -92,7 +92,7 @@ app.post('/*.json', function (req, res) {
     connection.ping();
     console.log("about to load rows");
     if (rows.length>0) {
-      connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err)) {
+      connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err) {
         if (err) {
           return console.log(err);
         }
