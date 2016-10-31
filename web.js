@@ -99,6 +99,7 @@ app.post('/*.json', function (req, res) {
     //connection.ping();
     console.log("about to load rows");
     if (rows.length>0) {
+      console.log("trying to udpate");
       connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err) {
         if (err) {
           return console.log(err);
@@ -106,6 +107,7 @@ app.post('/*.json', function (req, res) {
         console.log("successfully replaced row?");
       });
     } else {
+      console.log("trying to insert");
       connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
         if (err) {
           return console.log(err);
