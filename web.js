@@ -89,7 +89,9 @@ app.post('/*.json', function (req, res) {
     // for now, do not check for errors
     console.log("about to ping connection");
     connnection.ping();
+    console.log("just pinged connection");
     var stringified = JSON.stringify(req.body);
+    console.log("just stringified body");
     connection.ping();
     global.gc();
     connection.ping();
