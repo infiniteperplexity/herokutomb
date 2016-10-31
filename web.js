@@ -34,7 +34,8 @@ var fs = require('fs');
 var bodyParser = require('body-parser');
 var path = "C:/Users/m543015/Desktop/GitHub/hellatomb";
 //app.use(express.static('public'));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({limit: '100mb'}));
+//app.use(bodyPArser.urlencoded({limit: '50mb', extended: true}));
 
 function serveFile(req, res) {
   console.log("Received GET request: " + req.url);
