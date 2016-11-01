@@ -4,6 +4,7 @@ var port = process.env.PORT || 5000;
 var express = require('express');
 var app = express();
 var mysql = require('mysql');
+
 var dbinfo = {
   host: 'us-cdbr-iron-east-04.cleardb.net',
   user: 'bc8309dedbcac6',
@@ -29,7 +30,7 @@ function handleDisconnect() {
   });
 }
 handleDisconnect();
-
+console.log(process.memoryUsage());
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var path = "C:/Users/m543015/Desktop/GitHub/hellatomb";
