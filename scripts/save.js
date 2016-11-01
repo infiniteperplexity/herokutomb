@@ -58,7 +58,7 @@ HTomb = (function(HTomb) {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST", file, true);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhttp.send(json);
+    xhttp.send({txt: json});
     console.log("probably should have success/fail message...");
     HTomb.Time.unlockTime();
   }

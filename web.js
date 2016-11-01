@@ -109,7 +109,7 @@ app.get('/saves/', function(req, res) {
 });
 
 app.post('/*.json', function (req, res) {
-  console.log("type is " + typeof(req.body));
+  console.log("type is " + typeof(req.body.txt));
   global.gc();
   ram("start of POST");
   connection.ping();
@@ -119,7 +119,8 @@ app.post('/*.json', function (req, res) {
     ram("start of first POST query");
     // for now, do not check for errors
     //connnection.ping();
-    var stringified = JSON.stringify(req.body);
+    var stringified = req.body.txt;
+    //var stringified = JSON.stringify(req.body);
     ram("after stringifying");
     console.log("just stringified body");
     //connection.ping();
