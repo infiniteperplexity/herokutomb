@@ -49,6 +49,7 @@ app.use(bodyParser.json({limit: '100mb'}));
 function serveFile(req, res) {
   console.log("Received GET request: " + req.url);
   res.sendFile(__dirname + req.url);
+  ram("after serving file");
 }
 app.get('/', function (req, res) {
   console.log("Received GET request: " + req.url);
@@ -63,6 +64,7 @@ app.get('/*.json', function(req, res) {
   //global.gc();
   connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
     ram("start of save file query");
+    //big jump in memory usage here...
     if (err) {
       return console.log(err);
     }
