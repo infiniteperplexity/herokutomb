@@ -80,7 +80,6 @@ app.get('/*.json', function(req, res) {
 });
 
 app.get('/saves/', function(req, res) {
-  console.log("type is " + typeof(req.body));
   global.gc();
   console.log("Received GET request: " + req.url);
   ram("start of directory GET");
@@ -110,6 +109,7 @@ app.get('/saves/', function(req, res) {
 });
 
 app.post('/*.json', function (req, res) {
+  console.log("type is " + typeof(req.body));
   global.gc();
   ram("start of POST");
   connection.ping();
