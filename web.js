@@ -80,6 +80,7 @@ app.get('/*.json', function(req, res) {
 });
 
 app.get('/saves/', function(req, res) {
+  console.log("type is " + typeof(req.body));
   global.gc();
   console.log("Received GET request: " + req.url);
   ram("start of directory GET");
