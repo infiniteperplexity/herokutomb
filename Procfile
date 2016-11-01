@@ -1,1 +1,1 @@
-web: node web.js
+web: node --expose-gc web.js

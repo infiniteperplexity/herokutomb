@@ -43,7 +43,7 @@ var fs = require('fs');
 var bodyParser = require('body-parser');
 var path = "C:/Users/m543015/Desktop/GitHub/hellatomb";
 //app.use(express.static('public'));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({limit: '100mb'}));
 //app.use(bodyPArser.urlencoded({limit: '50mb', extended: true}));
 
 function serveFile(req, res) {
@@ -58,6 +58,7 @@ app.get('/', function (req, res) {
 app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
+  global.gc();
   ram("start of save file GET");
   console.log("Received GET request: " + req.url);
   connection.ping();
@@ -79,6 +80,7 @@ app.get('/*.json', function(req, res) {
 });
 
 app.get('/saves/', function(req, res) {
+  global.gc();
   console.log("Received GET request: " + req.url);
   ram("start of directory GET");
   connection.ping();
@@ -107,6 +109,7 @@ app.get('/saves/', function(req, res) {
 });
 
 app.post('/*.json', function (req, res) {
+  global.gc();
   ram("start of POST");
   connection.ping();
   console.log("Received POST request: " + req.url);
