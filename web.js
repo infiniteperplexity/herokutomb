@@ -109,12 +109,10 @@ app.get('/saves/', function(req, res) {
 });
 
 app.post('/*.json', function (req, res) {
-  console.log("type is " + typeof(req.body.txt));
   global.gc();
   ram("start of POST");
   connection.ping();
   console.log("Received POST request: " + req.url);
-  console.log("Received list of " + req.body.things.length + " things.");
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows) {
     ram("start of first POST query");
     // for now, do not check for errors
