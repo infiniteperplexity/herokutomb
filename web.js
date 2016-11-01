@@ -30,7 +30,15 @@ function handleDisconnect() {
   });
 }
 handleDisconnect();
-console.log(process.memoryUsage());
+
+function ram(str) {
+  var mb = parseInt(process.memoryUsage().heapUsed/(1024*1024));
+  if (str===undefined) {
+    console.log("Memory usage is " + mb + " megabytes.");
+  } else {
+    console.log("Memory usage at " + str + " is " + mb + " megabytes.");
+  }
+}
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var path = "C:/Users/m543015/Desktop/GitHub/hellatomb";
@@ -49,10 +57,12 @@ app.get('/', function (req, res) {
 app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
+  ram("start of save file GET");
   console.log("Received GET request: " + req.url);
   connection.ping();
   //global.gc();
   connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
+    ram("start of save file query");
     if (err) {
       return console.log(err);
     }
@@ -62,14 +72,17 @@ app.get('/*.json', function(req, res) {
     }
     //global.gc();
     res.send(rows[0].jsondata);
+    ram("after sending save file");
   });
 });
 
 app.get('/saves/', function(req, res) {
   console.log("Received GET request: " + req.url);
+  ram("start of directory GET");
   connection.ping();
   //global.gc();
   connection.query("SELECT filename FROM saves", function(err, rows, fields) {
+    ram("start of directory query");
     if (err) {
       return console.log(err);
     }
@@ -86,21 +99,22 @@ app.get('/saves/', function(req, res) {
     } else {
       //global.gc();
       res.send(JSON.stringify(rows));
+      ram("after sending directory");
     }
   });
 });
 
 app.post('/*.json', function (req, res) {
+  ram("start of POST");
   connection.ping();
   console.log("Received POST request: " + req.url);
   console.log("Received list of " + req.body.things.length + " things.");
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows) {
+    ram("start of first POST query");
     // for now, do not check for errors
-    console.log("about to ping connection");
-    console.log(connection.status);
     //connnection.ping();
-    console.log("just pinged connection");
     var stringified = JSON.stringify(req.body);
+    ram("after stringifying");
     console.log("just stringified body");
     //connection.ping();
     //global.gc();
@@ -109,6 +123,7 @@ app.post('/*.json', function (req, res) {
     if (rows.length>0) {
       console.log("trying to udpate");
       connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err) {
+        ram("start of row updating");
         if (err) {
           return console.log(err);
         }
@@ -117,6 +132,7 @@ app.post('/*.json', function (req, res) {
     } else {
       console.log("trying to insert");
       connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
+        ram("start of row inserting");
         if (err) {
           return console.log(err);
         }
@@ -130,6 +146,7 @@ app.post('/*.json', function (req, res) {
 
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
+  ram("application start");
 });
 setInterval(function() {
   connection.ping();
