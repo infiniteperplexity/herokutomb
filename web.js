@@ -31,6 +31,9 @@ function handleDisconnect() {
 }
 handleDisconnect();
 
+function collectAfter() {
+  setTimeout(function() {global.gc();}, 2000);
+}
 function ram(str) {
   var mb = parseInt(process.memoryUsage().heapUsed/(1024*1024));
   if (str===undefined) {
@@ -76,6 +79,7 @@ app.get('/*.json', function(req, res) {
     //global.gc();
     res.send(rows[0].jsondata);
     ram("after sending save file");
+    collectAfter();
   });
 });
 
@@ -100,10 +104,12 @@ app.get('/saves/', function(req, res) {
     }
     if (rows.length===0) {
       res.send(" ");
+      collectAfter();
     } else {
       //global.gc();
       res.send(JSON.stringify(rows));
       ram("after sending directory");
+      collectAfter();
     }
   });
 });
@@ -133,6 +139,7 @@ app.post('/*.json', function (req, res) {
           return console.log(err);
         }
         console.log("successfully replaced row?");
+        collectAfter();
       });
     } else {
       console.log("trying to insert");
@@ -142,6 +149,7 @@ app.post('/*.json', function (req, res) {
           return console.log(err);
         }
         console.log("successfully loaded row?");
+        collectAfter();
       });
     }
     //setTimeout(function() {global.gc();},2000);
@@ -155,5 +163,5 @@ app.listen(port, function () {
 });
 setInterval(function() {
   connection.ping();
-  //global.gc();
+  global.gc();
 },10000);
