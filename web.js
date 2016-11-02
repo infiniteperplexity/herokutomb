@@ -81,6 +81,7 @@ app.get('/*.json', function(req, res) {
     ram("after sending save file");
     collectAfter();
   });
+  res.set("Connection", "close");
 });
 
 app.get('/saves/', function(req, res) {
@@ -112,6 +113,7 @@ app.get('/saves/', function(req, res) {
       collectAfter();
     }
   });
+  res.set("Connection", "close");
 });
 
 app.post('/*.json', function (req, res) {
@@ -155,6 +157,7 @@ app.post('/*.json', function (req, res) {
     //setTimeout(function() {global.gc();},2000);
   });
   console.log("Saved file "+req.url);
+  res.set("Connection", "close");
 });
 
 app.listen(port, function () {
