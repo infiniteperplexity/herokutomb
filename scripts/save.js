@@ -7,9 +7,219 @@ HTomb = (function(HTomb) {
   let coord = HTomb.Utils.coord;
   // Global value for the name of the current game
   HTomb.Save.currentGame = "test";
+  let fetchText = function(textFunc, args) {
+    let val = textFunc();
+    // if we got actual text...
+    if (typeof(val)==="string") {
+      args.body = val;
+      // ...return a fetch promise using that text
+      return fetch(args);
+    } else if (val.then) {
+      // if we got a promise of text...
+      return val.then(res => {
+        args.body = res;
+        // ...chain to a fetch promise
+        return fetch(args);
+      });
+    }
+  };
+
+  let postThings = function() {
+    return
+  }
+  function batchMapPromise(func, arr, options) {
+    return new Promise(function(resolve, reject) {
+      options = options || {};
+      let oldThen = options.then || function() {};
+      let newThen = function(retn) {
+        //the one thing that's wrong is that this can't deal properly with asynchronous stuff.
+        //but in that case, you just leave out the oldThen, and stick thing in a new Then;
+        oldThen(retn);
+        resolve(retn);
+      };
+      options.then = newThen;
+      batchMap(func, arr, options);
+    });
+  }
+  //let goodPromise = new Promise(function(resolve, reject) {setTimeout(resolve, 2000, "success!");});
+  //let badPromise = new Promise(function(resolve, reject) {setTimeout(reject, 3000, "failure!");});
+  //Promise.all([goodPromise, badPromise]).then(values => {console.log(values);}, reason => {console.log(reason);})
+  //Promise.all([goodPromise, goodPromise]).then(values => {console.log(values);}, reason => {console.log(reason);})
+
   // Main game-saving function
     // Takes name and, implicitly, game state
     // Encodes as JSON and then posts data to server
+
+    HTomb.Save.saveGame3 = function(name) {
+      HTomb.Time.lockTime();
+      console.time("save game");
+      name = name || HTomb.Save.currentGame;
+      let totalN = HTomb.World.things.length;
+      let handleErrors = function(response) {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
+      };
+      batchMap(function(v, i, a) {
+          return HTomb.Save.stringifyThing(v, true);
+        }, HTomb.World.things,
+      {
+          splitby: 1000,
+          progress: function(i) {
+            console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
+            HTomb.GUI.Views.progressView(["Saving game:",parseInt(100*i/totalN).toString() + "% complete"]);
+          },
+          then: function(rslt) {
+            HTomb.GUI.pushMessage("Finished saving " + rslt.length + " entities.");
+            console.timeEnd("save game");
+            let things = rslt.join(',');
+            things = '{json: "['.concat(things,']"}');
+            let promiseThings = fetch({
+              method: "POST",
+              headers: headers,
+              url: "/saves/" + name + "/things/",
+              body: things
+            });
+            let promiseOther = function() {
+              let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
+              let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
+              let explored = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
+              let other = '{'.concat(
+                          '"explored": ', explored, ", ",
+                          '"lights": ', lights, ", ",
+                          '"cycle": ', cycle,
+                          '}'
+              );
+
+            }
+            .then(handleErrors)
+            // at this point, "things" should be GCed
+            .then(function() {
+
+
+            });
+
+            })
+            });
+
+            let tiles = HTomb.Save.stringifyThing(HTomb.World.tiles, false);
+            let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
+            let covers = HTomb.Save.stringifyThing(HTomb.World.covers, false);
+            let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
+            let cycle = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
+            let json = '{'.concat(
+              '"things": ', things, ", ",
+              '"tiles": ', tiles, ", ",
+              '"explored": ', explored, ", ",
+              '"covers": ', covers, ", ",
+              '"lights": ', lights, ", ",
+              '"cycle": ', cycle,
+              '}'
+            );
+            console.log("length of things is " + things.length);
+            console.log("length of tiles is " + tiles.length);
+            console.log("length of explored is " + explored.length);
+            console.log("length of covers is " + covers.length);
+            console.log("length of lights is " + lights.length);
+            console.log("length of cycle is " + cycle.length);
+            //console.time("complex parse");
+            //HTomb.Save.restoreGame(json);
+            //console.timeEnd("complex parse");
+            postData(name, json);
+            HTomb.GUI.splash(["Finished saving "+"'"+name+"'."]);
+          }
+        }
+      );
+    };
+
+  HTomb.Save.saveGame2 = function(name) {
+      HTomb.Time.lockTime();
+      name = name || HTomb.Save.currentGame;
+      var xhttp = new XMLHttpRequest();
+      let headers = new Headers();
+      headers.set("Content-Type", "application/json;charset=UTF-8");
+      batchMap(function(v, i, a) {return HTomb.Save.stringifyThing(v, true);},
+        HTomb.World.things,
+        {   splitby: 1000,
+            progress: function(i) {
+              console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
+              HTomb.GUI.Views.progressView(["Saving game:",parseInt(100*i/totalN).toString() + "% complete"]);
+            },
+            then: function(rslt) {
+              HTomb.GUI.pushMessage("Finished saving " + rslt.length + " entities.");
+              console.timeEnd("save game");
+              let things = rslt.join(',');
+              things = '{json: "['.concat(things,']"}');
+              fetch({
+                method: "POST",
+                headers: headers,
+                url: "/saves/" + name + "/things/"
+              }).then(res => {
+                if (response.ok) {
+
+                } else {
+                  console.log("post failed");
+                }
+              });
+            }
+          }
+        });
+      };
+      let getOther = function() {
+        let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
+        let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
+        let explored = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
+        let other = '{'.concat(
+                    '"explored": ', explored, ", ",
+                    '"lights": ', lights, ", ",
+                    '"cycle": ', cycle,
+                    '}'
+        );
+        //post other stuff
+      };
+      let getTiles = function(z1,z2) {
+        return function() {
+          let levels = HTomb.World.tiles.slice(z1,z2);
+          HTomb.Save.stringifyThing(levels, false);
+          //post the tiles
+        };
+      };
+      let textGetters = [
+        postThings,
+        postTiles(0,7),
+        postTiles(8,15),
+        postTiles(16,23),
+        postTiles(24,31),
+        postTiles(32,39),
+        postTiles(40,47),
+        postTiles(48,55),
+        postTiles(56,63)
+      ];
+
+
+      fetch("/saves/"+name+"/things.json", {
+        method: "POST",
+        headers:
+        body: things
+      }).then(function(response)) {
+
+      }).then(function(response)) {
+
+      }).then(function(response)) {
+
+      }
+      let postThings = function(callback) {};
+      let postTiles = function(callback) {};
+      let postCovers = function(callback) {};
+      let postOther = function(callback) {};
+      postThings(
+        postTiles(
+          postCovers(
+            postOther()
+          )
+        )
+      );
+  }
 
   HTomb.Save.saveGame = function(name) {
     HTomb.Time.lockTime();
@@ -59,6 +269,7 @@ HTomb = (function(HTomb) {
       }
     );
   };
+
   // Send the XMLHTTP POST request to save game
   function postData(name, json) {
     var file = "/"+ name + '.json';
@@ -72,6 +283,8 @@ HTomb = (function(HTomb) {
     console.log("probably should have success/fail message...");
     HTomb.Time.unlockTime();
   }
+
+  //okay...so this is how it's done...
 
   // Helper function to split job and unlock DOM
   function batchMap(func, arr, options) {
