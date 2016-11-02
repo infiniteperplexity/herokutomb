@@ -164,5 +164,5 @@ app.listen(port, function () {
 setInterval(function() {
   connection.ping();
   ram("ping");
-  //global.gc();
+  global.gc();
 },10000);
