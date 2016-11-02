@@ -10,7 +10,6 @@ HTomb = (function(HTomb) {
   // Main game-saving function
     // Takes name and, implicitly, game state
     // Encodes as JSON and then posts data to server
-
   HTomb.Save.saveGame = function(name) {
     HTomb.Time.lockTime();
     console.time("save game");
@@ -63,16 +62,12 @@ HTomb = (function(HTomb) {
   function postData(name, json) {
     var file = "/"+ name + '.json';
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      console.log("ready state is " + this.readyState);
-    }
     xhttp.open("POST", file, true);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.send(JSON.stringify({txt: json}));
     console.log("probably should have success/fail message...");
     HTomb.Time.unlockTime();
   }
-
   // Helper function to split job and unlock DOM
   function batchMap(func, arr, options) {
     options = options || {};
