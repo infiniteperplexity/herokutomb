@@ -43,6 +43,12 @@ HTomb = (function(HTomb) {
             '"cycle": ', cycle,
             '}'
           );
+          console.log("length of things is " + things.length);
+          console.log("length of tiles is " + tiles.length);
+          console.log("length of explored is " + explored.length);
+          console.log("length of covers is " + covers.length);
+          console.log("length of lights is " + lights.length);
+          console.log("length of cycle is " + cycle.length);
           //console.time("complex parse");
           //HTomb.Save.restoreGame(json);
           //console.timeEnd("complex parse");
