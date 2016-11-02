@@ -50,17 +50,20 @@ app.use(bodyParser.json({limit: '100mb'}));
 //app.use(bodyPArser.urlencoded({limit: '50mb', extended: true}));
 
 function serveFile(req, res) {
+  res.set("Connection", "close");
   console.log("Received GET request: " + req.url);
   res.sendFile(__dirname + req.url);
   ram("after serving file");
 }
 app.get('/', function (req, res) {
+  res.set("Connection", "close");
   console.log("Received GET request: " + req.url);
   res.sendFile(__dirname +"/index.html");
 });
 app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/*.json', function(req, res) {
+  res.set("Connection", "close");
   global.gc();
   ram("start of save file GET");
   console.log("Received GET request: " + req.url);
@@ -81,10 +84,10 @@ app.get('/*.json', function(req, res) {
     ram("after sending save file");
     collectAfter();
   });
-  res.set("Connection", "close");
 });
 
 app.get('/saves/', function(req, res) {
+  res.set("Connection", "close");
   global.gc();
   console.log("Received GET request: " + req.url);
   ram("start of directory GET");
@@ -113,7 +116,6 @@ app.get('/saves/', function(req, res) {
       collectAfter();
     }
   });
-  res.set("Connection", "close");
 });
 
 app.post('/*.json', function (req, res) {
@@ -122,6 +124,7 @@ app.post('/*.json', function (req, res) {
   connection.ping();
   console.log("Received POST request: " + req.url);
   connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows) {
+    res.set("Connection", "close");
     ram("start of first POST query");
     // for now, do not check for errors
     //connnection.ping();
@@ -135,7 +138,8 @@ app.post('/*.json', function (req, res) {
     console.log("about to load rows");
     if (rows.length>0) {
       console.log("trying to udpate");
-      connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err) {
+      connection.query("UPDATE saves SET jsondata = ? WHERE filename = ?", [stringified, req.url.substr(1)], function(err) {
+      //connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err) {
         ram("start of row updating");
         if (err) {
           return console.log(err);
@@ -157,7 +161,6 @@ app.post('/*.json', function (req, res) {
     //setTimeout(function() {global.gc();},2000);
   });
   console.log("Saved file "+req.url);
-  res.set("Connection", "close");
 });
 
 app.listen(port, function () {
