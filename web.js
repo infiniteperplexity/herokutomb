@@ -65,7 +65,7 @@ app.get('/*.js', serveFile);
 
 app.get('/saves/*', function(req, res) {
   res.set("Connection", "close");
-  let urlfrags = req.url.split("/");
+  var urlfrags = req.url.split("/");
   global.gc();
   ram("start of save file GET");
   console.log("Received GET request: " + req.url);
@@ -121,7 +121,7 @@ app.get('/saves/', function(req, res) {
 });
 app.post('/saves/*', function (req, res) {
   res.set("Connection", "close");
-  let urlfrags = req.url.split("/");
+  var urlfrags = req.url.split("/");
   global.gc();
   ram("start of POST");
   connection.ping();
