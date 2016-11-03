@@ -117,7 +117,7 @@ app.get('/saves/', function(req, res) {
     }
   });
 });
-app.post('/saves/*', function (req, res)) {
+app.post('/saves/*', function (req, res) {
   global.gc();
   ram("start of POST");
   connection.ping();
@@ -125,7 +125,7 @@ app.post('/saves/*', function (req, res)) {
   connection.query("UPDATE saves SET jsondata = ? WHERE filename = ?", [req.body.json, req.url.substr(1)], function(err) {
     ram("middle of the fake query");
   });
-};
+});
 app.post('/*.json', function (req, res) {
   global.gc();
   ram("start of POST");
