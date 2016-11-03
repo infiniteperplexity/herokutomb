@@ -13,14 +13,14 @@ HTomb = (function(HTomb) {
     let val = textFunc();
     // if we got actual text...
     if (typeof(val)==="string") {
-      args.body = val;
+      args.body = '{json: "' + val + '"}';
       console.log(url + " length is " + args.body.length);
       // ...return a fetch promise using that text
       return fetch(args);
     } else if (val.then) {
       // if we got a promise of text...
       return val.then(res => {
-        args.body = res;
+        args.body = = '{json: "' + res + '"}';
         // ...chain to a fetch promise
         console.log(url + " length is " + args.body.length);
         return fetch(args);
