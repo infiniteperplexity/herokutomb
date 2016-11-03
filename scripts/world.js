@@ -31,6 +31,26 @@ HTomb = (function(HTomb) {
   console.timeEnd("lists");
 
   HTomb.World.init = function() {
+    while(HTomb.World.things.length>0) {
+      HTomb.World.things.pop();
+    }
+    var oldkeys;
+    oldkeys = Object.keys(HTomb.World.creatures);
+    for (let i=0; i<oldkeys.length; i++) {
+      delete HTomb.World.creatures[oldkeys[i]];
+    }
+    oldkeys = Object.keys(HTomb.World.features);
+    for (let i=0; i<oldkeys.length; i++) {
+      delete HTomb.World.features[oldkeys[i]];
+    }
+    oldkeys = Object.keys(HTomb.World.items);
+    for (let i=0; i<oldkeys.length; i++) {
+      delete HTomb.World.items[oldkeys[i]];
+    }
+    oldkeys = Object.keys(HTomb.World.zones);
+    for (let i=0; i<oldkeys.length; i++) {
+      delete HTomb.World.zones[oldkeys[i]];
+    }
     HTomb.World.fillTiles();
     HTomb.World.generators.bestSoFar();
   };
