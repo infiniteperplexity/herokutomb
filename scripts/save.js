@@ -46,6 +46,9 @@ HTomb = (function(HTomb) {
             let things = rslt.join(',');
             things = '['.concat(things,']');
             resolve(things);
+          },
+          killif: function() {
+            return killsave;
           }
         }
       );
@@ -81,8 +84,10 @@ HTomb = (function(HTomb) {
     };
   }
 
+  var killsave = false;
   HTomb.Save.saveGame = function(name) {
     HTomb.Time.lockTime();
+    HTomb.GUI.Contexts.locked=true;
     name = name || HTomb.Save.currentGame;
     let headers = new Headers();
     headers.append("Content-Type", "application/json;charset=UTF-8");
@@ -90,6 +95,7 @@ HTomb = (function(HTomb) {
       method: "POST",
       headers: headers
     }
+    killsave = false;
     let promises = [
       fetchText(stringifyTiles(0,7),"/saves//tiles0/"+name+"/",args),
       fetchText(stringifyTiles(8,15),"/saves//tiles8/"+name+"/",args),
@@ -114,12 +120,13 @@ HTomb = (function(HTomb) {
       values => {
         console.log("succeeded: " + values);
         HTomb.GUI.splash(["Finished saving "+"'"+name+"'."]);
-        HTomb.Time.unlockTime();
+        HTomb.GUI.Contexts.locked=false;
       },
       reason => {
+        killsave = true;
         console.log("failed: " + reason);
         HTomb.GUI.splash(["Failed to save "+"'"+name+"'."]);
-        HTomb.Time.unlockTime();
+        HTomb.GUI.Contexts.locked=false;
       }
     )
   };
@@ -129,10 +136,14 @@ HTomb = (function(HTomb) {
     let splitby = options.splitby || 1;
     let then = options.then || function() {};
     let progress = options.progress || function(i) {console.log(i);};
+    let killif = options.killif || function() {return false};
     let retn = [];
     let count = 0;
     let recurse = function() {
       for (; count<arr.length; count++) {
+        if (killif()===true) {
+          return;
+        }
         retn.push(func(arr[count], count, arr));
         if (count>=arr.length-1) {
           then(retn);
@@ -218,39 +229,6 @@ HTomb = (function(HTomb) {
     xhttp.send();
   }
   // End code for listing directory contents
-
-  // Code for restoring games
-  HTomb.Save.getData = function(name, callback) {
-    HTomb.Time.lockTime();
-    HTomb.GUI.Views.progressView(["Restoring '" + name + "'..."]);
-    getData(name, callback);
-  };
-  //function getData(file) {
-  function getData(name, callback) {
-    name = name || currentGame;
-    console.time("get request");
-    var file = '/'+ name + '.json';
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (xhttp.readyState == XMLHttpRequest.DONE) {
-        if (xhttp.status == 200) {
-          console.log("Got our JSON, now we should do something with it.");
-          console.log(xhttp.responseText.length);
-          callback(xhttp.responseText);
-          //let json = JSON.parse(xhttp.responseText);
-          console.timeEnd("get request");
-        } else if (xhttp.status == 400) {
-          console.log("There was an error 400");
-        } else {
-          console.log("Something other than 200 was returned.");
-        }
-        HTomb.Time.unlockTime();
-      }
-    };
-    xhttp.open("GET", file, true);
-    xhttp.send();
-  };
-
   function fetchThen(restoreFunc, url, args) {
     fetch(url, args).then(res=> {
       restoreFunc(res.body);
@@ -412,6 +390,7 @@ HTomb = (function(HTomb) {
 
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
+    HTomb.GUI.Contexts.locked=true;
     let headers = new Headers();
     headers.append("Content-Type", "application/json;charset=UTF-8");
     let args = {
@@ -448,9 +427,12 @@ HTomb = (function(HTomb) {
         HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
         console.log("refreshed visibility");
         HTomb.Time.unlockTime();
+        HTomb.GUI.Contexts.locked=false;
         HTomb.GUI.splash(["Game restored."]);
       },
       reason => {
+        HTomb.Time.unlockTime();
+        HTomb.GUI.Contexts.locked=false;
         console.log("failed with " + values);
       }
     );

@@ -54,7 +54,8 @@ HTomb = (function(HTomb) {
   Views.System = {};
   Views.System.save = function() {
     // Uses the current or default save game name
-    HTomb.Save.saveGame();
+    HTomb.GUI.Views.progressView(["Saving game..."]);
+    setTimeout(HTomb.Save.saveGame,500);
   };
 
   Views.System.saveAs = function() {

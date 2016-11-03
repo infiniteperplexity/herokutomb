@@ -84,6 +84,9 @@ HTomb = (function(HTomb) {
   var keydown = function(key) {
     key.preventDefault();
     HTomb.Time.stopTime();
+    if (GUI.Contexts.locked===true) {
+      return;
+    }
     // Pass the keystroke to the current control context
     var diagonal = null;
     if (key.shiftKey && [ROT.VK_UP,ROT.VK_DOWN,ROT.VK_LEFT,ROT.VK_RIGHT].indexOf(key.keyCode)>-1) {
@@ -137,6 +140,9 @@ HTomb = (function(HTomb) {
   // this may change a bit if I add click functionality to other canvases
   var mousedown = function(click) {
     click.preventDefault();
+    if (GUI.Contexts.locked===true) {
+      return;
+    }
     // Convert X and Y from pixels to characters
     var x = Math.floor((click.clientX+XSKEW)/CHARWIDTH-1);
     var y = Math.floor((click.clientY+YSKEW)/CHARHEIGHT-1);
@@ -148,6 +154,9 @@ HTomb = (function(HTomb) {
     }
   };
   var mousemove = function(move) {
+    if (GUI.Contexts.locked===true) {
+      return;
+    }
     // Convert X and Y from pixels to characters
     var x = Math.floor((move.clientX+XSKEW)/CHARWIDTH-1);
     var y = Math.floor((move.clientY+YSKEW)/CHARHEIGHT-1);
@@ -202,6 +211,7 @@ HTomb = (function(HTomb) {
 
   //******* Define the abstract control context *******
   GUI.Contexts = {};
+  GUI.Contexts.locked = false;
 
   function Context(bindings) {
     // Pass a map of keystroke / function bindings

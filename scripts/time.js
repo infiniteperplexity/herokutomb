@@ -17,6 +17,9 @@ HTomb = (function(HTomb) {
     HTomb.Time.stopTime();
     timeLocked = true;
   };
+  HTomb.Time.timeIsLocked = function() {
+    return timeLocked;
+  }
   HTomb.Time.unlockTime = function() {
     console.log("time unlocked");
     timeLocked = false;
