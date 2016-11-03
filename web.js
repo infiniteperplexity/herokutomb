@@ -62,14 +62,16 @@ app.get('/', function (req, res) {
 });
 app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
-app.get('/*.json', function(req, res) {
+
+app.get('/saves/*', function(req, res) {
   res.set("Connection", "close");
+  let urlfrags = req.url.split("/");
   global.gc();
   ram("start of save file GET");
   console.log("Received GET request: " + req.url);
   connection.ping();
   //global.gc();
-  connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
+  connection.query("SELECT * FROM saves WHERE filename = ? AND segment = ?", [urlfrags[3], urlfrags[2]], function(err, rows, fields) {
     ram("start of save file query");
     //big jump in memory usage here...
     if (err) {
@@ -84,7 +86,7 @@ app.get('/*.json', function(req, res) {
     ram("after sending save file");
     collectAfter();
   });
-});
+};
 
 app.get('/saves/', function(req, res) {
   res.set("Connection", "close");
@@ -93,7 +95,7 @@ app.get('/saves/', function(req, res) {
   ram("start of directory GET");
   connection.ping();
   //global.gc();
-  connection.query("SELECT filename FROM saves", function(err, rows, fields) {
+  connection.query("SELECT DISTINCT filename FROM saves", function(err, rows, fields) {
     ram("start of directory query");
     if (err) {
       return console.log(err);
@@ -118,57 +120,17 @@ app.get('/saves/', function(req, res) {
   });
 });
 app.post('/saves/*', function (req, res) {
+  res.set("Connection", "close");
+  let urlfrags = req.url.split("/");
   global.gc();
   ram("start of POST");
   connection.ping();
   console.log("Received POST request: " + req.url);
-  connection.query("UPDATE saves SET jsondata = ? WHERE filename = ?", [req.body.json, req.url.substr(1)], function(err) {
-    ram("middle of the fake query");
+  connection.query("DELETE FROM saves WHERE filename = ? AND segment = ?",[urlfrags[3], urlfrags[2]], function(err) {
+    connection.query("UPDATE saves SET jsondata = ? WHERE filename = ? AND segment = ?", [req.body.json, urlfrags[3], urlfrags[2])], function(err) {
+      ram("middle of the fake query");
+    });
   });
-});
-app.post('/*.json', function (req, res) {
-  global.gc();
-  ram("start of POST");
-  connection.ping();
-  console.log("Received POST request: " + req.url);
-  connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows) {
-    res.set("Connection", "close");
-    ram("start of first POST query");
-    // for now, do not check for errors
-    //connnection.ping();
-    var stringified = req.body.txt;
-    //var stringified = JSON.stringify(req.body);
-    ram("after stringifying");
-    console.log("just stringified body");
-    //connection.ping();
-    //global.gc();
-    //connection.ping();
-    console.log("about to load rows");
-    if (rows.length>0) {
-      console.log("trying to udpate");
-      connection.query("UPDATE saves SET jsondata = ? WHERE filename = ?", [stringified, req.url.substr(1)], function(err) {
-      //connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err) {
-        ram("start of row updating");
-        if (err) {
-          return console.log(err);
-        }
-        console.log("successfully replaced row?");
-        collectAfter();
-      });
-    } else {
-      console.log("trying to insert");
-      connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
-        ram("start of row inserting");
-        if (err) {
-          return console.log(err);
-        }
-        console.log("successfully loaded row?");
-        collectAfter();
-      });
-    }
-    //setTimeout(function() {global.gc();},2000);
-  });
-  console.log("Saved file "+req.url);
 });
 
 app.listen(port, function () {

@@ -27,7 +27,7 @@ HTomb = (function(HTomb) {
   HTomb.World.features = {};
   HTomb.World.zones = {};
   HTomb.World.portals = {};
-  HTomb.World.covers = {};
+  HTomb.World.covers = grid3d();
   console.timeEnd("lists");
 
   HTomb.World.init = function() {
@@ -42,8 +42,10 @@ HTomb = (function(HTomb) {
         for (var z=0; z<NLEVELS; z++) {
           if (x===0 || x===LEVELW-1 || y===0 || y===LEVELH-1 || z===0 || z===NLEVELS-1) {
             HTomb.World.tiles[z][x][y] = HTomb.Tiles.VoidTile;
+            HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
           } else {
             HTomb.World.tiles[z][x][y] = HTomb.Tiles.EmptyTile;
+            HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
           }
         }
       }
@@ -144,7 +146,7 @@ HTomb = (function(HTomb) {
     }
   };
   HTomb.World.validate.liquids = function(x,y,z) {
-    var t = HTomb.World.covers[coord(x,y,z)];
+    var t = HTomb.World.covers[z][x][y];
     if (t && t.liquid) {
       t.liquid.flood(x,y,z);
     }

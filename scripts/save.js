@@ -73,9 +73,12 @@ HTomb = (function(HTomb) {
     };
   };
 
-  function stringifyCovers() {
-    let covers = HTomb.Save.stringifyThing(HTomb.World.covers, false);
-    return covers;
+  function stringifyCovers(z1,z2) {
+    return function() {
+      let levels = HTomb.World.covers.slice(z1,z2);
+      let covers = HTomb.Save.stringifyThing(levels, false);
+      return covers;
+    };
   }
 
   HTomb.Save.saveGame = function(name) {
@@ -88,17 +91,24 @@ HTomb = (function(HTomb) {
       headers: headers
     }
     let promises = [
-      fetchText(stringifyTiles(0,7),"/saves/" + name + "/tiles0/",args),
-      fetchText(stringifyTiles(8,15),"/saves/" + name + "/tiles8/",args),
-      fetchText(stringifyTiles(16,23),"/saves/" + name + "/tiles16/",args),
-      fetchText(stringifyTiles(24,31),"/saves/" + name + "/tiles24/",args),
-      fetchText(stringifyTiles(32,39),"/saves/" + name + "/tiles32/",args),
-      fetchText(stringifyTiles(40,47),"/saves/" + name + "/tiles40/",args),
-      fetchText(stringifyTiles(48,55),"/saves/" + name + "/tiles48/",args),
-      fetchText(stringifyTiles(56,63),"/saves/" + name + "/tiles56/",args),
-      fetchText(stringifyCovers,"/saves/" + name + "/covers/",args),
-      fetchText(stringifyOther,"/saves/" + name + "/other/",args),
-      fetchText(promiseThings,"/saves/" + name + "/things/",args)
+      fetchText(stringifyTiles(0,7),"/saves//tiles0/"+name+"/",args),
+      fetchText(stringifyTiles(8,15),"/saves//tiles8/"+name+"/",args),
+      fetchText(stringifyTiles(16,23),"/saves/tiles16/"+name+"/",args),
+      fetchText(stringifyTiles(24,31),"/saves/tiles24/"+name+"/",args),
+      fetchText(stringifyTiles(32,39),"/saves/tiles32/"+name+"/",args),
+      fetchText(stringifyTiles(40,47),"/saves/tiles40/"+name+"/",args),
+      fetchText(stringifyTiles(48,55),"/saves/tiles48/"+name+"/",args),
+      fetchText(stringifyTiles(56,63),"/saves/tiles56/"+name+"/",args),
+      fetchText(stringifyCovers(0,7),"/saves/covers0/"+name+"/",args),
+      fetchText(stringifyCovers(8,15),"/saves/covers8/"+name+"/",args),
+      fetchText(stringifyCovers(16,23),"/saves/covers16/"+name+"/",args),
+      fetchText(stringifyCovers(24,31),"/saves/covers24/"+name+"/",args),
+      fetchText(stringifyCovers(32,39),"/saves/covers32/"+name+"/",args),
+      fetchText(stringifyCovers(40,47),"/saves/covers40/"+name+"/",args),
+      fetchText(stringifyCovers(48,55),"/saves/covers48/"+name+"/",args),
+      fetchText(stringifyCovers(56,63),"/saves/covers56/"+name+"/",args),
+      fetchText(stringifyOther,"/saves/other/"+name+"/",args),
+      fetchText(promiseThings,"/saves/things/"+name+"/",args)
     ];
     Promise.all(promises).then(
       values => {
@@ -113,72 +123,6 @@ HTomb = (function(HTomb) {
       }
     )
   };
-
-  HTomb.Save.saveGameOld = function(name) {
-    HTomb.Time.lockTime();
-    console.time("save game");
-    name = name || HTomb.Save.currentGame;
-    let totalN = HTomb.World.things.length;
-    batchMap(function(v, i, a) {
-        return HTomb.Save.stringifyThing(v, true);
-      }, HTomb.World.things,
-    {
-        splitby: 1000,
-        progress: function(i) {
-          console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
-          HTomb.GUI.Views.progressView(["Saving game:",parseInt(100*i/totalN).toString() + "% complete"]);
-        },
-        then: function(rslt) {
-          HTomb.GUI.pushMessage("Finished saving " + rslt.length + " entities.");
-          console.timeEnd("save game");
-          let things = rslt.join(',');
-          things = '['.concat(things,']');
-          let tiles = HTomb.Save.stringifyThing(HTomb.World.tiles, false);
-          let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
-          let covers = HTomb.Save.stringifyThing(HTomb.World.covers, false);
-          let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
-          let cycle = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
-          let json = '{'.concat(
-            '"things": ', things, ", ",
-            '"tiles": ', tiles, ", ",
-            '"explored": ', explored, ", ",
-            '"covers": ', covers, ", ",
-            '"lights": ', lights, ", ",
-            '"cycle": ', cycle,
-            '}'
-          );
-          console.log("length of things is " + things.length);
-          console.log("length of tiles is " + tiles.length);
-          console.log("length of explored is " + explored.length);
-          console.log("length of covers is " + covers.length);
-          console.log("length of lights is " + lights.length);
-          console.log("length of cycle is " + cycle.length);
-          //console.time("complex parse");
-          //HTomb.Save.restoreGame(json);
-          //console.timeEnd("complex parse");
-          postData(name, json);
-          HTomb.GUI.splash(["Finished saving "+"'"+name+"'."]);
-        }
-      }
-    );
-  };
-
-  // Send the XMLHTTP POST request to save game
-  function postData(name, json) {
-    var file = "/"+ name + '.json';
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      console.log("ready state is " + this.readyState);
-    }
-    xhttp.open("POST", file, true);
-    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhttp.send(JSON.stringify({txt: json}));
-    console.log("probably should have success/fail message...");
-    HTomb.Time.unlockTime();
-  }
-
-  //okay...so this is how it's done...
-
   // Helper function to split job and unlock DOM
   function batchMap(func, arr, options) {
     options = options || {};
@@ -305,19 +249,18 @@ HTomb = (function(HTomb) {
     };
     xhttp.open("GET", file, true);
     xhttp.send();
-  }
+  };
 
-  HTomb.Save.restoreGame = function(json) {
+  function fetchThen(restoreFunc, url, args) {
+    fetch(url, args).then(res=> {
+      restoreFunc(res.body);
+    });
+  }
+  function restoreThings(json) {
     let tids = [];
     let icontains = [];
-    //let templates = [];
     let player = null;
-    // parse while keeping a list of references to thingIds
-    HTomb.GUI.Views.progressView([
-      "Restoring game:",
-      "...parsing JSON..."
-    ]);
-    let saveGame = JSON.parse(json, function (key, val) {
+    let things = JSON.parse(json, function (key, val) {
       if (val===null) {
         return null;
       // remove this once parsing is corrected
@@ -332,9 +275,7 @@ HTomb = (function(HTomb) {
       } else if (val.ItemContainer) {
         // should require tracking swaps
         let ic = new HTomb.ItemContainer();
-        // This doesn't set correctly.
         ic.parent = this;
-        console.log("parent is "+HTomb.Save.stringifyThing(this,true));
         icontains.push([ic]);
         for (let i=0; i<val.ItemContainer.length; i++) {
           // I saw length get messed up sometimes but I'm not sure it still does
@@ -388,22 +329,10 @@ HTomb = (function(HTomb) {
         item.container = container;
       }
     }
-    fillListFrom(saveGame.things, HTomb.World.things);
-    HTomb.GUI.Views.progressView([
-      "Restoring game:",
-      "...rebuilding map..."
-    ]);
-    fillGrid3dFrom(saveGame.tiles, HTomb.World.tiles, HTomb.Types.parseTile);
-    fillGrid3dFrom(saveGame.explored, HTomb.World.explored);
-    HTomb.GUI.Views.progressView([
-      "Restoring game:",
-      "...rebuilding entity lists..."
-    ]);
-    console.log(saveGame);
-
     while(HTomb.World.things.length>0) {
       HTomb.World.things.pop();
     }
+    fillListFrom(saveGame.things, things);
     var oldkeys;
     oldkeys = Object.keys(HTomb.World.creatures);
     for (let i=0; i<oldkeys.length; i++) {
@@ -420,10 +349,6 @@ HTomb = (function(HTomb) {
     oldkeys = Object.keys(HTomb.World.zones);
     for (let i=0; i<oldkeys.length; i++) {
       delete HTomb.World.zones[oldkeys[i]];
-    }
-    oldkeys = Object.keys(HTomb.World.covers);
-    for (let i=0; i<oldkeys.length; i++) {
-      delete HTomb.World.covers[oldkeys[i]];
     }
     for (let t = 0; t<saveGame.things.length; t++) {
       let thing = saveGame.things[t];
@@ -447,33 +372,88 @@ HTomb = (function(HTomb) {
         }
       }
     }
-    console.log("filled entities");
-    HTomb.GUI.Views.progressView([
-      "Restoring game:",
-      "...rebuilding liquids and ground cover..."
-    ]);
-    fillListFrom(saveGame.covers, HTomb.World.covers, HTomb.Types.parseCover);
-    HTomb.GUI.Views.progressView([
-      "Restoring game:",
-      "...rebuilding time cycle and visibility..."
-    ]);
-    HTomb.Time.dailyCycle.turn = saveGame.cycle.turn;
-    HTomb.Time.dailyCycle.minute = saveGame.cycle.minute;
-    HTomb.Time.dailyCycle.hour = saveGame.cycle.hour;
-    HTomb.Time.dailyCycle.day = saveGame.cycle.day;
-    HTomb.FOV.resetVisible();
-    if (HTomb.Player.sight) {
-      HTomb.FOV.findVisible(HTomb.Player.x, HTomb.Player.y, HTomb.Player.z, HTomb.Player.sight.range);
+  }
+
+  function restoreTiles(z1,z2) {
+    return function(json) {
+      let levels = JSON.parse(json, HTomb.Types.parseTile);
+      for (let i=0; i<=z2-z1; i++) {
+        for (let x=0; x<LEVELW; x++) {
+          for (let y=0; y<LEVELH; y++) {
+            HTomb.World.tiles[i+z1][x][y] = levels[i][x][y];
+          }
+        }
+      }
+    };
+  }
+
+  function restoreCovers(z1,z2) {
+    return function(json) {
+      let levels = JSON.parse(json, HTomb.Types.parseCover);
+      for (let i=0; i<=z2-z1; i++) {
+        for (let x=0; x<LEVELW; x++) {
+          for (let y=0; y<LEVELH; y++) {
+            HTomb.World.covers[i+z1][x][y] = levels[i][x][y];
+          }
+        }
+      }
+    };
+  }
+
+  function restoreOther(json) {
+    let other = JSON.parse(json);
+    fillGrid3dFrom(other.explored, HTomb.World.explored);
+    fillListFrom(other.lights, HTomb.World.lights);
+    HTomb.Time.dailyCycle.turn = other.cycle.turn;
+    HTomb.Time.dailyCycle.minute = other.cycle.minute;
+    HTomb.Time.dailyCycle.hour = other.cycle.hour;
+    HTomb.Time.dailyCycle.day = other.cycle.day;
+  }
+
+  HTomb.Save.restoreGame = function(name) {
+    HTomb.Time.lockTime();
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json;charset=UTF-8");
+    let args = {
+      method: "GET",
+      headers: headers
     }
-    HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
-    console.log("refreshed visibility");
-    HTomb.Time.unlockTime();
-    HTomb.GUI.splash(["Game restored."]);
-  };
-
-  function rebuildLists(fromThings, toList, callb) {
-    callb = callb || function(x) {return x;};
-
+    let promises = [
+      fetch("/saves/tiles0/" + name + "/", args).then(res => restoreTiles(0,7)(res.body)),
+      fetch("/saves/tiles8/" + name + "/", args).then(res => restoreTiles(8,15)(res.body)),
+      fetch("/saves/tiles16/" + name + "/", args).then(res => restoreTiles(16,23)(res.body)),
+      fetch("/saves/tiles24/" + name + "/", args).then(res => restoreTiles(24,31)(res.body)),
+      fetch("/saves/tiles32/" + name + "/", args).then(res => restoreTiles(32,39)(res.body)),
+      fetch("/saves/tiles40/" + name + "/", args).then(res => restoreTiles(40,47)(res.body)),
+      fetch("/saves/tiles48/" + name + "/", args).then(res => restoreTiles(48,55)(res.body)),
+      fetch("/saves/tiles56/" + name + "/", args).then(res => restoreTiles(56,63)(res.body)),
+      fetch("/saves/covers0/" + name + "/", args).then(res => restoreCovers(0,7)(res.body)),
+      fetch("/saves/covers8/" + name + "/", args).then(res => restoreCovers(8,15)(res.body)),
+      fetch("/saves/covers16/" + name + "/", args).then(res => restoreCovers(16,23)(res.body)),
+      fetch("/saves/covers24/" + name + "/", args).then(res => restoreCovers(24,31)(res.body)),
+      fetch("/saves/covers32/" + name + "/", args).then(res => restoreCovers(32,39)(res.body)),
+      fetch("/saves/covers40/" + name + "/", args).then(res => restoreCovers(40,47)(res.body)),
+      fetch("/saves/covers48/" + name + "/", args).then(res => restoreCovers(48,55)(res.body)),
+      fetch("/saves/covers56/" + name + "/", args).then(res => restoreCovers(56,63)(res.body)),
+      fetch("/saves/things/" + name + "/", args).then(res => restoreThings(res.body)),
+      fetch("/saves/others/" + name + "/", args).then(res => restoreOther(res.body)),
+    ]
+    Promise.all(promises).then(
+      values => {
+        console.log("succeeded with " + values);
+        HTomb.FOV.resetVisible();
+        if (HTomb.Player.sight) {
+          HTomb.FOV.findVisible(HTomb.Player.x, HTomb.Player.y, HTomb.Player.z, HTomb.Player.sight.range);
+        }
+        HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
+        console.log("refreshed visibility");
+        HTomb.Time.unlockTime();
+        HTomb.GUI.splash(["Game restored."]);
+      },
+      reason => {
+        console.log("failed with " + values);
+      }
+    );
   };
 
   function fillListFrom(fromList, toList, callb) {

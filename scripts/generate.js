@@ -217,7 +217,7 @@ timeIt("elevation", function() {
             break;
           } else if (rock._map[x][y]===0 || HTomb.World.tiles[z][x][y]!==HTomb.Tiles.WallTile
               || HTomb.Tiles.countNeighborsWhere(x,y,z,nonsolids)>0) {
-            HTomb.World.covers[coord(x,y,z)] = HTomb.Covers.Water;
+            HTomb.World.covers[z][x][y] = HTomb.Covers.Water;
           }
         }
       }
@@ -231,7 +231,7 @@ timeIt("elevation", function() {
           if (z<elev) {
             HTomb.World.tiles[z][x][y] = HTomb.Tiles.EmptyTile;
           }
-          HTomb.World.covers[coord(x,y,z)] = HTomb.Covers.Lava;
+          HTomb.World.covers[z][x][y] = HTomb.Covers.Lava;
         }
       }
     }
@@ -254,8 +254,8 @@ timeIt("elevation", function() {
       if (val) {
         var z = HTomb.Tiles.groundLevel(x,y);
         if (HTomb.Tiles.countNeighborsWhere(x,y,z,fallables)===0
-            && HTomb.World.covers[coord(x,y,z)]===undefined
-            && HTomb.World.covers[coord(x,y,z-1)]===undefined) {
+            && HTomb.World.covers[z][x][y]===HTomb.Covers.NoCover
+            && HTomb.World.covers[z-1][x][y]===HTomb.Covers.NoCover) {
           var grave = HTomb.Things["Tombstone"]();
           placement.stack(grave,x,y,z);
         }
@@ -421,9 +421,9 @@ timeIt("elevation", function() {
     cells.apply(function(x,y,val) {
       if (val) {
         var z = HTomb.Tiles.groundLevel(x,y);
-        var t = HTomb.World.covers[coord(x,y,z)];
+        var t = HTomb.World.covers[z][x][y];
         var plant;
-        if (t && t.liquid) {
+        if (t!==HTomb.Covers.NoCover && t.liquid) {
           if (Math.random()<0.5) {
             plant = HTomb.Things.Seaweed();
             placement.stack(plant,x,y,z);
@@ -444,8 +444,8 @@ timeIt("elevation", function() {
     for (var x=0; x<LEVELW; x++) {
       for (var y=0; y<LEVELH; y++) {
         var z = HTomb.Tiles.groundLevel(x,y);
-        if (tiles[z][x][y]===HTomb.Tiles.FloorTile && HTomb.World.covers[coord(x,y,z)]===undefined) {
-          HTomb.World.covers[coord(x,y,z)] = HTomb.Covers.Grass;
+        if (tiles[z][x][y]===HTomb.Tiles.FloorTile && HTomb.World.covers[z][x][y]===HTomb.Covers.NoCover) {
+          HTomb.World.covers[z][x][y] = HTomb.Covers.Grass;
         }
       }
     }
@@ -510,7 +510,7 @@ timeIt("elevation", function() {
         continue;
       }
       // do not place under water
-      if (HTomb.World.covers[coord(x,y,z)] && HTomb.World.covers[coord(x,y,z)].liquid) {
+      if (HTomb.World.covers[z][x][y].liquid) {
         continue;
       }
       // do not place on a different Z level from the graves
@@ -541,8 +541,8 @@ timeIt("elevation", function() {
       for (var y=1; y<LEVELH-1; y++) {
         if (Math.random()<p) {
           var z = HTomb.Tiles.groundLevel(x,y);
-          var t = HTomb.World.covers[coord(x,y,z)]
-          if (t && t.liquid) {
+          var t = HTomb.World.covers[z][x][y]
+          if (t.liquid) {
             template = HTomb.Utils.shuffle(waterCritters)[0];
           } else {
             template = HTomb.Utils.shuffle(landCritters)[0];
@@ -669,6 +669,7 @@ timeIt("elevation", function() {
     }
     var x,y,z;
     //// need a way to speed this up
+    // can't search Covers this way any more
     // var grasses = HTomb.Utils.where(HTomb.World.covers,function(v,k,o) {return (v.template==="Grass");});
     // for (var g=0; g<grasses.length; g++) {
     //   x = grasses[g].x;
@@ -686,15 +687,15 @@ timeIt("elevation", function() {
           continue;
         }
         z = HTomb.Tiles.groundLevel(x,y);
-        if (HTomb.World.tiles[z][x][y]!==HTomb.Tiles.FloorTile || HTomb.World.covers[coord(x,y,z)]) {
+        if (HTomb.World.tiles[z][x][y]!==HTomb.Tiles.FloorTile || HTomb.World.covers[z][x][y]!==HTomb.Covers.NoCover) {
           continue;
         }
         // count adjacent grass
         var n = HTomb.Tiles.countNeighborsWhere(x,y,z,function(x,y,z) {
-          return (HTomb.World.covers[coord(x,y,z)] && HTomb.World.covers[coord(x,y,z)].template==="Grass");
+          return (HTomb.World.covers[z][x][y].template==="Grass");
         });
         if (n>0) {
-          HTomb.World.covers[coord(x,y,z)] = HTomb.Covers.Grass;
+          HTomb.World.covers[z][x][y] = HTomb.Covers.Grass;
         }
       }
     }
