@@ -46,7 +46,6 @@ HTomb = (function(HTomb) {
       "Welcome to HellaTomb!",
       "N) New game.",
       "R) Restore game.",
-      "D) Delete a saved game.",
       "Q) Quit."
     ]);
   }
@@ -58,7 +57,7 @@ HTomb = (function(HTomb) {
       "S) Save game ('" + HTomb.Save.currentGame +"').",
       "A) Save game as...",
       "R) Restore game.",
-      "D) Delete a saved game.",
+      "D) Delete current game('" + HTomb.Save.currentGame +"').",
       "Q) Quit game."
     ]);
   };
@@ -70,31 +69,13 @@ HTomb = (function(HTomb) {
   };
 
   Views.System.delete = function() {
-    HTomb.Save.getDir(function(arg) {
-      let saves = [];
-      if (arg!==" ") {
-        saves = JSON.parse(arg);
-      }
-      var alpha = "abcdefghijklmnopqrstuvwxyz";
-      var controls = {};
-      for (let i=0; i<saves.length; i++) {
-        controls["VK_"+alpha[i].toUpperCase()] = function() {
-            let fragment = saves[i].substring(0,saves[i].length-5);
-            return function() {
-              if (confirm("Really delete game?")) {
-                HTomb.Save.deleteGame(fragment);
-              } else {
-                return;
-              }
-              console.log("We need some kind of way to manage the async...");
-            }
-        }();
-        saves[i] = alpha[i]+") " + saves[i].substring(0,saves[i].length-5);
-      }
-      saves.unshift("Choose a save file to delete:");
-      GUI.Contexts.active = GUI.Contexts.new(controls);
-      GUI.Panels.overlay.update(saves);
-    });
+    if (confirm("Really delete game?")) {
+      HTomb.Save.deleteGame(HTomb.Save.currentGame);
+      Views.startup();
+    } else {
+      Views.systemView();
+    }
+
   };
 
   Views.System.saveAs = function() {
@@ -169,7 +150,6 @@ HTomb = (function(HTomb) {
     VK_N: HTomb.World.newGame,
     VK_R: function() {Views.System.restore();},
     VK_Q: function() {Views.System.quit();},
-    VK_D: function() {Views.System.delete();}
   });
   GUI.Contexts.startup.clickTile = function() {};
   GUI.Contexts.startup.rightClickTile = function() {};
