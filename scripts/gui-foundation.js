@@ -177,7 +177,7 @@ HTomb = (function(HTomb) {
   menuDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
   scrollDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
   ///!!!! Maybe get rid of the next line....
-  overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.reset();});
+  overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickTile();});
 
   //************* Define the basic panels and how they access the DOM *********;
   GUI.Panels = {};
@@ -223,6 +223,8 @@ HTomb = (function(HTomb) {
         bindKey(this,b,bindings[b]);
       }
     }
+    this.rightClickTile = HTomb.GUI.reset;
+    this.clickTile = HTomb.GUI.reset;
   }
   Context.prototype.bindKey = function(k, f) {
     bindKey(this,k,f);

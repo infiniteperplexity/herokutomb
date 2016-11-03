@@ -196,7 +196,7 @@ HTomb = (function(HTomb) {
           items[i].item.owned = true;
         }
       }
-      HTomb.World.covers[z][x][y] = HTomb.World.NoCover;
+      HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
       if (Math.random()<0.25) {
         var rock = HTomb.Things.Rock();
         rock.item.n = 1;
@@ -228,7 +228,7 @@ HTomb = (function(HTomb) {
       var y = this.y;
       var z = this.z;
       var t = tiles[z][x][y];
-      HTomb.World.covers[z][x][y] = HTomb.World.NoCover;
+      HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
       // If it's a floor, build a slope
       if (t===FloorTile) {
         tiles[z][x][y] = UpSlopeTile;
@@ -316,7 +316,7 @@ HTomb = (function(HTomb) {
         x = neighbors[i][0];
         y = neighbors[i][1];
         t = HTomb.World.covers[z][x][y];
-        if (HTomb.World.tiles[z][x][y].solid===true || (t!==HTomb.World.NoCover && t.liquid)) {
+        if (HTomb.World.tiles[z][x][y].solid===true || t.liquid) {
           continue;
         }
         HTomb.World.covers[z][x][y] = this;
@@ -329,7 +329,7 @@ HTomb = (function(HTomb) {
     template: "NoCover",
     name: "none"
   });
-  
+
   HTomb.Types.defineCover({
     template: "Water",
     name: "water",

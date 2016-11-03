@@ -34,7 +34,7 @@ HTomb = (function(HTomb) {
   HTomb.Time.stopTime = function() {
     clearInterval(timePassing);
     timePassing = null;
-    HTomb.GUI.Panels.status.render();
+    //HTomb.GUI.Panels.status.render();
   };
   HTomb.Time.toggleTime = function() {
     if (timePassing===null) {

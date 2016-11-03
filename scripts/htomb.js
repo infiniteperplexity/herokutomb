@@ -14,18 +14,7 @@ var HTomb = (function() {
   var init = function() {
     // Initialize the DOM
     GUI.domInit();
-    console.time("worldInit");
-    // Initialize the world
-    World.init();
-    console.timeEnd("worldInit");
-    // Prepare the GUI and throw up an intro screen
-    GUI.reset();
-    HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
-    //HTomb.GUI.center(HTomb.Player.x,HTomb.Player.y);
-    GUI.splash(["Welcome to HellaTomb!"]);
-    HTomb.GUI.render();
-
-    //HTomb.GUI.recenter();
+    GUI.Views.startup();
   };
   // Set up the various submodules that will be used
   var World = {};
@@ -46,6 +35,19 @@ var HTomb = (function() {
   var Utils = {};
   var Time = {};
   // Allow public access to the submodules
+  World.newGame = function() {
+    GUI.Views.progressView(["Building world (may take a few minutes)"]);
+    setTimeout(function() {
+      console.time("worldInit");
+      // Initialize the world
+      World.init();
+      console.timeEnd("worldInit");
+      // Prepare the GUI and throw up an intro screen
+      GUI.reset();
+      HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
+      HTomb.GUI.render();
+    }, 500);
+  };
   return {
     Constants: Constants,
     init: init,

@@ -147,7 +147,7 @@ HTomb = (function(HTomb) {
   };
   HTomb.World.validate.liquids = function(x,y,z) {
     var t = HTomb.World.covers[z][x][y];
-    if (t && t.liquid) {
+    if (t.liquid) {
       t.liquid.flood(x,y,z);
     }
   };

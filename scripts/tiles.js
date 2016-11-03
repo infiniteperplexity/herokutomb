@@ -259,6 +259,9 @@ HTomb = (function(HTomb) {
       }
     } else {
       // *** if the square is empty except for cover, handle the symbol and color separately. ***
+      if (covers[z][x][y]===undefined) {
+        console.log([x,y,z]);
+      }
       if (covers[z][x][y]!==HTomb.Covers.NoCover) {
         fg = fg || covers[z][x][y].fg;
       // maybe do show the waterlogged ground?

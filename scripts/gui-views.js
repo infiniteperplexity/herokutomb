@@ -40,14 +40,25 @@ HTomb = (function(HTomb) {
     GUI.Panels.overlay.update(arr);
   };
 
+  Views.startup = function() {
+    GUI.Contexts.active = GUI.Contexts.startup;
+    GUI.Panels.overlay.update([
+      "Welcome to HellaTomb!",
+      "N) New game.",
+      "R) Restore game.",
+      "D) Delete a saved game.",
+      "Q) Quit."
+    ]);
+  }
   Views.systemView = function() {
     GUI.Contexts.active = GUI.Contexts.system;
     // it would be nice if "static menu" were a thing
     GUI.Panels.overlay.update([
       "Esc) Back to game.",
-      "S) Save game.",
+      "S) Save game ('" + HTomb.Save.currentGame +"').",
       "A) Save game as...",
       "R) Restore game.",
+      "D) Delete a saved game.",
       "Q) Quit game."
     ]);
   };
@@ -56,6 +67,34 @@ HTomb = (function(HTomb) {
     // Uses the current or default save game name
     HTomb.GUI.Views.progressView(["Saving game..."]);
     setTimeout(HTomb.Save.saveGame,500);
+  };
+
+  Views.System.delete = function() {
+    HTomb.Save.getDir(function(arg) {
+      let saves = [];
+      if (arg!==" ") {
+        saves = JSON.parse(arg);
+      }
+      var alpha = "abcdefghijklmnopqrstuvwxyz";
+      var controls = {};
+      for (let i=0; i<saves.length; i++) {
+        controls["VK_"+alpha[i].toUpperCase()] = function() {
+            let fragment = saves[i].substring(0,saves[i].length-5);
+            return function() {
+              if (confirm("Really delete game?")) {
+                HTomb.Save.deleteGame(fragment);
+              } else {
+                return;
+              }
+              console.log("We need some kind of way to manage the async...");
+            }
+        }();
+        saves[i] = alpha[i]+") " + saves[i].substring(0,saves[i].length-5);
+      }
+      saves.unshift("Choose a save file to delete:");
+      GUI.Contexts.active = GUI.Contexts.new(controls);
+      GUI.Panels.overlay.update(saves);
+    });
   };
 
   Views.System.saveAs = function() {
@@ -70,7 +109,11 @@ HTomb = (function(HTomb) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
             let fragment = saves[i].substring(0,saves[i].length-5);
             return function() {
-              HTomb.Save.saveGame(fragment);
+              if (i===save.length-1 || confirm("Really overwrite save file?")) {
+                HTomb.Save.saveGame(fragment);
+              } else {
+                return;
+              }
               console.log("We need some kind of way to manage the async...");
             }
         }();
@@ -80,7 +123,9 @@ HTomb = (function(HTomb) {
       saves.push(alpha[saves.length-1]+") ...new save...");
       controls["VK_"+alpha[saves.length-2].toUpperCase()] = function() {
         let entered = prompt();
-        HTomb.Save.saveGame(entered);
+        entered = entered.replace(/[.,\/#!$%\^&\*;:{}=\-`~()]/g,"");
+        HTomb.GUI.Views.progressView(["Saving game..."]);
+        setTimeout(HTomb.Save.saveGame, 500, entered);
         console.log("Probably got saved as " + entered);
       };
       GUI.Contexts.active = GUI.Contexts.new(controls);
@@ -92,7 +137,10 @@ HTomb = (function(HTomb) {
       console.log("type of arg is " + typeof(arg));
       console.log("arg is " + arg);
       let saves = [];
-      if (arg!==" ") {
+      if (args===" ") {
+        HTomb.GUI.splash("No saved games exist on the server.");
+        return;
+      } else {
         saves = JSON.parse(arg);
       }
       var alpha = "abcdefghijklmnopqrstuvwxyz";
@@ -113,23 +161,27 @@ HTomb = (function(HTomb) {
   };
   Views.System.quit = function() {
     console.log("testing");
-    GUI.Panels.overlay.update([
-      "Really quit?",
-      "Y) Yes.",
-      "N) No."
-    ]);
-    GUI.Contexts.active = GUI.Contexts.new({
-      VK_ESCAPE: HTomb.GUI.reset,
-      VK_Y: function() {close();},
-      VK_N: function() {Views.systemView();}
-    });
+    if (confirm("Really quit?")) {
+      close();
+    }
   };
+  GUI.Contexts.startup = GUI.Contexts.new({
+    VK_N: HTomb.World.newGame,
+    VK_R: function() {Views.System.restore();},
+    VK_Q: function() {Views.System.quit();},
+    VK_D: function() {Views.System.delete();}
+  });
+  GUI.Contexts.startup.clickTile = function() {};
+  GUI.Contexts.startup.rightClickTile = function() {};
+  GUI.Contexts.startup.mouseTile = function() {};
+
   GUI.Contexts.system = GUI.Contexts.new({
     VK_ESCAPE: HTomb.GUI.reset,
     VK_A: function() {Views.System.saveAs();},
     VK_S: function() {Views.System.save();},
     VK_R: function() {Views.System.restore();},
-    VK_Q: function() {Views.System.quit();}
+    VK_Q: function() {Views.System.quit();},
+    VK_D: function() {Views.System.delete();}
   });
 
   // These are the default controls

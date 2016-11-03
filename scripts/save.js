@@ -6,7 +6,7 @@ HTomb = (function(HTomb) {
   let NLEVELS = HTomb.Constants.NLEVELS;
   let coord = HTomb.Utils.coord;
   // Global value for the name of the current game
-  HTomb.Save.currentGame = "test";
+  HTomb.Save.currentGame = "save";
   // a function that takes a text-or-promise-returning function, plus fetch args, and then returns a fetch promise.
   function fetchText(textFunc, url, args) {
     let val = textFunc();
@@ -89,6 +89,7 @@ HTomb = (function(HTomb) {
     HTomb.Time.lockTime();
     HTomb.GUI.Contexts.locked=true;
     name = name || HTomb.Save.currentGame;
+    HTomb.Save.currentGame = name;
     let headers = new Headers();
     headers.append("Content-Type", "application/json;charset=UTF-8");
     let args = {
@@ -388,6 +389,10 @@ HTomb = (function(HTomb) {
     HTomb.Time.dailyCycle.day = other.cycle.day;
   }
 
+  HTomb.Save.deleteGame = function(name) {
+    HTomb.GUI.splash("Haven't added this functionality yet.");
+  };
+
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
     HTomb.GUI.Contexts.locked=true;
@@ -420,6 +425,7 @@ HTomb = (function(HTomb) {
     Promise.all(promises).then(
       values => {
         console.log("succeeded with " + values);
+        HTomb.Save.currentGame = "name";
         HTomb.FOV.resetVisible();
         if (HTomb.Player.sight) {
           HTomb.FOV.findVisible(HTomb.Player.x, HTomb.Player.y, HTomb.Player.z, HTomb.Player.sight.range);
