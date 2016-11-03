@@ -20,7 +20,7 @@ HTomb = (function(HTomb) {
     } else if (val.then) {
       // if we got a promise of text...
       return val.then(res => {
-        args.body = = '{json: "' + res + '"}';
+        args.body = '{json: "' + res + '"}';
         // ...chain to a fetch promise
         console.log(url + " length is " + args.body.length);
         return fetch(args);
