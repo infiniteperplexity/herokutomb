@@ -46,6 +46,12 @@ var HTomb = (function() {
       GUI.reset();
       HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
       HTomb.GUI.render();
+      if (confirm("Use tutorial alerts?")) {
+        Debug.tutorial = true;
+      } else {
+        Debug.tutorial = false;
+        alert("Press ? or / to reactivate tutorial.");
+      }
     }, 500);
   };
   return {

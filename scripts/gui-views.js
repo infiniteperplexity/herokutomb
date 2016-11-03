@@ -32,6 +32,7 @@ HTomb = (function(HTomb) {
 
   //GUI.Contexts.stashed = null;
   GUI.Contexts.frozen = GUI.Contexts.new({});
+  GUI.Contexts.frozen.clickAt = function() {};
   GUI.Contexts.frozen.clickTile = function() {};
   GUI.Contexts.frozen.rightClickTile = function() {};
   GUI.Contexts.frozen.mouseTile = function() {};
@@ -151,6 +152,7 @@ HTomb = (function(HTomb) {
     VK_R: function() {Views.System.restore();},
     VK_Q: function() {Views.System.quit();},
   });
+  GUI.Contexts.startup.clickAt = function() {};
   GUI.Contexts.startup.clickTile = function() {};
   GUI.Contexts.startup.rightClickTile = function() {};
   GUI.Contexts.startup.mouseTile = function() {};

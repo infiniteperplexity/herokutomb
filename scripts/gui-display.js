@@ -251,6 +251,8 @@ HTomb = (function(HTomb) {
     "(Shift+Arrows for diagonal.)",
     "J: Assign Job, Z: Cast Spell.",
     "G: Pick Up, D: Drop, I: Inventory.",
+    "T: Toggle tutorial",
+    "? or /: Show tutorial alert.",
     "Space: Wait, Tab: Survey Mode.",
     "PageUp / PageDown to change speed.",
     "Hover mouse to examine a square.",
@@ -261,12 +263,7 @@ HTomb = (function(HTomb) {
   // This function will correctly break text into lines
   menu.update = function(arr) {
     if (arr===undefined) {
-      if (HTomb.Debug.tutorial.active!==true) {
-        arr = menu.defaultText;
-      } else {
-        let tutorialText = menu.defaultText.concat([" ","TUTORIAL:",HTomb.Debug.tutorial.getText()]);
-        arr = tutorialText;
-      }
+      arr = menu.defaultText;
     }
     var i=0;
     var br=null;

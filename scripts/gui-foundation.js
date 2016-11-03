@@ -177,7 +177,7 @@ HTomb = (function(HTomb) {
   menuDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
   scrollDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
   ///!!!! Maybe get rid of the next line....
-  overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickTile();});
+  overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickAt();});
 
   //************* Define the basic panels and how they access the DOM *********;
   GUI.Panels = {};
@@ -223,6 +223,7 @@ HTomb = (function(HTomb) {
         bindKey(this,b,bindings[b]);
       }
     }
+    this.clickAt = HTomb.GUI.reset;
     this.rightClickTile = HTomb.GUI.reset;
     this.clickTile = HTomb.GUI.reset;
   }
@@ -236,6 +237,7 @@ HTomb = (function(HTomb) {
       this.boundKeys[key.keyCode]();
     }
   };
+  // I don't think this line works...
   GUI.Contexts.default = Context.prototype;
   GUI.Contexts.new = function(args) {
     return new Context(args);

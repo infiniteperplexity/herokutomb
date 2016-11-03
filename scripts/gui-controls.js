@@ -403,6 +403,18 @@ HTomb = (function(HTomb) {
     VK_I: Commands.inventory,
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
+    VK_T: function() {
+      if (HTomb.Debug.tutorial) {
+        alert("Tutorial deactivated.");
+        HTomb.Debug.tutorial = false;
+      } else {
+        alert("Tutorial activated.");
+        HTomb.Debug.tutorial = true;
+      }
+    },
+    VK_SLASH: function() {
+      HTomb.Debug.nextTutorial();
+    },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: Commands.wait,
     VK_ENTER: HTomb.Time.toggleTime,
