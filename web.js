@@ -86,7 +86,7 @@ app.get('/saves/*', function(req, res) {
     ram("after sending save file");
     collectAfter();
   });
-};
+});
 
 app.get('/saves/', function(req, res) {
   res.set("Connection", "close");
