@@ -367,10 +367,12 @@ HTomb = (function(HTomb) {
     return function(json) {
       console.log("attempting to restore tiles"+z1);
       let levels = JSON.parse(json, HTomb.Types.parseTile);
-      console.log(levels);
       for (let i=0; i<=z2-z1; i++) {
+        console.log("z="+i);
         for (let x=0; x<LEVELW; x++) {
+          console.log("x="+x);
           for (let y=0; y<LEVELH; y++) {
+            console.log("y="+y);
             HTomb.World.tiles[i+z1][x][y] = levels[i][x][y];
           }
         }
@@ -383,10 +385,6 @@ HTomb = (function(HTomb) {
     return function(json) {
       console.log("attempting to restore covers"+z1);
       let covers = JSON.parse(json, HTomb.Types.parseCover);
-      console.log(covers);
-      if (covers===undefined) {
-        console.log("undefined covers for " + z1);
-      }
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
           for (let y=0; y<LEVELH; y++) {
