@@ -388,9 +388,7 @@ HTomb = (function(HTomb) {
     return function(json) {
       console.log("attempting to restore covers"+z1);
       let covers = JSON.parse(json, HTomb.Types.parseCover);
-      if (covers.length!==7) {
-        throw(new Error("length not 7 for covers"+z1));
-      }
+      console.log(covers);
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
           for (let y=0; y<LEVELH; y++) {
@@ -432,14 +430,14 @@ HTomb = (function(HTomb) {
       headers: headers
     }
     let promises = [
-      fetchParse("/saves/tiles0/" + name + "/", args, restoreTiles(0,7)),
-      fetchParse("/saves/tiles8/" + name + "/", args, restoreTiles(8,15)),
-      fetchParse("/saves/tiles16/" + name + "/", args, restoreTiles(16,23)),
-      fetchParse("/saves/tiles24/" + name + "/", args, restoreTiles(24,31)),
-      fetchParse("/saves/tiles32/" + name + "/", args, restoreTiles(32,39)),
-      fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
-      fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
-      fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
+      fetchParse("/saves/tiles0/" + name + "/", args, restoreTiles(0,7))//,
+      //fetchParse("/saves/tiles8/" + name + "/", args, restoreTiles(8,15)),
+      //fetchParse("/saves/tiles16/" + name + "/", args, restoreTiles(16,23)),
+      //fetchParse("/saves/tiles24/" + name + "/", args, restoreTiles(24,31)),
+      //fetchParse("/saves/tiles32/" + name + "/", args, restoreTiles(32,39)),
+      //fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
+      //fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
+      //fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
       //fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
       //fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
       //fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
