@@ -243,6 +243,7 @@ HTomb = (function(HTomb) {
   }
   // End code for listing directory contents
   function fetchThen(restoreFunc, url, args) {
+    console.log("fetching "+url);
     fetch(url, args).then(res=> {
       console.log("restoring "+url);
       restoreFunc(res.body);
