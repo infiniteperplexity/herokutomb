@@ -382,14 +382,17 @@ HTomb = (function(HTomb) {
     };
   }
 
-  HTomb.Save.testRestore = function() {
+  HTomb.Save.testRestore = function(name) {
     let headers = new Headers();
     headers.append("Content-Type", "application/json;charset=UTF-8");
     let args = {
       method: "GET",
       headers: headers
-    }
-    fetch("/saves/tiles16/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(16,23)(res.body);}),
+    };
+    fetch("/saves/tiles16/" + name + "/", args).then(res => {
+        console.log("fetched " + res.url);
+        restoreTiles(16,23)(res.body);
+    });
   };
   function restoreCovers(z1,z2) {
     return function(json) {
