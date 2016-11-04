@@ -50,7 +50,7 @@ HTomb = (function(HTomb) {
       };
       // Create a parsing function for the type
       HTomb.Types["parse" + args.template] = function(value) {
-        if (typeof(value==="number")) {
+        if (typeof(value)==="number") {
           return HTomb.Types.templates[args.template].types[value];
         } else {
           return value;
