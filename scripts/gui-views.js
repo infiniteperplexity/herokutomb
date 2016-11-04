@@ -157,7 +157,7 @@ HTomb = (function(HTomb) {
       GUI.Contexts.active.mouseTile = function() {};
       GUI.bindKey(GUI.Contexts.workshops,"VK_ESCAPE",function() {
         Views.startup();
-      };
+      });
     },
     VK_Q: function() {Views.System.quit();},
   });
