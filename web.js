@@ -127,8 +127,8 @@ app.post('/saves/*', function (req, res) {
   connection.ping();
   console.log("Received POST request: " + req.url);
   connection.query("DELETE FROM saves WHERE filename = ? AND segment = ?",[urlfrags[3], urlfrags[2]], function(err) {
-    connection.query("UPDATE saves SET jsondata = ? WHERE filename = ? AND segment = ?", [req.body.json, urlfrags[3], urlfrags[2]], function(err) {
-      ram("middle of the fake query");
+    connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES (null, ?, ?, ?)", [urlfrags[3], urlfrags[2], req.body.json], function(err) {
+      ram("after INSERT");
     });
   });
 });
