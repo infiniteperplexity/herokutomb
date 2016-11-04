@@ -38,7 +38,7 @@ HTomb = (function(HTomb) {
         {
           splitby: 1000,
           progress: function(i) {
-            if (i>=totalN-this.splitby) {
+            if (parseInt(100*i/totalN)>=98) {
               HTomb.GUI.Views.progressView(["Waiting for server response..."]);
             } else {
               console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
