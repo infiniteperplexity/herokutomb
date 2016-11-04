@@ -449,7 +449,7 @@ HTomb = (function(HTomb) {
     Promise.all(promises).then(
       values => {
         for (let i=0; i<values.length; i++) {
-          if (values[i].ok===false) {
+          if (!values[i] || values[i].ok===false) {
             console.log("response for " + values[i].url + " not ok");
             HTomb.Time.unlockTime();
             HTomb.GUI.Contexts.locked=false;
