@@ -244,6 +244,7 @@ HTomb = (function(HTomb) {
   }
 
   function restoreThings(json) {
+    console.log("attempting to restore things");
     let tids = [];
     let icontains = [];
     let player = null;
@@ -363,8 +364,8 @@ HTomb = (function(HTomb) {
   }
 
   function restoreTiles(z1,z2) {
-    console.log("beginning restoretiles");
     return function(json) {
+      console.log("attempting to restore tiles"+z1);
       let levels = JSON.parse(json, HTomb.Types.parseTile);
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
@@ -377,21 +378,9 @@ HTomb = (function(HTomb) {
     };
   }
 
-  HTomb.Save.testRestore = function(name, url) {
-    url = url || "tiles16";
-    let headers = new Headers();
-    headers.append("Content-Type", "application/json;charset=UTF-8");
-    let args = {
-      method: "GET",
-      headers: headers
-    };
-    fetch("/saves/" + url + "/" + name + "/", args).then(res => {
-        console.log(res.text().then(res => console.log(res)));
-        //restoreTiles(16,23);
-    });
-  };
   function restoreCovers(z1,z2) {
     return function(json) {
+      console.log("attempting to restore covers"+z1);
       let levels = JSON.parse(json, HTomb.Types.parseCover);
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
@@ -405,6 +394,7 @@ HTomb = (function(HTomb) {
   }
 
   function restoreOther(json) {
+    console.log("attempting to restore others");
     let other = JSON.parse(json);
     fillGrid3dFrom(other.explored, HTomb.World.explored);
     fillListFrom(other.lights, HTomb.World.lights);
@@ -420,7 +410,8 @@ HTomb = (function(HTomb) {
   };
 
   function fetchParse(url, args, func) {
-    return fetch(url, args).then(res=>{return res.text();}).then(txt=>{func(txt);});
+    console.log("fetching " + url);
+    return fetch(url, args).then(res=>{console.log("fetched " + url); return res.text();}).then(txt=>{console.log("parsing " + url); func(txt);});
   }
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
