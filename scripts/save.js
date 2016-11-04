@@ -367,6 +367,7 @@ HTomb = (function(HTomb) {
     return function(json) {
       console.log("attempting to restore tiles"+z1);
       let levels = JSON.parse(json, HTomb.Types.parseTile);
+      console.log("for " + z1 + " it's " + levels.length);
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
           for (let y=0; y<LEVELH; y++) {
