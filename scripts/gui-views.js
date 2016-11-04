@@ -129,7 +129,7 @@ HTomb = (function(HTomb) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
             let fragment = saves[i];
             return function() {
-              HTomb.save.restoreGame(fragment);
+              HTomb.Save.restoreGame(fragment);
             }
         }();
         saves[i] = alpha[i]+") " + saves[i];
