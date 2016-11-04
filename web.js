@@ -149,7 +149,7 @@ app.post('/saves/*', function (req, res) {
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
   ram("application start");
-  //dbcleanup();
+  dbcleanup();
 });
 setInterval(function() {
   connection.ping();
@@ -158,7 +158,7 @@ setInterval(function() {
 },10000);
 
 function dbcleanup() {
-  connection.query("DELETE FROM saves WHERE filename = 'save' OR filename = 'tiles0' OR filename = 'tiles8'", function (err) {
+  connection.query("DELETE FROM saves WHERE filename = 'testing'", function (err) {
     if (err) {
       return console.log(err);
     }
