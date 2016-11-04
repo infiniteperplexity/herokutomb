@@ -246,7 +246,7 @@ HTomb = (function(HTomb) {
   function fetchThen(restoreFunc, url, args) {
     console.log("fetching "+url);
     fetch(url, args).then(res=> {
-      console.log("restoring "+url);
+      console.log(res.json());
       restoreFunc(res.body);
     });
   }
