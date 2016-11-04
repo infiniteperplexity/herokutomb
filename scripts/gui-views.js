@@ -116,8 +116,6 @@ HTomb = (function(HTomb) {
   };
   Views.System.restore = function() {
     HTomb.Save.getDir(function(arg) {
-      console.log("type of arg is " + typeof(arg));
-      console.log("arg is " + arg);
       let saves = [];
       if (arg===" ") {
         HTomb.GUI.splash("No saved games exist on the server.");
@@ -131,7 +129,7 @@ HTomb = (function(HTomb) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
             let fragment = saves[i];
             return function() {
-              HTomb.Save.getData(fragment,HTomb.Save.restoreGame);
+              HTomb.save.restoreGame(fragment);
             }
         }();
         saves[i] = alpha[i]+") " + saves[i];
