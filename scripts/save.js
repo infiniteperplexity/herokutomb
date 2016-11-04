@@ -373,6 +373,9 @@ HTomb = (function(HTomb) {
             HTomb.World.tiles[i+z1][x][y] = levels[i][x][y];
           }
         }
+        if (i===z2-z1) {
+          console.log("hit end of loop");
+        }
       }
       console.log("successfully restored tiles"+z1);
     };
@@ -383,7 +386,6 @@ HTomb = (function(HTomb) {
       console.log("attempting to restore covers"+z1);
       let covers = JSON.parse(json, HTomb.Types.parseCover);
       for (let i=0; i<=z2-z1; i++) {
-        console.log("z="+i);
         for (let x=0; x<LEVELW; x++) {
           for (let y=0; y<LEVELH; y++) {
             HTomb.World.covers[i+z1][x][y] = covers[i][x][y];
@@ -439,9 +441,9 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/covers32/" + name + "/", args, restoreCovers(32,39)),
       fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
       fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
-      fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
-      fetchParse("/saves/things/" + name + "/", args, restoreThings),
-      fetchParse("/saves/others/" + name + "/", args, restoreOther),
+      fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63))//,
+      //fetchParse("/saves/things/" + name + "/", args, restoreThings),
+      //fetchParse("/saves/others/" + name + "/", args, restoreOther),
     ]
     Promise.all(promises).then(
       values => {
