@@ -242,14 +242,7 @@ HTomb = (function(HTomb) {
     xhttp.open("GET", file, true);
     xhttp.send();
   }
-  // End code for listing directory contents
-  function fetchThen(restoreFunc, url, args) {
-    console.log("fetching "+url);
-    fetch(url, args).then(res=> {
-      console.log(res.json());
-      restoreFunc(res.body);
-    });
-  }
+
   function restoreThings(json) {
     let tids = [];
     let icontains = [];
@@ -393,7 +386,7 @@ HTomb = (function(HTomb) {
       headers: headers
     };
     fetch("/saves/" + url + "/" + name + "/", args).then(res => {
-        console.log(res);
+        console.log(res.text());
         //restoreTiles(16,23)(res.body);
     });
   };
