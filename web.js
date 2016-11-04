@@ -88,7 +88,7 @@ app.get('/saves/*', function(req, res) {
   });
 });
 
-app.get('/saves/', function(req, res) {
+app.get('/saves', function(req, res) {
   res.set("Connection", "close");
   global.gc();
   console.log("Received GET request: " + req.url);

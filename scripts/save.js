@@ -209,7 +209,7 @@ HTomb = (function(HTomb) {
   };
   function getDir(callback) {
     console.time("get request");
-    var file = '/saves/';
+    var file = '/saves';
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (xhttp.readyState == XMLHttpRequest.DONE) {
