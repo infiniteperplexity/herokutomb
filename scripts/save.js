@@ -367,7 +367,9 @@ HTomb = (function(HTomb) {
     return function(json) {
       console.log("attempting to restore tiles"+z1);
       let levels = JSON.parse(json, HTomb.Types.parseTile);
-      console.log("for " + z1 + " it's " + levels.length);
+      if (levels.length!==7) {
+        console.log("was not 7 for tiles"+z1);
+      }
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
           for (let y=0; y<LEVELH; y++) {
@@ -386,6 +388,11 @@ HTomb = (function(HTomb) {
     return function(json) {
       console.log("attempting to restore covers"+z1);
       let covers = JSON.parse(json, HTomb.Types.parseCover);
+      if (covers.length!==7) {
+        console.log("was not 7 for tiles"+z1);
+      } else {
+        console.log("was 7 for tiles"+z1);
+      }
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
           for (let y=0; y<LEVELH; y++) {
@@ -435,14 +442,14 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
       fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
       fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
-      fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
-      fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
-      fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
-      fetchParse("/saves/covers24/" + name + "/", args, restoreCovers(24,31)),
-      fetchParse("/saves/covers32/" + name + "/", args, restoreCovers(32,39)),
-      fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
-      fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
-      fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63))//,
+      //fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
+      //fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
+      //fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
+      //fetchParse("/saves/covers24/" + name + "/", args, restoreCovers(24,31)),
+      //fetchParse("/saves/covers32/" + name + "/", args, restoreCovers(32,39)),
+      //fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
+      //fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
+      //fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63))//,
       //fetchParse("/saves/things/" + name + "/", args, restoreThings),
       //fetchParse("/saves/others/" + name + "/", args, restoreOther),
     ]
