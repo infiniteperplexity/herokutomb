@@ -89,7 +89,7 @@ HTomb = (function(HTomb) {
       var controls = {};
       for (let i=0; i<saves.length; i++) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
-            let fragment = saves[i].substring(0,saves[i].length-5);
+            let fragment = saves[i].substring(0,saves[i];
             return function() {
               if (i===save.length-1 || confirm("Really overwrite save file?")) {
                 HTomb.Save.saveGame(fragment);
@@ -99,7 +99,7 @@ HTomb = (function(HTomb) {
               console.log("We need some kind of way to manage the async...");
             }
         }();
-        saves[i] = alpha[i]+") " + saves[i].substring(0,saves[i].length-5);
+        saves[i] = alpha[i]+") " + saves[i];
       }
       saves.unshift("Choose a save file to overwrite:");
       saves.push(alpha[saves.length-1]+") ...new save...");
@@ -129,12 +129,12 @@ HTomb = (function(HTomb) {
       var controls = {};
       for (let i=0; i<saves.length; i++) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
-            let fragment = saves[i].substring(0,saves[i].length-5);
+            let fragment = saves[i];
             return function() {
               HTomb.Save.getData(fragment,HTomb.Save.restoreGame);
             }
         }();
-        saves[i] = alpha[i]+") " + saves[i].substring(0,saves[i].length-5);
+        saves[i] = alpha[i]+") " + saves[i];
       }
       saves.unshift("Choose a save file to restore:");
       GUI.Contexts.active = GUI.Contexts.new(controls);
@@ -149,7 +149,16 @@ HTomb = (function(HTomb) {
   };
   GUI.Contexts.startup = GUI.Contexts.new({
     VK_N: HTomb.World.newGame,
-    VK_R: function() {Views.System.restore();},
+    VK_R: function() {
+      Views.System.restore();
+      GUI.Contexts.active.clickAt = function() {};
+      GUI.Contexts.active.clickTile = function() {};
+      GUI.Contexts.active.rightClickTile = function() {};
+      GUI.Contexts.active.mouseTile = function() {};
+      GUI.bindKey(GUI.Contexts.workshops,"VK_ESCAPE",function() {
+        Views.startup();
+      };
+    },
     VK_Q: function() {Views.System.quit();},
   });
   GUI.Contexts.startup.clickAt = function() {};
