@@ -369,6 +369,7 @@ HTomb = (function(HTomb) {
   }
 
   function restoreTiles(z1,z2) {
+    console.log("beginning restoretiles");
     return function(json) {
       let levels = JSON.parse(json, HTomb.Types.parseTile);
       for (let i=0; i<=z2-z1; i++) {
@@ -390,8 +391,9 @@ HTomb = (function(HTomb) {
       headers: headers
     };
     fetch("/saves/tiles16/" + name + "/", args).then(res => {
-        console.log("fetched " + res.url);
+        console.log(res.body);
         restoreTiles(16,23)(res.body);
+
     });
   };
   function restoreCovers(z1,z2) {
