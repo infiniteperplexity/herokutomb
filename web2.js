@@ -175,10 +175,10 @@ setInterval(function() {
 },10000);
 
 function dbcleanup() {
-  connection.query("DELETE FROM saves WHERE filename = 'save' OR filename = 'tiles0' OR filename = 'tiles8'", function (err) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log("cleanup succeeded");
-  });
+  //connection.query("DELETE FROM saves WHERE filename = 'save' OR filename = 'tiles0' OR filename = 'tiles8'", function (err) {
+  //  if (err) {
+  //    return console.log(err);
+  //  }
+  //  console.log("cleanup succeeded");
+  //});
 }
