@@ -38,8 +38,12 @@ HTomb = (function(HTomb) {
         {
           splitby: 1000,
           progress: function(i) {
-            console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
-            HTomb.GUI.Views.progressView(["Stringifying things:",parseInt(100*i/totalN).toString() + "% complete"]);
+            if (i>=totalN-splitby) {
+              HTomb.GUI.Views.progressView(["Waiting for server response..."]);
+            } else {
+              console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
+              HTomb.GUI.Views.progressView(["Stringifying things:",parseInt(100*i/totalN).toString() + "% complete"]);
+            }
           },
           then: function(rslt) {
             HTomb.GUI.pushMessage("Finished stringifying " + rslt.length + " entities.");
@@ -440,7 +444,7 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
       fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
       fetchParse("/saves/things/" + name + "/", args, restoreThings),
-      fetchParse("/saves/others/" + name + "/", args, restoreOther),
+      fetchParse("/saves/other/" + name + "/", args, restoreOther),
     ]
     Promise.all(promises).then(
       values => {
