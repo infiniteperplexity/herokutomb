@@ -393,9 +393,8 @@ HTomb = (function(HTomb) {
       headers: headers
     };
     fetch("/saves/" + url + "/" + name + "/", args).then(res => {
-        console.log(res.body);
-        restoreTiles(16,23)(res.body);
-
+        console.log(res);
+        //restoreTiles(16,23)(res.body);
     });
   };
   function restoreCovers(z1,z2) {
