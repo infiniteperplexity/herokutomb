@@ -382,7 +382,7 @@ HTomb = (function(HTomb) {
     };
   }
 
-  HTomb.Save.testRestore() {
+  HTomb.Save.testRestore = function() {
     let headers = new Headers();
     headers.append("Content-Type", "application/json;charset=UTF-8");
     let args = {
