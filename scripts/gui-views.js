@@ -129,7 +129,9 @@ HTomb = (function(HTomb) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
             let fragment = saves[i];
             return function() {
-              HTomb.Save.restoreGame(fragment);
+              GUI.Views.progressView("Restoring game...");
+              setTimeout(HTomb.Save.restoreGame, 500, fragment);
+              //HTomb.Save.restoreGame(fragment);
             }
         }();
         saves[i] = alpha[i]+") " + saves[i];

@@ -248,7 +248,6 @@ HTomb = (function(HTomb) {
   }
 
   function restoreThings(json) {
-    console.log("attempting to restore things");
     let tids = [];
     let icontains = [];
     let player = null;
@@ -364,12 +363,10 @@ HTomb = (function(HTomb) {
         }
       }
     }
-    console.log("successfully restored things");
   }
 
   function restoreTiles(z1,z2) {
     return function(json) {
-      console.log("attempting to restore tiles"+z1);
       let levels = JSON.parse(json, HTomb.Types.parseTile);
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
@@ -378,13 +375,11 @@ HTomb = (function(HTomb) {
           }
         }
       }
-      console.log("successfully restored tiles"+z1);
     };
   }
 
   function restoreCovers(z1,z2) {
     return function(json) {
-      console.log("attempting to restore covers"+z1);
       let covers = JSON.parse(json, HTomb.Types.parseCover);
       for (let i=0; i<=z2-z1; i++) {
         for (let x=0; x<LEVELW; x++) {
@@ -393,12 +388,11 @@ HTomb = (function(HTomb) {
           }
         }
       }
-      console.log("successfully restored covers"+z1);
+
     };
   }
 
   function restoreOther(json) {
-    console.log("attempting to restore others");
     let other = JSON.parse(json);
     fillGrid3dFrom(other.explored, HTomb.World.explored);
     fillListFrom(other.lights, HTomb.World.lights);
@@ -406,7 +400,6 @@ HTomb = (function(HTomb) {
     HTomb.Time.dailyCycle.minute = other.cycle.minute;
     HTomb.Time.dailyCycle.hour = other.cycle.hour;
     HTomb.Time.dailyCycle.day = other.cycle.day;
-    console.log("successfully restored other stuff");
   }
 
   HTomb.Save.deleteGame = function(name) {
@@ -414,11 +407,9 @@ HTomb = (function(HTomb) {
   };
 
   function fetchParse(url, args, func) {
-    console.log("fetching " + url);
     //This is a truly ridiculous hack to pass along the response.ok = false value...
     return fetch(url, args)
       .then(res=>{
-        console.log("fetched " + url);
         if (res.ok===false) {
           return res;
         }
@@ -428,7 +419,6 @@ HTomb = (function(HTomb) {
         if (txt.ok===false) {
           return txt;
         }
-        console.log("parsing " + url);
         func(txt);
       });
   }
