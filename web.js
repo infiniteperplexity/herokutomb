@@ -80,7 +80,7 @@ app.get('/saves/*', function(req, res) {
     if (rows.length===0) {
       res.status(404).send();
     }
-    console.log(rows[0].jsondata.substring(1,5));
+    console.log(rows[0].jsondata.substring(1,25));
     res.send(JSON.stringify(rows[0].jsondata));
     ram("after sending save file");
     collectAfter();
