@@ -415,22 +415,22 @@ HTomb = (function(HTomb) {
 
   function fetchParse(url, args, func) {
     console.log("fetching " + url);
-    //return fetch(url, args).then(res=>{console.log("fetched " + url); return res.text();}).then(txt=>{console.log("parsing " + url); func(txt);});
+    //This is a truly ridiculous hack to pass along the response.ok = false value...
     return fetch(url, args)
-            .then(res=>{
-              console.log("fetched " + url);
-              if (res.ok===false) {
-                return res;
-              }
-              return res.text();
-            })
-            .then(txt=>{
-              if (txt.ok===false) {
-                return txt;
-              }
-              console.log("parsing " + url);
-              func(txt);
-            });
+      .then(res=>{
+        console.log("fetched " + url);
+        if (res.ok===false) {
+          return res;
+        }
+        return res.text();
+      })
+      .then(txt=>{
+        if (txt.ok===false) {
+          return txt;
+        }
+        console.log("parsing " + url);
+        func(txt);
+      });
   }
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
@@ -450,7 +450,6 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
       fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
       fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
-      fetchParse("/saves/tiles55/" + name + "/", args, restoreTiles(56,63)),
       fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
       fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
       fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
@@ -465,13 +464,11 @@ HTomb = (function(HTomb) {
     Promise.all(promises).then(
       values => {
         for (let i=0; i<values.length; i++) {
-          if (!values[i]) {
-            console.log("What on earth happened to "+i+"?");
-          } else if (values[i].ok===false) {
+        } else if (values[i] && values[i].ok===false) {
             console.log("response for " + values[i].url + " not ok");
             HTomb.Time.unlockTime();
             HTomb.GUI.Contexts.locked=false;
-            console.log("failed with " + values);
+            HTomb.GUI.Views.startup();
             return;
           }
         }
@@ -491,6 +488,7 @@ HTomb = (function(HTomb) {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         console.log("failed with " + reason);
+        HTomb.GUI.Views.startup();
       }
     );
   };
