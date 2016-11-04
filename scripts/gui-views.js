@@ -91,7 +91,7 @@ HTomb = (function(HTomb) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
             let fragment = saves[i];
             return function() {
-              if (i===save.length-1 || confirm("Really overwrite save file?")) {
+              if (i===saves.length-1 || confirm("Really overwrite save file?")) {
                 HTomb.Save.saveGame(fragment);
               } else {
                 return;
