@@ -73,16 +73,14 @@ app.get('/saves/*', function(req, res) {
   //global.gc();
   connection.query("SELECT * FROM saves WHERE filename = ? AND segment = ?", [urlfrags[3], urlfrags[2]], function(err, rows, fields) {
     ram("start of save file query");
-    console.log(rows);
     //big jump in memory usage here...
     if (err) {
       return console.log(err);
     }
     if (rows.length===0) {
-      throw new Error();
-      return;
+      res.status(404).send();
     }
-    //global.gc();
+    console.log(Object.keys(rows[0]));
     res.send(rows[0].jsondata);
     ram("after sending save file");
     collectAfter();

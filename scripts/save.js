@@ -210,7 +210,8 @@ HTomb = (function(HTomb) {
       } else {
         return val;
       }
-    }," ");
+    //}," ");
+    });
     return json;
   };
   // End code for saving games
