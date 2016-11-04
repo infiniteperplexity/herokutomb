@@ -298,12 +298,12 @@ HTomb = (function(HTomb) {
     for (let i=0; i<tids.length; i++) {
       let tid = tids[i];
       if (tid[0].swappedWith) {
-        tid[0].swappedWith[tid[1]] = saveGame.things[tid[2].tid];
+        tid[0].swappedWith[tid[1]] = things[tid[2].tid];
       } else {
-        tid[0][tid[1]] = saveGame.things[tid[2].tid];
+        tid[0][tid[1]] = things[tid[2].tid];
       }
       if (tid[1]==="player") {
-        player = saveGame.things[tid[2].tid];
+        player = things[tid[2].tid];
       }
     }
     HTomb.Player = player.entity;
@@ -316,7 +316,7 @@ HTomb = (function(HTomb) {
       for (let j=1; j<icontains[i].length; j++) {
         let item = icontains[i][j];
         if (item.tid) {
-          item = saveGame.things[item.tid];
+          item = things[item.tid];
         }
         item.container = container;
       }
@@ -324,7 +324,7 @@ HTomb = (function(HTomb) {
     while(HTomb.World.things.length>0) {
       HTomb.World.things.pop();
     }
-    fillListFrom(saveGame.things, things);
+    fillListFrom(things, HTomb.World.things);
     var oldkeys;
     oldkeys = Object.keys(HTomb.World.creatures);
     for (let i=0; i<oldkeys.length; i++) {
@@ -342,8 +342,8 @@ HTomb = (function(HTomb) {
     for (let i=0; i<oldkeys.length; i++) {
       delete HTomb.World.zones[oldkeys[i]];
     }
-    for (let t = 0; t<saveGame.things.length; t++) {
-      let thing = saveGame.things[t];
+    for (let t = 0; t<things.length; t++) {
+      let thing = things[t];
       let x = thing.x;
       let y = thing.y;
       let z = thing.z;
