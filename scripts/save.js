@@ -474,6 +474,7 @@ HTomb = (function(HTomb) {
         }
         console.log("succeeded with " + values);
         HTomb.Save.currentGame = "name";
+        HTomb.World.validate.lighting();
         HTomb.FOV.resetVisible();
         if (HTomb.Player.sight) {
           HTomb.FOV.findVisible(HTomb.Player.x, HTomb.Player.y, HTomb.Player.z, HTomb.Player.sight.range);
