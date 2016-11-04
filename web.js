@@ -128,12 +128,6 @@ app.post('/saves/*', function (req, res) {
   ram("start of POST");
   connection.ping();
   console.log("Received POST request: " + req.url);
-  //simulate a database error
-  if (urlfrags[2]==="covers32") {
-    console.log("simulating an error for " + req.url);
-    res.status(404).send();
-    return;
-  }
   connection.query("DELETE FROM saves WHERE filename = ? AND segment = ?",[urlfrags[3], urlfrags[2]], function(err) {
     if (err) {
       console.log("error during row deletion for " + req.url);

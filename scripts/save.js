@@ -122,6 +122,11 @@ HTomb = (function(HTomb) {
         for (let i=0; i<values.length; i++) {
           if (values[i].ok===false) {
             console.log("response to " + values[i].url + " not ok");
+            console.log("failed: " + reason);
+            HTomb.GUI.splash(["Failed to save "+"'"+name+"'."]);
+            HTomb.GUI.Contexts.locked=false;
+            HTomb.Time.unlockTime();
+            return;
           }
         }
         console.log("succeeded: " + values);
@@ -431,6 +436,15 @@ HTomb = (function(HTomb) {
     ]
     Promise.all(promises).then(
       values => {
+        for (let i=0; i<values.length; i++) {
+          if (values[i].ok===false) {
+            console.log("response for " + values[i].url + " not ok");
+            HTomb.Time.unlockTime();
+            HTomb.GUI.Contexts.locked=false;
+            console.log("failed with " + values);
+            return;
+          }
+        }
         console.log("succeeded with " + values);
         HTomb.Save.currentGame = "name";
         HTomb.FOV.resetVisible();
@@ -446,7 +460,7 @@ HTomb = (function(HTomb) {
       reason => {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
-        console.log("failed with " + values);
+        console.log("failed with " + reason);
       }
     );
   };
