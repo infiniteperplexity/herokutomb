@@ -415,7 +415,9 @@ HTomb = (function(HTomb) {
 
   function fetchParse(url, args, func) {
     console.log("fetching " + url);
-    return fetch(url, args).then(res=>{console.log("fetched " + url); return res.text();}).then(txt=>{console.log("parsing " + url); func(txt);});
+    var response;
+    fetch(url, args).then(res=>{response = res; console.log("fetched " + url); return res.text();}).then(txt=>{console.log("parsing " + url); func(txt);});
+    return response;
   }
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
