@@ -119,7 +119,7 @@ HTomb = (function(HTomb) {
       console.log("type of arg is " + typeof(arg));
       console.log("arg is " + arg);
       let saves = [];
-      if (args===" ") {
+      if (arg===" ") {
         HTomb.GUI.splash("No saved games exist on the server.");
         return;
       } else {
