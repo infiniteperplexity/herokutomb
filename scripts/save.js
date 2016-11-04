@@ -387,7 +387,7 @@ HTomb = (function(HTomb) {
     };
     fetch("/saves/" + url + "/" + name + "/", args).then(res => {
         console.log(res.text().then(res => console.log(res)));
-        //restoreTiles(16,23)(res.body);
+        //restoreTiles(16,23);
     });
   };
   function restoreCovers(z1,z2) {
@@ -419,6 +419,9 @@ HTomb = (function(HTomb) {
     HTomb.GUI.splash("Haven't added this functionality yet.");
   };
 
+  function fetchParse(url, args, func) {
+    fetch(url, args).then(res=>resolve(res.text();)).then(txt=>func(txt));
+  }
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
     HTomb.GUI.Contexts.locked=true;
@@ -429,24 +432,24 @@ HTomb = (function(HTomb) {
       headers: headers
     }
     let promises = [
-      fetch("/saves/tiles0/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(0,7)(res.body);}),
-      fetch("/saves/tiles8/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(8,15)(res.body);}),
-      fetch("/saves/tiles16/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(16,23)(res.body);}),
-      fetch("/saves/tiles24/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(24,31)(res.body);}),
-      fetch("/saves/tiles32/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(32,39)(res.body);}),
-      fetch("/saves/tiles40/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(40,47)(res.body);}),
-      fetch("/saves/tiles48/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(48,55)(res.body);}),
-      fetch("/saves/tiles56/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreTiles(56,63)(res.body);}),
-      fetch("/saves/covers0/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreCovers(0,7)(res.body);}),
-      fetch("/saves/covers8/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreCovers(8,15)(res.body);}),
-      fetch("/saves/covers16/" + name + "/", args).then(res => {console.log("fetched " + res.url); restoreCovers(16,23)(res.body);}),
-      fetch("/saves/covers24/" + name + "/", args).then(res => {console.log("fetched " + res.url);restoreCovers(24,31)(res.body);}),
-      fetch("/saves/covers32/" + name + "/", args).then(res => {console.log("fetched " + res.url);restoreCovers(32,39)(res.body);}),
-      fetch("/saves/covers40/" + name + "/", args).then(res => {console.log("fetched " + res.url);restoreCovers(40,47)(res.body);}),
-      fetch("/saves/covers48/" + name + "/", args).then(res => {console.log("fetched " + res.url);restoreCovers(48,55)(res.body);}),
-      fetch("/saves/covers56/" + name + "/", args).then(res => {console.log("fetched " + res.url);restoreCovers(56,63)(res.body);}),
-      fetch("/saves/things/" + name + "/", args).then(res => {console.log("fetched " + res.url);restoreThings(res.body);}),
-      fetch("/saves/others/" + name + "/", args).then(res => {console.log("fetched " + res.url);restoreOther(res.body);}),
+      fetchParse("/saves/tiles0/" + name + "/", args, restoreTiles(0,7)),
+      fetchParse("/saves/tiles8/" + name + "/", args, restoreTiles(8,15)),
+      fetchParse("/saves/tiles16/" + name + "/", args, restoreTiles(16,23)),
+      fetchParse("/saves/tiles24/" + name + "/", args, restoreTiles(24,31)),
+      fetchParse("/saves/tiles32/" + name + "/", args, restoreTiles(32,39)),
+      fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
+      fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
+      fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
+      fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
+      fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
+      fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
+      fetchParse("/saves/covers24/" + name + "/", args, restoreCovers(24,31)),
+      fetchParse("/saves/covers32/" + name + "/", args, restoreCovers(32,39)),
+      fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
+      fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
+      fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
+      fetchParse("/saves/things/" + name + "/", args, restoreThings),
+      fetchParse("/saves/others/" + name + "/", args, restoreOther),
     ]
     Promise.all(promises).then(
       values => {
