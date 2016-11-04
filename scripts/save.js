@@ -415,7 +415,7 @@ HTomb = (function(HTomb) {
 
   function fetchParse(url, args, func) {
     console.log("fetching " + url);
-    fetch(url, args).then(res=>{console.log("fetched " + url); return [res,res.text()];}).then(arr=>{console.log("parsing " + url); func(arr[1]); return arr[0];});
+    return fetch(url, args).then(res=>{console.log("fetched " + url); return [res,res.text()];}).then(arr=>{console.log("parsing " + url); func(arr[1]); return arr[0];});
 
     //fetch(url, args).then(res=>{console.log("fetched " + url); return res.text();}).then(txt=>{console.log("parsing " + url); func(txt);});
   }
