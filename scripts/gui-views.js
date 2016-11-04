@@ -92,7 +92,8 @@ HTomb = (function(HTomb) {
             let fragment = saves[i];
             return function() {
               if (i===saves.length-1 || confirm("Really overwrite save file?")) {
-                HTomb.Save.saveGame(fragment);
+                Views.progressView(["Saving game..."]);
+                setTimeout(HTomb.Save.saveGame,500);
               } else {
                 return;
               }
