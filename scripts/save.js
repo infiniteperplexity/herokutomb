@@ -420,7 +420,7 @@ HTomb = (function(HTomb) {
   };
 
   function fetchParse(url, args, func) {
-    fetch(url, args).then(res=>resolve(res.text();)).then(txt=>func(txt));
+    return fetch(url, args).then(res=>{resolve(res.text());}).then(txt=>{func(txt);});
   }
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
