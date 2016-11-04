@@ -70,7 +70,7 @@ HTomb = (function(HTomb) {
   // returns a function that several rows of stringified tiles
   function stringifyTiles(z1,z2) {
     return function() {
-      let levels = HTomb.World.tiles.slice(z1,z2);
+      let levels = HTomb.World.tiles.slice(z1,z2+1);
       let tiles = HTomb.Save.stringifyThing(levels, false);
       return tiles;
     };
@@ -78,7 +78,7 @@ HTomb = (function(HTomb) {
 
   function stringifyCovers(z1,z2) {
     return function() {
-      let levels = HTomb.World.covers.slice(z1,z2);
+      let levels = HTomb.World.covers.slice(z1,z2+1);
       let covers = HTomb.Save.stringifyThing(levels, false);
       return covers;
     };
@@ -429,24 +429,24 @@ HTomb = (function(HTomb) {
       headers: headers
     }
     let promises = [
-      fetchParse("/saves/tiles0/" + name + "/", args, restoreTiles(0,7))//,
-      //fetchParse("/saves/tiles8/" + name + "/", args, restoreTiles(8,15)),
-      //fetchParse("/saves/tiles16/" + name + "/", args, restoreTiles(16,23)),
-      //fetchParse("/saves/tiles24/" + name + "/", args, restoreTiles(24,31)),
-      //fetchParse("/saves/tiles32/" + name + "/", args, restoreTiles(32,39)),
-      //fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
-      //fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
-      //fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
-      //fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
-      //fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
-      //fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
-      //fetchParse("/saves/covers24/" + name + "/", args, restoreCovers(24,31)),
-      //fetchParse("/saves/covers32/" + name + "/", args, restoreCovers(32,39)),
-      //fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
-      //fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
-      //fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63))//,
-      //fetchParse("/saves/things/" + name + "/", args, restoreThings),
-      //fetchParse("/saves/others/" + name + "/", args, restoreOther),
+      fetchParse("/saves/tiles0/" + name + "/", args, restoreTiles(0,7)),
+      fetchParse("/saves/tiles8/" + name + "/", args, restoreTiles(8,15)),
+      fetchParse("/saves/tiles16/" + name + "/", args, restoreTiles(16,23)),
+      fetchParse("/saves/tiles24/" + name + "/", args, restoreTiles(24,31)),
+      fetchParse("/saves/tiles32/" + name + "/", args, restoreTiles(32,39)),
+      fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
+      fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
+      fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
+      fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
+      fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
+      fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
+      fetchParse("/saves/covers24/" + name + "/", args, restoreCovers(24,31)),
+      fetchParse("/saves/covers32/" + name + "/", args, restoreCovers(32,39)),
+      fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
+      fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
+      fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
+      fetchParse("/saves/things/" + name + "/", args, restoreThings),
+      fetchParse("/saves/others/" + name + "/", args, restoreOther),
     ]
     Promise.all(promises).then(
       values => {
