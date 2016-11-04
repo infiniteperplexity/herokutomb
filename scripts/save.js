@@ -244,6 +244,7 @@ HTomb = (function(HTomb) {
   // End code for listing directory contents
   function fetchThen(restoreFunc, url, args) {
     fetch(url, args).then(res=> {
+      console.log("restoring "+url);
       restoreFunc(res.body);
     });
   }
@@ -363,6 +364,7 @@ HTomb = (function(HTomb) {
         }
       }
     }
+    console.log("successfully restored things");
   }
 
   function restoreTiles(z1,z2) {
@@ -375,6 +377,7 @@ HTomb = (function(HTomb) {
           }
         }
       }
+      console.log("successfully restored tiles"+z1);
     };
   }
 
@@ -388,6 +391,7 @@ HTomb = (function(HTomb) {
           }
         }
       }
+      console.log("successfully restored covers"+z1);
     };
   }
 
@@ -399,6 +403,7 @@ HTomb = (function(HTomb) {
     HTomb.Time.dailyCycle.minute = other.cycle.minute;
     HTomb.Time.dailyCycle.hour = other.cycle.hour;
     HTomb.Time.dailyCycle.day = other.cycle.day;
+    console.log("successfully restored other stuff");
   }
 
   HTomb.Save.deleteGame = function(name) {

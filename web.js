@@ -135,7 +135,7 @@ app.post('/saves/*', function (req, res) {
       res.status(404).send();
       return;
     }
-    connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES (null, ?, ?, ?)", [urlfrags[3], urlfrags[2], req.body.json], function(err) {
+    connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES ('Glenn', ?, ?, ?)", [urlfrags[3], urlfrags[2], req.body.json], function(err) {
       if (err) {
         console.log("error during row insertion for " + req.url);
         console.log(err);
