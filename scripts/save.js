@@ -98,8 +98,8 @@ HTomb = (function(HTomb) {
     }
     killsave = false;
     let promises = [
-      fetchText(stringifyTiles(0,7),"/saves//tiles0/"+name+"/",args),
-      fetchText(stringifyTiles(8,15),"/saves//tiles8/"+name+"/",args),
+      fetchText(stringifyTiles(0,7),"/saves/tiles0/"+name+"/",args),
+      fetchText(stringifyTiles(8,15),"/saves/tiles8/"+name+"/",args),
       fetchText(stringifyTiles(16,23),"/saves/tiles16/"+name+"/",args),
       fetchText(stringifyTiles(24,31),"/saves/tiles24/"+name+"/",args),
       fetchText(stringifyTiles(32,39),"/saves/tiles32/"+name+"/",args),
