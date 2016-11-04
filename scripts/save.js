@@ -383,14 +383,15 @@ HTomb = (function(HTomb) {
     };
   }
 
-  HTomb.Save.testRestore = function(name) {
+  HTomb.Save.testRestore = function(name, url) {
+    url = url || "tiles16";
     let headers = new Headers();
     headers.append("Content-Type", "application/json;charset=UTF-8");
     let args = {
       method: "GET",
       headers: headers
     };
-    fetch("/saves/tiles16/" + name + "/", args).then(res => {
+    fetch("/saves/" + url + "/" + name + "/", args).then(res => {
         console.log(res.body);
         restoreTiles(16,23)(res.body);
 
