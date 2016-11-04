@@ -136,9 +136,19 @@ app.post('/saves/*', function (req, res) {
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
   ram("application start");
+  dbcleanup();
 });
 setInterval(function() {
   connection.ping();
   ram("ping");
   global.gc();
 },10000);
+
+function dbcleanup() {
+  connection.query("DELETE FROM saves WHERE filename = 'save' OR filename = 'tiles0' OR filename = 'tiles8'", function (err) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log("cleanup succeeded");
+  });
+}
