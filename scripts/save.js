@@ -450,6 +450,7 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
       fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
       fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
+      fetchParse("/saves/tiles55/" + name + "/", args, restoreTiles(56,63)),
       fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
       fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
       fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
