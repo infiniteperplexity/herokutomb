@@ -460,9 +460,7 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
       fetchParse("/saves/things/" + name + "/", args, restoreThings),
       fetchParse("/saves/other/" + name + "/", args, restoreOther),
-    ]
-    let promises2 = Promise.all(promises);
-    Promise.all(promises2)
+    ];
     Promise.all(promises).then(
       values => {
         for (let i=0; i<values.length; i++) {
