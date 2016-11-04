@@ -119,15 +119,22 @@ HTomb = (function(HTomb) {
     ];
     Promise.all(promises).then(
       values => {
+        for (let i=0; i<values.length; i++) {
+          if (values[i].ok===false) {
+            console.log("response to " + values[i].url + " not ok");
+          }
+        }
         console.log("succeeded: " + values);
         HTomb.GUI.splash(["Finished saving "+"'"+name+"'."]);
         HTomb.GUI.Contexts.locked=false;
+        HTomb.Time.unlockTime();
       },
       reason => {
         killsave = true;
         console.log("failed: " + reason);
         HTomb.GUI.splash(["Failed to save "+"'"+name+"'."]);
         HTomb.GUI.Contexts.locked=false;
+        HTomb.Time.unlockTime();
       }
     )
   };

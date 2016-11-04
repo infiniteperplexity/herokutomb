@@ -98,7 +98,9 @@ app.get('/saves', function(req, res) {
   connection.query("SELECT DISTINCT filename FROM saves", function(err, rows, fields) {
     ram("start of directory query");
     if (err) {
-      return console.log(err);
+      console.log(err);
+      res.status(404).send();
+      return;
     }
     rows = rows.map(function(e,i,a) {return e.filename;});
     // clean the array
@@ -127,8 +129,21 @@ app.post('/saves/*', function (req, res) {
   connection.ping();
   console.log("Received POST request: " + req.url);
   connection.query("DELETE FROM saves WHERE filename = ? AND segment = ?",[urlfrags[3], urlfrags[2]], function(err) {
+    if (err) {
+      console.log("error during row deletion for " + req.url);
+      console.log(err);
+      res.status(404).send();
+      return;
+    }
     connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES (null, ?, ?, ?)", [urlfrags[3], urlfrags[2], req.body.json], function(err) {
+      if (err) {
+        console.log("error during row insertion for " + req.url);
+        console.log(err);
+        res.status(404).send();
+        return;
+      }
       ram("after INSERT");
+      res.send();
     });
   });
 });
