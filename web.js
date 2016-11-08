@@ -129,7 +129,7 @@ app.get('/saves', function(req, res) {
     }
   });
 });
-app.get('/saves/delete/*', function(req, res) {
+app.get('/delete/*', function(req, res) {
   var owner = req.cookies.herokutomb_owner;
   res.set("Connection", "close");
   var urlfrags = req.url.split("/");
@@ -137,7 +137,7 @@ app.get('/saves/delete/*', function(req, res) {
   ram("start of DELETE");
   connection.ping();
   console.log("Received GET request: " + req.url);
-  connection.query("DELETE FROM saves WHERE filename = ?",[urlfrags[3]], function(err) {
+  connection.query("DELETE FROM saves WHERE filename = ?",[urlfrags[2]], function(err) {
   //connection.query("DELETE FROM saves WHERE owner = ? AND filename = ?",[owner, urlfrags[3]], function(err) {
     if (err) {
       console.log("error during row deletion for " + req.url);

@@ -411,7 +411,7 @@ HTomb = (function(HTomb) {
       headers: headers,
       credentials: "include"
     }
-    fetch("/saves/delete/" + name, args).then(
+    fetch("/delete/" + name, args).then(
       res => {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
