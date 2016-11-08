@@ -4,6 +4,7 @@ var port = process.env.PORT || 5000;
 var express = require('express');
 var app = express();
 var mysql = require('mysql');
+var cookieParser = require('cookie-parser');
 
 var dbinfo = {
   host: 'us-cdbr-iron-east-04.cleardb.net',
@@ -47,6 +48,7 @@ var bodyParser = require('body-parser');
 var path = "C:/Users/m543015/Desktop/GitHub/hellatomb";
 //app.use(express.static('public'));
 app.use(bodyParser.json({limit: '100mb'}));
+app.use(cookieParser());
 //app.use(bodyPArser.urlencoded({limit: '50mb', extended: true}));
 
 function serveFile(req, res) {
@@ -62,6 +64,10 @@ app.get('/', function (req, res) {
 });
 app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
+app.get('/cookie', function(req, res)) {
+  console.log("Cookies: ", req.cookies);
+  res.cookie("cookie_name", 'cookie_value').send("Cookie is set");
+}
 
 app.get('/saves/*', function(req, res) {
   res.set("Connection", "close");

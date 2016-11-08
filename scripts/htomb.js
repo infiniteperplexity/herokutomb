@@ -12,6 +12,9 @@ var HTomb = (function() {
 
   // Begin the game
   var init = function() {
+    if (document.cookie="") {
+      fetch("/cookie",{credentials: "include"}).then(res, console.log("Cookie: " + document.cookie));
+    }
     // Initialize the DOM
     GUI.domInit();
     GUI.Views.startup();
