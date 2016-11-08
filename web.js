@@ -78,7 +78,7 @@ app.get('/saves/*', function(req, res) {
   console.log("Received GET request: " + req.url);
   connection.ping();
   //global.gc();
-  connection.query("SELECT * FROM saves WHERE AND filename = ? AND segment = ?", [urlfrags[3], urlfrags[2]], function(err, rows, fields) {
+  connection.query("SELECT * FROM saves WHERE filename = ? AND segment = ?", [urlfrags[3], urlfrags[2]], function(err, rows, fields) {
   //connection.query("SELECT * FROM saves WHERE owner = ? AND filename = ? AND segment = ?", [owner, urlfrags[3], urlfrags[2]], function(err, rows, fields) {
     ram("start of save file query");
     //big jump in memory usage here...
