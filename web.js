@@ -66,7 +66,7 @@ app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/cookie', function(req, res) {
   console.log("Cookies: ", req.cookies);
-  res.cookie("cookie_name", 'cookie_value').send("Cookie is set");
+  res.cookie("cookie_name", 'cookie_value1').send("Cookie is set");
 });
 
 app.get('/saves/*', function(req, res) {
