@@ -392,9 +392,15 @@ HTomb = (function(HTomb) {
     overlay.unhide();
   }
 
-  GUI.splash = function(arr) {
+  GUI.splash = function(arr, callback) {
     GUI.Contexts.active = GUI.Contexts.new();
     overlay.update(arr);
+    if (callback) {
+      GUI.Contexts.active.bindKey("VK_ESCAPE", callback);
+      GUI.Contexts.active.clickAt = callback;
+      GUI.Contexts.active.clickTile = callback;
+      GUI.Contexts.active.rightClickTile = callback;
+    }
   };
 
   return HTomb;

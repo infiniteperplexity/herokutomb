@@ -68,7 +68,6 @@ HTomb = (function(HTomb) {
     HTomb.GUI.Views.progressView(["Saving game..."]);
     setTimeout(HTomb.Save.saveGame,500);
   };
-
   Views.System.delete = function() {
     if (confirm("Really delete game?")) {
       HTomb.GUI.Views.progressView(["Deleting game..."])
@@ -119,7 +118,7 @@ HTomb = (function(HTomb) {
     HTomb.Save.getDir(function(arg) {
       let saves = [];
       if (arg===" ") {
-        HTomb.GUI.splash("No saved games exist on the server.");
+        HTomb.GUI.splash(["No saved games exist on the server."], function() {HTomb.GUI.Views.startup();});
         return;
       } else {
         saves = JSON.parse(arg);

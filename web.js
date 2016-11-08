@@ -95,6 +95,7 @@ app.get('/saves/*', function(req, res) {
 });
 
 app.get('/saves', function(req, res) {
+  sweepdb();
   var owner = req.cookies.herokutomb_owner;
   res.set("Connection", "close");
   global.gc();
@@ -170,6 +171,7 @@ app.post('/saves/*', function (req, res) {
         console.log("error during row insertion for " + req.url);
         console.log(err);
         res.status(404).send();
+        sweepdb();
         return;
       }
       ram("after INSERT");
@@ -188,6 +190,37 @@ setInterval(function() {
   ram("ping");
   global.gc();
 },10000);
+
+function sweepdb() {
+  var correctLength = 18;
+  connection.ping();
+  connection.query("SELECT DISTINCT filename FROM saves", function(err, rows, fields) {
+    if (err) {
+      console.log("error in db cleanup sweep");
+      console.log(err);
+      return;
+    }
+    rows = rows.map(function(e,i,a) {return e.filename;});
+    for (var i=0; i<rows.length; i++) {
+      connection.query("SELECT DISTINCT segment FROM saves WHERE filename = ?", [rows[i]], function(err, rows) {
+        if (err) {
+          console.log("error in db cleanup sweep");
+          console.log(err);
+          return;
+        }
+        if (rows.length!==correctLength) {
+          connection.query("DELETE FROM saves WHERE filename = ?", [rows[i]], function(err, rows) {
+            if (err) {
+              console.log("error in db cleanup sweep");
+              console.log(err);
+              return;
+            }
+          });
+        }
+      });
+    }
+  });
+}
 
 function dbcleanup() {
   connection.query("DELETE FROM saves WHERE filename = 'testing'", function (err) {
