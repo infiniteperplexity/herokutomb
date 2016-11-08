@@ -10,10 +10,9 @@ var HTomb = (function() {
   // Frequently-used colors and characters...not sure this should be here
   var UNIBLOCK = Constants.UNIBLOCK = '\u2588';
 
-  console.log("testing");
-  //if (document.cookie==="") {
+  if (document.cookie==="") {
     fetch("/cookie",{credentials: "include"}).then(res => console.log("Cookie: " + document.cookie));
-  //}
+  }
   // Begin the game
   var init = function() {
     // Initialize the DOM
