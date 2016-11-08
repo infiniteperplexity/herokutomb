@@ -71,8 +71,8 @@ HTomb = (function(HTomb) {
 
   Views.System.delete = function() {
     if (confirm("Really delete game?")) {
-      HTomb.Save.deleteGame(HTomb.Save.currentGame);
-      Views.startup();
+      HTomb.GUI.Views.progressView(["Deleting game..."])
+      setTimeout(HTomb.Save.deleteGame,500,HTomb.Save.currentGame);
     } else {
       Views.systemView();
     }
