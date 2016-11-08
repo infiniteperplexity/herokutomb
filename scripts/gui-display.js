@@ -159,7 +159,7 @@ HTomb = (function(HTomb) {
   status.render = function() {
     //black out the entire line with solid blocks
     var cursor = 0;
-    //scrollDisplay.drawText(this.x0+cursor,this.y0+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
+    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
     scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Mana:" + HTomb.Player.caster.mana + "/" + HTomb.Player.caster.maxmana);
     cursor+=12;
     scrollDisplay.drawText(this.x0+cursor,this.y0+1,"X:" + HTomb.Player.x);
@@ -187,7 +187,7 @@ HTomb = (function(HTomb) {
     }
   };
   menu.render = function() {
-    for (var i=0; i<SCREENH+SCROLLH; i++) {
+    for (var i=0; i<MENUH; i++) {
       menuDisplay.drawText(this.x0, this.y0+i, "%c{black}"+(UNIBLOCK.repeat(MENUW-2)));
       if (menu.text[i]) {
         var j = 0;
@@ -247,13 +247,12 @@ HTomb = (function(HTomb) {
 
   // ***** Basic right-hand menu stuff *****
   menu.defaultText = [
+    "? or /: Show tutorial tip.",
     "Movement: NumPad / Arrows.",
     "(Shift+Arrows for diagonal.)",
     "Z: Cast a spell.",
     "J: Assign Job.",
     "G: Pick Up, D: Drop, I: Inventory.",
-    "T: Toggle tutorial",
-    "? or /: Show tutorial alert.",
     "Space: Wait.",
     "PageUp / PageDown to change speed.",
     "Hover mouse to examine a square.",

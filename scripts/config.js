@@ -13,7 +13,23 @@ HTomb = (function(HTomb) {
   //Debug.paused = true;\
   //Debug.peaceful = true;
   HTomb.Debug.nextTutorial = function() {
-    alert("No tutorial currently.");
+    if (HTomb.Player.master.minions.length===0) {
+      HTomb.GUI.splash([
+        "(Press Escape or click to exit this screen.)",
+        "1) Press Z to cast a spell.",
+        "2) Press A to choose 'raise zombie'.",
+        "3) Click on a tombstone to cast the spell.",
+        "4) Wait for the zombie to dig its way out."
+      ]);
+    } else {
+      HTomb.GUI.splash([
+        "(Press Escape or click to exit this screen.)",
+        "1) Press J to assign a job.",
+        "2) Press A to dig or B to build.",
+        "3) Click the square you want to dig out or build on.",
+        "4) Wait for your zombies to complete their tasks."
+      ]);
+    }
   }
   return HTomb;
 })(HTomb);
