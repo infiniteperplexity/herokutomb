@@ -146,7 +146,7 @@ app.get('/saves/delete/*', function(req, res) {
       return;
     }
     res.send();
-  }
+  });
 });
 app.post('/saves/*', function (req, res) {
   var owner = req.cookies.herokutomb_owner;
