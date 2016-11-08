@@ -116,9 +116,6 @@ HTomb = (function(HTomb) {
     });
   };
   Views.System.restore = function() {
-    if (glob===undefined) {
-      glob = false;
-    }
     HTomb.Save.getDir(function(arg) {
       let saves = [];
       if (arg===" ") {

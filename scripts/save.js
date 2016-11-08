@@ -6,7 +6,7 @@ HTomb = (function(HTomb) {
   let NLEVELS = HTomb.Constants.NLEVELS;
   let coord = HTomb.Utils.coord;
   // Global value for the name of the current game
-  HTomb.Save.currentGame = "save";
+  HTomb.Save.currentGame = "mySaveGame";
   // a function that takes a text-or-promise-returning function, plus fetch args, and then returns a fetch promise.
   function fetchText(textFunc, url, args) {
     let val = textFunc();
@@ -483,7 +483,7 @@ HTomb = (function(HTomb) {
           }
         }
         console.log("succeeded with " + values);
-        HTomb.Save.currentGame = "name";
+        HTomb.Save.currentGame = name;
         HTomb.World.validate.lighting();
         HTomb.FOV.resetVisible();
         if (HTomb.Player.sight) {
