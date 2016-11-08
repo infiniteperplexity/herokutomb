@@ -421,7 +421,7 @@ HTomb = (function(HTomb) {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         console.log("failed to delete with " + reason);
-        HTomb.GUI.splash(["failed to delete " + name])''
+        HTomb.GUI.splash(["failed to delete " + name]);
       }
     );
   };
