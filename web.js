@@ -129,7 +129,7 @@ app.get('/saves', function(req, res) {
     }
   });
 });
-app.get.('/saves/delete/*', function(req, res) {
+app.get('/saves/delete/*', function(req, res) {
   var owner = req.cookies.herokutomb_owner;
   res.set("Connection", "close");
   var urlfrags = req.url.split("/");
