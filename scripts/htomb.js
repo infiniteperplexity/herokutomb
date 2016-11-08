@@ -11,7 +11,7 @@ var HTomb = (function() {
   var UNIBLOCK = Constants.UNIBLOCK = '\u2588';
 
   if (document.cookie=="") {
-    fetch("/cookie",{credentials: "include"}).then(res, console.log("Cookie: " + document.cookie));
+    fetch("/cookie",{credentials: "include"}).then(res => console.log("Cookie: " + document.cookie));
   }
   // Begin the game
   var init = function() {
