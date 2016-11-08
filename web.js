@@ -78,7 +78,8 @@ app.get('/saves/*', function(req, res) {
   console.log("Received GET request: " + req.url);
   connection.ping();
   //global.gc();
-  connection.query("SELECT * FROM saves WHERE owner = ? AND filename = ? AND segment = ?", [owner, urlfrags[3], urlfrags[2]], function(err, rows, fields) {
+  connection.query("SELECT * FROM saves WHERE AND filename = ? AND segment = ?", [urlfrags[3], urlfrags[2]], function(err, rows, fields) {
+  //connection.query("SELECT * FROM saves WHERE owner = ? AND filename = ? AND segment = ?", [owner, urlfrags[3], urlfrags[2]], function(err, rows, fields) {
     ram("start of save file query");
     //big jump in memory usage here...
     if (err) {
@@ -101,8 +102,8 @@ app.get('/saves', function(req, res) {
   ram("start of directory GET");
   connection.ping();
   //global.gc();
-  //connection.query("SELECT DISTINCT filename FROM saves", function(err, rows, fields) {
-  connection.query("SELECT DISTINCT filename FROM saves WHERE owner = ?", [owner], function(err, rows, fields) {
+  connection.query("SELECT DISTINCT filename FROM saves", function(err, rows, fields) {
+  //connection.query("SELECT DISTINCT filename FROM saves WHERE owner = ?", [owner], function(err, rows, fields) {
     ram("start of directory query");
     if (err) {
       console.log(err);
@@ -136,7 +137,8 @@ app.get.('/saves/delete/*', function(req, res) {
   ram("start of DELETE");
   connection.ping();
   console.log("Received GET request: " + req.url);
-  connection.query("DELETE FROM saves WHERE owner = ? AND filename = ?",[owner, urlfrags[3]], function(err) {
+  connection.query("DELETE FROM saves WHERE filename = ?",[urlfrags[3]], function(err) {
+  //connection.query("DELETE FROM saves WHERE owner = ? AND filename = ?",[owner, urlfrags[3]], function(err) {
     if (err) {
       console.log("error during row deletion for " + req.url);
       console.log(err);
@@ -154,14 +156,16 @@ app.post('/saves/*', function (req, res) {
   ram("start of POST");
   connection.ping();
   console.log("Received POST request: " + req.url);
-  connection.query("DELETE FROM saves WHERE owner = ? AND filename = ? AND segment = ?",[owner, urlfrags[3], urlfrags[2]], function(err) {
+  connection.query("DELETE FROM saves WHERE filename = ? AND segment = ?",[urlfrags[3], urlfrags[2]], function(err) {
+  //connection.query("DELETE FROM saves WHERE owner = ? AND filename = ? AND segment = ?",[owner, urlfrags[3], urlfrags[2]], function(err) {
     if (err) {
       console.log("error during row deletion for " + req.url);
       console.log(err);
       res.status(404).send();
       return;
     }
-    connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES (?, ?, ?, ?)", [owner, urlfrags[3], urlfrags[2], req.body.json], function(err) {
+    connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES ('none', ?, ?, ?)", [urlfrags[3], urlfrags[2], req.body.json], function(err) {
+    //connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES (?, ?, ?, ?)", [owner, urlfrags[3], urlfrags[2], req.body.json], function(err) {
       if (err) {
         console.log("error during row insertion for " + req.url);
         console.log(err);
