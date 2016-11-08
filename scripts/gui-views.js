@@ -47,7 +47,8 @@ HTomb = (function(HTomb) {
       "Welcome to HellaTomb!",
       "N) New game.",
       "R) Restore game.",
-      "Q) Quit."
+      "Q) Quit.",
+      "C) Restore game (without cookie.)"
     ]);
   }
   Views.systemView = function() {
@@ -59,7 +60,8 @@ HTomb = (function(HTomb) {
       "A) Save game as...",
       "R) Restore game.",
       "D) Delete current game('" + HTomb.Save.currentGame +"').",
-      "Q) Quit game."
+      "Q) Quit game.",
+      "C) Restore game (without cookie.)"
     ]);
   };
   Views.System = {};
@@ -116,6 +118,9 @@ HTomb = (function(HTomb) {
     });
   };
   Views.System.restore = function() {
+    if (glob===undefined) {
+      glob = false;
+    }
     HTomb.Save.getDir(function(arg) {
       let saves = [];
       if (arg===" ") {

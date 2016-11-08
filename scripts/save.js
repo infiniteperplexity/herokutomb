@@ -98,7 +98,8 @@ HTomb = (function(HTomb) {
     headers.append("Content-Type", "application/json;charset=UTF-8");
     let args = {
       method: "POST",
-      headers: headers
+      headers: headers,
+      credentials: "include"
     }
     killsave = false;
     let promises = [
@@ -403,7 +404,26 @@ HTomb = (function(HTomb) {
   }
 
   HTomb.Save.deleteGame = function(name) {
-    HTomb.GUI.splash("Haven't added this functionality yet.");
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json;charset=UTF-8");
+    let args = {
+      method: "GET",
+      headers: headers,
+      credentials: "include"
+    }
+    fetch("/saves/delete/" + name, args).then(
+      res => {
+        HTomb.Time.unlockTime();
+        HTomb.GUI.Contexts.locked=false;
+        HTomb.GUI.Views.startup();
+      },
+      reason => {
+        HTomb.Time.unlockTime();
+        HTomb.GUI.Contexts.locked=false;
+        console.log("failed to delete with " + reason);
+        HTomb.GUI.splash(["failed to delete " + name])''
+      }
+    );
   };
 
   function fetchParse(url, args, func) {
