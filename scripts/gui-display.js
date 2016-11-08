@@ -159,7 +159,7 @@ HTomb = (function(HTomb) {
   status.render = function() {
     //black out the entire line with solid blocks
     var cursor = 0;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
+    //scrollDisplay.drawText(this.x0+cursor,this.y0+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
     scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Mana:" + HTomb.Player.caster.mana + "/" + HTomb.Player.caster.maxmana);
     cursor+=12;
     scrollDisplay.drawText(this.x0+cursor,this.y0+1,"X:" + HTomb.Player.x);
@@ -182,7 +182,7 @@ HTomb = (function(HTomb) {
   scroll.render = function() {
     for (var s=0; s<this.buffer.length; s++) {
       //black out the entire line with solid blocks
-      scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCREENW+MENUW-2)));
+      scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCREENW-2)));
       scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[s]);
     }
   };
@@ -249,6 +249,23 @@ HTomb = (function(HTomb) {
   menu.defaultText = [
     "Movement: NumPad / Arrows.",
     "(Shift+Arrows for diagonal.)",
+    "Z: Cast a spell.",
+    "J: Assign Job.",
+    "G: Pick Up, D: Drop, I: Inventory.",
+    "T: Toggle tutorial",
+    "? or /: Show tutorial alert.",
+    "Space: Wait.",
+    "PageUp / PageDown to change speed.",
+    "Hover mouse to examine a square.",
+    "Click to pause or unpause.",
+    "Right click for detailed view.",
+    "Tab: Survey mode.",
+    "~: Summary view.",
+    "Esc: System view."
+  ];
+  /*menu.defaultText = [
+    "Movement: NumPad / Arrows.",
+    "(Shift+Arrows for diagonal.)",
     "J: Assign Job, Z: Cast Spell.",
     "G: Pick Up, D: Drop, I: Inventory.",
     "T: Toggle tutorial",
@@ -259,7 +276,7 @@ HTomb = (function(HTomb) {
     "Click to pause or unpause.",
     "Right click for detailed view.",
     "Escape for summary view."
-  ];
+  ];*/
   // This function will correctly break text into lines
   menu.update = function(arr) {
     if (arr===undefined) {

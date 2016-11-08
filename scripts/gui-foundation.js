@@ -36,7 +36,7 @@ HTomb = (function(HTomb) {
     fontFamily: FONTFAMILY
   });
   var scrollDisplay = new ROT.Display({
-    width: SCROLLW,
+    width: SCROLLW-10,
     height: STATUSH+SCROLLH,
     fontSize: TEXTSIZE,
     fontFamily: TEXTFONT,
