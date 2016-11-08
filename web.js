@@ -5,6 +5,7 @@ var express = require('express');
 var app = express();
 var mysql = require('mysql');
 var cookieParser = require('cookie-parser');
+var uuid = require('uuid');
 
 var dbinfo = {
   host: 'us-cdbr-iron-east-04.cleardb.net',
@@ -66,7 +67,7 @@ app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
 app.get('/cookie', function(req, res) {
   console.log("Cookies: ", req.cookies);
-  res.cookie("cookie_name", 'cookie_value1').send("Cookie is set");
+  res.cookie("herukotomb_owner", uuid.v4()).send("Cookie is set");
 });
 
 app.get('/saves/*', function(req, res) {
