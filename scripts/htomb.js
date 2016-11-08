@@ -11,9 +11,9 @@ var HTomb = (function() {
   var UNIBLOCK = Constants.UNIBLOCK = '\u2588';
 
   console.log("testing");
-  if (document.cookie==="") {
+  //if (document.cookie==="") {
     fetch("/cookie",{credentials: "include"}).then(res => console.log("Cookie: " + document.cookie));
-  }
+  //}
   // Begin the game
   var init = function() {
     // Initialize the DOM
