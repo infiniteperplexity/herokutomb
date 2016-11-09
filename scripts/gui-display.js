@@ -182,7 +182,7 @@ HTomb = (function(HTomb) {
   scroll.render = function() {
     for (var s=0; s<this.buffer.length; s++) {
       //black out the entire line with solid blocks
-      scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCREENW-2)));
+      scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
       scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[s]);
     }
   };
