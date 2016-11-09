@@ -80,13 +80,14 @@ HTomb = (function(HTomb) {
   };
 
   Views.System.saveAs = function() {
+    HTomb.GUI.Views.parentView = HTomb.GUI.Views.systemView;
     HTomb.Save.getDir(function(arg) {
       let saves = [];
       if (arg!==" ") {
         saves = JSON.parse(arg);
       }
       var alpha = "abcdefghijklmnopqrstuvwxyz";
-      var controls = {};
+      var controls = {VK_ESCAPE: GUI.reset};
       for (let i=0; i<saves.length; i++) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
             let fragment = saves[i];
@@ -165,7 +166,7 @@ HTomb = (function(HTomb) {
     VK_ESCAPE: HTomb.GUI.reset,
     VK_A: function() {Views.System.saveAs();},
     VK_S: function() {Views.System.save();},
-    VK_R: function() {Views.System.restore();},
+    VK_R: function() {HTomb.GUI.Views.parentView = HTomb.GUI.Views.systemView; Views.System.restore();},
     VK_Q: function() {Views.System.quit();},
     VK_D: function() {Views.System.delete();}
   });
