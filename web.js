@@ -95,7 +95,7 @@ app.get('/saves/*', function(req, res) {
 });
 
 app.get('/saves', function(req, res) {
-  sweepdb();
+  //sweepdb();
   var owner = req.cookies.herokutomb_owner;
   res.set("Connection", "close");
   global.gc();
