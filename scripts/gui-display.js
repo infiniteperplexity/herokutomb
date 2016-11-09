@@ -204,6 +204,7 @@ HTomb = (function(HTomb) {
   };
 
   GUI.reset = function() {
+    console.log(GUI.Views.parentView);
     GUI.Views.parentView();
   };
   // This should probably be an Event, not a GUI method
