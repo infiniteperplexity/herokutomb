@@ -119,14 +119,13 @@ HTomb = (function(HTomb) {
     HTomb.Save.getDir(function(arg) {
       let saves = [];
       if (arg===" ") {
-        Views.parentView = Views.startup;
         HTomb.GUI.splash(["No saved games exist on the server."]);
         return;
       } else {
         saves = JSON.parse(arg);
       }
       var alpha = "abcdefghijklmnopqrstuvwxyz";
-      var controls = {};
+      var controls = {VK_ESCAPE: GUI.reset};
       for (let i=0; i<saves.length; i++) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
             let fragment = saves[i];
