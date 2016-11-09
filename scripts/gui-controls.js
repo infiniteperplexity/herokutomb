@@ -29,13 +29,23 @@ HTomb = (function(HTomb) {
   // set up GUI and display
   var GUI = HTomb.GUI;
   var gameScreen = GUI.Panels.gameScreen;
+  var overlay = GUI.Panels.overlay;
   var menu = GUI.Panels.menu;
 
   let Contexts = GUI.Contexts;
   let Commands = HTomb.Commands;
   let Views = GUI.Views = {};
   let Main = GUI.Views.Main = {};
-
+  Main.reset = function() {
+    if (overlay.active) {
+      overlay.hide();
+    }
+    GUI.Contexts.active = GUI.Contexts.main;
+    // This shoudl probably be handled a bit differently?
+    menu.refresh(); // menu.refresh();
+    gameScreen.recenter(); // gameScreen.recenter();
+    GUI.render(); // Actions.render();
+  };
   // **** Set default controls
   // By default, clicking resets the GUI
   Contexts.default.clickAt = function() {

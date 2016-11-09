@@ -36,6 +36,7 @@ HTomb = (function(HTomb) {
   GUI.Contexts.frozen.clickTile = function() {};
   GUI.Contexts.frozen.rightClickTile = function() {};
   GUI.Contexts.frozen.mouseTile = function() {};
+
   Views.progressView = function(arr) {
     GUI.Contexts.active = GUI.Contexts.frozen;
     GUI.Panels.overlay.update(arr);
@@ -118,7 +119,8 @@ HTomb = (function(HTomb) {
     HTomb.Save.getDir(function(arg) {
       let saves = [];
       if (arg===" ") {
-        HTomb.GUI.splash(["No saved games exist on the server."], function() {HTomb.GUI.Views.startup();});
+        Views.parentView = Views.startup;
+        HTomb.GUI.splash(["No saved games exist on the server."]);
         return;
       } else {
         saves = JSON.parse(arg);
@@ -150,14 +152,8 @@ HTomb = (function(HTomb) {
   GUI.Contexts.startup = GUI.Contexts.new({
     VK_N: HTomb.World.newGame,
     VK_R: function() {
+      Views.parentView = Views.startup;
       Views.System.restore();
-      GUI.Contexts.active.clickAt = function() {};
-      GUI.Contexts.active.clickTile = function() {};
-      GUI.Contexts.active.rightClickTile = function() {};
-      GUI.Contexts.active.mouseTile = function() {};
-      GUI.bindKey(GUI.Contexts.workshops,"VK_ESCAPE",function() {
-        Views.startup();
-      });
     },
     VK_Q: function() {Views.System.quit();},
   });

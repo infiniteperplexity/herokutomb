@@ -415,12 +415,13 @@ HTomb = (function(HTomb) {
       res => {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
-        HTomb.GUI.Views.startup();
+        Views.parentView = Views.startup;
       },
       reason => {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         console.log("failed to delete with " + reason);
+        Views.parentView = Views.Main.reset;
         HTomb.GUI.splash(["failed to delete " + name]);
       }
     );
@@ -478,7 +479,7 @@ HTomb = (function(HTomb) {
             console.log("response for " + values[i].url + " not ok");
             HTomb.Time.unlockTime();
             HTomb.GUI.Contexts.locked=false;
-            HTomb.GUI.Views.startup();
+            Views.parentView = Views.startup;
             return;
           }
         }
@@ -493,13 +494,14 @@ HTomb = (function(HTomb) {
         console.log("refreshed visibility");
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
+        Views.parentView = Views.Main.reset;
         HTomb.GUI.splash(["Game restored."]);
       },
       reason => {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         console.log("failed with " + reason);
-        HTomb.GUI.Views.startup();
+        Views.parentView = Views.startup;
       }
     );
   };

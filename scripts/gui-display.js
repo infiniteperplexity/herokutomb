@@ -204,14 +204,7 @@ HTomb = (function(HTomb) {
   };
 
   GUI.reset = function() {
-    if (overlay.active) {
-      overlay.hide();
-    }
-    GUI.Contexts.active = GUI.Contexts.main;
-    // This shoudl probably be handled a bit differently?
-    menu.refresh(); // menu.refresh();
-    gameScreen.recenter(); // gameScreen.recenter();
-    GUI.render(); // Actions.render();
+    GUI.Views.parentView();
   };
   // This should probably be an Event, not a GUI method
   GUI.sensoryEvent = function(strng,x,y,z) {
@@ -392,15 +385,9 @@ HTomb = (function(HTomb) {
     overlay.unhide();
   }
 
-  GUI.splash = function(arr, callback) {
+  GUI.splash = function(arr) {
     GUI.Contexts.active = GUI.Contexts.new();
     overlay.update(arr);
-    if (callback) {
-      GUI.Contexts.active.bindKey("VK_ESCAPE", callback);
-      GUI.Contexts.active.clickAt = callback;
-      GUI.Contexts.active.clickTile = callback;
-      GUI.Contexts.active.rightClickTile = callback;
-    }
   };
 
   return HTomb;
