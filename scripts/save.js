@@ -416,7 +416,7 @@ HTomb = (function(HTomb) {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         HTomb.GUI.Views.parentView = HTomb.GUI.Views.startup;
-        HTomb.GUI.splash("'" + name + "' deleted.");
+        HTomb.GUI.splash(["'" + name + "' deleted."]);
       },
       reason => {
         HTomb.Time.unlockTime();
