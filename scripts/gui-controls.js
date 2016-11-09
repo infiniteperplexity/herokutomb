@@ -540,8 +540,8 @@ HTomb = (function(HTomb) {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
     },
-    VK_PAGE_UP: scroll.scrollUp,
-    VK_PAGE_DOWN: scroll.scrollDown
+    VK_PAGE_UP: function() {scroll.scrollUp();},
+    VK_PAGE_DOWN: function() {scroll.scrollDown();}
   });
   survey.menuText = ["You are now in survey mode.","Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
   survey.clickTile = main.clickTile;

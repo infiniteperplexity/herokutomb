@@ -26,7 +26,7 @@ HTomb = (function(HTomb) {
         "(Press Escape or click to exit this screen.)",
         "1) Press J to assign a job.",
         "2) Press A to dig or B to build.",
-        "3) Click the square you want to dig out or build on.",
+        "3) Click on two corners of the area you want to dig out or build on.",
         "4) Wait for your zombies to complete their tasks."
       ]);
     }

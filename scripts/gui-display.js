@@ -259,6 +259,7 @@ HTomb = (function(HTomb) {
     "? or /: Show tutorial tip.",
     "Movement: NumPad / Arrows.",
     "(Shift+Arrows for diagonal.)",
+    ", or . to go up or down.",
     "Z: Cast a spell.",
     "J: Assign Job.",
     "G: Pick Up, D: Drop, I: Inventory.",
