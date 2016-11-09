@@ -49,8 +49,9 @@ HTomb = (function(HTomb) {
     fontFamily: TEXTFONT,
     spacing: TEXTSPACING
   });
+  //HTomb.GUI.Panels.gameScreen.display._context.canvas.width
   var overlayDisplay = new ROT.Display({
-    width: SCREENW*(CHARWIDTH/TEXTWIDTH)+MENUW,
+    width: SCREENW*CHARWIDTH/(TEXTWIDTH-TEXTSPACING)+MENUW,
     height: MENUH,
     fontSize: TEXTSIZE,
     fontFamily: TEXTFONT,
@@ -193,6 +194,9 @@ HTomb = (function(HTomb) {
     }
 
     this.render = function() {};
+  }
+  Panel.prototype.width = function() {
+    return this.display._context.canvas.width;
   }
   Panel.prototype.hide = function() {
     document.getElementById(this.element).style.display = "none";

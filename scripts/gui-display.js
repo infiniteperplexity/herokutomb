@@ -369,7 +369,7 @@ HTomb = (function(HTomb) {
     HTomb.Time.stopParticles();
     // we may not want to force the player to reset the GUI...but let's try it out
     for (var i=0; i<SCREENH+SCROLLH; i++) {
-      overlayDisplay.drawText(1,1+i,"%c{black}"+(UNIBLOCK.repeat(SCREENW*(CHARWIDTH/TEXTWIDTH)+MENUW-2)));
+      overlayDisplay.drawText(1,1+i,"%c{black}"+(UNIBLOCK.repeat(MENUW+SCREENW*CHARWIDTH/(TEXTWIDTH-TEXTSPACING))));
     }
     for (var j=0; j<arr.length; j++) {
       var x=0;
