@@ -146,7 +146,7 @@ HTomb = (function(HTomb) {
   Views.System.quit = function() {
     console.log("testing");
     if (confirm("Really quit?")) {
-      close();
+      Views.startup();
     }
   };
   GUI.Contexts.startup = GUI.Contexts.new({
