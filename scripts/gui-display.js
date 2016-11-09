@@ -178,13 +178,26 @@ HTomb = (function(HTomb) {
       scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Paused");
     }
   };
+  scroll.bufferMax = 100;
   scroll.buffer = [];
+  scroll.bufferIndex = 0;
   scroll.render = function() {
-    for (var s=0; s<this.buffer.length; s++) {
+    for (var s=0; s<SCROLLH; s++) {
       //black out the entire line with solid blocks
       scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
-      scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[s]);
+      if (s+this.bufferIndex >= this.buffer.length) {
+        return;
+      }
+      scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[s+this.bufferIndex]);
     }
+  };
+  scroll.scrollUp = function() {
+    this.bufferIndex = Math.max(0,this.bufferIndex-1);
+    this.render();
+  };
+  scroll.scrollDown = function() {
+    this.bufferIndex = Math.max(0,Math.min(this.bufferIndex+1,this.buffer.length-SCROLLH+2));
+    this.render();
   };
   menu.render = function() {
     for (var i=0; i<MENUH; i++) {
@@ -215,6 +228,9 @@ HTomb = (function(HTomb) {
   GUI.pushMessage = function(strng) {
     scroll.buffer.push(strng);
     if (scroll.buffer.length>=SCROLLH) {
+      scroll.bufferIndex = Math.max(0,scroll.buffer.length-SCROLLH+1);
+    }
+    if (scroll.buffer.length>scroll.bufferMax) {
       scroll.buffer.shift();
     }
     // Render the message immediatey if the scroll is visible
@@ -247,7 +263,8 @@ HTomb = (function(HTomb) {
     "J: Assign Job.",
     "G: Pick Up, D: Drop, I: Inventory.",
     "Space: Wait.",
-    "PageUp / PageDown to change speed.",
+    "+ / - to change speed.",
+    "PageUp/Down to scroll messages.",
     "Hover mouse to examine a square.",
     "Click to pause or unpause.",
     "Right click for detailed view.",

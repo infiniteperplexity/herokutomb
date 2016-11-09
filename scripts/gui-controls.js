@@ -31,6 +31,7 @@ HTomb = (function(HTomb) {
   var gameScreen = GUI.Panels.gameScreen;
   var overlay = GUI.Panels.overlay;
   var menu = GUI.Panels.menu;
+  var scroll = GUI.Panels.scroll;
 
   let Contexts = GUI.Contexts;
   let Commands = HTomb.Commands;
@@ -423,15 +424,17 @@ HTomb = (function(HTomb) {
     VK_BACK_QUOTE: function() {Views.summaryView();},
     VK_TILDE: function() {Views.summaryView();},
     VK_ESCAPE: function() {Views.systemView();},
-    VK_PAGE_UP: function() {
+    VK_HYPHEN_MINUS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
       HTomb.Time.startTime();
     },
-    VK_PAGE_DOWN: function() {
+    VK_EQUALS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
-    }
+    },
+    VK_PAGE_UP: function() {scroll.scrollUp();},
+    VK_PAGE_DOWN: function() {scroll.scrollDown();}
   });
 
   // Clicking outside the game screen does nothing
@@ -527,7 +530,18 @@ HTomb = (function(HTomb) {
       gameScreen.z = survey.saveZ;
       gameScreen.recenter();
       GUI.reset();
-    }
+    },
+    VK_HYPHEN_MINUS: function() {
+      HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
+      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.startTime();
+    },
+    VK_EQUALS: function() {
+      HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
+      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+    },
+    VK_PAGE_UP: scroll.scrollUp,
+    VK_PAGE_DOWN: scroll.scrollDown
   });
   survey.menuText = ["You are now in survey mode.","Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
   survey.clickTile = main.clickTile;
