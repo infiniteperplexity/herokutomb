@@ -48,7 +48,8 @@ HTomb = (function(HTomb) {
       "Welcome to HellaTomb!",
       "N) New game.",
       "R) Restore game.",
-      "Q) Quit."
+      "Q) Quit.",
+      "!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ]);
   }
   Views.systemView = function() {
@@ -60,7 +61,8 @@ HTomb = (function(HTomb) {
       "A) Save game as...",
       "R) Restore game.",
       "D) Delete current game('" + HTomb.Save.currentGame +"').",
-      "Q) Quit game."
+      "Q) Quit game.",
+      "!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ]);
   };
   Views.System = {};
@@ -112,6 +114,7 @@ HTomb = (function(HTomb) {
         setTimeout(HTomb.Save.saveGame, 500, entered);
         console.log("Probably got saved as " + entered);
       };
+      saves.push("!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
       GUI.Contexts.active = GUI.Contexts.new(controls);
       GUI.Panels.overlay.update(saves);
     });
@@ -139,6 +142,7 @@ HTomb = (function(HTomb) {
         saves[i] = alpha[i]+") " + saves[i];
       }
       saves.unshift("Choose a save file to restore:");
+      saves.push("!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
       GUI.Contexts.active = GUI.Contexts.new(controls);
       GUI.Panels.overlay.update(saves);
     });
