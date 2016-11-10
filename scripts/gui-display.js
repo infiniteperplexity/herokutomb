@@ -381,6 +381,11 @@ HTomb = (function(HTomb) {
     );
   };
 
+  //overlay.update = function(arr) {
+  //  menu.update(arr);
+  //  overlay.hide();
+  //};
+
   overlay.update = function(arr) {
     overlay.currentLines = arr;
     HTomb.Time.stopTime();
