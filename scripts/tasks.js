@@ -327,7 +327,7 @@ HTomb = (function(HTomb) {
       bg: "#440088"
     },
     makes: "Construction",
-    ingredients: {Rock: 1},
+    //ingredients: {Rock: 1},
     canDesignateTile: function(x,y,z) {
       //shouldn't be able to build surrounded by emptiness
       var t = HTomb.World.tiles[z][x][y];
