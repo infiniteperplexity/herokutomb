@@ -561,6 +561,7 @@ HTomb = (function(HTomb) {
   Views.Workshops.workshopDetails = function(w) {
     let txt = [
       "Up/Down to traverse queue, Left/Right to change repeat options.",
+      "\u21d2 indicates current selection.",
       "Hyphen/Underscore to lower count, equals/plus to raise count.",
       "a-z to insert good into queue.",
       "Backspace or Delete to cancel good or remove from queue.",
@@ -569,7 +570,7 @@ HTomb = (function(HTomb) {
     ];
     txt.push(" ");
     if (w.makes && w.makes.length>0) {
-      txt.push("Products:");
+      txt.push("Insert product into queue (below the \u21d2):");
       let alphabet = 'abcdefghijklmnopqrstuvwxyz';
       for (let i=0; i<w.makes.length; i++) {
         let t = HTomb.Things.templates[w.makes[i]];
@@ -584,11 +585,11 @@ HTomb = (function(HTomb) {
     }
     if (q.length>1 && workQueueCursor>-1) {
       let s = q[workQueueCursor+1];
-      s = "*" + s.substr(1);
+      s = "\u21d2" + s.substr(1);
       q[workQueueCursor+1] = s;
     } else {
       let s = q[0];
-      s = "*" + s.substr(1);
+      s = "\u21d2" + s.substr(1);
       q[0] = s;
     }
     txt = txt.concat(q);
