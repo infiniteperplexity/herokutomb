@@ -163,6 +163,8 @@ HTomb = (function(HTomb) {
     var y = Math.floor((move.clientY+YSKEW)/CHARHEIGHT-1);
       // If the hover is on the game screen, pass the X and Y tile coordinates
     var gameScreen = GUI.Panels.gameScreen;
+    GUI.Contexts.mouseX = x;
+    GUI.Contexts.mouseY = y;
     GUI.Contexts.active.mouseTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
   };
   // Bind a ROT.js keyboard constant to a function for a particular context
@@ -215,6 +217,8 @@ HTomb = (function(HTomb) {
 
   //******* Define the abstract control context *******
   GUI.Contexts = {};
+  GUI.Contexts.mouseX = 0;
+  GUI.Contexts.mouseY = 0;
   GUI.Contexts.locked = false;
 
   function Context(bindings) {

@@ -493,6 +493,7 @@ HTomb = (function(HTomb) {
       if (gameScreen.yoffset+dy < LEVELH-SCREENH && gameScreen.yoffset+dy >= 0) {
         gameScreen.yoffset+=dy;
       }
+      GUI.Contexts.active.mouseTile(GUI.Contexts.mouseX, GUI.Contexts.mouseY);
       GUI.render();
     };
     // Actually this returns a custom function for each type of movement

@@ -476,10 +476,14 @@ HTomb = (function(HTomb) {
           c.worker.task.unassign();
         }
       };
+      function myHover() {
+        menu.middle["%c{green}Remove all designations in this area."];
+      }
       HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
         context: this,
         assigner: assigner,
-        callback: deleteZones
+        callback: deleteZones,
+        hover: myHover
       });
     }
   });
@@ -493,10 +497,14 @@ HTomb = (function(HTomb) {
       bg: "#880088"
     },
     designate: function(assigner) {
+      function myHover() {
+        menu.middle = ["%c{green}Assign a minion to patrol this square."];
+      }
       HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
         assigner: assigner,
         context: this,
-        callback: this.placeZone
+        callback: this.placeZone,
+        hover: myHover
       });
     },
     ai: function() {
@@ -512,6 +520,17 @@ HTomb = (function(HTomb) {
       template: "HoardZone",
       name: "hoard",
       bg: "#666600"
+    },
+    designate: function(assigner) {
+      function myHover() {
+        menu.middle = ["%c{green}Have minions move items to this square."];
+      }
+      HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
+        assigner: assigner,
+        context: this,
+        callback: this.placeZone,
+        hover: myHover
+      });
     },
     canDesignateTile: function(x,y,z) {
       if (HTomb.World.tiles[z][x][y]===HTomb.Tiles.FloorTile) {
@@ -582,6 +601,17 @@ HTomb = (function(HTomb) {
       name: "forbidden",
       bg: "#880000"
     },
+    designate: function(assigner) {
+      function myHover() {
+        menu.middle = ["%c{green}Forbid minions from entering this square."];
+      }
+      HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
+        assigner: assigner,
+        context: this,
+        callback: this.placeZone,
+        hover: myHover
+      });
+    },
     // this task will never be assigned...
     tryAssign: function() {
       return false;
@@ -609,9 +639,9 @@ HTomb = (function(HTomb) {
     },
     // filter depending on whether we are removing features or covers
     designateSquares: function(squares, options) {
-      var anyf = false;
-      for (var j=0; j<squares.length; j++) {
-        var s = squares[j];
+      let anyf = false;
+      for (let j=0; j<squares.length; j++) {
+        let s = squares[j];
         if (HTomb.World.features[coord(s[0],s[1],s[2])]) {
           anyf = true;
         }
@@ -622,6 +652,40 @@ HTomb = (function(HTomb) {
         });
       }
       HTomb.Things.templates.Task.designateSquares.call(this, squares, options);
+    },
+    designate: function(assigner) {
+      function myHover(x, y, z, squares) {
+        if (squares===undefined) {
+          let feature = HTomb.World.features[coord(x,y,z)];
+          let cover = HTomb.World.covers[z][x][y];
+          if (feature) {
+            menu.middle = ["%c{green}Dismantle "+feature.describe()+"."];
+          } else if (cover!==HTomb.Covers.NoCover) {
+            menu.middle = ["%c{green}Remove "+cover.describe()+"."];
+          } else {
+            menu.middle = ["%c{orange}Nothing to remove here."];
+          }
+        } else {
+          let anyf = false;
+          for (let j=0; j<squares.length; j++) {
+            let s = squares[j];
+            if (HTomb.World.features[coord(s[0],s[1],s[2])]) {
+              anyf = true;
+            }
+          }
+          if (anyf===true) {
+            menu.middle = ["%c{green}Dismantle features in this area."];
+          } else {
+            menu.middle ["%c{green}Remove covers in this area."];
+          }
+        }
+      }
+      HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
+        assigner: assigner,
+        context: this,
+        callback: this.placeZone,
+        hover: myHover
+      });
     },
     work: function(x,y,z) {
       var f = HTomb.World.features[coord(x,y,z)];
@@ -673,10 +737,14 @@ HTomb = (function(HTomb) {
               }
             }
           }
+          function myHover(x,y,z) {
+            menu.middle = ["%c{green}Install " + feature.describe() + " here."];
+          }
           HTomb.GUI.selectSquare(assigner.z,that.designateSquare,{
             assigner: assigner,
             context: that,
-            callback: createZone
+            callback: createZone,
+            hover: myHover
           });
         };
       });
@@ -707,13 +775,17 @@ HTomb = (function(HTomb) {
     },
     makes: null,
     designate: function(assigner) {
+      function myHover() {
+        menu.middle = ["%c{green}Build a farm in this area."];
+      }
       HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
         context: this,
         assigner: assigner,
         callback: this.placeZone,
         outline: false,
         bg: this.zoneTemplate.bg,
-        reset: false
+        reset: false,
+        hover: myHover
       });
     },
     designateSquares: function(squares, options) {
