@@ -286,13 +286,13 @@ HTomb = (function(HTomb) {
         if (squares===undefined) {
           let tile = HTomb.World.tiles[z][x][y];
           if (tile===HTomb.Tiles.DownSlopeTile) {
-            menu.middle = ["%c{green}Digging here will excavate the slope below."];
+            menu.middle = ["%c{lime}Digging here will excavate the slope below."];
           } else if (tile===HTomb.Tiles.UpSlopeTile) {
-            menu.middle = ["%c{green}Digging here will level the slope."];
+            menu.middle = ["%c{lime}Digging here will level the slope."];
           } else if (tile===HTomb.Tiles.FloorTile) {
-            menu.middle = ["%c{green}Digging here will excavate a downward slope in the floor."];
+            menu.middle = ["%c{lime}Digging here will excavate a downward slope in the floor."];
           } else if (tile===HTomb.Tiles.WallTile) {
-            menu.middle = ["%c{green}Digging here will dig a roofed tunnel."];
+            menu.middle = ["%c{lime}Digging here will dig a roofed tunnel."];
           } else {
             menu.middle["%c{orange}Cannot dig here."];
           }
@@ -313,11 +313,11 @@ HTomb = (function(HTomb) {
           }
         }
         if (tallest===1) {
-          menu.middle = ["%c{green}Dig tunnels and level slopes in this area."];
+          menu.middle = ["%c{lime}Dig tunnels and level slopes in this area."];
         } else if (tallest===0) {
-          menu.middle = ["%c{green}Dig downward slopes in this area."];
+          menu.middle = ["%c{lime}Dig downward slopes in this area."];
         } else if (tallest===-1) {
-          menu.middle = ["%c{green}Level the downward slopes below this area."];
+          menu.middle = ["%c{lime}Level the downward slopes below this area."];
         } else {
           menu.middle = ["%c{orange}Can't dig in this area."];
         }
@@ -418,11 +418,11 @@ HTomb = (function(HTomb) {
         if (squares===undefined) {
           let tile = HTomb.World.tiles[z][x][y];
           if (tile===HTomb.Tiles.EmptyTile || tile===HTomb.Tiles.DownSlopeTile) {
-            menu.middle = ["%c{green}Building here will construct a new floor."];
+            menu.middle = ["%c{lime}Building here will construct a new floor."];
           } else if (tile===HTomb.Tiles.UpSlopeTile) {
-            menu.middle = ["%c{green}Building here will turn the slope into a wall."];
+            menu.middle = ["%c{lime}Building here will turn the slope into a wall."];
           } else if (tile===HTomb.Tiles.FloorTile) {
-            menu.middle = ["%c{green}Building here will raise the floor into a slope."];
+            menu.middle = ["%c{lime}Building here will raise the floor into a slope."];
           } else {
             menu.middle = ["%c{orange}Can't build on this tile."];
           }
@@ -441,11 +441,11 @@ HTomb = (function(HTomb) {
           }
         }
         if (lowest===-1) {
-          menu.middle = ["%c{green}Construct new floors in this area."];
+          menu.middle = ["%c{lime}Construct new floors in this area."];
         } else if (lowest===0) {
-          menu.middle = ["%c{green}Construct new slopes in this area."];
+          menu.middle = ["%c{lime}Construct new slopes in this area."];
         } else if (lowest===1){
-          menu.middle = ["%c{green}Construct new walls in this area."];
+          menu.middle = ["%c{lime}Construct new walls in this area."];
         } else {
           menu.middle = ["%c{orange}Can't build in this area."];
         }
@@ -477,7 +477,7 @@ HTomb = (function(HTomb) {
         }
       };
       function myHover() {
-        menu.middle["%c{green}Remove all designations in this area."];
+        HTomb.GUI.Panels.menu.middle["%c{lime}Remove all designations in this area."];
       }
       HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
         context: this,
@@ -498,7 +498,7 @@ HTomb = (function(HTomb) {
     },
     designate: function(assigner) {
       function myHover() {
-        menu.middle = ["%c{green}Assign a minion to patrol this square."];
+        HTomb.GUI.Panels.menu.middle = ["%c{lime}Assign a minion to patrol this square."];
       }
       HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
         assigner: assigner,
@@ -523,7 +523,7 @@ HTomb = (function(HTomb) {
     },
     designate: function(assigner) {
       function myHover() {
-        menu.middle = ["%c{green}Have minions move items to this square."];
+        HTomb.GUI.Panels.menu.middle = ["%c{lime}Have minions move items to this square."];
       }
       HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
         assigner: assigner,
@@ -603,7 +603,7 @@ HTomb = (function(HTomb) {
     },
     designate: function(assigner) {
       function myHover() {
-        menu.middle = ["%c{green}Forbid minions from entering this square."];
+        HTomb.GUI.Panels.menu.middle = ["%c{lime}Forbid minions from entering this square."];
       }
       HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
         assigner: assigner,
@@ -648,20 +648,21 @@ HTomb = (function(HTomb) {
       }
       if (anyf===true) {
         squares = squares.filter(function(e,i,a) {
-          return (HTomb.World.features[coord(e[0],e[1],e[2])]!==undefined);
+          return (HTomb.World.features[coord(e[0],e[1],e[2])]);
         });
       }
       HTomb.Things.templates.Task.designateSquares.call(this, squares, options);
     },
     designate: function(assigner) {
+      let menu = HTomb.GUI.Panels.menu;
       function myHover(x, y, z, squares) {
         if (squares===undefined) {
           let feature = HTomb.World.features[coord(x,y,z)];
           let cover = HTomb.World.covers[z][x][y];
           if (feature) {
-            menu.middle = ["%c{green}Dismantle "+feature.describe()+"."];
+            menu.middle = ["%c{lime}Dismantle "+feature.describe()+"."];
           } else if (cover!==HTomb.Covers.NoCover) {
-            menu.middle = ["%c{green}Remove "+cover.describe()+"."];
+            menu.middle = ["%c{lime}Remove "+cover.describe()+"."];
           } else {
             menu.middle = ["%c{orange}Nothing to remove here."];
           }
@@ -669,21 +670,22 @@ HTomb = (function(HTomb) {
           let anyf = false;
           for (let j=0; j<squares.length; j++) {
             let s = squares[j];
-            if (HTomb.World.features[coord(s[0],s[1],s[2])]) {
+            if (HTomb.World.features[coord(s[0],s[1],s[2])]!==undefined) {
               anyf = true;
             }
           }
           if (anyf===true) {
-            menu.middle = ["%c{green}Dismantle features in this area."];
+            menu.middle = ["%c{lime}Dismantle features in this area."];
           } else {
-            menu.middle ["%c{green}Remove covers in this area."];
+            menu.middle = ["%c{lime}Remove covers in this area."];
           }
         }
       }
-      HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
-        assigner: assigner,
+      HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
         context: this,
+        assigner: assigner,
         callback: this.placeZone,
+        bg: this.zoneTemplate.bg,
         hover: myHover
       });
     },
@@ -738,7 +740,7 @@ HTomb = (function(HTomb) {
             }
           }
           function myHover(x,y,z) {
-            menu.middle = ["%c{green}Install " + feature.describe() + " here."];
+            HTomb.GUI.Panels.menu.middle = ["%c{lime}Install " + feature.describe() + " here."];
           }
           HTomb.GUI.selectSquare(assigner.z,that.designateSquare,{
             assigner: assigner,
@@ -748,6 +750,7 @@ HTomb = (function(HTomb) {
           });
         };
       });
+      HTomb.GUI.Panels.menu.middle = ["%c{orange}Choose a feature before placing it."];
     },
     work: function(x,y,z) {
       var f = HTomb.World.features[coord(x,y,z)];
@@ -775,8 +778,13 @@ HTomb = (function(HTomb) {
     },
     makes: null,
     designate: function(assigner) {
+      let seeds = HTomb.Utils.findItems(function(v,k,i) {return (v.parent==="Seed" && v.item.owned!==false);});
       function myHover() {
-        menu.middle = ["%c{green}Build a farm in this area."];
+        if (seeds.length===0) {
+          HTomb.GUI.Panels.menu.middle = ["%c{orange}No seeds availabe."];
+          return;
+        }
+        HTomb.GUI.Panels.menu.middle = ["%c{lime}Build a farm in this area."];
       }
       HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
         context: this,
@@ -815,6 +823,9 @@ HTomb = (function(HTomb) {
             HTomb.GUI.reset();
           };
         });
+        HTomb.GUI.Contexts.active.mouseTile = function() {};
+        HTomb.GUI.Panels.menu.middle = ["%c{lime}Choose a crop."];
+        HTomb.GUI.Panels.menu.refresh();
       }
     },
     tryAssign: function(cr) {

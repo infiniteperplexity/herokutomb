@@ -89,7 +89,17 @@ HTomb = (function(HTomb) {
           HTomb.GUI.pushMessage("Can't cast the spell there.");
         }
       }
-      HTomb.GUI.selectSquare(c.z,raiseZombie,{message:"Select a tile with a tombstone or corpse."});
+      function myHover(x, y, z) {
+        if (that.canDesignateTile(x,y,z)) {
+          HTomb.GUI.Panels.menu.middle = ["%c{lime}Raise a zombie here."];
+        } else {
+          HTomb.GUI.Panels.menu.middle = ["%c{orange}No corpse here to raise."];
+        }
+      }
+      HTomb.GUI.selectSquare(c.z,raiseZombie,{
+        message:"Select a tile with a tombstone or corpse.",
+        hover: myHover
+      });
     },
     canDesignateTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
