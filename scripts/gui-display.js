@@ -229,8 +229,9 @@ HTomb = (function(HTomb) {
     let br=null;
     //%{\w+}
     while(c<menuText.length) {
-      let pat = /%{\w+}/;
+      let pat = /%c{\w+}/;
       let match = pat.exec(menuText[c]);
+
       let txt = menuText[c];
       if (match!==null) {
         txt = menuText[c].replace(match[0],"");
