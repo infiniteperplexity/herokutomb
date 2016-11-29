@@ -286,11 +286,11 @@ HTomb = (function(HTomb) {
         if (squares===undefined) {
           let tile = HTomb.World.tiles[z][x][y];
           if (tile===HTomb.Tiles.DownSlopeTile) {
-            menu.middle = ["%c{lime}Digging here will excavate the slope below."];
+            menu.middle = ["%c{lime}Digging here will excavate the slope on the level below."];
           } else if (tile===HTomb.Tiles.UpSlopeTile) {
-            menu.middle = ["%c{lime}Digging here will level the slope."];
+            menu.middle = ["%c{lime}Digging here will remove the slope."];
           } else if (tile===HTomb.Tiles.FloorTile) {
-            menu.middle = ["%c{lime}Digging here will excavate a downward slope in the floor."];
+            menu.middle = ["%c{lime}Digging here will excavate a slope to a lower level."];
           } else if (tile===HTomb.Tiles.WallTile) {
             menu.middle = ["%c{lime}Digging here will dig a roofed tunnel."];
           } else {
