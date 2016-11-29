@@ -29,13 +29,26 @@ HTomb = (function(HTomb) {
   // set up GUI and display
   var GUI = HTomb.GUI;
   var gameScreen = GUI.Panels.gameScreen;
+  var overlay = GUI.Panels.overlay;
   var menu = GUI.Panels.menu;
+  var scroll = GUI.Panels.scroll;
 
   let Contexts = GUI.Contexts;
   let Commands = HTomb.Commands;
   let Views = GUI.Views = {};
   let Main = GUI.Views.Main = {};
-
+  Main.reset = function() {
+    if (overlay.active) {
+      overlay.hide();
+    }
+    GUI.Contexts.active = GUI.Contexts.main;
+    // This shoudl probably be handled a bit differently?
+    menu.middle = menu.defaultMiddle;
+    menu.bottom = menu.defaultBottom;
+    menu.refresh(); // menu.refresh();
+    gameScreen.recenter(); // gameScreen.recenter();
+    GUI.render(); // Actions.render();
+  };
   // **** Set default controls
   // By default, clicking resets the GUI
   Contexts.default.clickAt = function() {
@@ -57,21 +70,24 @@ HTomb = (function(HTomb) {
     oldCursor = null;
   };
 
-  Contexts.default.mouseTile = function(x,y) {
+  function mouseTile(x,y) {
     if (oldCursor!==null) {
       gameScreen.refreshTile(oldCursor[0],oldCursor[1]);
     }
     gameScreen.highlightTile(x,y,"#0000FF");
     oldCursor = [x,y];
-    var z = gameScreen.z;
-    var txt = examineSquare(x,y,z); // Not sure yet what to do here
-    var myText = this.menuText || menu.defaultText; // Not sure yet what to do here
-    menu.update(myText.concat(" ").concat(txt)); // Not sure yet what to do here
+  }
+
+  Contexts.default.mouseTile = function(x,y) {
+    mouseTile(x,y);
+    menu.bottom = examineSquare(x,y,gameScreen.z);
+    menu.refresh();
   };
 
   // **** Selection and targeting methods
   GUI.selectSquareZone = function(z, callb, options) {
     options = options || {};
+    let hover = options.hover || function(x, y, z, sq) {};
     GUI.pushMessage("Select the first corner.");
     var context = Object.create(survey);
     context.menuText = ["Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
@@ -80,10 +96,15 @@ HTomb = (function(HTomb) {
       context.menuText.unshift(options.message);
     }
     Contexts.active = context;
-    menu.refresh();
     survey.saveX = gameScreen.xoffset;
     survey.saveY = gameScreen.yoffset;
     survey.saveZ = gameScreen.z;
+    context.mouseTile = function(x,y) {
+      mouseTile(x,y)
+      hover(x, y, gameScreen.z);
+      menu.bottom = examineSquare(x,y,gameScreen.z);
+      menu.refresh();
+    };
     context.clickTile = function (x,y) {
       GUI.pushMessage("Select the second corner.");
       var context2 = Contexts.new({VK_ESCAPE: GUI.reset});
@@ -120,9 +141,9 @@ HTomb = (function(HTomb) {
           var coord = squares[k];
           gameScreen.highlightTile(coord[0],coord[1],bg);
         }
-        var txt = examineSquare(x1,y1,gameScreen.z);
-        var myText = Contexts.active.menuText;
-        menu.update(myText.concat(" ").concat(txt));
+        hover(x1, y1, gameScreen.z, squares);
+        menu.bottom = examineSquare(x1,y1,gameScreen.z);
+        menu.refresh();
       };
     };
     var secondSquare = function(x0,y0) {
@@ -160,6 +181,7 @@ HTomb = (function(HTomb) {
 
   GUI.selectBox = function(width, height, z, callb, options) {
     options = options || {};
+    let hover = options.hover || function(sq) {};
     var gameScreen = GUI.Panels.gameScreen;
     GUI.pushMessage("Select a square.");
     var context = Object.create(survey);
@@ -175,11 +197,12 @@ HTomb = (function(HTomb) {
       }
       for (var k =0; k<squares.length; k++) {
         var coord = squares[k];
-      gameScreen.highlightTile(coord[0],coord[1],bg);
+        gameScreen.highlightTile(coord[0],coord[1],bg);
       }
-      var txt = examineSquare(x0,y0,gameScreen.z);
-      var myText = Contexts.active.menuText;
-      menu.update(myText.concat(" ").concat(txt));
+      // maybe give the coordinates here?
+      menu.bottom = [];
+      hover(squares);
+      menu.refresh();
     };
     Contexts.active = context;
     if (options.message) {
@@ -225,6 +248,7 @@ HTomb = (function(HTomb) {
   // Select a single square with the mouse
   GUI.selectSquare = function(z, callb, options) {
     options = options || {};
+    let hover = options.hover || function(x, y, z) {};
     GUI.pushMessage("Select a square.");
     var context = Object.create(survey);
     context.menuText = ["Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
@@ -233,7 +257,6 @@ HTomb = (function(HTomb) {
       context.menuText.unshift("");
       context.menuText.unshift(options.message);
     }
-    menu.update();
     survey.saveX = gameScreen.xoffset;
     survey.saveY = gameScreen.yoffset;
     survey.saveZ = gameScreen.z;
@@ -241,6 +264,12 @@ HTomb = (function(HTomb) {
       callb(x,y,gameScreen.z,options);
       GUI.reset();
     };
+    context.mouseTile = function(x,y) {
+      mouseTile(x,y);
+      hover(x, y, gameScreen.z);
+      menu.bottom = examineSquare(x,y,gameScreen.z);
+      menu.refresh();
+    }
     if (options.line!==undefined) {
       var x0 = options.line.x || HTomb.Player.x;
       var y0 = options.line.y || HTomb.Player.y;
@@ -252,9 +281,6 @@ HTomb = (function(HTomb) {
           var sq = line[i];
           gameScreen.highlightSquare(sq[0],sq[1],bg);
         }
-        var txt = examineSquare(x1,y1,gameScreen.z);
-        var myText = Contexts.active.menuText;
-        menu.update(myText.concat(" ").concat(txt));
       };
     }
   };
@@ -403,6 +429,9 @@ HTomb = (function(HTomb) {
     VK_I: Commands.inventory,
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
+    VK_SLASH: function() {
+      HTomb.Debug.nextTutorial();
+    },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: Commands.wait,
     VK_ENTER: HTomb.Time.toggleTime,
@@ -410,15 +439,17 @@ HTomb = (function(HTomb) {
     VK_BACK_QUOTE: function() {Views.summaryView();},
     VK_TILDE: function() {Views.summaryView();},
     VK_ESCAPE: function() {Views.systemView();},
-    VK_PAGE_UP: function() {
+    VK_HYPHEN_MINUS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
       HTomb.Time.startTime();
     },
-    VK_PAGE_DOWN: function() {
+    VK_EQUALS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
-    }
+    },
+    VK_PAGE_UP: function() {scroll.scrollUp();},
+    VK_PAGE_DOWN: function() {scroll.scrollDown();}
   });
 
   // Clicking outside the game screen does nothing
@@ -514,7 +545,18 @@ HTomb = (function(HTomb) {
       gameScreen.z = survey.saveZ;
       gameScreen.recenter();
       GUI.reset();
-    }
+    },
+    VK_HYPHEN_MINUS: function() {
+      HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
+      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.startTime();
+    },
+    VK_EQUALS: function() {
+      HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
+      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+    },
+    VK_PAGE_UP: function() {scroll.scrollUp();},
+    VK_PAGE_DOWN: function() {scroll.scrollDown();}
   });
   survey.menuText = ["You are now in survey mode.","Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
   survey.clickTile = main.clickTile;

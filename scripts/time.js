@@ -17,6 +17,9 @@ HTomb = (function(HTomb) {
     HTomb.Time.stopTime();
     timeLocked = true;
   };
+  HTomb.Time.timeIsLocked = function() {
+    return timeLocked;
+  }
   HTomb.Time.unlockTime = function() {
     console.log("time unlocked");
     timeLocked = false;
@@ -31,7 +34,7 @@ HTomb = (function(HTomb) {
   HTomb.Time.stopTime = function() {
     clearInterval(timePassing);
     timePassing = null;
-    HTomb.GUI.Panels.status.render();
+    //HTomb.GUI.Panels.status.render();
   };
   HTomb.Time.toggleTime = function() {
     if (timePassing===null) {

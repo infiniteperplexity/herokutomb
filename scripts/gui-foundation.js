@@ -49,8 +49,9 @@ HTomb = (function(HTomb) {
     fontFamily: TEXTFONT,
     spacing: TEXTSPACING
   });
+  //HTomb.GUI.Panels.gameScreen.display._context.canvas.width
   var overlayDisplay = new ROT.Display({
-    width: SCREENW*(CHARWIDTH/TEXTWIDTH)+MENUW,
+    width: SCREENW*CHARWIDTH/(TEXTWIDTH-TEXTSPACING)+MENUW,
     height: MENUH,
     fontSize: TEXTSIZE,
     fontFamily: TEXTFONT,
@@ -84,6 +85,9 @@ HTomb = (function(HTomb) {
   var keydown = function(key) {
     key.preventDefault();
     HTomb.Time.stopTime();
+    if (GUI.Contexts.locked===true) {
+      return;
+    }
     // Pass the keystroke to the current control context
     var diagonal = null;
     if (key.shiftKey && [ROT.VK_UP,ROT.VK_DOWN,ROT.VK_LEFT,ROT.VK_RIGHT].indexOf(key.keyCode)>-1) {
@@ -137,6 +141,9 @@ HTomb = (function(HTomb) {
   // this may change a bit if I add click functionality to other canvases
   var mousedown = function(click) {
     click.preventDefault();
+    if (GUI.Contexts.locked===true) {
+      return;
+    }
     // Convert X and Y from pixels to characters
     var x = Math.floor((click.clientX+XSKEW)/CHARWIDTH-1);
     var y = Math.floor((click.clientY+YSKEW)/CHARHEIGHT-1);
@@ -148,6 +155,9 @@ HTomb = (function(HTomb) {
     }
   };
   var mousemove = function(move) {
+    if (GUI.Contexts.locked===true) {
+      return;
+    }
     // Convert X and Y from pixels to characters
     var x = Math.floor((move.clientX+XSKEW)/CHARWIDTH-1);
     var y = Math.floor((move.clientY+YSKEW)/CHARHEIGHT-1);
@@ -168,7 +178,7 @@ HTomb = (function(HTomb) {
   menuDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
   scrollDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
   ///!!!! Maybe get rid of the next line....
-  overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.reset();});
+  overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickAt();});
 
   //************* Define the basic panels and how they access the DOM *********;
   GUI.Panels = {};
@@ -184,6 +194,9 @@ HTomb = (function(HTomb) {
     }
 
     this.render = function() {};
+  }
+  Panel.prototype.width = function() {
+    return this.display._context.canvas.width;
   }
   Panel.prototype.hide = function() {
     document.getElementById(this.element).style.display = "none";
@@ -202,6 +215,7 @@ HTomb = (function(HTomb) {
 
   //******* Define the abstract control context *******
   GUI.Contexts = {};
+  GUI.Contexts.locked = false;
 
   function Context(bindings) {
     // Pass a map of keystroke / function bindings
@@ -213,6 +227,9 @@ HTomb = (function(HTomb) {
         bindKey(this,b,bindings[b]);
       }
     }
+    this.clickAt = HTomb.GUI.reset;
+    this.rightClickTile = HTomb.GUI.reset;
+    this.clickTile = HTomb.GUI.reset;
   }
   Context.prototype.bindKey = function(k, f) {
     bindKey(this,k,f);
@@ -224,6 +241,7 @@ HTomb = (function(HTomb) {
       this.boundKeys[key.keyCode]();
     }
   };
+  // I don't think this line works...
   GUI.Contexts.default = Context.prototype;
   GUI.Contexts.new = function(args) {
     return new Context(args);

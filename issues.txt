@@ -1,0 +1,16 @@
+11/23/16
+-- smaller, newer issues
+- hovering while assigning tasks should tell what the task will do on that square
+- lighting doesn't update properly after digging, until you place a light
+- squares with the player or friendly monsters should always appear "lit"
+- list requirements for making crafts
+- call "craft" something other than "craft"
+
+-- big issues
+- consider better keyboard shortcuts
+- try to put more stuff on menu instead of overlay
+
+--ideas
+- add ravens, which are diurnal and feed on your zombies
+- make bats nocturnal...where do they go during the day?
+- add caves

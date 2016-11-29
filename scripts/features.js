@@ -20,10 +20,7 @@ HTomb = (function(HTomb) {
       var y = this.y;
       var z = this.z;
       this.destroy();
-      var t = HTomb.World.covers[coord(x,y,z)];
-      if (t) {
-        delete HTomb.World.covers[coord(x,y,z)];
-      }
+      HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
       var cr = HTomb.World.creatures[coord(x,y,z-1)];
       if (cr) {
         HTomb.GUI.sensoryEvent(cr.describe() + " bursts forth from the ground!",x,y,z);
@@ -199,9 +196,7 @@ HTomb = (function(HTomb) {
           items[i].item.owned = true;
         }
       }
-      if(HTomb.World.covers[coord(x,y,z)]) {
-        delete HTomb.World.covers[coord(x,y,z)];
-      }
+      HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
       if (Math.random()<0.25) {
         var rock = HTomb.Things.Rock();
         rock.item.n = 1;
@@ -233,10 +228,7 @@ HTomb = (function(HTomb) {
       var y = this.y;
       var z = this.z;
       var t = tiles[z][x][y];
-      var cover = HTomb.World.covers[coord(x,y,z)];
-      if (cover) {
-        delete HTomb.World.covers[coord(x,y,z)];
-      }
+      HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
       // If it's a floor, build a slope
       if (t===FloorTile) {
         tiles[z][x][y] = UpSlopeTile;
@@ -311,10 +303,10 @@ HTomb = (function(HTomb) {
       return bg;
     },
     flood: function(x,y,z) {
-      var t = HTomb.World.covers[coord(x,y,z-1)];
+      var t = HTomb.World.covers[z-1][x][y];
       var water;
       if (HTomb.World.tiles[z-1][x][y].solid!==true && t.liquid===undefined) {
-        HTomb.World.covers[coord(x,y,z)] = this;
+        HTomb.World.covers[z][x][y] = this;
         this.flood(x,y,z);
         // if we flood below, don't flood to the sides...should this happen each turn?
         return;
@@ -323,14 +315,19 @@ HTomb = (function(HTomb) {
       for (var i=0; i<neighbors.length; i++) {
         x = neighbors[i][0];
         y = neighbors[i][1];
-        t = HTomb.World.covers[coord(x,y,z)];
-        if (HTomb.World.tiles[z][x][y].solid===true || (t && t.liquid)) {
+        t = HTomb.World.covers[z][x][y];
+        if (HTomb.World.tiles[z][x][y].solid===true || t.liquid) {
           continue;
         }
-        HTomb.World.covers = this;
+        HTomb.World.covers[z][x][y] = this;
         this.flood(x,y,z);
       }
     }
+  });
+
+  HTomb.Types.defineCover({
+    template: "NoCover",
+    name: "none"
   });
 
   HTomb.Types.defineCover({

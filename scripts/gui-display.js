@@ -178,16 +178,103 @@ HTomb = (function(HTomb) {
       scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Paused");
     }
   };
+  scroll.bufferMax = 100;
   scroll.buffer = [];
+  scroll.bufferIndex = 0;
   scroll.render = function() {
-    for (var s=0; s<this.buffer.length; s++) {
+    for (var s=0; s<SCROLLH; s++) {
       //black out the entire line with solid blocks
-      scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCREENW+MENUW-2)));
-      scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[s]);
+      scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
+      if (s+this.bufferIndex >= this.buffer.length) {
+        return;
+      }
+      scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[s+this.bufferIndex]);
     }
   };
+  scroll.scrollUp = function() {
+    this.bufferIndex = Math.max(0,this.bufferIndex-1);
+    this.render();
+  };
+  scroll.scrollDown = function() {
+    this.bufferIndex = Math.max(0,Math.min(this.bufferIndex+1,this.buffer.length-SCROLLH+2));
+    this.render();
+  };
+
   menu.render = function() {
-    for (var i=0; i<SCREENH+SCROLLH; i++) {
+    // compose menu text with proper spacing
+    let menuTop = menu.top;
+    if (!menuTop || menuTop.length===0) {
+      menuTop = GUI.Contexts.active.menuText;
+    }
+    if (!menuTop || menuTop.length===0) {
+      menuTop = menu.defaultTop;
+    }
+    let menuMiddle = menu.middle;
+    if (!menuMiddle|| menuMiddle.length===0) {
+      menuMiddle = menu.defaultMiddle;
+    }
+    let menuBottom = menu.bottom;
+    if (!menuBottom || menuBottom.length===0) {
+      menuBottom = menu.defaultBottom;
+    }
+    let menuText = menuTop;
+    if (menuMiddle.length>0) {
+      menuText = Array.concat(menuText,[" "], menuMiddle);
+    }
+    if (menuBottom.length>0) {
+      menuText = Array.concat(menuText,[" "], menuBottom);
+    }
+    // handle line breaks
+    let c=0;
+    let br=null;
+    //%{\w+}
+    while(c<menuText.length) {
+      let pat = /%{\w+}/;
+      let match = pat.exec(menuText[c]);
+      let txt = menuText[c];
+      if (match!==null) {
+        txt = menuText[c].replace(match[0],"");
+      }
+      if (txt.length<MENUW-2) {
+        c++;
+        continue;
+      }
+      for (var j=0; j<txt.length; j++) {
+        if (txt[j]===" ") {
+          br = j;
+        }
+        if (j>=MENUW-2) {
+          var one = txt.substring(0,br);
+          var two = txt.substring(br+1);
+          if (match!==null) {
+            one = match[0]+one;
+            two = match[0]+two;
+          }
+          menuText[c] = one;
+          menuText.splice(c+1,0,two);
+          break;
+        }
+      }
+      c++;
+      br = null;
+    }
+    for (let i=0; i<MENUH; i++) {
+      menuDisplay.drawText(this.x0, this.y0+i, "%c{black}"+(UNIBLOCK.repeat(MENUW-2)));
+      if (menuText[i]) {
+        var j = 0;
+        if (menuText[i].charAt(0)===" ") {
+          for (j=0; j<menuText[i].length; j++) {
+            if (menuText[i].charAt(j)!==" ") {
+              break;
+            }
+          }
+        }
+        menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
+      }
+    }
+  };
+  /*menu.render = function() {
+    for (var i=0; i<MENUH; i++) {
       menuDisplay.drawText(this.x0, this.y0+i, "%c{black}"+(UNIBLOCK.repeat(MENUW-2)));
       if (menu.text[i]) {
         var j = 0;
@@ -201,17 +288,10 @@ HTomb = (function(HTomb) {
         menuDisplay.drawText(this.x0+j, this.y0+i, menu.text[i]);
       }
     }
-  };
+  };*/
 
   GUI.reset = function() {
-    if (overlay.active) {
-      overlay.hide();
-    }
-    GUI.Contexts.active = GUI.Contexts.main;
-    // This shoudl probably be handled a bit differently?
-    menu.refresh(); // menu.refresh();
-    gameScreen.recenter(); // gameScreen.recenter();
-    GUI.render(); // Actions.render();
+    GUI.Views.parentView();
   };
   // This should probably be an Event, not a GUI method
   GUI.sensoryEvent = function(strng,x,y,z) {
@@ -222,6 +302,9 @@ HTomb = (function(HTomb) {
   GUI.pushMessage = function(strng) {
     scroll.buffer.push(strng);
     if (scroll.buffer.length>=SCROLLH) {
+      scroll.bufferIndex = Math.max(0,scroll.buffer.length-SCROLLH+1);
+    }
+    if (scroll.buffer.length>scroll.bufferMax) {
       scroll.buffer.shift();
     }
     // Render the message immediatey if the scroll is visible
@@ -246,27 +329,44 @@ HTomb = (function(HTomb) {
   //******end defaults
 
   // ***** Basic right-hand menu stuff *****
-  menu.defaultText = [
+  menu.defaultTop = [
+    "? or /: Show tutorial tip.",
+    "Movement: NumPad / Arrows.",
+    "(Shift+Arrows for diagonal.)",
+    ", or . to go up or down.",
+    "Z: Cast a spell.",
+    "J: Assign Job.",
+    "G: Pick Up, D: Drop, I: Inventory.",
+    "Space: Wait.",
+    "+ / - to change speed.",
+    "PageUp/Down to scroll messages.",
+    "Hover mouse to examine a square.",
+    "Click to pause or unpause.",
+    "Right click for detailed view.",
+    "Tab: Survey mode.",
+    "~: Summary view.",
+    "Esc: System view."
+  ];
+  menu.defaultMiddle = [];
+  menu.defaultBottom = [];
+  /*menu.defaultText = [
     "Movement: NumPad / Arrows.",
     "(Shift+Arrows for diagonal.)",
     "J: Assign Job, Z: Cast Spell.",
     "G: Pick Up, D: Drop, I: Inventory.",
+    "T: Toggle tutorial",
+    "? or /: Show tutorial alert.",
     "Space: Wait, Tab: Survey Mode.",
     "PageUp / PageDown to change speed.",
     "Hover mouse to examine a square.",
     "Click to pause or unpause.",
     "Right click for detailed view.",
     "Escape for summary view."
-  ];
+  ];*/
   // This function will correctly break text into lines
   menu.update = function(arr) {
     if (arr===undefined) {
-      if (HTomb.Debug.tutorial.active!==true) {
-        arr = menu.defaultText;
-      } else {
-        let tutorialText = menu.defaultText.concat([" ","TUTORIAL:",HTomb.Debug.tutorial.getText()]);
-        arr = tutorialText;
-      }
+      arr = menu.defaultText;
     }
     var i=0;
     var br=null;
@@ -294,7 +394,8 @@ HTomb = (function(HTomb) {
     menu.render();
   };
   menu.refresh = function() {
-    menu.update(GUI.Contexts.active.menuText || undefined);
+    menu.top = GUI.Contexts.active.menuText || menu.defaulTop;
+    menu.render();
   };
 
 
@@ -357,13 +458,18 @@ HTomb = (function(HTomb) {
     );
   };
 
+  //overlay.update = function(arr) {
+  //  menu.update(arr);
+  //  overlay.hide();
+  //};
+
   overlay.update = function(arr) {
     overlay.currentLines = arr;
     HTomb.Time.stopTime();
     HTomb.Time.stopParticles();
     // we may not want to force the player to reset the GUI...but let's try it out
     for (var i=0; i<SCREENH+SCROLLH; i++) {
-      overlayDisplay.drawText(1,1+i,"%c{black}"+(UNIBLOCK.repeat(SCREENW*(CHARWIDTH/TEXTWIDTH)+MENUW-2)));
+      overlayDisplay.drawText(1,1+i,"%c{black}"+(UNIBLOCK.repeat(MENUW+SCREENW*CHARWIDTH/(TEXTWIDTH-TEXTSPACING))));
     }
     for (var j=0; j<arr.length; j++) {
       var x=0;

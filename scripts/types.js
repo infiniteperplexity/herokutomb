@@ -49,8 +49,12 @@ HTomb = (function(HTomb) {
         return HTomb.Types.define(opts);
       };
       // Create a parsing function for the type
-      HTomb.Types["parse" + args.template] = function(value) {
-        return HTomb.Types.templates[args.template].types[value];
+      HTomb.Types["parse" + args.template] = function(key,value) {
+        if (typeof(value)==="number") {
+          return HTomb.Types.templates[args.template].types[value];
+        } else {
+          return value;
+        }
       }
   	} else {
       // define a concrete type

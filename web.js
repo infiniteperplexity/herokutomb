@@ -4,6 +4,9 @@ var port = process.env.PORT || 5000;
 var express = require('express');
 var app = express();
 var mysql = require('mysql');
+var cookieParser = require('cookie-parser');
+var uuid = require('uuid');
+
 var dbinfo = {
   host: 'us-cdbr-iron-east-04.cleardb.net',
   user: 'bc8309dedbcac6',
@@ -30,47 +33,83 @@ function handleDisconnect() {
 }
 handleDisconnect();
 
+function collectAfter() {
+  setTimeout(function() {global.gc();}, 2000);
+}
+function ram(str) {
+  var mb = parseInt(process.memoryUsage().heapUsed/(1024*1024));
+  if (str===undefined) {
+    console.log("Memory usage is " + mb + " megabytes.");
+  } else {
+    console.log("Memory usage at " + str + " is " + mb + " megabytes.");
+  }
+}
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var path = "C:/Users/m543015/Desktop/GitHub/hellatomb";
 //app.use(express.static('public'));
 app.use(bodyParser.json({limit: '100mb'}));
+app.use(cookieParser());
 //app.use(bodyPArser.urlencoded({limit: '50mb', extended: true}));
 
 function serveFile(req, res) {
+  res.set("Connection", "close");
   console.log("Received GET request: " + req.url);
   res.sendFile(__dirname + req.url);
+  ram("after serving file");
 }
 app.get('/', function (req, res) {
+  res.set("Connection", "close");
   console.log("Received GET request: " + req.url);
   res.sendFile(__dirname +"/index.html");
 });
 app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
-app.get('/*.json', function(req, res) {
+app.get('/cookie', function(req, res) {
+  res.cookie("herukotomb_owner", uuid.v4()).send("Cookie is set");
+});
+
+app.get('/saves/*', function(req, res) {
+  var owner = req.cookies.herokutomb_owner;
+  res.set("Connection", "close");
+  var urlfrags = req.url.split("/");
+  global.gc();
+  ram("start of save file GET");
   console.log("Received GET request: " + req.url);
   connection.ping();
   //global.gc();
-  connection.query("SELECT * FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows, fields) {
+  connection.query("SELECT * FROM saves WHERE filename = ? AND segment = ?", [urlfrags[3], urlfrags[2]], function(err, rows, fields) {
+  //connection.query("SELECT * FROM saves WHERE owner = ? AND filename = ? AND segment = ?", [owner, urlfrags[3], urlfrags[2]], function(err, rows, fields) {
+    ram("start of save file query");
+    //big jump in memory usage here...
     if (err) {
       return console.log(err);
     }
     if (rows.length===0) {
-      throw new Error();
-      return;
+      res.status(404).send();
     }
-    //global.gc();
     res.send(rows[0].jsondata);
+    ram("after sending save file");
+    collectAfter();
   });
 });
 
-app.get('/saves/', function(req, res) {
+app.get('/saves', function(req, res) {
+  //sweepdb();
+  var owner = req.cookies.herokutomb_owner;
+  res.set("Connection", "close");
+  global.gc();
   console.log("Received GET request: " + req.url);
+  ram("start of directory GET");
   connection.ping();
   //global.gc();
-  connection.query("SELECT filename FROM saves", function(err, rows, fields) {
+  connection.query("SELECT DISTINCT filename FROM saves", function(err, rows, fields) {
+  //connection.query("SELECT DISTINCT filename FROM saves WHERE owner = ?", [owner], function(err, rows, fields) {
+    ram("start of directory query");
     if (err) {
-      return console.log(err);
+      console.log(err);
+      res.status(404).send();
+      return;
     }
     rows = rows.map(function(e,i,a) {return e.filename;});
     // clean the array
@@ -82,55 +121,112 @@ app.get('/saves/', function(req, res) {
     }
     if (rows.length===0) {
       res.send(" ");
+      collectAfter();
     } else {
       //global.gc();
       res.send(JSON.stringify(rows));
+      ram("after sending directory");
+      collectAfter();
     }
   });
 });
-
-app.post('/*.json', function (req, res) {
+app.get('/delete/*', function(req, res) {
+  var owner = req.cookies.herokutomb_owner;
+  res.set("Connection", "close");
+  var urlfrags = req.url.split("/");
+  global.gc();
+  ram("start of DELETE");
+  connection.ping();
+  console.log("Received GET request: " + req.url);
+  connection.query("DELETE FROM saves WHERE filename = ?",[urlfrags[2]], function(err) {
+  //connection.query("DELETE FROM saves WHERE owner = ? AND filename = ?",[owner, urlfrags[3]], function(err) {
+    if (err) {
+      console.log("error during row deletion for " + req.url);
+      console.log(err);
+      res.status(404).send();
+      return;
+    }
+    res.send();
+  });
+});
+app.post('/saves/*', function (req, res) {
+  var owner = req.cookies.herokutomb_owner;
+  res.set("Connection", "close");
+  var urlfrags = req.url.split("/");
+  global.gc();
+  ram("start of POST");
   connection.ping();
   console.log("Received POST request: " + req.url);
-  console.log("Received list of " + req.body.things.length + " things.");
-  connection.query("SELECT filename FROM saves WHERE filename = ?", [req.url.substr(1)], function(err, rows) {
-    // for now, do not check for errors
-    console.log("about to ping connection");
-    console.log(connection.status);
-    //connnection.ping();
-    console.log("just pinged connection");
-    var stringified = JSON.stringify(req.body);
-    console.log("just stringified body");
-    //connection.ping();
-    //global.gc();
-    //connection.ping();
-    console.log("about to load rows");
-    if (rows.length>0) {
-      console.log("trying to udpate");
-      connection.query("UPDATE saves SET jsondata = '" + stringified + "' WHERE filename = ?", [req.url.substr(1)], function(err) {
-        if (err) {
-          return console.log(err);
-        }
-        console.log("successfully replaced row?");
-      });
-    } else {
-      console.log("trying to insert");
-      connection.query("INSERT INTO saves (filename, jsondata) VALUES (?, '" + stringified +"')",[req.url.substr(1)],function(err) {
-        if (err) {
-          return console.log(err);
-        }
-        console.log("successfully loaded row?");
-      });
+  connection.query("DELETE FROM saves WHERE filename = ? AND segment = ?",[urlfrags[3], urlfrags[2]], function(err) {
+  //connection.query("DELETE FROM saves WHERE owner = ? AND filename = ? AND segment = ?",[owner, urlfrags[3], urlfrags[2]], function(err) {
+    if (err) {
+      console.log("error during row deletion for " + req.url);
+      console.log(err);
+      res.status(404).send();
+      return;
     }
-    //setTimeout(function() {global.gc();},2000);
+    connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES ('none', ?, ?, ?)", [urlfrags[3], urlfrags[2], req.body.json], function(err) {
+    //connection.query("INSERT INTO saves (owner, filename, segment, jsondata) VALUES (?, ?, ?, ?)", [owner, urlfrags[3], urlfrags[2], req.body.json], function(err) {
+      if (err) {
+        console.log("error during row insertion for " + req.url);
+        console.log(err);
+        res.status(404).send();
+        sweepdb();
+        return;
+      }
+      ram("after INSERT");
+      res.send();
+    });
   });
-  console.log("Saved file "+req.url);
 });
 
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
+  ram("application start");
+  //dbcleanup();
 });
 setInterval(function() {
   connection.ping();
-  //global.gc();
+  ram("ping");
+  global.gc();
 },10000);
+
+function sweepdb() {
+  var correctLength = 18;
+  connection.ping();
+  connection.query("SELECT DISTINCT filename FROM saves", function(err, rows, fields) {
+    if (err) {
+      console.log("error in db cleanup sweep");
+      console.log(err);
+      return;
+    }
+    rows = rows.map(function(e,i,a) {return e.filename;});
+    for (var i=0; i<rows.length; i++) {
+      connection.query("SELECT DISTINCT segment FROM saves WHERE filename = ?", [rows[i]], function(err, rows) {
+        if (err) {
+          console.log("error in db cleanup sweep");
+          console.log(err);
+          return;
+        }
+        if (rows.length!==correctLength) {
+          connection.query("DELETE FROM saves WHERE filename = ?", [rows[i]], function(err, rows) {
+            if (err) {
+              console.log("error in db cleanup sweep");
+              console.log(err);
+              return;
+            }
+          });
+        }
+      });
+    }
+  });
+}
+
+function dbcleanup() {
+  connection.query("DELETE FROM saves WHERE filename = 'testing'", function (err) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log("cleanup succeeded");
+  });
+}

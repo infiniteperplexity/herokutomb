@@ -360,8 +360,8 @@ HTomb = (function(HTomb) {
       if (terrain.fallable===true && this.flies!==true) {
         return false;
       }
-      var cover = HTomb.World.covers[c];
-      if (cover && cover.liquid && this.swims!==true) {
+      var cover = HTomb.World.covers[z][x][y];
+      if (cover!==HTomb.Covers.NoCover && cover.liquid && this.swims!==true) {
         return false;
       }
       // non-flyers can't climb diagonally

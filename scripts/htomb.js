@@ -10,22 +10,14 @@ var HTomb = (function() {
   // Frequently-used colors and characters...not sure this should be here
   var UNIBLOCK = Constants.UNIBLOCK = '\u2588';
 
+  if (document.cookie==="") {
+    fetch("/cookie",{credentials: "include"}).then(res => console.log("Cookie: " + document.cookie));
+  }
   // Begin the game
   var init = function() {
     // Initialize the DOM
     GUI.domInit();
-    console.time("worldInit");
-    // Initialize the world
-    World.init();
-    console.timeEnd("worldInit");
-    // Prepare the GUI and throw up an intro screen
-    GUI.reset();
-    HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
-    //HTomb.GUI.center(HTomb.Player.x,HTomb.Player.y);
-    GUI.splash(["Welcome to HellaTomb!"]);
-    HTomb.GUI.render();
-
-    //HTomb.GUI.recenter();
+    GUI.Views.startup();
   };
   // Set up the various submodules that will be used
   var World = {};
@@ -46,6 +38,20 @@ var HTomb = (function() {
   var Utils = {};
   var Time = {};
   // Allow public access to the submodules
+  World.newGame = function() {
+    GUI.Views.progressView(["Building world (may take a few minutes)"]);
+    setTimeout(function() {
+      console.time("worldInit");
+      // Initialize the world
+      World.init();
+      console.timeEnd("worldInit");
+      // Prepare the GUI and throw up an intro screen
+      GUI.Views.parentView = GUI.Views.Main.reset;
+      GUI.reset();
+      HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
+      HTomb.GUI.render();
+    }, 500);
+  };
   return {
     Constants: Constants,
     init: init,

@@ -158,23 +158,23 @@ HTomb = (function(HTomb) {
       }
     }
     // *********** Choose the background color *******************************
-    if (covers[crd] && covers[crd].liquid && tile.solid!==true) {
+    if (covers[z][x][y]!==HTomb.Covers.NoCover && covers[z][x][y].liquid && tile.solid!==true) {
       if (vis) {
-        bg = bg || covers[crd].shimmer();
+        bg = bg || covers[z][x][y].shimmer();
       } else {
-        bg = bg || covers[crd].darken();
+        bg = bg || covers[z][x][y].darken();
       }
-    } else if (zview===-1 && covers[cbelow] && covers[cbelow].liquid && tiles[z-1][x][y].solid!==true) {
+    } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && tiles[z-1][x][y].solid!==true) {
       if (vis) {
-        bg = bg || covers[cbelow].shimmer();
+        bg = bg || covers[z-1][x][y].shimmer();
       } else {
-        bg = bg || covers[cbelow].darken();
+        bg = bg || covers[z-1][x][y].darken();
       }
     } else if (zview===-1 && tiles[z-1][x][y].zview===-1 && tiles[z-2][x][y].solid!==true
-        &&covers[coord(x,y,z-2)] && covers[coord(x,y,z-2)].liquid) {
-      bg = bg || covers[coord(x,y,z-2)].darken();
-    } else if (covers[crd]) {
-      bg = bg || covers[crd].bg;
+        && covers[z-2][x][y]!==HTomb.Covers.NoCover && covers[z-2][x][y].liquid) {
+      bg = bg || covers[z-2][x][y].darken();
+    } else if (covers[z][x][y]!==HTomb.Covers.NoCover) {
+      bg = bg || covers[z][x][y].bg;
     }
     // ** An empty tile with an explored floor below...
     if (zview===-1 && HTomb.World.tiles[z-1][x][y]===Tiles.FloorTile && explored[z-1][x][y]) {
@@ -225,8 +225,8 @@ HTomb = (function(HTomb) {
       fg = fg || WALLFG;
     } else if (zview===-1 && creatures[cbelow] && (vis || visb)) {
       sym = creatures[cbelow].symbol;
-      if (covers[cbelow] && covers[cbelow].liquid) {
-        fg = fg || covers[cbelow].fg;
+      if (covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
+        fg = fg || covers[z-1][x][y].fg;
       } else {
         fg = fg || BELOWFG;
       }
@@ -241,8 +241,8 @@ HTomb = (function(HTomb) {
       fg = fg || WALLFG;
     } else if (zview===-1 && items[cbelow]) {
       sym = items[cbelow].tail().symbol;
-      if (zview===-1 && covers[cbelow] && covers[cbelow].liquid) {
-        fg = fg || covers[cbelow].fg;
+      if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
+        fg = fg || covers[z-1][x][y].fg;
       } else {
         fg = fg || BELOWFG;
       }
@@ -252,18 +252,21 @@ HTomb = (function(HTomb) {
     // ** Can't see features down through liquids? or maybe we should color it with the liquid instead?
     } else if (zview===-1 && features[cbelow]) {
       sym = features[cbelow].symbol;
-      if (covers[cbelow] && covers[cbelow].liquid) {
-        fg = fg || covers[cbelow].fg;
+      if (covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
+        fg = fg || covers[z-1][x][y].fg;
       } else {
         fg = fg || BELOWFG;
       }
     } else {
       // *** if the square is empty except for cover, handle the symbol and color separately. ***
-      if (covers[crd]) {
-        fg = fg || covers[crd].fg;
+      if (covers[z][x][y]===undefined) {
+        console.log([x,y,z]);
+      }
+      if (covers[z][x][y]!==HTomb.Covers.NoCover) {
+        fg = fg || covers[z][x][y].fg;
       // maybe do show the waterlogged ground?
-      } else if (covers[cbelow] && covers[cbelow].liquid && (tile.solid!==true && tile.zview!==+1)) {
-        fg = fg || covers[cbelow].fg;
+    } else if (covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && (tile.solid!==true && tile.zview!==+1)) {
+        fg = fg || covers[z-1][x][y].fg;
       } else {
         fg = tile.fg;
       }
@@ -274,9 +277,9 @@ HTomb = (function(HTomb) {
       } else if (tile===Tiles.FloorTile && explored[z-1][x][y] && tiles[z-1][x][y].solid!==true) {
       // explored tunnel below
         sym = "\u25E6";
-      } else if (covers[crd] && tile.solid!==true) {
-        if (covers[crd].liquid) {
-          if (zview===-1 && covers[cbelow] && covers[cbelow].liquid && tiles[z-1][x][y].zmove!==+1) {
+      } else if (covers[z][x][y]!==HTomb.Covers.NoCover && tile.solid!==true) {
+        if (covers[z][x][y].liquid) {
+          if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && tiles[z-1][x][y].zmove!==+1) {
           // deeper liquid
             sym = "\u2235";
           } else {
@@ -285,11 +288,11 @@ HTomb = (function(HTomb) {
           }
         } else {
           // non-liquid cover
-          sym = covers[crd].symbol;
+          sym = covers[z][x][y].symbol;
         }
-      } else if (zview===-1 && covers[cbelow] && covers[cbelow].liquid) {
+      } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
         // liquid surface
-        sym = covers[cbelow].symbol;
+        sym = covers[z-1][x][y].symbol;
       } else {
         // ordinary tile
         sym = tile.symbol;
@@ -310,7 +313,7 @@ HTomb = (function(HTomb) {
     square.feature = HTomb.World.features[crd];
     square.portals = HTomb.World.portals[crd];
     square.zone = HTomb.World.zones[crd];
-    square.cover = HTomb.World.covers[crd];
+    square.cover = HTomb.World.covers[z][x][y];
     square.explored = HTomb.World.explored[z][x][y];
     square.visible = HTomb.World.visible[crd];
     //square.visible = HTomb.World.visible[z][x][y];
