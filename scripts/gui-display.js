@@ -199,7 +199,70 @@ HTomb = (function(HTomb) {
     this.bufferIndex = Math.max(0,Math.min(this.bufferIndex+1,this.buffer.length-SCROLLH+2));
     this.render();
   };
+
   menu.render = function() {
+    // compose menu text with proper spacing
+    let menuTop = menu.top;
+    if (!menuTop || menuTop.length===0) {
+      menuTop = GUI.Contexts.active.menuText;
+    }
+    if (!menuTop || menuTop.length===0) {
+      menuTop = menu.defaultTop;
+    }
+    let menuMiddle = menu.middle;
+    if (!menuMiddle|| menuMiddle.length===0) {
+      menuMiddle = menu.defaultMiddle;
+    }
+    let menuBottom = menu.bottom;
+    if (!menuBottom || menuBottom.length===0) {
+      menuBottom = menu.defaultBottom;
+    }
+    let menuText = menuTop;
+    if (menuMiddle.length>0) {
+      menuText = Array.concat(menuText,[" "], menuMiddle);
+    }
+    if (menuBottom.length>0) {
+      menuText = Array.concat(menuText,[" "], menuBottom);
+    }
+    // handle line breaks
+    let c=0;
+    let br=null;
+    while(c<menuText.length) {
+      if (menuText[c].length<MENUW-2) {
+        c++;
+        continue;
+      }
+      for (var j=0; j<menuText[c].length; j++) {
+        if (menuText[c][j]===" ") {
+          br = j;
+        }
+        if (j>=MENUW-2) {
+          var one = menuText[c].substring(0,br);
+          var two = menuText[c].substring(br+1);
+          menuText[c] = one;
+          menuText.splice(c+1,0,two);
+          break;
+        }
+      }
+      c++;
+      br = null;
+    }
+    for (let i=0; i<MENUH; i++) {
+      menuDisplay.drawText(this.x0, this.y0+i, "%c{black}"+(UNIBLOCK.repeat(MENUW-2)));
+      if (menuText[i]) {
+        var j = 0;
+        if (menuText[i].charAt(0)===" ") {
+          for (j=0; j<menuText[i].length; j++) {
+            if (menuText[i].charAt(j)!==" ") {
+              break;
+            }
+          }
+        }
+        menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
+      }
+    }
+  };
+  /*menu.render = function() {
     for (var i=0; i<MENUH; i++) {
       menuDisplay.drawText(this.x0, this.y0+i, "%c{black}"+(UNIBLOCK.repeat(MENUW-2)));
       if (menu.text[i]) {
@@ -214,7 +277,7 @@ HTomb = (function(HTomb) {
         menuDisplay.drawText(this.x0+j, this.y0+i, menu.text[i]);
       }
     }
-  };
+  };*/
 
   GUI.reset = function() {
     GUI.Views.parentView();
@@ -255,7 +318,7 @@ HTomb = (function(HTomb) {
   //******end defaults
 
   // ***** Basic right-hand menu stuff *****
-  menu.defaultText = [
+  menu.defaultTop = [
     "? or /: Show tutorial tip.",
     "Movement: NumPad / Arrows.",
     "(Shift+Arrows for diagonal.)",
@@ -273,6 +336,8 @@ HTomb = (function(HTomb) {
     "~: Summary view.",
     "Esc: System view."
   ];
+  menu.defaultMiddle = [];
+  menu.defaultBottom = [];
   /*menu.defaultText = [
     "Movement: NumPad / Arrows.",
     "(Shift+Arrows for diagonal.)",
@@ -318,7 +383,8 @@ HTomb = (function(HTomb) {
     menu.render();
   };
   menu.refresh = function() {
-    menu.update(GUI.Contexts.active.menuText || undefined);
+    menu.top = GUI.Contexts.active.menuText || menu.defaulTop;
+    menu.render();
   };
 
 

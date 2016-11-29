@@ -3,7 +3,6 @@ HTomb = (function(HTomb) {
   var LEVELW = HTomb.Constants.LEVELW;
   var LEVELH = HTomb.Constants.LEVELH;
   var coord = HTomb.Utils.coord;
-
   // should we maybe allow a queue of zones???  probably not
   HTomb.Things.define({
     template: "Task",
@@ -281,6 +280,54 @@ HTomb = (function(HTomb) {
       }
       HTomb.Things.templates.Task.designateSquares.call(this, squares, options);
     },
+    designate: function(assigner) {
+      let menu = HTomb.GUI.Panels.menu;
+      function myHover(x, y, z, squares) {
+        if (squares===undefined) {
+          let tile = HTomb.World.tiles[z][x][y];
+          if (tile===HTomb.Tiles.DownSlopeTile) {
+            menu.middle = ["Digging here will excavate the slope below."];
+          } else if (tile===HTomb.Tiles.UpSlopeTile) {
+            menu.middle = ["Digging here will level the slope."];
+          } else if (tile===HTomb.Tiles.FloorTile) {
+            menu.middle = ["Digging here will excavate a downward slope in the floor."];
+          } else if (tile===HTomb.Tiles.WallTile) {
+            menu.middle = ["Digging here will dig a roofed tunnel."];
+          }
+          return;
+        }
+        var tallest = -2;
+        for (var j=0; j<squares.length; j++) {
+          var s = squares[j];
+          let tile = HTomb.World.tiles[s[2]][s[0]][s[1]];
+          if (tile===HTomb.Tiles.WallTile) {
+            tallest = Math.max(tallest,1);
+          } else if (tile===HTomb.Tiles.UpSlopeTile) {
+            tallest = Math.max(tallest,1);
+          } else if (tile===HTomb.Tiles.FloorTile) {
+            tallest = Math.max(tallest,0);
+          } else if (tile===HTomb.Tiles.DownSlopeTile) {
+            tallest = Math.max(tallest,-1);
+          }
+        }
+        if (tallest===1) {
+          menu.middle = ["Dig tunnels and level slopes in this area."];
+        } else if (tallest===0) {
+          menu.middle = ["Dig downward slopes in this area."];
+        } else if (tallest===-1) {
+          menu.middle = ["Level the downward slopes below this area."];
+        } else {
+          menu.middle = ["Can't dig in this area."];
+        }
+      };
+      HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
+        context: this,
+        assigner: assigner,
+        callback: this.placeZone,
+        bg: this.zoneTemplate.bg,
+        hover: myHover
+      });
+    },
     work: function(x,y,z) {
       // If this was initially placed illegally in unexplored territory, remove it now
       var t = (HTomb.World.tiles[z][x][y]);
@@ -364,12 +411,50 @@ HTomb = (function(HTomb) {
       HTomb.Things.templates.Task.designateSquares.call(this, squares, options);
     },
     designate: function(assigner) {
+      let menu = HTomb.GUI.Panels.menu;
+      function myHover(x, y, z, squares) {
+        if (squares===undefined) {
+          let tile = HTomb.World.tiles[z][x][y];
+          if (tile===HTomb.Tiles.EmptyTile || tile===HTomb.Tiles.DownSlopeTile) {
+            menu.middle = ["Building here will construct a new floor."];
+          } else if (tile===HTomb.Tiles.UpSlopeTile) {
+            menu.middle = ["Building here will turn the slope into a wall."];
+          } else if (tile===HTomb.Tiles.FloorTile) {
+            menu.middle = ["Building here will raise the floor into a slope."];
+          } else {
+            menu.middle = ["Can't build on this tile."];
+          }
+          return;
+        }
+        var lowest = 2;
+        for (var j=0; j<squares.length; j++) {
+          var s = squares[j];
+          let tile = HTomb.World.tiles[s[2]][s[0]][s[1]];
+          if (tile===HTomb.Tiles.EmptyTile || tile===HTomb.Tiles.DownSlopeTile) {
+            lowest = Math.min(lowest,-1);
+          } else if (tile===HTomb.Tiles.FloorTile) {
+            lowest = Math.min(lowest,0);
+          } else if (tile===HTomb.Tiles.UpSlopeTile) {
+            lowest = Math.min(lowest,1);
+          }
+        }
+        if (lowest===-1) {
+          menu.middle = ["Construct new floors in this area."];
+        } else if (lowest===0) {
+          menu.middle = ["Construct new slopes in this area."];
+        } else if (lowest===1){
+          menu.middle = ["Construct new walls in this area."];
+        } else {
+          menu.middle = ["Can't build in this area."];
+        }
+      };
       HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
         context: this,
         assigner: assigner,
         callback: this.placeZone,
         outline: true,
-        bg: this.zoneTemplate.bg
+        bg: this.zoneTemplate.bg,
+        hover: myHover
       });
     }
   });
