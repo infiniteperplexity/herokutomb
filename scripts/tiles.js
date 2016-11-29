@@ -320,8 +320,8 @@ HTomb = (function(HTomb) {
     // until we get the real code in place...
     square.visibleBelow = (square.visible && square.terrain.zview===-1) || HTomb.Debug.visible || false;
     square.visibleAbove = (square.visible && (square.terrain.zview===+1 || HTomb.World.tiles[z+1][x][y].zview===-1)) || HTomb.Debug.visible || false;
-    square.exploredBelow = (square.explored && square.terrain.zview===-1) || HTomb.Debug.explored || false;
-    square.exploredAbove = (square.explored && (square.terrain.zview===+1 || HTomb.World.tiles[z+1][x][y].zview===-1)) || HTomb.Debug.explored || false;
+    square.exploredBelow = ((square.explored && square.terrain.zview===-1) || HTomb.World.explored[z-1][x][y]) || HTomb.Debug.explored || false;
+    square.exploredAbove = ((square.explored && (square.terrain.zview===+1 || HTomb.World.tiles[z+1][x][y].zview===-1)) || HTomb.World.explored[z+1][x][y]) || HTomb.Debug.explored || false;
     square.x = x;
     square.y = y;
     square.z = z;

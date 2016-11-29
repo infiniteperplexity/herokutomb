@@ -260,14 +260,16 @@ HTomb = (function(HTomb) {
   };
   // Show a menu of the spells the player can cast
   Commands.showSpells = function() {
-    //var spells = [];
-    //for (var i=0;)
     GUI.choosingMenu("Choose a spell (mana cost):", HTomb.Player.caster.spells,
       function(sp) {
         return function() {
           if (HTomb.Player.caster.mana>=sp.getCost()) {
+            HTomb.GUI.Panels.menu.middle = [];
+            HTomb.GUI.Panels.menu.refresh();
             HTomb.Player.caster.cast(sp);
           } else {
+            HTomb.GUI.Panels.menu.middle = ["%c{orange}Not enough mana."];
+            HTomb.GUI.Panels.menu.refresh();
             HTomb.GUI.pushMessage("Not enough mana!");
           }
         };

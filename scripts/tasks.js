@@ -317,7 +317,7 @@ HTomb = (function(HTomb) {
         } else if (tallest===0) {
           menu.middle = ["%c{lime}Dig downward slopes in this area."];
         } else if (tallest===-1) {
-          menu.middle = ["%c{lime}Level the downward slopes below this area."];
+          menu.middle = ["%c{lime}Level downward slopes below this area."];
         } else {
           menu.middle = ["%c{orange}Can't dig in this area."];
         }
@@ -418,11 +418,11 @@ HTomb = (function(HTomb) {
         if (squares===undefined) {
           let tile = HTomb.World.tiles[z][x][y];
           if (tile===HTomb.Tiles.EmptyTile || tile===HTomb.Tiles.DownSlopeTile) {
-            menu.middle = ["%c{lime}Building here will construct a new floor."];
+            menu.middle = ["%c{lime}Building here will construct a floor over empty space."];
           } else if (tile===HTomb.Tiles.UpSlopeTile) {
-            menu.middle = ["%c{lime}Building here will turn the slope into a wall."];
+            menu.middle = ["%c{lime}Building here will convert this slope into a wall."];
           } else if (tile===HTomb.Tiles.FloorTile) {
-            menu.middle = ["%c{lime}Building here will raise the floor into a slope."];
+            menu.middle = ["%c{lime}Building here will construct a slope to a higher level."];
           } else {
             menu.middle = ["%c{orange}Can't build on this tile."];
           }

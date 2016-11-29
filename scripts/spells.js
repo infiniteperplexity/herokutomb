@@ -9,7 +9,11 @@ HTomb = (function(HTomb) {
       return 10;
     },
     onList: function() {
-      return this.describe()+" ("+this.getCost()+")";
+      let descrip = this.describe()+" ("+this.getCost()+")";
+      if (this.getCost()>this.caster.mana) {
+        descrip = "%c{gray}"+descrip;
+      }
+      return descrip;
     },
   });
 
