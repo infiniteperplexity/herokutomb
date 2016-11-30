@@ -79,7 +79,6 @@ HTomb = (function(HTomb) {
   };
   HTomb.World.validate.clean = function() {
     //lighting can only be done all at once?
-    HTomb.World.validate.lighting();
     for (var crd in this.dirty) {
       if (this.cleaned[crd]) {
         continue;
@@ -92,6 +91,7 @@ HTomb = (function(HTomb) {
     }
     this.dirty = {};
     this.cleaned = {};
+    HTomb.World.validate.lighting();
   };
   HTomb.World.validate.square = function(x,y,z) {
     this.slopes(x,y,z);
@@ -109,6 +109,7 @@ HTomb = (function(HTomb) {
         }
       }
     }
+    HTomb.World.validate.lighting();
   };
   HTomb.World.validate.dirtify = function(x,y,z) {
     this.dirty[coord(x,y,z)]===true;

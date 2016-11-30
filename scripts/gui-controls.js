@@ -313,18 +313,20 @@ HTomb = (function(HTomb) {
     var square = HTomb.Tiles.getSquare(x,y,z);
     var below = HTomb.Tiles.getSquare(x,y,z-1);
     var above = HTomb.Tiles.getSquare(x,y,z+1);
-    var text = ["Coord: " + square.x +"," + square.y + "," + square.z];
+    let mainColor = "%c{LightCyan}";
+    let otherColor = "%c{Gainsboro}";
+    var text = [mainColor + "Coord: " + square.x +"," + square.y + "," + square.z];
     var next;
     var listLines, i;
     if(square.explored || HTomb.Debug.explored) {
-      next = "Terrain: "+square.terrain.name;
+      next = mainColor + "Terrain: "+square.terrain.name;
       text.push(next);
-      next = "Creature: ";
+      next = mainColor + "Creature: ";
       if (square.creature && (square.visible || HTomb.Debug.visible)) {
         next+=square.creature.describe();
         text.push(next);
       }
-      next = "Items: ";
+      next = mainColor + "Items: ";
       if (square.items && (square.visible || HTomb.Debug.visible)) {
         for (i=0; i<square.items.length; i++) {
           next+=square.items[i].describe();
@@ -332,36 +334,36 @@ HTomb = (function(HTomb) {
           next = "       ";
         }
       }
-      next = "Feature: ";
+      next = mainColor + "Feature: ";
       if (square.feature) {
         next+=square.feature.describe();
       }
       text.push(next);
-      next = "Zone: ";
+      next = mainColor + "Zone: ";
       if (square.zone) {
         next+=square.zone.describe();
       }
       text.
       push(next);
-      next = "Cover: ";
+      next = mainColor + "Cover: ";
       if (square.cover) {
         next+=square.cover.describe();
       }
       text.push(next);
-      next = "Lighting: ";
+      next = mainColor + "Lighting: ";
       next+=Math.round(HTomb.World.lit[z][x][y]);
       text.push(next);
       text.push(" ");
     }
     if (square.exploredAbove) {
-      next = "Above: "+above.terrain.name;
+      next = otherColor + "Above: "+above.terrain.name;
       text.push(next);
-      next = "Creature: ";
+      next = otherColor + "Creature: ";
       if (above.creature && square.visibleAbove) {
         next+=above.creature.describe();
         text.push(next);
       }
-      next = "Items: ";
+      next = otherColor + "Items: ";
       if (above.items && square.visibleAbove) {
         for (i=0; i<above.items.length; i++) {
           next+=above.items[i].describe();
@@ -369,35 +371,35 @@ HTomb = (function(HTomb) {
           next = "       ";
         }
       }
-      next = "Feature: ";
+      next = otherColor + "Feature: ";
       if (above.feature) {
         next+=above.feature.describe();
       }
       text.push(next);
-      next = "Zone: ";
+      next = otherColor + "Zone: ";
       if (above.zone) {
         next+=above.zone.describe();
       }
       text.push(next);
-      next = "Cover: ";
+      next = otherColor + "Cover: ";
       if (above.cover) {
         next+=above.cover.describe();
       }
       text.push(next);
-      next = "Lighting: ";
+      next = otherColor + "Lighting: ";
       next+=Math.round(HTomb.World.lit[z+1][x][y]);
       text.push(next);
       text.push(" ");
     }
     if (square.exploredBelow) {
-      next = "Below: "+below.terrain.name;
+      next = otherColor + "Below: "+below.terrain.name;
       text.push(next);
-      next = "Creature: ";
+      next = otherColor + "Creature: ";
       if (below.creature && square.visibleBelow) {
         next+=below.creature.describe();
         text.push(next);
       }
-      next = "Items: ";
+      next = otherColor + "Items: ";
       if (below.items && square.visibleBelow) {
         for (i=0; i<below.items.length; i++) {
           next+=below.items[i].describe();
@@ -405,22 +407,22 @@ HTomb = (function(HTomb) {
           next = "       ";
         }
       }
-      next = "Feature: ";
+      next = otherColor + "Feature: ";
       if (below.feature) {
         next+=below.feature.describe();
       }
       text.push(next);
-      next = "Zone: ";
+      next = otherColor + "Zone: ";
       if (below.zone) {
         next+=below.zone.describe();
       }
       text.push(next);
-      next = "Cover: ";
+      next = otherColor + "Cover: ";
       if (below.cover) {
         next+=below.cover.describe();
       }
       text.push(next);
-      next = "Lighting: ";
+      next = otherColor + "Lighting: ";
       next+=Math.round(HTomb.World.lit[z][x][y]);
       text.push(next);
     }

@@ -104,7 +104,7 @@ HTomb = (function(HTomb) {
       var x = light.point.x;
       var y = light.point.y;
       var z = light.point.z;
-      if (light.point.item ) {
+      if (light.point.item) {
         let cont = light.point.item.containerXYZ();
         if (cont[0]!==null) {
           x = cont[0];

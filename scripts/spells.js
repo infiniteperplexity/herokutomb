@@ -97,11 +97,10 @@ HTomb = (function(HTomb) {
         if (that.canDesignateTile(x,y,z)) {
           HTomb.GUI.Panels.menu.middle = ["%c{lime}Raise a zombie here."];
         } else {
-          HTomb.GUI.Panels.menu.middle = ["%c{orange}No corpse here to raise."];
+          HTomb.GUI.Panels.menu.middle = ["%c{orange}Select a tile with a tombstone or corpse."];
         }
       }
       HTomb.GUI.selectSquare(c.z,raiseZombie,{
-        //message:"Select a tile with a tombstone or corpse.",
         hover: myHover
       });
     },

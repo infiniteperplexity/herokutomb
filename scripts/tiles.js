@@ -300,6 +300,14 @@ HTomb = (function(HTomb) {
     }
     sym = sym || "X";
     fg = fg || "white";
+    if (creatures[crd]) {
+      if (creatures[crd]===HTomb.Player) {
+        return [sym,fg,fg];
+      }
+      if (creatures[crd].minion && creatures[crd].minion.master===HTomb.Player) {
+        return [sym,fg,fg];
+      }
+    }
     shade = shade || HTomb.FOV.shade(fg,x,y,z);
     return [sym,fg,shade];
   };
