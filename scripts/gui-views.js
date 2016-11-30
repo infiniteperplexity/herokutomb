@@ -49,7 +49,7 @@ HTomb = (function(HTomb) {
       "N) New game.",
       "R) Restore game.",
       "Q) Quit.",
-      "!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
+      "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ]);
   }
   Views.systemView = function() {
@@ -63,7 +63,7 @@ HTomb = (function(HTomb) {
       "R) Restore game.",
       "D) Delete current game('" + HTomb.Save.currentGame +"').",
       "Q) Quit game.",
-      "!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
+      "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ]);
   };
   Views.System = {};
@@ -115,7 +115,7 @@ HTomb = (function(HTomb) {
         setTimeout(HTomb.Save.saveGame, 500, entered);
         console.log("Probably got saved as " + entered);
       };
-      saves.push("!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
+      saves.push("%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
       GUI.Contexts.active = GUI.Contexts.new(controls);
       GUI.Panels.overlay.update(saves);
     });
@@ -143,7 +143,7 @@ HTomb = (function(HTomb) {
         saves[i] = alpha[i]+") " + saves[i];
       }
       saves.unshift("Choose a save file to restore:");
-      saves.push("!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
+      saves.push("%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
       GUI.Contexts.active = GUI.Contexts.new(controls);
       GUI.Panels.overlay.update(saves);
     });
@@ -510,7 +510,6 @@ HTomb = (function(HTomb) {
   };
   Views.summaryView = function() {
     GUI.Contexts.active = GUI.Contexts.summary;
-
     var text = ["Tab/PageUp/PageDown to scroll through minions; Escape to exit."];
     text.push(" ");
     var s;

@@ -260,9 +260,6 @@ HTomb = (function(HTomb) {
   };
   // Show a menu of the spells the player can cast
   Commands.showSpells = function() {
-    if (HTomb.GUI.Contexts.active !== HTomb.GUI.Contexts.main) {
-      HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.surveyMode;
-    }
     GUI.choosingMenu("Choose a spell (mana cost):", HTomb.Player.caster.spells,
       function(sp) {
         return function() {
@@ -281,9 +278,6 @@ HTomb = (function(HTomb) {
   };
   // Show a menu of the tasks the player can assign
   Commands.showJobs = function() {
-    if (HTomb.GUI.Contexts.active !== HTomb.GUI.Contexts.main) {
-      HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.surveyMode;
-    }
     GUI.choosingMenu("Choose a task:", HTomb.Player.master.listTasks(),
       function(task) {
         return function() {

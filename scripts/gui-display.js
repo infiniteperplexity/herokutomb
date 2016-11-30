@@ -274,25 +274,8 @@ HTomb = (function(HTomb) {
       }
     }
   };
-  /*menu.render = function() {
-    for (var i=0; i<MENUH; i++) {
-      menuDisplay.drawText(this.x0, this.y0+i, "%c{black}"+(UNIBLOCK.repeat(MENUW-2)));
-      if (menu.text[i]) {
-        var j = 0;
-        if (menu.text[i].charAt(0)===" ") {
-          for (j=0; j<menu.text[i].length; j++) {
-            if (menu.text[i].charAt(j)!==" ") {
-              break;
-            }
-          }
-        }
-        menuDisplay.drawText(this.x0+j, this.y0+i, menu.text[i]);
-      }
-    }
-  };*/
 
   GUI.reset = function() {
-    console.log("reseting");
     GUI.Views.parentView();
   };
   // This should probably be an Event, not a GUI method
@@ -332,74 +315,25 @@ HTomb = (function(HTomb) {
 
   // ***** Basic right-hand menu stuff *****
   menu.defaultTop = [
-    "? or /: Show tutorial tip.",
+    "Esc: System view.",
+    "%c{yellow}Avatar mode (Tab: Move viewing window)",
     "Movement: NumPad / Arrows.",
     "(Shift+Arrows for diagonal.)",
-    ", or . to go up or down.",
-    "Z: Cast a spell.",
-    "J: Assign Job.",
+    "<: Up, >: Down, Space: Wait.",
+    "Z: Cast spell, J: Assign job.",
     "G: Pick Up, D: Drop, I: Inventory.",
-    "Space: Wait.",
-    "+ / - to change speed.",
-    "PageUp/Down to scroll messages.",
-    "Hover mouse to examine a square.",
-    "Click to pause or unpause.",
-    "Right click for detailed view.",
-    "Tab: Survey mode.",
-    "~: Summary view.",
-    "Esc: System view."
+    "+ / -: Change speed.",
+    "Click: Pause or unpause.",
+    "Right Click: View details",
+    "~: View summary.",
+    "PageUp/Down to scroll messages."
   ];
   menu.defaultMiddle = [];
   menu.defaultBottom = [];
-  /*menu.defaultText = [
-    "Movement: NumPad / Arrows.",
-    "(Shift+Arrows for diagonal.)",
-    "J: Assign Job, Z: Cast Spell.",
-    "G: Pick Up, D: Drop, I: Inventory.",
-    "T: Toggle tutorial",
-    "? or /: Show tutorial alert.",
-    "Space: Wait, Tab: Survey Mode.",
-    "PageUp / PageDown to change speed.",
-    "Hover mouse to examine a square.",
-    "Click to pause or unpause.",
-    "Right click for detailed view.",
-    "Escape for summary view."
-  ];*/
-  // This function will correctly break text into lines
-  menu.update = function(arr) {
-    if (arr===undefined) {
-      arr = menu.defaultText;
-    }
-    var i=0;
-    var br=null;
-    while(i<arr.length) {
-      if (arr[i].length<MENUW-2) {
-        i++;
-        continue;
-      }
-      for (var j=0; j<arr[i].length; j++) {
-        if (arr[i][j]===" ") {
-          br = j;
-        }
-        if (j>=MENUW-2) {
-          var one = arr[i].substring(0,br);
-          var two = arr[i].substring(br+1);
-          arr[i] = one;
-          arr.splice(i+1,0,two);
-          break;
-        }
-      }
-      i++;
-      br = null;
-    }
-    menu.text = arr;
-    menu.render();
-  };
-  menu.refresh = function() {
-    menu.top = GUI.Contexts.active.menuText || menu.defaulTop;
-    menu.render();
-  };
 
+  menu.refresh = function() {
+    menu.render();
+  };
 
   // *** Drawing on the game screen *****
   gameScreen.refreshTile = function(x,y) {
@@ -459,11 +393,6 @@ HTomb = (function(HTomb) {
       bg
     );
   };
-
-  //overlay.update = function(arr) {
-  //  menu.update(arr);
-  //  overlay.hide();
-  //};
 
   overlay.update = function(arr) {
     overlay.currentLines = arr;

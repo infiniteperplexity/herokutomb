@@ -37,9 +37,15 @@ HTomb = (function(HTomb) {
   let Commands = HTomb.Commands;
   let Views = GUI.Views = {};
   let Main = GUI.Views.Main = {};
+
+  Main.inSurveyMode = false;
   Main.reset = function() {
     if (overlay.active) {
       overlay.hide();
+    }
+    if (Main.inSurveyMode===true) {
+      Main.surveyMode();
+      return;
     }
     GUI.Contexts.active = GUI.Contexts.main;
     // This shoudl probably be handled a bit differently?
@@ -88,9 +94,15 @@ HTomb = (function(HTomb) {
   GUI.selectSquareZone = function(z, callb, options) {
     options = options || {};
     let hover = options.hover || function(x, y, z, sq) {};
-    GUI.pushMessage("Select the first corner.");
     var context = Object.create(survey);
-    context.menuText = ["Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
+    GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
+    context.menuText = [
+      "Esc: Cancel.",
+      "%c{yellow}Select first corner.",
+      "Move screen: NumPad / Arrows.",
+      "(Shift+Arrows for diagonal.)",
+      "<: Up, >: Down"
+    ];
     if (options.message) {
       context.menuText.unshift("");
       context.menuText.unshift(options.message);
@@ -106,7 +118,7 @@ HTomb = (function(HTomb) {
       menu.refresh();
     };
     context.clickTile = function (x,y) {
-      GUI.pushMessage("Select the second corner.");
+      context.menuText[1] = "%c{yellow}Select second corner.";
       var context2 = Contexts.new({VK_ESCAPE: GUI.reset});
       Contexts.active = context2;
       context2.menuText = context.menuText;
@@ -183,9 +195,15 @@ HTomb = (function(HTomb) {
     options = options || {};
     let hover = options.hover || function(sq) {};
     var gameScreen = GUI.Panels.gameScreen;
-    GUI.pushMessage("Select a square.");
     var context = Object.create(survey);
-    context.menuText = ["Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
+    GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
+    context.menuText = [
+      "Esc: Cancel.",
+      "%c{yellow}Select an area.",
+      "Move screen: NumPad / Arrows.",
+      "(Shift+Arrows for diagonal.)",
+      "<: Up, >: Down"
+    ];
     context.mouseTile = function(x0,y0) {
       var bg = options.bg || "#550000";
       gameScreen.render();
@@ -229,7 +247,7 @@ HTomb = (function(HTomb) {
   GUI.choosingMenu = function(s, arr, func) {
     var alpha = "abcdefghijklmnopqrstuvwxyz";
     var contrls = {};
-    var choices = [s];
+    var choices = ["Esc: Cancel.","%c{yellow}"+s];
     // there is probably a huge danger of memory leaks here
     for (var i=0; i<arr.length; i++) {
       var desc = (arr[i].onList!==undefined) ? arr[i].onList() : arr[i];
@@ -239,7 +257,6 @@ HTomb = (function(HTomb) {
       choices.push(alpha[i]+") " + desc);
     }
     contrls.VK_ESCAPE = GUI.reset;
-    choices.push("Esc to cancel");
     Contexts.active = Contexts.new(contrls);
     Contexts.active.menuText = choices;
     menu.refresh();
@@ -249,9 +266,15 @@ HTomb = (function(HTomb) {
   GUI.selectSquare = function(z, callb, options) {
     options = options || {};
     let hover = options.hover || function(x, y, z) {};
-    GUI.pushMessage("Select a square.");
     var context = Object.create(survey);
-    context.menuText = ["Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
+    GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
+    context.menuText = [
+      "Esc: Cancel.",
+      "%c{yellow}Select a square.",
+      "Move screen: NumPad / Arrows.",
+      "(Shift+Arrows for diagonal.)",
+      "<: Up, >: Down"
+    ];
     Contexts.active = context;
     if (options.message) {
       context.menuText.unshift("");
@@ -475,11 +498,13 @@ HTomb = (function(HTomb) {
 
   // ***** Survey mode *********
   Main.surveyMode = function() {
-    GUI.Views.parentView = GUI.Views.Main.reset;
+    Main.inSurveyMode = true;
     Contexts.active = survey;
     survey.saveX = gameScreen.xoffset;
     survey.saveY = gameScreen.yoffset;
     survey.saveZ = gameScreen.z;
+    menu.middle = menu.defaultMiddle;
+    menu.bottom = menu.defaultBottom;
     menu.refresh();
   };
   // Enter survey mode and save the screen's current position
@@ -541,11 +566,11 @@ HTomb = (function(HTomb) {
     VK_NUMPAD2: Main.surveyMove(0,+1,0),
     VK_NUMPAD3: Main.surveyMove(+1,+1,0),
     // Exit survey mode and return to the original position
-    VK_ESCAPE: function() {
-      //gameScreen.xoffset = survey.saveX;
-      //gameScreen.yoffset = survey.saveY;
+    VK_ESCAPE: function() {Views.systemView();},
+    VK_TAB: function() {
       gameScreen.z = survey.saveZ;
       gameScreen.recenter();
+      Main.inSurveyMode = false;
       GUI.reset();
     },
     VK_HYPHEN_MINUS: function() {
@@ -561,16 +586,23 @@ HTomb = (function(HTomb) {
     VK_PAGE_DOWN: function() {scroll.scrollDown();},
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
-    VK_SPACE: Commands.wait
+    VK_SPACE: Commands.wait,
+    VK_TILDE: function() {Views.summaryView();}
   });
+
   survey.menuText =
-  ["You are now in survey mode.",
-  "Use movement keys to navigate.",
-  "Comma go down.","Period to go up.",
-  "Z for spells, J for jobs.",
-  "Space: Wait.",
-  "+ / - to change speed.",
-  "Escape to exit."];
+  [ "Esc: System view.",
+    "%c{yellow}Navigation mode (Tab: Player view)",
+    "Move screen: NumPad / Arrows.",
+    "(Shift+Arrows for diagonal.)",
+    "<: Up, >: Down, Space: Wait.",
+    "Z: Cast spell, J: Assign job.",
+    "+ / -: Change speed.",
+    "Click: Pause or unpause.",
+    "Right Click: View details",
+    "~: View summary.",
+    "PageUp/Down to scroll messages."
+  ];
   survey.clickTile = main.clickTile;
   survey.rightClickTile = main.rightClickTile;
 

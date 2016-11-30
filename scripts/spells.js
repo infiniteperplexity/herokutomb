@@ -101,7 +101,7 @@ HTomb = (function(HTomb) {
         }
       }
       HTomb.GUI.selectSquare(c.z,raiseZombie,{
-        message:"Select a tile with a tombstone or corpse.",
+        //message:"Select a tile with a tombstone or corpse.",
         hover: myHover
       });
     },
