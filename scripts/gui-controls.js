@@ -507,7 +507,7 @@ HTomb = (function(HTomb) {
     survey.saveZ = gameScreen.z;
     menu.middle = menu.defaultMiddle;
     menu.bottom = menu.defaultBottom;
-    menu.refresh();
+    GUI.render();
   };
   // Enter survey mode and save the screen's current position
   Main.surveyMove = function(dx,dy,dz) {
