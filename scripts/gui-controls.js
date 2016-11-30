@@ -430,7 +430,7 @@ HTomb = (function(HTomb) {
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
     VK_SLASH: function() {
-      HTomb.Debug.nextTutorial();
+      //HTomb.Debug.nextTutorial();
     },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: Commands.wait,
@@ -442,11 +442,11 @@ HTomb = (function(HTomb) {
     VK_HYPHEN_MINUS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
-      HTomb.Time.startTime();
     },
     VK_EQUALS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.startTime();
     },
     VK_PAGE_UP: function() {scroll.scrollUp();},
     VK_PAGE_DOWN: function() {scroll.scrollDown();}
@@ -475,6 +475,7 @@ HTomb = (function(HTomb) {
 
   // ***** Survey mode *********
   Main.surveyMode = function() {
+    GUI.Views.parentView = GUI.Views.Main.reset;
     Contexts.active = survey;
     survey.saveX = gameScreen.xoffset;
     survey.saveY = gameScreen.yoffset;
@@ -550,22 +551,28 @@ HTomb = (function(HTomb) {
     VK_HYPHEN_MINUS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
-      HTomb.Time.startTime();
     },
     VK_EQUALS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.startTime();
     },
     VK_PAGE_UP: function() {scroll.scrollUp();},
-    VK_PAGE_DOWN: function() {scroll.scrollDown();}
+    VK_PAGE_DOWN: function() {scroll.scrollDown();},
+    VK_J: Commands.showJobs,
+    VK_Z: Commands.showSpells,
+    VK_SPACE: Commands.wait
   });
-  survey.menuText = ["You are now in survey mode.","Use movement keys to navigate.","Comma go down.","Period to go up.","Escape to exit."];
+  survey.menuText =
+  ["You are now in survey mode.",
+  "Use movement keys to navigate.",
+  "Comma go down.","Period to go up.",
+  "Z for spells, J for jobs.",
+  "Space: Wait.",
+  "+ / - to change speed.",
+  "Escape to exit."];
   survey.clickTile = main.clickTile;
   survey.rightClickTile = main.rightClickTile;
-
-
-
-
 
   return HTomb;
 })(HTomb);

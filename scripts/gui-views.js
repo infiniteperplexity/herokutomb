@@ -53,6 +53,7 @@ HTomb = (function(HTomb) {
     ]);
   }
   Views.systemView = function() {
+    GUI.Views.parentView = GUI.Views.Main.reset;
     GUI.Contexts.active = GUI.Contexts.system;
     // it would be nice if "static menu" were a thing
     GUI.Panels.overlay.update([

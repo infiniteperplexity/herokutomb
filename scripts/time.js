@@ -108,7 +108,9 @@ HTomb = (function(HTomb) {
       }
     }
     // Recenter the GUI on the player
-    HTomb.GUI.Panels.gameScreen.recenter();
+    if (HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
+      HTomb.GUI.Panels.gameScreen.recenter();
+    }
     // Render the GUI
     HTomb.GUI.render();
     if (HTomb.Debug.paused!==true) {
