@@ -497,6 +497,12 @@ HTomb = (function(HTomb) {
         HTomb.GUI.Contexts.locked=false;
         HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.reset;
         HTomb.GUI.splash(["Game restored."]);
+        HTomb.GUI.Panels.gameScreen.recenter();
+        if (HTomb.GUI.Views.Main.inSurveyMode) {
+          HTomb.GUI.Contexts.survey.saveX = HTomb.GUI.Panels.gameScreen.xoffset;
+          HTomb.GUI.Contexts.survey.saveY = HTomb.GUI.Panels.gameScreen.yoffset;
+          HTomb.GUI.Contexts.survey.saveZ = HTomb.GUI.Panels.gameScreen.z;
+        }
       },
       reason => {
         HTomb.Time.unlockTime();
