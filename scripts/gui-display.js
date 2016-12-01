@@ -11,6 +11,7 @@ HTomb = (function(HTomb) {
   var SCROLLW = HTomb.Constants.SCROLLW;
   var MENUW = HTomb.Constants.MENUW;
   var MENUH = HTomb.Constants.MENUH;
+  var TOTALW = HTomb.Constants.TOTALW;
   var STATUSH = HTomb.Constants.STATUSH;
   var FONTSIZE = HTomb.Constants.FONTSIZE;
   var UNIBLOCK = HTomb.Constants.UNIBLOCK;
@@ -175,7 +176,7 @@ HTomb = (function(HTomb) {
       + HTomb.Time.dailyCycle.minute);
     cursor+=11;
     if (HTomb.Time.isPaused()===true) {
-      scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Paused");
+      scrollDisplay.drawText(this.x0+cursor,this.y0+1,"%c{yellow}Paused");
     }
   };
   scroll.bufferMax = 100;
@@ -326,7 +327,8 @@ HTomb = (function(HTomb) {
     "Click: Pause or unpause.",
     "Right Click: View details",
     "~: View summary.",
-    "PageUp/Down to scroll messages."
+    "PageUp/Down to scroll messages.",
+    "%c{yellow}?: Help / Playtest notes."
   ];
   menu.defaultMiddle = [];
   menu.defaultBottom = [];
@@ -395,15 +397,48 @@ HTomb = (function(HTomb) {
   };
 
   overlay.update = function(arr) {
-    overlay.currentLines = arr;
     HTomb.Time.stopTime();
     HTomb.Time.stopParticles();
     // we may not want to force the player to reset the GUI...but let's try it out
-    for (var i=0; i<SCREENH+SCROLLH; i++) {
+    for (let i=0; i<SCREENH+SCROLLH; i++) {
       overlayDisplay.drawText(1,1+i,"%c{black}"+(UNIBLOCK.repeat(MENUW+SCREENW*CHARWIDTH/(TEXTWIDTH-TEXTSPACING))));
     }
-    for (var j=0; j<arr.length; j++) {
-      var x=0;
+    let c=0;
+    let br=null;
+    //%{\w+}
+    while(c<arr.length) {
+      let pat = /%c{\w+}/;
+      let match = pat.exec(arr[c]);
+
+      let txt = arr[c];
+      if (match!==null) {
+        txt = arr[c].replace(match[0],"");
+      }
+      if (txt.length<TOTALW/TEXTWIDTH-20) {
+        c++;
+        continue;
+      }
+      for (let j=0; j<txt.length; j++) {
+        if (txt[j]===" ") {
+          br = j;
+        }
+        if (j>=TOTALW/TEXTWIDTH-20) {
+          var one = txt.substring(0,br);
+          var two = txt.substring(br+1);
+          if (match!==null) {
+            one = match[0]+one;
+            two = match[0]+two;
+          }
+          arr[c] = one;
+          arr.splice(c+1,0,two);
+          break;
+        }
+      }
+      c++;
+      br = null;
+    }
+    for (let j=0; j<arr.length; j++) {
+      let x=0;
       if (arr[j].charAt(0)===" ") {
         for (x=1; x<arr[j].length; x++) {
           if (arr[j].charAt(x)!==" ") {
@@ -411,6 +446,7 @@ HTomb = (function(HTomb) {
           }
         }
       }
+      overlay.currentLines = arr;
       overlayDisplay.drawText(4+x, 3+j, arr[j]);
     }
     overlay.unhide();
