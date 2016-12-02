@@ -94,7 +94,8 @@ HTomb = (function(HTomb) {
   GUI.selectSquareZone = function(z, callb, options) {
     options = options || {};
     let hover = options.hover || function(x, y, z, sq) {};
-    var context = Object.create(survey);
+    //var context = Object.create(survey);
+    var context = HTomb.Utils.clone(survey);
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "Esc: Cancel.",
@@ -195,7 +196,8 @@ HTomb = (function(HTomb) {
     options = options || {};
     let hover = options.hover || function(sq) {};
     var gameScreen = GUI.Panels.gameScreen;
-    var context = Object.create(survey);
+    //var context = Object.create(survey);
+    var context = HTomb.Utils.clone(survey);
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "Esc: Cancel.",
@@ -266,7 +268,8 @@ HTomb = (function(HTomb) {
   GUI.selectSquare = function(z, callb, options) {
     options = options || {};
     let hover = options.hover || function(x, y, z) {};
-    var context = Object.create(survey);
+    //var context = Object.create(survey);
+    var context = HTomb.Utils.clone(survey);
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "Esc: Cancel.",

@@ -39,7 +39,7 @@ HTomb = (function(HTomb) {
       var nobj = {};
       if (Array.isArray(obj)) {
         for (var i=0; i<obj.length; i++) {
-          nobj[i].push(HTomb.Utils.copy(obj[i]));
+          nobj[i] = HTomb.Utils.copy(obj[i]);
         }
       } else {
         for (var key in obj) {
@@ -62,7 +62,7 @@ HTomb = (function(HTomb) {
       var nobj = Object.create(obj);
       if (Array.isArray(obj)) {
         for (var i=0; i<obj.length; i++) {
-          nobj[i].push(HTomb.Utils.clone(obj[i]));
+          nobj[i] = HTomb.Utils.clone(obj[i]);
         }
       } else {
         for (var key in obj) {
