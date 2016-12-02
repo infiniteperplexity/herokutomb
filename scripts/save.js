@@ -435,6 +435,7 @@ HTomb = (function(HTomb) {
         if (res.ok===false) {
           return res;
         }
+        HTomb.GUI.Views.progressView(["Parsing results from " + url + "."]);
         return res.text();
       })
       .then(txt=>{
