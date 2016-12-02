@@ -56,8 +56,8 @@ HTomb = (function(HTomb) {
   var TEXTWIDTH = Constants.TEXTWIDTH = font.width;
   var TEXTSPACING = Constants.TEXTSPACING = font.spacing;
 
-  var TOTALH = GAMEH+8*TEXTSIZE;
-  var TOTALW = 900;
+  var TOTALH = Constants.TOTALH = GAMEH+8*TEXTSIZE;
+  var TOTALW = Constants.TOTALW = 900;
   var MENUW = Constants.MENUW = Math.floor((TOTALW-GAMEW)/TEXTWIDTH);
   var MENUH = Constants.MENUH = TOTALH/TEXTSIZE;
   var STATUSH = Constants.STATUSH = 2;

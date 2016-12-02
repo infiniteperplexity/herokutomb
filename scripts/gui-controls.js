@@ -308,6 +308,21 @@ HTomb = (function(HTomb) {
     }
   };
 
+  HTomb.GUI.helpText = [
+    "Playtest questions:",
+    " ",
+    "1) How quickly were you able to orient yourself to what you're looking at?  In particular, how difficult was it to figure out how slopes and elevations are represented, and how difficult was it to understand how visibility is represented?",
+    " ",
+    "2) How quickly were you able to figure out the minimal gameplay of 'summon one or more zombies, then dig or build things?'  Is the minimal gameplay at least minimally enjoyable?",
+    " ",
+    "3) Do the features beyond the minimal gameplay, such as workshops, farming, and so on, distract and make it harder to figure out the basics?  If so, I might remove them from the demo, or give them prerequisites.",
+    " ",
+    "4) How quickly were you able to figure out how to switch between the 'player's-eye-view' (controlling the necromancer, as in a traditional roguelike) and the 'god's-eye-view' (moving the viewing window around and giving orders, as in Dwarf Fortress)?",
+    " ",
+    "5) Is the mixture of mouse and keyboard controls reasonably comfortable?",
+    " ",
+    "(%c{yellow}Press Escape to return to the game.)"
+  ];
   // ***** I'm not sure how to categorize this one yet...
   function examineSquare(x,y,z) {
     var square = HTomb.Tiles.getSquare(x,y,z);
@@ -455,7 +470,7 @@ HTomb = (function(HTomb) {
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
     VK_SLASH: function() {
-      //HTomb.Debug.nextTutorial();
+      HTomb.GUI.splash(GUI.helpText);
     },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: Commands.wait,
@@ -589,6 +604,9 @@ HTomb = (function(HTomb) {
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
     VK_SPACE: Commands.wait,
+    VK_SLASH: function() {
+      HTomb.GUI.splash(GUI.helpText);
+    },
     VK_TILDE: function() {Views.summaryView();}
   });
 
@@ -603,7 +621,8 @@ HTomb = (function(HTomb) {
     "Click: Pause or unpause.",
     "Right Click: View details",
     "~: View summary.",
-    "PageUp/Down to scroll messages."
+    "PageUp/Down to scroll messages.",
+    "%c{yellow}?: Help / Playtest notes."
   ];
   survey.clickTile = main.clickTile;
   survey.rightClickTile = main.rightClickTile;

@@ -14,3 +14,11 @@
 - add ravens, which are diurnal and feed on your zombies
 - make bats nocturnal...where do they go during the day?
 - add caves
+
+
+
+- How quickly were you able to orient yourself to what you're looking at?  In particular, how difficult was it to figure out how slopes and elevations are represented, and how difficult was it to understand how visibility is represented?
+- How quickly were you able to figure out the minimal gameplay of "summon one or more zombies, then dig or build things?"  Is the minimal gameplay at least minimally enjoyable?
+- Do the features beyond the minimal gameplay, such as workshops, farming, and so on, distract and make it harder to figure out the basics?  If so, I might remove them from the demo, or give them prerequisites.
+- How quickly were you able to figure out how to switch between the "player's-eye-view" (controlling the necromancer, as in a traditional roguelike) and the "god's-eye-view" (moving the viewing window around and giving orders, as in Dwarf Fortress)?
+- Is the mixture of mouse and keyboard controls reasonably comfortable?
