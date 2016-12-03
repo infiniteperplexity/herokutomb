@@ -23,7 +23,7 @@ HTomb = (function(HTomb) {
     var measuredFonts = ["Lucida Console","Courier New"];
     var width = (measuredFonts.indexOf(font)===-1) ? size : measuredWidth;
     var xskew = (measuredFonts.indexOf(font)===-1) ? +9 : +3;
-    if (newSize!==baselineSize || font==="72px monospace") {
+    if (newSize!==baselineSize || font==="Lucida Console") {
       console.log("Using " + font+".");
       return {font: font, size: size, width: width, xskew: xskew, yskew: +7, spacing: spacing};
     }
