@@ -2,25 +2,6 @@
 <html>
 	<head>
 		<title>HellaTomb</title>
-		<style>
-		@font-face {
-			@font-face {
-			  font-family: "Lucida Console";
-			  src: local("Lucida Console"),
-			       url(fonts/lucon.ttf);
-			},
-			@font-face {
-			  font-family: "Verdana";
-			  src: local("Verdana"),
-			       url(fonts/verdana.ttf);
-			},
-			@font-face {
-			  font-family: "Courier New";
-			  src: local("Courier New"),
-			       url(fonts/cour.ttf);
-			}
-		}
-		</style>
 		<script src="scripts/polyfill.js"></script>
 		<script src="scripts/rot.min.js"></script>
 		<script src="scripts/htomb.js"></script>
@@ -89,6 +70,21 @@
 			z-index: 1;
 			width: 900px;
 			height: 620px;
+		}
+		@font-face {
+			font-family: "Lucida Console";
+			src: local("Lucida Console"),
+				 	 url("fonts/lucon.ttf") format('truetype');
+		}
+		@font-face {
+			font-family: "Verdana";
+			src: local("Verdana"),
+					 url("fonts/verdana.ttf") format('truetype');
+		}
+		@font-face {
+			font-family: "Courier New";
+			src: local("Courier New"),
+					 url("fonts/cour.ttf") format('truetype');
 		}
 	</style>
 	<body>
