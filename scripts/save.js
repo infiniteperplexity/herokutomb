@@ -18,7 +18,7 @@ HTomb = (function(HTomb) {
       return fetch(url, args);
     } else if (val.then) {
       // if we got a promise of text...
-      return val.then(res => {
+      return val.then(function(res) {
         args.body = JSON.stringify({json: res});
         // ...chain to a fetch promise
         console.log(url + " length is " + args.body.length);
@@ -123,7 +123,7 @@ HTomb = (function(HTomb) {
       fetchText(promiseThings,"/saves/things/"+name+"/",args)
     ];
     Promise.all(promises).then(
-      values => {
+      function(values) {
         for (let i=0; i<values.length; i++) {
           if (values[i].ok===false) {
             console.log("response to " + values[i].url + " not ok");
@@ -139,7 +139,7 @@ HTomb = (function(HTomb) {
         HTomb.GUI.Contexts.locked=false;
         HTomb.Time.unlockTime();
       },
-      reason => {
+      function(reason) {
         killsave = true;
         console.log("failed: " + reason);
         HTomb.GUI.splash(["Failed to save "+"'"+name+"'."]);
@@ -412,13 +412,13 @@ HTomb = (function(HTomb) {
       credentials: "include"
     }
     fetch("/delete/" + name, args).then(
-      res => {
+      function(res) {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         HTomb.GUI.Views.parentView = HTomb.GUI.Views.startup;
         HTomb.GUI.splash(["'" + name + "' deleted."]);
       },
-      reason => {
+      function(reason) {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         console.log("failed to delete with " + reason);
@@ -431,14 +431,14 @@ HTomb = (function(HTomb) {
   function fetchParse(url, args, func) {
     //This is a truly ridiculous hack to pass along the response.ok = false value...
     return fetch(url, args)
-      .then(res=>{
+      .then(function(res) {
         if (res.ok===false) {
           return res;
         }
         HTomb.GUI.Views.progressView(["Parsing saved data from " + url + "."]);
         return res.text();
       })
-      .then(txt=>{
+      .then(function(txt) {
         if (txt.ok===false) {
           return txt;
         }
@@ -475,7 +475,7 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/other/" + name + "/", args, restoreOther),
     ];
     Promise.all(promises).then(
-      values => {
+      function(values) {
         for (let i=0; i<values.length; i++) {
           if (values[i] && values[i].ok===false) {
             console.log("response for " + values[i].url + " not ok");
@@ -505,7 +505,7 @@ HTomb = (function(HTomb) {
           HTomb.GUI.Contexts.survey.saveZ = HTomb.GUI.Panels.gameScreen.z;
         }
       },
-      reason => {
+      function(reason) {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         console.log("failed with " + reason);

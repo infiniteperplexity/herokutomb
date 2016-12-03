@@ -220,10 +220,10 @@ HTomb = (function(HTomb) {
     }
     let menuText = menuTop;
     if (menuMiddle.length>0) {
-      menuText = Array.concat(menuText,[" "], menuMiddle);
+      menuText = menuText.concat([" "], menuMiddle);
     }
     if (menuBottom.length>0) {
-      menuText = Array.concat(menuText,[" "], menuBottom);
+      menuText = menuText.concat([" "], menuBottom);
     }
     // handle line breaks
     let c=0;
