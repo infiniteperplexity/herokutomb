@@ -65,6 +65,7 @@ app.get('/', function (req, res) {
 });
 app.get('/*.html', serveFile);
 app.get('/*.js', serveFile);
+app.get('/*.ttf', serveFile);
 app.get('/cookie', function(req, res) {
   res.cookie("herukotomb_owner", uuid.v4()).send("Cookie is set");
 });
