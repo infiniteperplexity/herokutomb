@@ -6,9 +6,6 @@ HTomb = (function(HTomb) {
   //var useFont = "Lucida Console";
 
   function fontFallback(fontArr) {
-    if (fontArr.length===0) {
-      fontArr.push(["Courier New",15]);
-    }
     var font = fontArr[0][0];
     var size = fontArr[0][1];
     var spacing = font[0][2] || 1;
@@ -17,24 +14,29 @@ HTomb = (function(HTomb) {
     testContext.font = "72px monospace";
     //testContext.font = size + "px " + font;
     var baselineSize = testContext.measureText(testText).width;
-    testContext.font = "72px '" + fontArr[0][0] + "', monospace";
+    if (font!=="72px monospace") {
+      testContext.font = "72px '" + fontArr[0][0] + "', monospace";
+    }
     var newSize = testContext.measureText(testText).width;
     testContext.font = size + "px '" + font + "', monospace";
     var measuredWidth = 1+Math.floor(testContext.measureText(testText).width/testText.length);
     var measuredFonts = ["Lucida Console","Courier New"];
     var width = (measuredFonts.indexOf(font)===-1) ? size : measuredWidth;
     var xskew = (measuredFonts.indexOf(font)===-1) ? +9 : +3;
-    if (newSize!==baselineSize) {
+    if (newSize!==baselineSize || font==="72px monospace") {
       console.log("Using " + font+".");
       return {font: font, size: size, width: width, xskew: xskew, yskew: +7, spacing: spacing};
     }
     else {
       console.log("Font " + font + " is not available.");
       fontArr.shift();
+      if (fontArr.length===0) {
+        fontArr.push(["72px monospace",size]);
+      }
       return fontFallback(fontArr,size);
     }
   }
-  var font = fontFallback([["Verdana",18]]);
+  var font = fontFallback([["Verdana",18],["Geneva",18],["sans-serif",18]]);
   var FONTFAMILY = Constants.FONTFAMILY = font.font;
   var FONTSIZE = Constants.FONTSIZE = font.size;
   var CHARHEIGHT = Constants.CHARHEIGHT = font.size;
@@ -50,7 +52,7 @@ HTomb = (function(HTomb) {
   console.log("Playing area will be " + SCREENW + "x" + SCREENH + ".");
 
   //font = fontFallback([["Caudex",15,0.9],["Lucida Console",15]]);
-  font = fontFallback([["Lucida Console",15]]);
+  font = fontFallback([["Lucida Console",15],["Monaco",15],["monospace",15]]);
   var TEXTFONT = Constants.TEXTFONT = font.font;
   var TEXTSIZE = Constants.TEXTSIZE = font.size;
   var TEXTWIDTH = Constants.TEXTWIDTH = font.width;
