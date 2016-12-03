@@ -52,7 +52,7 @@ HTomb = (function(HTomb) {
   console.log("Playing area will be " + SCREENW + "x" + SCREENH + ".");
 
   //font = fontFallback([["Caudex",15,0.9],["Lucida Console",15]]);
-  font = fontFallback([["Lucida Console",15],["Monaco",15]["monaco",15],["monospace",15]]);
+  font = fontFallback([["Lucida Console",15],["Monaco",15],["monaco",15],["monospace",15]]);
   var TEXTFONT = Constants.TEXTFONT = font.font;
   var TEXTSIZE = Constants.TEXTSIZE = font.size;
   var TEXTWIDTH = Constants.TEXTWIDTH = font.width;
