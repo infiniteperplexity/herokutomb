@@ -24,7 +24,7 @@ HTomb = (function(HTomb) {
     var width = (measuredFonts.indexOf(font)===-1) ? size : measuredWidth;
     var xskew = (measuredFonts.indexOf(font)===-1) ? +9 : +3;
     //return {font: font, size: size, width: width, xskew: xskew, yskew: +7, spacing: spacing};
-    if (newSize!==baselineSize || font==="Lucida Console" || font==="Verdana") {
+    if (newSize!==baselineSize || font==="Lucida Console") {
     //if (newSize!==baselineSize || font==="72px monospace") {
       console.log("Using " + font+".");
       return {font: font, size: size, width: width, xskew: xskew, yskew: +7, spacing: spacing};
