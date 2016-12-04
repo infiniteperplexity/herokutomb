@@ -181,23 +181,27 @@ HTomb = (function(HTomb) {
   };
   scroll.bufferMax = 100;
   scroll.buffer = [];
-  scroll.bufferIndex = 0;
+  scroll.bufferIndex = 1;
   scroll.render = function() {
-    for (var s=0; s<SCROLLH; s++) {
+    for (let s=0; s<SCROLLH; s++) {
       //black out the entire line with solid blocks
       scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
-      if (s+this.bufferIndex >= this.buffer.length) {
+      if (s+this.bufferIndex>this.buffer.length) {
         return;
       }
-      scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[s+this.bufferIndex]);
+      if (s+this.bufferIndex === 1) {
+        scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{cyan}"+this.buffer[this.buffer.length-s-this.bufferIndex]);
+      } else {
+        scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[this.buffer.length-s-this.bufferIndex]);
+      }
     }
   };
   scroll.scrollUp = function() {
-    this.bufferIndex = Math.max(0,this.bufferIndex-1);
+    this.bufferIndex = Math.max(1,this.bufferIndex-1);
     this.render();
   };
   scroll.scrollDown = function() {
-    this.bufferIndex = Math.max(0,Math.min(this.bufferIndex+1,this.buffer.length-SCROLLH+2));
+    this.bufferIndex = Math.max(1,Math.min(this.bufferIndex+1,this.buffer.length-SCROLLH+2));
     this.render();
   };
 
@@ -286,10 +290,11 @@ HTomb = (function(HTomb) {
     }
   };
   GUI.pushMessage = function(strng) {
+    scroll.bufferIndex = 1;
     scroll.buffer.push(strng);
-    if (scroll.buffer.length>=SCROLLH) {
-      scroll.bufferIndex = Math.max(0,scroll.buffer.length-SCROLLH+1);
-    }
+    //if (scroll.buffer.length>=SCROLLH) {
+    //  scroll.bufferIndex = Math.max(0,scroll.buffer.length-SCROLLH+1);
+    //}
     if (scroll.buffer.length>scroll.bufferMax) {
       scroll.buffer.shift();
     }
