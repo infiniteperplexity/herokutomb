@@ -78,6 +78,8 @@ HTomb = (function(HTomb) {
     menu.appendChild(menuDisplay.getContainer());
     scroll.appendChild(scrollDisplay.getContainer());
     overlay.appendChild(overlayDisplay.getContainer());
+    console.log("Menu uses " + menuDisplay.getContainer().getContext('2d').font);
+    console.log("Play area uses " + display.getContainer().getContext('2d').font);
   };
 
   // Attach input events
