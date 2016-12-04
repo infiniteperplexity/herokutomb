@@ -1,5 +1,6 @@
 // This is the object whose scope will enclose all the tools used by the game
 var HTomb = (function() {
+
 "use strict";
   // Set a number of useful constants
   var Constants = {};
@@ -9,6 +10,9 @@ var HTomb = (function() {
   var NLEVELS = Constants.NLEVELS = 64;
   // Frequently-used colors and characters...not sure this should be here
   var UNIBLOCK = Constants.UNIBLOCK = '\u2588';
+
+  try{eval("let letSupported = true;");} catch(e) {alert("Please update to a newer browser version.");}
+
 
   if (document.cookie==="") {
     fetch("/cookie",{credentials: "include"}).then(function(res) {console.log("Cookie: " + document.cookie);});
