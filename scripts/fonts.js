@@ -38,7 +38,7 @@ HTomb = (function(HTomb) {
       return fontFallback(fontArr,size);
     }
   }
-  var font = fontFallback([["Verdana",18],["Geneva",18],["sans-serif",18]]);
+  var font = fontFallback([["Verdana",18],["sans-serif",18]]);
   var FONTFAMILY = Constants.FONTFAMILY = font.font;
   var FONTSIZE = Constants.FONTSIZE = font.size;
   var CHARHEIGHT = Constants.CHARHEIGHT = font.size;
