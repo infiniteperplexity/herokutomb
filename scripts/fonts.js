@@ -38,13 +38,16 @@ HTomb = (function(HTomb) {
       return fontFallback(fontArr,size);
     }
   }
-  var font = fontFallback([["Verdana",18],["Geneva",18],["sans-serif",18]]);
-  var FONTFAMILY = Constants.FONTFAMILY = font.font;
-  var FONTSIZE = Constants.FONTSIZE = font.size;
-  var CHARHEIGHT = Constants.CHARHEIGHT = font.size;
-  var CHARWIDTH = Constants.CHARWIDTH = font.width;
-  var XSKEW = Constants.XSKEW = font.xskew;
-  var YSKEW = Constants.YSKEW = font.yskew;
+  //var font = fontFallback([["Verdana",18],["Geneva",18],["sans-serif",18]]);
+  //var font = "Verdana, Geneva, sans-serif";
+  font = "Verdana";
+  var size = 18;
+  var FONTFAMILY = Constants.FONTFAMILY = font;
+  var FONTSIZE = Constants.FONTSIZE = size;
+  var CHARHEIGHT = Constants.CHARHEIGHT = size;
+  var CHARWIDTH = Constants.CHARWIDTH = size;
+  var XSKEW = Constants.XSKEW = 3;
+  var YSKEW = Constants.YSKEW = 9;
 
   // Dimensions of the display panels
   var GAMEW = 500;
@@ -54,11 +57,14 @@ HTomb = (function(HTomb) {
   console.log("Playing area will be " + SCREENW + "x" + SCREENH + ".");
 
   //font = fontFallback([["Caudex",15,0.9],["Lucida Console",15]]);
-  font = fontFallback([["Lucida Console",15],["Monaco",15],["monaco",15],["monospace",15]]);
-  var TEXTFONT = Constants.TEXTFONT = font.font;
-  var TEXTSIZE = Constants.TEXTSIZE = font.size;
-  var TEXTWIDTH = Constants.TEXTWIDTH = font.width;
-  var TEXTSPACING = Constants.TEXTSPACING = font.spacing;
+  //font = fontFallback([["Lucida Console",15],["Monaco",15],["monaco",15],["monospace",15]]);
+  //font = "Lucida Console, Monaco, monospace, sans-serif";
+  var font = "Lucida Console";
+  size = 15;
+  var TEXTFONT = Constants.TEXTFONT = font;
+  var TEXTSIZE = Constants.TEXTSIZE = size;
+  var TEXTWIDTH = Constants.TEXTWIDTH = 10;
+  var TEXTSPACING = Constants.TEXTSPACING = 1;
 
   var TOTALH = Constants.TOTALH = GAMEH+8*TEXTSIZE;
   var TOTALW = Constants.TOTALW = 900;
