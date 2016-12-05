@@ -62,7 +62,7 @@ HTomb = (function(HTomb) {
     name: "seaweed",
     plural: true,
     //symbol: ["\u2648","\u2724","\u060F"],
-    symbol: ["\u2648\uFE0E","\u2724","\u060F"],
+    symbol: ["\u0633","\u2724","\u060F"],
     fg: "#779922",
     randomColor: 20
   });
