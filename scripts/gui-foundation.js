@@ -33,8 +33,11 @@ HTomb = (function(HTomb) {
     width: SCREENW,
     height: SCREENH,
     fontSize: FONTSIZE,
-    fontFamily: FONTFAMILY
+    fontFamily: FONTFAMILY,
+    forceSquareRatio: true
   });
+  //forceSquareRatio doesn't work consistently
+  display._backend._spacingX = display._backend._spacingY;
   var scrollDisplay = new ROT.Display({
     width: SCROLLW,
     height: STATUSH+SCROLLH,
@@ -78,8 +81,6 @@ HTomb = (function(HTomb) {
     menu.appendChild(menuDisplay.getContainer());
     scroll.appendChild(scrollDisplay.getContainer());
     overlay.appendChild(overlayDisplay.getContainer());
-    console.log("Menu uses " + menuDisplay.getContainer().getContext('2d').font);
-    console.log("Play area uses " + display.getContainer().getContext('2d').font);
   };
 
   // Attach input events

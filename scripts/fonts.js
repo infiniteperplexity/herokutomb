@@ -46,8 +46,8 @@ HTomb = (function(HTomb) {
   var FONTSIZE = Constants.FONTSIZE = size;
   var CHARHEIGHT = Constants.CHARHEIGHT = size;
   var CHARWIDTH = Constants.CHARWIDTH = size;
-  var XSKEW = Constants.XSKEW = 3;
-  var YSKEW = Constants.YSKEW = 9;
+  var XSKEW = Constants.XSKEW = 10;
+  var YSKEW = Constants.YSKEW = 10;
 
   // Dimensions of the display panels
   var GAMEW = 500;
