@@ -145,6 +145,7 @@ HTomb = (function(HTomb) {
   }
   // this may change a bit if I add click functionality to other canvases
   var mousedown = function(click) {
+    console.log("testing");
     click.preventDefault();
     if (GUI.Contexts.locked===true) {
       return;
