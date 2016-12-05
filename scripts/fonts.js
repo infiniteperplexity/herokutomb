@@ -41,7 +41,6 @@ HTomb = (function(HTomb) {
   //var font = fontFallback([["Verdana",18],["Geneva",18],["sans-serif",18]]);
   //var font = "Verdana, Geneva, sans-serif";
   var font = "Verdana, Trebuchet MS, Helvetica, Arial, sans-serif";
-  font = "Helvetica, Arial, sans-serif";
   var size = 18;
   var FONTFAMILY = Constants.FONTFAMILY = font;
   var FONTSIZE = Constants.FONTSIZE = size;
