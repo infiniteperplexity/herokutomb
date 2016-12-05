@@ -145,7 +145,6 @@ HTomb = (function(HTomb) {
   }
   // this may change a bit if I add click functionality to other canvases
   var mousedown = function(click) {
-    console.log("testing");
     click.preventDefault();
     if (GUI.Contexts.locked===true) {
       return;
@@ -189,7 +188,7 @@ HTomb = (function(HTomb) {
     ///!!!! Maybe get rid of the next line....
     overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickAt();});
     console.log("adding event listeners");
-  },100);
+  },500);
 
   //************* Define the basic panels and how they access the DOM *********;
   GUI.Panels = {};
