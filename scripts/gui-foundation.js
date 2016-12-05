@@ -178,15 +178,18 @@ HTomb = (function(HTomb) {
     target.boundKeys[ROT[key]] = func;
   };
   // Set up event listeners
-  window.addEventListener("keydown",keydown);
-  window.addEventListener("keyup",keyup);
-  display.getContainer().addEventListener("mousedown",mousedown);
-  display.getContainer().addEventListener("mousemove",mousemove);
-  window.oncontextmenu = function(e) {if (e && e.stopPropagation) {e.stopPropagation();} return false;};
-  menuDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
-  scrollDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
-  ///!!!! Maybe get rid of the next line....
-  overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickAt();});
+  setTimeout(function() {
+    window.addEventListener("keydown",keydown);
+    window.addEventListener("keyup",keyup);
+    display.getContainer().addEventListener("mousedown",mousedown);
+    display.getContainer().addEventListener("mousemove",mousemove);
+    window.oncontextmenu = function(e) {if (e && e.stopPropagation) {e.stopPropagation();} return false;};
+    menuDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
+    scrollDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
+    ///!!!! Maybe get rid of the next line....
+    overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickAt();});
+    console.log("adding event listeners");
+  },100);
 
   //************* Define the basic panels and how they access the DOM *********;
   GUI.Panels = {};
