@@ -40,7 +40,7 @@ HTomb = (function(HTomb) {
   }
   //var font = fontFallback([["Verdana",18],["Geneva",18],["sans-serif",18]]);
   //var font = "Verdana, Geneva, sans-serif";
-  font = "Verdana";
+  font = "Verdana, Trebuchet MS, Helvetica, Arial, sans-serif";
   var size = 18;
   var FONTFAMILY = Constants.FONTFAMILY = font;
   var FONTSIZE = Constants.FONTSIZE = size;
@@ -59,7 +59,7 @@ HTomb = (function(HTomb) {
   //font = fontFallback([["Caudex",15,0.9],["Lucida Console",15]]);
   //font = fontFallback([["Lucida Console",15],["Monaco",15],["monaco",15],["monospace",15]]);
   //font = "Lucida Console, Monaco, monospace, sans-serif";
-  var font = "Lucida Console";
+  var font = "Lucida Console, Monaco, Courier New, Courier, monospace";
   size = 15;
   var TEXTFONT = Constants.TEXTFONT = font;
   var TEXTSIZE = Constants.TEXTSIZE = size;
