@@ -160,7 +160,6 @@ HTomb = (function(HTomb) {
   status.render = function() {
     //black out the entire line with solid blocks
     var cursor = 0;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
     scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Mana:" + HTomb.Player.caster.mana + "/" + HTomb.Player.caster.maxmana);
     cursor+=12;
     scrollDisplay.drawText(this.x0+cursor,this.y0+1,"X:" + HTomb.Player.x);
@@ -183,9 +182,9 @@ HTomb = (function(HTomb) {
   scroll.buffer = [];
   scroll.bufferIndex = 1;
   scroll.render = function() {
+    scrollDisplay.clear();
+    status.render();
     for (let s=0; s<SCROLLH; s++) {
-      //black out the entire line with solid blocks
-      scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{black}"+(UNIBLOCK.repeat(SCROLLW-2)));
       if (s+this.bufferIndex>this.buffer.length) {
         return;
       }
@@ -264,8 +263,8 @@ HTomb = (function(HTomb) {
       c++;
       br = null;
     }
+    menuDisplay.clear();
     for (let i=0; i<MENUH; i++) {
-      menuDisplay.drawText(this.x0, this.y0+i, "%c{black}"+(UNIBLOCK.repeat(MENUW-2)));
       if (menuText[i]) {
         var j = 0;
         if (menuText[i].charAt(0)===" ") {
@@ -313,7 +312,6 @@ HTomb = (function(HTomb) {
   // Render all four default panels
   GUI.render = function() {
     gameScreen.render();
-    status.render();
     scroll.render();
     menu.render();
   };
@@ -405,9 +403,7 @@ HTomb = (function(HTomb) {
     HTomb.Time.stopTime();
     HTomb.Time.stopParticles();
     // we may not want to force the player to reset the GUI...but let's try it out
-    for (let i=0; i<SCREENH+SCROLLH; i++) {
-      overlayDisplay.drawText(1,1+i,"%c{black}"+(UNIBLOCK.repeat(MENUW+SCREENW*CHARWIDTH/(TEXTWIDTH-TEXTSPACING))));
-    }
+    overlayDisplay.clear();
     let c=0;
     let br=null;
     //%{\w+}

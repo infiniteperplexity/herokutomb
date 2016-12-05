@@ -36,8 +36,11 @@ HTomb = (function(HTomb) {
     fontFamily: FONTFAMILY,
     forceSquareRatio: true
   });
+  console.log("Aspect ratio is "+display._backend._spacingX + "x"+display._backend._spacingY+".");
+  let canv = display.getContainer();
+  console.log("Screen dimensions are "+canv.width + "x" + canv.height+".");
   //forceSquareRatio doesn't work consistently
-  display._backend._spacingX = display._backend._spacingY;
+  //display._backend._spacingX = display._backend._spacingY;
   var scrollDisplay = new ROT.Display({
     width: SCROLLW,
     height: STATUSH+SCROLLH,

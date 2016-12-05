@@ -29,7 +29,8 @@ HTomb = (function(HTomb) {
       return;
     }
     timePassing = setInterval(HTomb.Time.passTime,speed);
-    HTomb.GUI.Panels.status.render();
+    //HTomb.GUI.Panels.status.render();
+    HTomb.GUI.Panels.scroll.render();
   };
   HTomb.Time.stopTime = function() {
     clearInterval(timePassing);
