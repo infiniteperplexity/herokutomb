@@ -223,21 +223,18 @@ HTomb = (function(HTomb) {
       tsk.designate(this.entity);
     },
     assignTasks: function() {
-      for(var i=0; i<this.taskList.length; i++) {
+      for(let i=0; i<this.taskList.length; i++) {
         var tsk = this.taskList[i];
         if (tsk.assignee!==null) {
           continue;
         }
         var master = this.entity;
         var minions = this.minions;
-        for (var j=0; j<minions.length; j++) {
+        for (let j=0; j<minions.length; j++) {
           if (minions[j].worker===undefined) {
             continue;
           }
           if (minions[j].worker.task!==null) {
-            continue;
-          }
-          if (minions[j].worker===undefined) {
             continue;
           }
           if (minions[j].worker.allowedTasks.indexOf(tsk.template)===-1 && minions[j].worker.allowedTasks.indexOf(tsk.fakeAs)===-1) {

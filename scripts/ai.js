@@ -71,6 +71,7 @@ HTomb = (function(HTomb) {
         return false;
       // failed to find what we needed
       } else if (needy===true && t===null) {
+        console.log("unassigned by failure to find...");
         cr.worker.task.unassign();
         cr.ai.walkRandom();
       } else if (t!==null) {
