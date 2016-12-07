@@ -183,7 +183,10 @@ HTomb = (function(HTomb) {
     },
     VK_DOWN: function() {
       Views.Summary.scrollDown();
-    }
+    },
+    VK_RETURN: function() {
+      HTomb.Time.toggleTime();
+    },
   });
   GUI.Contexts.summary.mouseTile = function() {};
 
