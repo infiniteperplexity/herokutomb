@@ -202,10 +202,17 @@ HTomb = (function(HTomb) {
     VK_EQUALS: function() {Views.Workshops.workQueueMore();},
     VK_HYPHEN_MINUS: function() {Views.Workshops.workQueueLess();},
     VK_BACK_SPACE: function() {Views.Workshops.cancelGood();},
-    VK_DELETE: function() {Views.Workshops.cancelGood();}
+    VK_DELETE: function() {Views.Workshops.cancelGood();},
+    VK_ENTER: HTomb.Time.toggleTime
   });
   GUI.Contexts.workshops.mouseTile = function() {};
-
+  GUI.Contexts.workshops.clickAt = function() {};
+  GUI.Contexts.workshops.clickTile = function(x,y) {
+    let crd = HTomb.Utils.coord(x,y, GUI.Panels.gameScreen.z);
+    if (HTomb.World.features[crd] && HTomb.World.features[crd].workshop) {
+      Views.workshopView(HTomb.World.features[crd].workshop);
+    }
+  };
   Views.Workshops.cancelGood = function() {
     let i = workQueueCursor;
     let w = currentWorkshop;
@@ -322,9 +329,17 @@ HTomb = (function(HTomb) {
       }
       HTomb.GUI.reset();
     },
-    VK_TAB: function() {Views.Creature.nextMinion()}
+    VK_TAB: function() {Views.Creature.nextMinion();},
+    VK_ENTER: HTomb.Time.toggleTime
   });
   GUI.Contexts.creatures.mouseTile = function() {};
+  GUI.Contexts.creatures.clickAt = function() {};
+  GUI.Contexts.creatures.clickTile = function(x,y) {
+    let crd = HTomb.Utils.coord(x,y, GUI.Panels.gameScreen.z);
+    if (HTomb.World.creatures[crd]) {
+      Views.creatureView(HTomb.World.creatures[crd]);
+    }
+  };
   Views.Creature.creatureDetails = function(c) {
     let txt = [
       "Esc: Done.",

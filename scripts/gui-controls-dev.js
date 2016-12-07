@@ -578,6 +578,8 @@ HTomb = (function(HTomb) {
     VK_NUMPAD1: Main.surveyMove(-1,+1,0),
     VK_NUMPAD2: Main.surveyMove(0,+1,0),
     VK_NUMPAD3: Main.surveyMove(+1,+1,0),
+    VK_ENTER: HTomb.Time.toggleTime,
+    VK_SPACE: Commands.wait,
     // Exit survey mode and return to the original position
     VK_ESCAPE: function() {Views.systemView();},
     VK_TAB: function() {
