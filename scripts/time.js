@@ -101,12 +101,19 @@ HTomb = (function(HTomb) {
       HTomb.FOV.findVisible(Player.x, Player.y, Player.z, Player.sight.range);
     }
     if (Player.master) {
-      for (var i=0; i<Player.master.minions.length; i++) {
-        var cr = Player.master.minions[i];
+      for (let i=0; i<Player.master.minions.length; i++) {
+        let cr = Player.master.minions[i];
         if (cr.sight) {
           HTomb.FOV.findVisible(cr.x,cr.y,cr.z, cr.sight.range);
         }
       }
+      //for (let i=0; i<Player.master.workshops.length; i++) {
+      //  let w = Player.master.workshops[i];
+      //  for (let j=0; j<w.features.length; j++) {
+      //    let f = w.features[j];
+      //    HTomb.World.visible[HTomb.Utils.coord(f.x,f.y,f.z)] = true;
+      //  }
+      //}
     }
     // Recenter the GUI on the player
     if (HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {

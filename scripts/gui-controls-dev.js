@@ -500,9 +500,9 @@ HTomb = (function(HTomb) {
     HTomb.Time.toggleTime();
   };
   main.rightClickTile = function(x,y) {
-    let p = HTomb.Player;
-    if (x===p.x && y===p.y && gameScreen.z===p.z) {
-      GUI.Views.summaryView();
+    let c = HTomb.World.creatures[coord(x,y,gameScreen.z)];
+    if (c) {
+      GUI.Views.creatureView(c);
       return;
     }
     let f = HTomb.World.features[coord(x,y,gameScreen.z)];

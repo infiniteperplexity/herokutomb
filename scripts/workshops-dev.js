@@ -84,7 +84,7 @@ HTomb = (function(HTomb) {
       if (this.task) {
         //let s = "\u2692"+" "+this.task.describe();
         //let s = this.task.describe() + "- (next item to produce)";
-        let s = "> " + HTomb.Things.templates[this.task.makes].name;
+        let s = "@ " + HTomb.Things.templates[this.task.makes].name;
         if (this.task.assignee) {
           s+=": (active: "+this.task.assignee.describe()+")";
         } else {
@@ -92,7 +92,7 @@ HTomb = (function(HTomb) {
         }
         txt.push(s);
       } else {
-        txt.push("> (none)");
+        txt.push("@ (none)");
       }
       for (let i=0; i<this.queue.length; i++) {
         let item = this.queue[i];

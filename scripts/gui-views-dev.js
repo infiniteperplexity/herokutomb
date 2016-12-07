@@ -189,12 +189,9 @@ HTomb = (function(HTomb) {
   var workQueueCursor = 0;
   GUI.Contexts.workshops = GUI.Contexts.new({
     VK_ESCAPE: HTomb.GUI.reset,
-    VK_PAGE_UP: function() {Views.Workshops.nextWorkshop();},
-    VK_PAGE_DOWN: function() {Views.Workshops.previousWorkshop();},
-    VK_TAB: function() {//Views.detailsView();
-    },
     VK_UP: function() {Views.Workshops.workQueueUp();},
     VK_DOWN: function() {Views.Workshops.workQueueDown();},
+    VK_TAB: function() {Views.Workshops.nextWorkshop();},
     VK_LEFT: function() {Views.Workshops.workQueueLeft();},
     VK_RIGHT: function() {Views.Workshops.workQueueRight();},
     VK_EQUALS: function() {Views.Workshops.workQueueMore();},
@@ -304,21 +301,92 @@ HTomb = (function(HTomb) {
   Views.Details = {};
   GUI.Contexts.details = GUI.Contexts.new({
     VK_ESCAPE: HTomb.GUI.reset,
-    VK_PAGE_UP: function() {Views.Details.nextMinion();},
-    VK_PAGE_DOWN: function() {Views.Details.previousMinion();},
+    //VK_PAGE_UP: function() {Views.Details.nextMinion();},
+    //VK_PAGE_DOWN: function() {Views.Details.previousMinion();},
     VK_TAB: function() {Views.summaryView();}
   });
   var currentMinion = null;
   var currentWorkshop = null;
-  Views.Details.nextMinion = function() {
+
+  Views.Creature = {};
+  GUI.Contexts.creatures = GUI.Contexts.new({
+    VK_ESCAPE: HTomb.GUI.reset,
+    VK_TAB: function() {Views.Creature.nextMinion()}
+  });
+  GUI.Contexts.creatures.mouseTile = function() {};
+  Views.Creature.creatureDetails = function(c) {
+    let txt = [
+      "Esc: Done.",
+      "%c{yellow}Creature: "+c.name.substr(0,1).toUpperCase()+c.name.substr(1)+" at "+c.x +", "+c.y+", "+c.z+".",
+      "Tab: Next minion.",
+      " "
+    ];
+    if (c.ai && c.ai.target) {
+      let b = c.ai.target;
+      txt.push("Focus: " + b.describe() + " at "+b.x+", "+b.y+", "+b.z+".");
+      txt.push(" ");
+    }
+    if (c.worker) {
+      let b = c.worker;
+      if (b.task) {
+        let s = "Task: " + b.task.describe();
+        if (b.task.zone) {
+          let zone = b.task.zone;
+          s+=" at " + zone.x + ", "+zone.y+", "+zone.z;
+        }
+        s+=".";
+        txt.push(s);
+      }
+      txt.push(" ");
+    }
+    if (c.inventory && c.inventory.items.length>0) {
+      let b = c.inventory.items;
+      txt.push("Carrying: ");
+      let s = "  ";
+      for (let i=0; i<b.length; i++) {
+        s+=b[i].describe();
+        txt.push(s);
+        s = "  ";
+      }
+      txt.push(" ");
+    }
+    if (c.body && c.body.materials) {
+      let b = c.body.materials;
+      txt.push("Body: ");
+      let s = "  ";
+      for (let i in b) {
+        s+=HTomb.Materials[i].describe() + " (" + b[i].has + " out of " + b[i].max + ")";
+        txt.push(s);
+        s = "  ";
+      }
+    }
+    return txt;
+  };
+  Views.creatureView = function(c) {
+    console.log("viewing creature");
+    c = c || HTomb.Player;
+    HTomb.GUI.Views.Main.zoomIfNotVisible(c.x,c.y,c.z);
+    HTomb.GUI.Panels.gameScreen.highlightTile(c.x,c.y,"#557722");
+    GUI.Contexts.active = GUI.Contexts.creatures;
+    GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(c);
+    menu.bottom = menu.defaultBottom;
+    menu.render();
+  };
+  Views.Creature.nextMinion = function() {
     var p = HTomb.Player;
     if (currentMinion===null && p.master.minions.length>0) {
       p = p.master.minions[0];
       currentMinion = p;
-      GUI.Panels.overlay.update(Views.Details.viewDetails(p.x,p.y,p.z));
+      HTomb.GUI.Views.Main.zoomIfNotVisible(p.x,p.y,p.z);
+      HTomb.GUI.Panels.gameScreen.highlightTile(p.x,p.y,"#557722");
+      GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(currentMinion);
+      menu.render();
     } else if (p.master.minions.indexOf(currentMinion)===-1) {
-      currentMinion = null;
-      GUI.Panels.overlay.update(Views.Details.viewDetails(p.x,p.y,p.z));
+      currentMinion = HTomb.Player;
+      HTomb.GUI.Views.Main.zoomIfNotVisible(p.x,p.y,p.z);
+      HTomb.GUI.Panels.gameScreen.highlightTile(p.x,p.y,"#557722");
+      GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(currentMinion);
+      menu.render();
     } else {
       var i = p.master.minions.indexOf(currentMinion);
       if (i===p.master.minions.length-1) {
@@ -328,19 +396,24 @@ HTomb = (function(HTomb) {
       }
       p = p.master.minions[i];
       currentMinion = p;
-      GUI.Panels.overlay.update(Views.Details.viewDetails(p.x,p.y,p.z));
+      HTomb.GUI.Views.Main.zoomIfNotVisible(p.x,p.y,p.z);
+      HTomb.GUI.Panels.gameScreen.highlightTile(p.x,p.y,"#557722");
+      GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(currentMinion);
+      menu.render();
     }
-    GUI.Contexts.active = GUI.Contexts.details;
+    GUI.Contexts.active = GUI.Contexts.creatures;
   };
-  Views.Details.previousMinion = function() {
+  Views.Creature.previousMinion = function() {
     var p = HTomb.Player;
     if (currentMinion===null && p.master.minions.length>0) {
       p = p.master.minions[p.master.minions.length-1];
       currentMinion = p;
-      GUI.Panels.overlay.update(Views.Details.viewDetails(p.x,p.y,p.z));
+      GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(currentMinion);
+      menu.render();
     } else if (p.master.minions.indexOf(currentMinion)===-1) {
-      currentMinion = null;
-      GUI.Panels.overlay.update(Views.Details.viewDetails(p.x,p.y,p.z));
+      currentMinion = HTomb.Player;
+      GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(currentMinion);
+      menu.render();
     } else {
       var i = p.master.minions.indexOf(currentMinion);
       if (i===0) {
@@ -350,9 +423,12 @@ HTomb = (function(HTomb) {
       }
       p = p.master.minions[i];
       currentMinion = p;
-      GUI.Panels.overlay.update(Views.Details.viewDetails(p.x,p.y,p.z));
+      HTomb.GUI.Views.Main.zoomIfNotVisible(p.x,p.y,p.z);
+      HTomb.GUI.Panels.gameScreen.highlightTile(p.x,p.y,"#557722");
+      GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(currentMinion);
+      menu.render();
     }
-    GUI.Contexts.active = GUI.Contexts.details;
+    GUI.Contexts.active = GUI.Contexts.creatures;
   };
   Views.Details.viewDetails = function(x,y,z) {
     var square = HTomb.Tiles.getSquare(x,y,z);
@@ -451,7 +527,7 @@ HTomb = (function(HTomb) {
       currentWorkshop = null;
       GUI.Panels.overlay.update(Controls.viewDetails(p.x,p.y,p.z));
     } else {
-      var i = p.master.workshops.indexOf(currentWorkshop);
+      let i = p.master.workshops.indexOf(currentWorkshop);
       if (i===p.master.workshops.length-1) {
         i = 0;
       } else {
@@ -459,11 +535,17 @@ HTomb = (function(HTomb) {
       }
       p = p.master.workshops[i];
       currentWorkshop = p;
+      HTomb.GUI.Views.Main.zoomIfNotVisible(p.x,p.y,p.z);
+      for (let j=0; j<p.features.length;j++) {
+        let f = p.features[j];
+        HTomb.GUI.Panels.gameScreen.highlightTile(f.x,f.y,"#557722");
+      }
       GUI.Contexts.workshops.menuText = Views.Workshops.workshopDetails(p);
       menu.render();
     }
-    GUI.Contexts.active = workshops;
-  }
+    GUI.Contexts.active = GUI.Contexts.workshops;
+  };
+
   Views.Workshops.previousWorkshop = function() {
     var p = HTomb.Player;
     if (currentWorkshop===null && p.master.workshops.length>0) {
@@ -483,10 +565,15 @@ HTomb = (function(HTomb) {
       }
       let w = p.master.workshops[i];
       currentWorkshop = w;
+      HTomb.GUI.Views.Main.zoomIfNotVisible(p.x,p.y,p.z);
+      for (let j=0; j<p.features.length;j++) {
+        let f = p.features[j];
+        HTomb.GUI.Panels.gameScreen.highlightTile(f.x,f.y,"#557722");
+      }
       GUI.Contexts.workshops.menuText = Views.Workshops.workshopDetails(w);
       menu.render();
     }
-    GUI.Contexts.active = workshops;
+    GUI.Contexts.active = GUI.Contexts.workshops;
   };
   Views.workshopView = function(w) {
     w = w || HTomb.Player.master.workshops[0] || null;
@@ -496,6 +583,11 @@ HTomb = (function(HTomb) {
       GUI.Contexts.active = GUI.Contexts.new();
       GUI.Contexts.active.keydown = Views.summaryView;
       return;
+    }
+    HTomb.GUI.Views.Main.zoomIfNotVisible(w.x,w.y,w.z);
+    for (let j=0; j<w.features.length;j++) {
+      let f = w.features[j];
+      HTomb.GUI.Panels.gameScreen.highlightTile(f.x,f.y,"#557722");
     }
     GUI.Contexts.workshops.menuText = Views.Workshops.workshopDetails(w);
     menu.bottom = menu.defaultBottom;
@@ -522,6 +614,7 @@ HTomb = (function(HTomb) {
         });
       }
     }
+    menu.render();
   };
   Views.summaryView = function() {
     GUI.Contexts.active = GUI.Contexts.summary;
@@ -580,13 +673,13 @@ HTomb = (function(HTomb) {
   Views.Workshops.workshopDetails = function(w) {
     let txt = [
       "Esc: Done.",
-      "%c{yellow}Workshop: "+w.name.substr(0,1).toUpperCase()+w.name.substr(1),
+      "%c{yellow}Workshop: "+w.name.substr(0,1).toUpperCase()+w.name.substr(1)+" at "+w.x +", "+w.y+", "+w.z+".",
       "Up/Down: Traverse queue.",
       "Left/Right: Alter repeat.",
       "+/-: Alter count.",
-      "a-z: Insert good below \u21d2",
+      "a-z: Insert good below the >.",
       "Backspace/Delete: Remove good.",
-      "PageUp/PageDown: Next workshop."
+      "Tab: Next workshop."
     ];
     txt.push(" ");
     if (w.makes && w.makes.length>0) {
@@ -605,11 +698,11 @@ HTomb = (function(HTomb) {
     }
     if (q.length>1 && workQueueCursor>-1) {
       let s = q[workQueueCursor+1];
-      s = "\u21d2" + s.substr(1);
+      s = ">" + s.substr(1);
       q[workQueueCursor+1] = s;
     } else {
       let s = q[0];
-      s = "\u21d2" + s.substr(1);
+      s = ">" + s.substr(1);
       q[0] = s;
     }
     txt = txt.concat(q);
