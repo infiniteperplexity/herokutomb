@@ -160,7 +160,9 @@ HTomb = (function(HTomb) {
   status.render = function() {
     //black out the entire line with solid blocks
     var cursor = 0;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Mana:" + HTomb.Player.caster.mana + "/" + HTomb.Player.caster.maxmana);
+    if (HTomb.Player.caster) {
+      scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Mana:" + HTomb.Player.caster.mana + "/" + HTomb.Player.caster.maxmana);
+    }
     cursor+=12;
     scrollDisplay.drawText(this.x0+cursor,this.y0+1,"X:" + HTomb.Player.x);
     cursor+=6;
@@ -325,11 +327,10 @@ HTomb = (function(HTomb) {
     "(Shift+Arrows for diagonal.)",
     "<: Up, >: Down, Space: Wait.",
     "Z: Cast spell, J: Assign job.",
+    "S: Summary, M: Minions, W: Workshops.",
     "G: Pick Up, D: Drop, I: Inventory.",
     "+ / -: Change speed.",
     "Click: Pause or unpause.",
-    "Right Click: View details",
-    "~: View summary.",
     "PageUp/Down to scroll messages.",
     "%c{yellow}?: Help / Playtest notes."
   ];

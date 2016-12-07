@@ -28,7 +28,7 @@ HTomb = (function(HTomb) {
   var TOTALH = Constants.TOTALH = GAMEH+8*TEXTSIZE;
   var TOTALW = Constants.TOTALW = 900;
   var MENUW = Constants.MENUW = Math.floor((TOTALW-GAMEW)/TEXTWIDTH);
-  var MENUH = Constants.MENUH = TOTALH/TEXTSIZE;
+  var MENUH = Constants.MENUH = parseInt(TOTALH/TEXTSIZE);
   var STATUSH = Constants.STATUSH = 2;
   var SCROLLH = Constants.SCROLLH = 6;
   var SCROLLW = Constants.SCROLLW = GAMEW/TEXTWIDTH;

@@ -25,17 +25,18 @@ HTomb = (function(HTomb) {
     timeLocked = false;
   };
   HTomb.Time.startTime = function() {
+    console.log("starting time");
     if (timeLocked===true) {
       return;
     }
     timePassing = setInterval(HTomb.Time.passTime,speed);
-    //HTomb.GUI.Panels.status.render();
     HTomb.GUI.Panels.scroll.render();
   };
   HTomb.Time.stopTime = function() {
+    console.log("stopping time");
     clearInterval(timePassing);
     timePassing = null;
-    //HTomb.GUI.Panels.status.render();
+    HTomb.GUI.Panels.scroll.render();
   };
   HTomb.Time.toggleTime = function() {
     if (timePassing===null) {
@@ -73,7 +74,7 @@ HTomb = (function(HTomb) {
     }
     HTomb.Time.startParticles();
     HTomb.Events.publish({type: "TurnBegin"});
-    HTomb.Time.stopTime();
+    //HTomb.Time.stopTime();
     var Player = HTomb.Player;
     // Assign tasks to minions
     if (Player.master) {
@@ -122,9 +123,9 @@ HTomb = (function(HTomb) {
     HTomb.GUI.Panels.menu.render();
     // Render the GUI
     HTomb.GUI.render();
-    if (HTomb.Debug.paused!==true) {
-      HTomb.Time.startTime();
-    }
+    //if (HTomb.Debug.paused!==true) {
+    //  HTomb.Time.startTime();
+    //}
     if (HTomb.Encounters.check()) {
         HTomb.Encounters.roll();
     }

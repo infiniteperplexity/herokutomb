@@ -89,7 +89,10 @@ HTomb = (function(HTomb) {
   var shiftArrow = null;
   var keydown = function(key) {
     key.preventDefault();
-    HTomb.Time.stopTime();
+    // VK_RETURN is often used to toggle time, and stopping time first breaks that
+    if (key.keyCode!==ROT.VK_RETURN) {
+      HTomb.Time.stopTime();
+    }
     if (GUI.Contexts.locked===true) {
       return;
     }
@@ -186,7 +189,7 @@ HTomb = (function(HTomb) {
     menuDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
     scrollDisplay.getContainer().addEventListener("mousemove",function() {GUI.Contexts.active.mouseOver();});
     ///!!!! Maybe get rid of the next line....
-    overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickAt();});
+    overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickOverlay();});
     console.log("adding event listeners");
   },500);
 
@@ -239,9 +242,6 @@ HTomb = (function(HTomb) {
         bindKey(this,b,bindings[b]);
       }
     }
-    this.clickAt = HTomb.GUI.reset;
-    this.rightClickTile = HTomb.GUI.reset;
-    this.clickTile = HTomb.GUI.reset;
   }
   Context.prototype.bindKey = function(k, f) {
     bindKey(this,k,f);
@@ -253,11 +253,15 @@ HTomb = (function(HTomb) {
       this.boundKeys[key.keyCode]();
     }
   };
-  // I don't think this line works...
-  GUI.Contexts.default = Context.prototype;
+  Context.prototype.clickOverlay = function() {
+    GUI.reset();
+  }
+
   GUI.Contexts.new = function(args) {
     return new Context(args);
-  };
+  }
+  // I don't think this line works...
+  GUI.Contexts.default = Context.prototype;
 
   return HTomb;
 })(HTomb);

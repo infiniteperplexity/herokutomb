@@ -38,6 +38,8 @@ HTomb = (function(HTomb) {
   let Views = GUI.Views = {};
   let Main = GUI.Views.Main = {};
 
+
+
   Main.inSurveyMode = false;
   Main.reset = function() {
     if (overlay.active) {
@@ -56,16 +58,6 @@ HTomb = (function(HTomb) {
     GUI.render(); // Actions.render();
   };
   // **** Set default controls
-  // By default, clicking resets the GUI
-  Contexts.default.clickAt = function() {
-    GUI.reset();
-  };
-  Contexts.default.rightClickTile = function(x,y) {
-    this.clickTile(x,y);
-  };
-  Contexts.default.clickTile = function() {
-    GUI.reset();
-  };
   // By default, dragging the mouse outside the game screen resets the game screen
   // This clears out highlighted tiles from hovering, for example
   var oldCursor = null;
@@ -88,6 +80,33 @@ HTomb = (function(HTomb) {
     mouseTile(x,y);
     menu.bottom = examineSquare(x,y,gameScreen.z);
     menu.refresh();
+  };
+
+  Contexts.default.clickAt = function(x,y) {
+    HTomb.Time.toggleTime();
+  };
+  Contexts.default.clickTile = function(x,y) {
+    // If we clicked on a creature, go to creature view
+    let c = HTomb.World.creatures[coord(x,y,gameScreen.z)];
+    if (c) {
+      GUI.Views.creatureView(c);
+      return;
+    }
+    // If we clicked on a workshop, go to workshop view
+    let f = HTomb.World.features[coord(x,y,gameScreen.z)];
+    if (f && f.workshop && f.workshop.active && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
+      GUI.Views.workshopView(f.workshop);
+      return;
+    }
+    // Otherwise, toggle time
+    if (HTomb.Time.isPaused()) {
+      HTomb.Time.startTime();
+    } else {
+      HTomb.Time.toggleTime();
+    }
+  }
+  Contexts.default.rightClickTile = function(x,y) {
+    this.clickTile(x,y);
   };
 
   // **** Selection and targeting methods
@@ -477,10 +496,12 @@ HTomb = (function(HTomb) {
     },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: Commands.wait,
-    VK_ENTER: HTomb.Time.toggleTime,
+    VK_RETURN: function() {
+      HTomb.Time.toggleTime();
+    },
     //VK_ESCAPE: HTomb.Time.stopTime,
-    VK_BACK_QUOTE: function() {Views.summaryView();},
-    VK_TILDE: function() {Views.summaryView();},
+    //VK_BACK_QUOTE: function() {Views.summaryView();},
+    //VK_TILDE: function() {Views.summaryView();},
     VK_ESCAPE: function() {Views.systemView();},
     VK_HYPHEN_MINUS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
@@ -492,30 +513,17 @@ HTomb = (function(HTomb) {
       HTomb.Time.startTime();
     },
     VK_PAGE_UP: function() {scroll.scrollUp();},
-    VK_PAGE_DOWN: function() {scroll.scrollDown();}
+    VK_PAGE_DOWN: function() {scroll.scrollDown();},
+    VK_M: function() {
+      HTomb.GUI.Views.creatureView();
+    },
+    VK_W: function() {
+      HTomb.GUI.Views.workshopView();
+    },
+    VK_S: function() {
+      HTomb.GUI.Views.summaryView();
+    }
   });
-
-  // Clicking outside the game screen does nothing
-  main.clickAt = function(x,y) {
-    HTomb.Time.toggleTime();
-  };
-  main.rightClickTile = function(x,y) {
-    let p = HTomb.Player;
-    if (x===p.x && y===p.y && gameScreen.z===p.z) {
-      GUI.Views.summaryView();
-      return;
-    }
-    let f = HTomb.World.features[coord(x,y,gameScreen.z)];
-    if (f && f.workshop && f.workshop.active && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
-      GUI.Views.workshopView(f.workshop);
-      return;
-    }
-    GUI.Views.detailsView(x,y,gameScreen.z);
-  }
-  main.clickTile = function(x,y) {
-    HTomb.Time.toggleTime();
-  };
-
   // ***** Survey mode *********
   Main.surveyMode = function() {
     Main.inSurveyMode = true;
@@ -578,6 +586,12 @@ HTomb = (function(HTomb) {
     VK_NUMPAD1: Main.surveyMove(-1,+1,0),
     VK_NUMPAD2: Main.surveyMove(0,+1,0),
     VK_NUMPAD3: Main.surveyMove(+1,+1,0),
+    VK_RETURN: function() {
+      HTomb.Time.toggleTime();
+    },
+    VK_SPACE: function() {
+      Commands.wait();
+    },
     // Exit survey mode and return to the original position
     VK_ESCAPE: function() {Views.systemView();},
     VK_TAB: function() {
@@ -603,7 +617,16 @@ HTomb = (function(HTomb) {
     VK_SLASH: function() {
       HTomb.GUI.splash(GUI.helpText);
     },
-    VK_TILDE: function() {Views.summaryView();}
+    //VK_TILDE: function() {Views.summaryView();}
+    VK_M: function() {
+      HTomb.GUI.Views.creatureView();
+    },
+    VK_W: function() {
+      HTomb.GUI.Views.workshopView();
+    },
+    VK_S: function() {
+      HTomb.GUI.Views.summaryView();
+    }
   });
 
   survey.menuText =
@@ -613,15 +636,12 @@ HTomb = (function(HTomb) {
     "(Shift+Arrows for diagonal.)",
     "<: Up, >: Down, Space: Wait.",
     "Z: Cast spell, J: Assign job.",
+    "S: Summary, M: Minions, W: Workshops.",
     "+ / -: Change speed.",
     "Click: Pause or unpause.",
-    "Right Click: View details",
-    "~: View summary.",
     "PageUp/Down to scroll messages.",
     "%c{yellow}?: Help / Playtest notes."
   ];
-  survey.clickTile = main.clickTile;
-  survey.rightClickTile = main.rightClickTile;
 
   return HTomb;
 })(HTomb);

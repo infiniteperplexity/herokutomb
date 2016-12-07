@@ -84,34 +84,46 @@ HTomb = (function(HTomb) {
       if (this.task) {
         //let s = "\u2692"+" "+this.task.describe();
         //let s = this.task.describe() + "- (next item to produce)";
-        let s = "> " + this.task.name;
+        let s = "@ " + HTomb.Things.templates[this.task.makes].name;
         if (this.task.assignee) {
-          s+=" (active: "+this.task.assignee.describe()+")";
+          s+=": (active: "+this.task.assignee.describe()+")";
         } else {
-          s+=" (unassigned)";
+          s+=": (unassigned)";
         }
         txt.push(s);
       } else {
-        txt.push("> (no current production)");
+        txt.push("@ (none)");
       }
       for (let i=0; i<this.queue.length; i++) {
         let item = this.queue[i];
         //let s = "- " + HTomb.Things.templates[item[0]].describe() + ": ";
-        let s = "- produce " + HTomb.Things.templates[item[0]].name + ": ";
+        let s = "- " + HTomb.Things.templates[item[0]].name + ": ";
         if (item[1]==="finite") {
           //s+=item[2] + " #";
-          s+=(" (repeat " + item[2] + " times)");
+          s+=(" (repeat " + item[2] + ")");
         } else if (item[1]==="infinite") {
           //s+="\u221E";
-          s+=" (repeat indefinitely)";
+          s+=" (repeat infinite)";
         } else if (item[1]===parseInt(item[1])) {
           //s+=item[2]+ " " + "\u27F3" + " " + item[1];
-          s+=(" (repeat " + item[2] + " times then cycle queue)");
+          s+=(" (cycle " + item[2] + ")");
         }
         txt.push(s);
       }
       return txt;
-    }
+    },
+    highlight: function(bg) {
+      for (let i=0; i<this.features.length; i++) {
+        this.features[i].highlightColor = bg;
+      }
+    },
+    unhighlight: function() {
+      for (let i=0; i<this.features.length; i++) {
+        if (this.features[i].highlightColor) {
+          delete this.features[i].highlightColor;
+        }
+      }
+    },
   });
   //    -	Do X times
   //    -	As many as possible (u221E)
