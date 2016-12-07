@@ -119,6 +119,7 @@ HTomb = (function(HTomb) {
     if (HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
       HTomb.GUI.Panels.gameScreen.recenter();
     }
+    HTomb.GUI.Panels.menu.render();
     // Render the GUI
     HTomb.GUI.render();
     if (HTomb.Debug.paused!==true) {

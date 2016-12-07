@@ -111,7 +111,19 @@ HTomb = (function(HTomb) {
         txt.push(s);
       }
       return txt;
-    }
+    },
+    highlight: function(bg) {
+      for (let i=0; i<this.features.length; i++) {
+        this.features[i].highlightColor = bg;
+      }
+    },
+    unhighlight: function() {
+      for (let i=0; i<this.features.length; i++) {
+        if (this.features[i].highlightColor) {
+          delete this.features[i].highlightColor;
+        }
+      }
+    },
   });
   //    -	Do X times
   //    -	As many as possible (u221E)

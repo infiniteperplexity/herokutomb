@@ -157,6 +157,12 @@ HTomb = (function(HTomb) {
         return (bg || "black");
       }
     }
+    // look for explicit highlight colors
+    if (HTomb.World.creatures[crd] && HTomb.World.creatures[crd].highlightColor) {
+      return HTomb.World.creatures[crd].highlightColor;
+    } else if (HTomb.World.features[crd] && HTomb.World.features[crd].highlightColor) {
+      return HTomb.World.features[crd].highlightColor;
+    }
     // *********** Choose the background color *******************************
     if (covers[z][x][y]!==HTomb.Covers.NoCover && covers[z][x][y].liquid && tile.solid!==true) {
       if (vis) {

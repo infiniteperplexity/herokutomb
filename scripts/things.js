@@ -47,6 +47,14 @@ HTomb = (function(HTomb) {
     },
     details: function() {
       return ["This is " + this.describe() + "."];
+    },
+    highlight: function(bg) {
+      this.highlightColor = bg;
+    },
+    unhighlight: function() {
+      if (this.highlightColor) {
+        delete this.highlightColor;
+      }
     }
   };
   // The global list of known templates

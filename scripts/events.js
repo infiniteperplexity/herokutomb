@@ -10,7 +10,9 @@ HTomb = (function(HTomb) {
       Events[etype] = [];
       Events.types.push(etype);
     }
-    Events[etype].push(listener);
+    if (Events[etype].indexOf(listener)===-1) {
+      Events[etype].push(listener);
+    }
   };
   Events.publish = function(event) {
     if (typeof(event)==="string") {
