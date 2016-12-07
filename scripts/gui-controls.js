@@ -589,9 +589,6 @@ HTomb = (function(HTomb) {
     VK_RETURN: function() {
       HTomb.Time.toggleTime();
     },
-    VK_SPACE: function() {
-      Commands.wait();
-    },
     // Exit survey mode and return to the original position
     VK_ESCAPE: function() {Views.systemView();},
     VK_TAB: function() {
@@ -600,6 +597,8 @@ HTomb = (function(HTomb) {
       Main.inSurveyMode = false;
       GUI.reset();
     },
+    VK_J: Commands.showJobs,
+    VK_Z: Commands.showSpells,
     VK_HYPHEN_MINUS: function() {
       HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
@@ -609,11 +608,11 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
       HTomb.Time.startTime();
     },
+    VK_SPACE: function() {
+      Commands.wait();
+    },
     VK_PAGE_UP: function() {scroll.scrollUp();},
     VK_PAGE_DOWN: function() {scroll.scrollDown();},
-    VK_J: Commands.showJobs,
-    VK_Z: Commands.showSpells,
-    VK_SPACE: Commands.wait,
     VK_SLASH: function() {
       HTomb.GUI.splash(GUI.helpText);
     },

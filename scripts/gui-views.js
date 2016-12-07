@@ -187,6 +187,20 @@ HTomb = (function(HTomb) {
     VK_RETURN: function() {
       HTomb.Time.toggleTime();
     },
+    VK_HYPHEN_MINUS: function() {
+      HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
+      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+    },
+    VK_EQUALS: function() {
+      HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
+      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.startTime();
+    },
+    VK_SPACE: function() {
+      HTomb.Commands.wait();
+    },
+    VK_PAGE_UP: function() {HTomb.GUI.Panels.scroll.scrollUp();},
+    VK_PAGE_DOWN: function() {HTomb.GUI.Panels.scroll.scrollDown();},
   });
   GUI.Contexts.summary.mouseTile = function() {};
 
@@ -204,22 +218,20 @@ HTomb = (function(HTomb) {
     VK_TAB: function() {Views.Workshops.nextWorkshop();},
     VK_LEFT: function() {Views.Workshops.workQueueLeft();},
     VK_RIGHT: function() {Views.Workshops.workQueueRight();},
-    VK_EQUALS: function() {Views.Workshops.workQueueMore();},
-    VK_HYPHEN_MINUS: function() {Views.Workshops.workQueueLess();},
+    VK_CLOSE_BRACKET: function() {Views.Workshops.workQueueMore();},
+    VK_OPEN_BRACKET: function() {Views.Workshops.workQueueLess();},
     VK_BACK_SPACE: function() {Views.Workshops.cancelGood();},
     VK_DELETE: function() {Views.Workshops.cancelGood();},
     VK_RETURN: function() {
       HTomb.Time.toggleTime();
-    }
+    },
+    VK_SPACE: function() {
+      HTomb.Commands.wait();
+    },
+    VK_PAGE_UP: function() {HTomb.GUI.Panels.scroll.scrollUp();},
+    VK_PAGE_DOWN: function() {HTomb.GUI.Panels.scroll.scrollDown();},
   });
   GUI.Contexts.workshops.mouseTile = function() {};
-  //GUI.Contexts.workshops.clickAt = function() {};
-  //GUI.Contexts.workshops.clickTile = function(x,y) {
-  //  let crd = HTomb.Utils.coord(x,y, GUI.Panels.gameScreen.z);
-  //  if (HTomb.World.features[crd] && HTomb.World.features[crd].workshop) {
-  //    Views.workshopView(HTomb.World.features[crd].workshop);
-  //  }
-  //};
   Views.Workshops.cancelGood = function() {
     let i = workQueueCursor;
     let w = currentWorkshop;
@@ -339,7 +351,21 @@ HTomb = (function(HTomb) {
     VK_TAB: function() {Views.Creature.nextMinion();},
     VK_RETURN: function() {
       HTomb.Time.toggleTime();
-    }
+    },
+    VK_HYPHEN_MINUS: function() {
+      HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
+      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+    },
+    VK_EQUALS: function() {
+      HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
+      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.startTime();
+    },
+    VK_SPACE: function() {
+      HTomb.Commands.wait();
+    },
+    VK_PAGE_UP: function() {HTomb.GUI.Panels.scroll.scrollUp();},
+    VK_PAGE_DOWN: function() {HTomb.GUI.Panels.scroll.scrollDown();},
   });
   GUI.Contexts.creatures.mouseTile = function() {};
   GUI.Contexts.creatures.clickAt = function() {
@@ -699,6 +725,12 @@ HTomb = (function(HTomb) {
   Views.summaryView = function() {
     summaryIndex = 0;
     GUI.Contexts.active = GUI.Contexts.summary;
+    GUI.Contexts.summary.menuText = GUI.Views.Summary.summaryText();
+    menu.bottom = menu.defaultBottom;
+    menu.render();
+  }
+  Views.Summary = {};
+  Views.Summary.summaryText = function() {
     var text = [
       "Esc: Done.",
       "%c{yellow}Summary:",
@@ -739,17 +771,19 @@ HTomb = (function(HTomb) {
         text.push(s);
       }
     }
-    GUI.Contexts.summary.menuText = text;
-    menu.bottom = menu.defaultBottom;
-    menu.render();
-  }
-  Views.Summary = {};
+    return text;
+  };
   Views.Summary.scrollUp = function() {
     summaryIndex = Math.max(0, summaryIndex-1);
+    GUI.Contexts.summary.menuText = GUI.Views.Summary.summaryText().splice(summaryIndex,MENUH);
+    console.log(summaryIndex);
     menu.render();
   };
   Views.Summary.scrollDown = function() {
-    summaryIndex = Math.min(summaryIndex+1, Math.max(0,GUI.Contexts.summary.menuText.length-MENUH));
+    summaryIndex = Math.min(summaryIndex+1, Math.max(0,GUI.Views.Summary.summaryText().length-MENUH));
+    console.log(summaryIndex);
+    GUI.Contexts.summary.menuText = GUI.Views.Summary.summaryText().splice(summaryIndex,MENUH);
+    menu.render();
   };
   Views.Workshops.workshopDetails = function(w) {
     let txt = [
@@ -757,7 +791,7 @@ HTomb = (function(HTomb) {
       "%c{yellow}Workshop: "+w.name.substr(0,1).toUpperCase()+w.name.substr(1)+" at "+w.x +", "+w.y+", "+w.z+".",
       "Up/Down: Traverse queue.",
       "Left/Right: Alter repeat.",
-      "+/-: Alter count.",
+      "[/]: Alter count.",
       "a-z: Insert good below the >.",
       "Backspace/Delete: Remove good.",
       "Tab: Next workshop."
