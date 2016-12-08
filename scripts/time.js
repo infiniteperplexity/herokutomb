@@ -13,7 +13,6 @@ HTomb = (function(HTomb) {
     return speed;
   };
   HTomb.Time.lockTime = function() {
-    console.log("Note that we haven't actually locked the interface yet...");
     HTomb.Time.stopTime();
     timeLocked = true;
   };

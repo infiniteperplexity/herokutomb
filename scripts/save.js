@@ -194,9 +194,6 @@ HTomb = (function(HTomb) {
         return val.stringify();
         // if it's from the global things table, stringify it normally
       } else if (topLevel===true && val.thingId!==undefined) {
-        if (val.template==="Player") {
-          console.log("hit the player.");
-        }
         topLevel = false;
         let dummy = {};
         let template = HTomb.Things.templates[val.template];
@@ -232,8 +229,6 @@ HTomb = (function(HTomb) {
     xhttp.onreadystatechange = function() {
       if (xhttp.readyState == XMLHttpRequest.DONE) {
         if (xhttp.status == 200) {
-          console.log("Got our JSON, now we should do something with it.");
-          console.log(xhttp.responseText);
           callback(xhttp.responseText);
           console.timeEnd("get request");
         } else if (xhttp.status == 400) {
@@ -485,7 +480,6 @@ HTomb = (function(HTomb) {
             return;
           }
         }
-        console.log("succeeded with " + values);
         HTomb.Save.currentGame = name;
         HTomb.World.validate.lighting();
         HTomb.FOV.resetVisible();
@@ -493,7 +487,6 @@ HTomb = (function(HTomb) {
           HTomb.FOV.findVisible(HTomb.Player.x, HTomb.Player.y, HTomb.Player.z, HTomb.Player.sight.range);
         }
         HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
-        console.log("refreshed visibility");
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.reset;
