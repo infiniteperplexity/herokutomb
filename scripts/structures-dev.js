@@ -3,6 +3,16 @@ HTomb = (function(HTomb) {
   let coord = HTomb.Utils.coord;
 
   // Might like to have animations
+
+  HTomb.Things.define({
+    template: "Structure",
+    name: "structure",
+    owner: null,
+    x: null,
+    y: null,
+    z: null,
+
+  });
   HTomb.Things.define({
     template: "Workshop",
     name: "workshop",
