@@ -4,15 +4,58 @@ HTomb = (function(HTomb) {
 
   // Might like to have animations
 
-  HTomb.Things.define({
+  HTomb.Things.defineBehavior({
     template: "Structure",
     name: "structure",
     owner: null,
-    x: null,
-    y: null,
-    z: null,
-
+    height: null,
+    width: null,
+    features: [],
+    symbols: [],
+    fgs: [],
+    ingredients: {},
+    queue: null,
+    task: null,
+    onDefine: function() {
+      HTomb.Things.defineFeature({
+        template: this.template+"Feature",
+        name: this.name,
+        position: null,
+        onRemove: function() {
+          let c = this.workshop;
+          c.features.splice(c.features.indexOf(this),0);
+          this.workshop.deactivate();
+          if (c.features.length<=0) {
+            c.despawn();
+          }
+        }
+      });
+    },
+    onCreate: function() {
+      this.features = [];
+      return this;
+    },
+    onPlace: function() {
+      this.owner.master.workshops.push(this.entity);
+    },
+    onRemove: function() {
+      this.owner.master.workshops.splice(this.owner.master.workshops.indexOf(this),1);
+    }
   });
+  HTomb.Things.defineBehavior({
+    template: "Workshop",
+    name: "workshop",
+    onPlace: function() {
+      this.queue = [];
+    },
+    onRemove: function() {
+      for (let i=0; i<this.queue.length; i++) {
+        // not actually correct
+        this.task.cancel();
+      }
+    }
+  });
+
   HTomb.Things.define({
     template: "Workshop",
     name: "workshop",
@@ -64,6 +107,9 @@ HTomb = (function(HTomb) {
     },
     nextGood: function() {
       if (this.queue.length===0) {
+        return;
+      } else if (HTomb.World.zones[HTomb.Utils.coord(this.x,this.y,this.z)]) {
+        HTomb.GUI.pushMessage("Workshop tried to create new task but there was already a zone.");
         return;
       }
       let zone = HTomb.Things.templates.ProduceTask.placeZone(this.x,this.y,this.z,this.owner);
@@ -134,10 +180,43 @@ HTomb = (function(HTomb) {
         }
       }
     },
+    details: function() {
+      let txt = [
+        "Esc: Done.",
+        "%c{yellow}Workshop: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
+        "Up/Down: Traverse queue.",
+        "Left/Right: Alter repeat.",
+        "[/]: Alter count.",
+        "a-z: Insert good below the >.",
+        "Backspace/Delete: Remove good.",
+        "Tab: Next workshop."
+      ];
+      txt.push(" ");
+      if (this.makes && this.makes.length>0) {
+        txt.push("Goods:");
+        let alphabet = 'abcdefghijklmnopqrstuvwxyz';
+        for (let i=0; i<this.makes.length; i++) {
+          let t = HTomb.Things.templates[this.makes[i]];
+          txt.push(alphabet[i] + ") " + t.describe());
+        }
+        txt.push(" ");
+      }
+      txt.push("Production Queue:");
+      let q = this.formattedQueue();
+      if (q.length>1 && HTomb.GUI.Views.Workshops.workQueueCursor>-1) {
+        let s = q[HTomb.GUI.Views.Workshops.workQueueCursor+1];
+        s = ">" + s.substr(1);
+        q[HTomb.GUI.Views.Workshops.workQueueCursor+1] = s;
+      } else {
+        let s = q[0];
+        s = ">" + s.substr(1);
+        q[0] = s;
+      }
+      txt = txt.concat(q);
+      return txt;
+    }
   });
-  //    -	Do X times
-  //    -	As many as possible (u221E)
-  //    -	Cycle (u27F3, u21BB, u21C4)
+
   HTomb.Things.defineWorkshop({
     template: "Mortuary",
     name: "mortuary",
@@ -306,7 +385,6 @@ HTomb = (function(HTomb) {
       }
     }
   });
-
   // UseWorkshopTask
     // Each workshop maintains a queue...it spawns tasks one at a time.
     // When the task finished, it tries to assign the next one to the same minion.

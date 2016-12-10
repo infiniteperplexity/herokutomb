@@ -464,11 +464,6 @@ HTomb = (function(HTomb) {
 
   // any tile that can be touched by a worker from a square
   HTomb.Tiles.touchableFrom = function(x,y,z) {
-    if (HTomb.World.tiles[z]===undefined) {
-      console.log("caller is " + this.caller);
-      HTomb.trace = this.caller;
-      //throw new Error("why god why???");
-    }
     var touchable = [];
     //sideways
     var t, x1, y1;

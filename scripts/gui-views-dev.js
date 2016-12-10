@@ -268,6 +268,7 @@ HTomb = (function(HTomb) {
 
   // ***************** Workshop (or Structure?) view **********
   Views.workshopView = function(w) {
+    Views.Workshops.workQueueCursor = -1;
     if (Views.Workshops.selectedStructure) {
       Views.Workshops.selectedStructure.unhighlight();
     }
@@ -329,52 +330,17 @@ HTomb = (function(HTomb) {
   GUI.Contexts.workshops.mouseTile = function() {};
   Views.Workshops = {};
   Views.Workshops.selectedStructure = null;
-  Views.Workshops.workQueueCursor = 0;
+  Views.Workshops.workQueueCursor = -1;
   Views.Workshops.displayWorkshopInfo = function(w) {
     w.highlight("#557722");
     HTomb.GUI.Views.Main.zoomIfNotVisible(w.x,w.y,w.z);
-    GUI.Contexts.workshops.menuText = Views.Workshops.workshopDetails(w);
-    menu.bottom = menu.defaultBottom;
-    menu.render();
-    GUI.Contexts.active = GUI.Contexts.workshops;
-  };
-  Views.Workshops.workshopDetails = function(w) {
-    let txt = [
-      "Esc: Done.",
-      "%c{yellow}Workshop: "+w.name.substr(0,1).toUpperCase()+w.name.substr(1)+" at "+w.x +", "+w.y+", "+w.z+".",
-      "Up/Down: Traverse queue.",
-      "Left/Right: Alter repeat.",
-      "[/]: Alter count.",
-      "a-z: Insert good below the >.",
-      "Backspace/Delete: Remove good.",
-      "Tab: Next workshop."
-    ];
-    txt.push(" ");
-    if (w.makes && w.makes.length>0) {
-      txt.push("Goods:");
-      let alphabet = 'abcdefghijklmnopqrstuvwxyz';
-      for (let i=0; i<w.makes.length; i++) {
-        let t = HTomb.Things.templates[w.makes[i]];
-        txt.push(alphabet[i] + ") " + t.describe());
-      }
-      txt.push(" ");
-    }
-    txt.push("Production Queue:");
-    let q = w.formattedQueue();
     if (Views.Workshops.workQueueCursor>=w.queue.length) {
       Views.Workshops.workQueueCursor = w.queue.length-1;
     }
-    if (q.length>1 && Views.Workshops.workQueueCursor>-1) {
-      let s = q[Views.Workshops.workQueueCursor+1];
-      s = ">" + s.substr(1);
-      q[Views.Workshops.workQueueCursor+1] = s;
-    } else {
-      let s = q[0];
-      s = ">" + s.substr(1);
-      q[0] = s;
-    }
-    txt = txt.concat(q);
-    return txt;
+    GUI.Contexts.workshops.menuText = w.details();
+    menu.bottom = menu.defaultBottom;
+    menu.render();
+    GUI.Contexts.active = GUI.Contexts.workshops;
   };
   Views.Workshops.cancelGood = function() {
     let w = Views.Workshops.selectedStructure;
@@ -465,6 +431,7 @@ HTomb = (function(HTomb) {
     Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
   };
   Views.Workshops.nextWorkshop = function() {
+    Views.Workshops.workQueueCursor = -1;
     if (Views.Workshops.selectedStructure) {
       Views.Workshops.selectedStructure.unhighlight();
     }
@@ -488,6 +455,7 @@ HTomb = (function(HTomb) {
     Views.Workshops.displayWorkshopInfo(p);
   };
   Views.Workshops.previousWorkshop = function() {
+    Views.Workshops.workQueueCursor = -1;
     if (Views.Workshops.selectedStructure) {
       Views.Workshops.selectedStructure.unhighlight();
     }

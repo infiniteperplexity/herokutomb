@@ -14,56 +14,19 @@ HTomb = (function(HTomb) {
       if (this.isPlaced()) {
         this.remove();
       }
-      let c = coord(x,y,z);
-      if (this.creature) {
-        let creatures = HTomb.World.creatures;
-        if (creatures[c]) {
-          HTomb.Debug.pushMessage("Overwrote a creature!");
-          creatures[c].remove();
-          creatures[c].despawn();
-        }
-        creatures[c] = this;
-      }
-      if (this.item) {
-        var pile = HTomb.World.items[c] || ItemContainer();
-        pile.push(this);
-        if (pile.length>0) {
-          HTomb.World.items[c] = pile;
-          pile.parent = HTomb.World.items;
-        }
-      }
-      if (this.feature) {
-        let features = HTomb.World.features;
-        if (features[c]) {
-          HTomb.Debug.pushMessage("Overwrote a feature!");
-          features[c].remove();
-          features[c].despawn();
-        }
-        features[c] = this;
-      }
-      if (this.zone) {
-        let zones = HTomb.World.zones;
-        if (zones[c]) {
-          let zn = zones[c];
-          HTomb.Debug.pushMessage("Overwrote a zone!");
-          //zones[c].remove();
-          //zones[c].despawn();
-          zn.remove();
-          zn.despawn();
-        }
-        zones[c] = this;
-      }
       this.x = x;
       this.y = y;
       this.z = z;
+      if (this.isPlaced()) {
+        var beh = this.getBehaviors();
+        for (var i=0; i<beh.length; i++) {
+          if (beh[i].onPlace) {
+            beh[i].onPlace(x,y,z);
+          }
+        }
+      }
       if (this.onPlace) {
         this.onPlace(x,y,z);
-      }
-      var beh = this.getBehaviors();
-      for (var i=0; i<beh.length; i++) {
-        if (beh[i].onPlace) {
-          beh[i].onPlace();
-        }
       }
       return this;
     },
@@ -85,32 +48,10 @@ HTomb = (function(HTomb) {
       return behaviors;
     },
     remove: function() {
-      let c = coord(this.x,this.y,this.z);
-      if (this.creature) {
-        delete HTomb.World.creatures[c];
-      }
-      if (this.item) {
-        var pile = HTomb.World.items[c];
-        // remove it from the old pile
-        if (pile) {
-          if (pile.contains(this)) {
-            pile.remove(this);
-          }
-          if (pile.length===0) {
-            delete HTomb.World.items[c];
-          }
-        }
-      }
-      if (this.feature) {
-        delete HTomb.World.features[c];
-      }
-      if (this.zone) {
-        delete HTomb.World.zones[c];
-        if (this.task) {
-          let task = this.task;
-          this.task = null;
-          task.zone = null;
-          task.cancel();
+      var beh = this.getBehaviors();
+      for (var i=0; i<beh.length; i++) {
+        if (beh[i].onRemove) {
+          beh[i].onRemove();
         }
       }
       if (this.onRemove) {
@@ -121,24 +62,15 @@ HTomb = (function(HTomb) {
       this.z = null;
     },
     destroy: function() {
-      if (this.creature && this.creature.destroy) {
-        this.creature.destroy();
-      }
-      if (this.item && this.item.destroy) {
-        this.item.destroy();
-      }
-      if (this.feature && this.feature.destroy) {
-        this.feature.destroy();
-      }
-      if (this.zone && this.zone.destroy) {
-        this.zone.destroy();
-      }
-      HTomb.Events.publish({type: "Destroy", entity: this});
       var beh = this.getBehaviors();
       for (var i=0; i<beh.length; i++) {
         var b = beh[i];
+        if (b.destroy) {
+          b.destroy();
+        }
         b.despawn();
       }
+      HTomb.Events.publish({type: "Destroy", entity: this});
       this.despawn();
     },
     onDespawn: function() {
@@ -248,6 +180,18 @@ HTomb = (function(HTomb) {
         HTomb.GUI.sensoryEvent(this.entity.describe() + " dies.",this.entity.x,this.entity.y,this.entity.z);
         this.entity.destroy();
       }
+    },
+    onPlace: function(x,y,z) {
+      let c = coord(x,y,z);
+      if (HTomb.World.creatures[c]) {
+        HTomb.Debug.pushMessage("Overwrote a creature!");
+        HTomb.World.creatures[c].remove();
+        HTomb.World.creatures[c].despawn();
+      }
+      HTomb.World.creatures[c] = this.entity;
+    },
+    onRemove: function() {
+      delete HTomb.World.creatures[coord(this.entity.x, this.entity.y, this.entity.z)];
     }
   });
 
@@ -260,6 +204,28 @@ HTomb = (function(HTomb) {
     container: null,
     owned: true,
     bulk: 10,
+    onPlace: function(x,y,z) {
+      let c = coord(x,y,z);
+      var pile = HTomb.World.items[c] || ItemContainer();
+      pile.push(this.entity);
+      if (pile.length>0) {
+        HTomb.World.items[c] = pile;
+        pile.parent = HTomb.World.items;
+      }
+    },
+    onRemove: function() {
+      let c = coord(this.entity.x,this.entity.y,this.entity.z);
+      var pile = HTomb.World.items[c];
+      // remove it from the old pile
+      if (pile) {
+        if (pile.contains(this.entity)) {
+          pile.remove(this.entity);
+        }
+        if (pile.length===0) {
+          delete HTomb.World.items[c];
+        }
+      }
+    },
     makeStack: function() {
       if (this.entity.stackSize && this.stackable && this.n===null) {
         this.n = 1+HTomb.Utils.diceUntil(3,3);
@@ -280,6 +246,21 @@ HTomb = (function(HTomb) {
     name: "feature",
     yields: null,
     integrity: null,
+    onPlace: function(x,y,z) {
+      let c = coord(x,y,z);
+      if (HTomb.World.features[c]) {
+        HTomb.Debug.pushMessage("Overwrote a feature!");
+        HTomb.World.features[c].remove();
+        HTomb.World.features[c].despawn();
+      }
+      HTomb.World.features[c] = this.entity;
+    },
+    onRemove: function() {
+      let c = coord(this.entity.x,this.entity.y,this.entity.z);
+      if (HTomb.World.features[c]) {
+        delete HTomb.World.features[c];
+      }
+    },
     dismantle: function(optionalTask) {
       if (this.integrity===null) {
         this.integrity=5;
@@ -312,7 +293,32 @@ HTomb = (function(HTomb) {
   });
   HTomb.Things.defineBehavior({
     template: "Zone",
-    name: "zone"
+    name: "zone",
+    onPlace: function(x,y,z) {
+      let c = coord(x,y,z);
+      let zones = HTomb.World.zones;
+      if (zones[c]) {
+        let zn = zones[c];
+        HTomb.Debug.pushMessage("Overwrote a zone!");
+        zn.remove();
+        zn.despawn();
+      }
+      zones[c] = this.entity;
+    },
+    onRemove: function() {
+      let c = coord(this.entity.x, this.entity.y, this.entity.z);
+      delete HTomb.World.zones[c];
+      // sloppy placement of task!
+      //if (this.task) {
+      if (this.entity.task) {
+        //let task = this.task;
+        //this.task = null;
+        let task = this.entity.task;
+        this.entity.task = null;
+        task.zone = null;
+        task.cancel();
+      }
+    }
   });
 
   HTomb.Things.defineCreature = function(args) {

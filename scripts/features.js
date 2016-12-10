@@ -137,16 +137,13 @@ HTomb = (function(HTomb) {
     name: "excavation",
     incompleteSymbol: "\u2717",
     incompleteFg: HTomb.Constants.BELOW,
-    onPlace: function(f) {
+    onPlace: function(x,y,z) {
       var tiles = HTomb.World.tiles;
       var EmptyTile = HTomb.Tiles.EmptyTile;
       var FloorTile = HTomb.Tiles.FloorTile;
       var WallTile = HTomb.Tiles.WallTile;
       var UpSlopeTile = HTomb.Tiles.UpSlopeTile;
       var DownSlopeTile = HTomb.Tiles.DownSlopeTile;
-      var x = this.x;
-      var y = this.y;
-      var z = this.z;
       var t = tiles[z][x][y];
       let items = HTomb.World.items[coord(x,y,z)] || [];
       // If there is a slope below, dig out the floor
@@ -218,16 +215,13 @@ HTomb = (function(HTomb) {
     name: "construction",
     incompleteSymbol: "\u2692",
     incompleteFg: HTomb.Constants.ABOVE,
-    onPlace: function() {
+    onPlace: function(x,y,z) {
       var tiles = HTomb.World.tiles;
       var EmptyTile = HTomb.Tiles.EmptyTile;
       var FloorTile = HTomb.Tiles.FloorTile;
       var WallTile = HTomb.Tiles.WallTile;
       var UpSlopeTile = HTomb.Tiles.UpSlopeTile;
       var DownSlopeTile = HTomb.Tiles.DownSlopeTile;
-      var x = this.x;
-      var y = this.y;
-      var z = this.z;
       var t = tiles[z][x][y];
       HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
       // If it's a floor, build a slope

@@ -143,6 +143,7 @@ HTomb = (function(HTomb) {
     },
     onDespawn: function() {
       if (this.isPlaced()) {
+        console.log("removeing a despawned thing");
         this.remove();
       }
     },
