@@ -94,7 +94,7 @@ HTomb = (function(HTomb) {
     }
     // If we clicked on a workshop, go to workshop view
     let f = HTomb.World.features[coord(x,y,gameScreen.z)];
-    if (f && f.workshop && f.workshop.active && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
+    if (f && f.workshop && f.workshop.isPlaced() && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
       GUI.Views.workshopView(f.workshop);
       return;
     }

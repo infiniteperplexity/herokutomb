@@ -99,7 +99,6 @@ HTomb = (function(HTomb) {
   };
 
 
-
   // Create a new object based on the template
   HTomb.Things.create = function(template, args) {
     if (HTomb.Things.templates[template]===undefined) {

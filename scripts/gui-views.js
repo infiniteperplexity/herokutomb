@@ -268,8 +268,9 @@ HTomb = (function(HTomb) {
 
   // ***************** Workshop (or Structure?) view **********
   Views.workshopView = function(w) {
+    Views.Workshops.workQueueCursor = -1;
     if (Views.Workshops.selectedStructure) {
-      Views.Workshops.selectedStructure.unhighlight();
+      Views.Workshops.selectedStructure.structure.unhighlight();
     }
     w = w || HTomb.Player.master.workshops[0] || null;
     Views.Workshops.selectedStructure = w;
@@ -285,14 +286,16 @@ HTomb = (function(HTomb) {
     for (let i=0; i<alphabet.length; i++) {
       GUI.bindKey(GUI.Contexts.workshops,"VK_"+alphabet[i],
         function() {
-          if (Views.Workshops.selectedStructure.makes===undefined || Views.Workshops.selectedStructure.makes.length<=i) {
+          if (Views.Workshops.selectedStructure.workshop === undefined || Views.Workshops.selectedStructure.workshop.makes===undefined || Views.Workshops.selectedStructure.workshop.makes.length<=i) {
             return;
           }
-          Views.Workshops.selectedStructure.queue.splice(Views.Workshops.workQueueCursor+1,0,[Views.Workshops.selectedStructure.makes[i],"finite",1]);
-          if (Views.Workshops.selectedStructure.task===null) {
-            Views.Workshops.selectedStructure.nextGood();
+          Views.Workshops.selectedStructure.workshop.queue.splice(
+            Views.Workshops.workQueueCursor+1,0,[Views.Workshops.selectedStructure.workshop.makes[i],"finite",1]
+          );
+          if (Views.Workshops.selectedStructure.workshop.task===null) {
+            Views.Workshops.selectedStructure.workshop.nextGood();
           }
-          if (Views.Workshops.workQueueCursor<w.queue.length-1) {
+          if (Views.Workshops.workQueueCursor<w.workshop.queue.length-1) {
             Views.Workshops.workQueueCursor+=1;
           }
           Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
@@ -304,7 +307,7 @@ HTomb = (function(HTomb) {
   GUI.Contexts.workshops = GUI.Contexts.new({
     VK_ESCAPE: function() {
       if (Views.Workshops.selectedStructure) {
-        Views.Workshops.selectedStructure.unhighlight();
+        Views.Workshops.selectedStructure.structure.unhighlight();
       }
       HTomb.GUI.reset();
     },
@@ -329,70 +332,35 @@ HTomb = (function(HTomb) {
   GUI.Contexts.workshops.mouseTile = function() {};
   Views.Workshops = {};
   Views.Workshops.selectedStructure = null;
-  Views.Workshops.workQueueCursor = 0;
+  Views.Workshops.workQueueCursor = -1;
   Views.Workshops.displayWorkshopInfo = function(w) {
-    w.highlight("#557722");
+    w.structure.highlight("#557722");
     HTomb.GUI.Views.Main.zoomIfNotVisible(w.x,w.y,w.z);
-    GUI.Contexts.workshops.menuText = Views.Workshops.workshopDetails(w);
+    if (Views.Workshops.workQueueCursor>=w.workshop.queue.length) {
+      Views.Workshops.workQueueCursor = w.workshop.queue.length-1;
+    }
+    GUI.Contexts.workshops.menuText = w.workshop.details();
     menu.bottom = menu.defaultBottom;
     menu.render();
     GUI.Contexts.active = GUI.Contexts.workshops;
   };
-  Views.Workshops.workshopDetails = function(w) {
-    let txt = [
-      "Esc: Done.",
-      "%c{yellow}Workshop: "+w.name.substr(0,1).toUpperCase()+w.name.substr(1)+" at "+w.x +", "+w.y+", "+w.z+".",
-      "Up/Down: Traverse queue.",
-      "Left/Right: Alter repeat.",
-      "[/]: Alter count.",
-      "a-z: Insert good below the >.",
-      "Backspace/Delete: Remove good.",
-      "Tab: Next workshop."
-    ];
-    txt.push(" ");
-    if (w.makes && w.makes.length>0) {
-      txt.push("Goods:");
-      let alphabet = 'abcdefghijklmnopqrstuvwxyz';
-      for (let i=0; i<w.makes.length; i++) {
-        let t = HTomb.Things.templates[w.makes[i]];
-        txt.push(alphabet[i] + ") " + t.describe());
-      }
-      txt.push(" ");
-    }
-    txt.push("Production Queue:");
-    let q = w.formattedQueue();
-    if (Views.Workshops.workQueueCursor>=w.queue.length) {
-      Views.Workshops.workQueueCursor = w.queue.length-1;
-    }
-    if (q.length>1 && Views.Workshops.workQueueCursor>-1) {
-      let s = q[Views.Workshops.workQueueCursor+1];
-      s = ">" + s.substr(1);
-      q[Views.Workshops.workQueueCursor+1] = s;
-    } else {
-      let s = q[0];
-      s = ">" + s.substr(1);
-      q[0] = s;
-    }
-    txt = txt.concat(q);
-    return txt;
-  };
   Views.Workshops.cancelGood = function() {
     let w = Views.Workshops.selectedStructure;
     if (Views.Workshops.workQueueCursor ===-1) {
-      if (w.task) {
-        w.task.cancel();
+      if (w.workshop.task) {
+        w.workshop.task.cancel();
       }
-    } else if (w.queue.length>0 && Views.Workshops.workQueueCursor>=0) {
-      w.queue.splice(Views.Workshops.workQueueCursor,1);
+    } else if (w.workshop.queue.length>0 && Views.Workshops.workQueueCursor>=0) {
+      w.workshop.queue.splice(Views.Workshops.workQueueCursor,1);
     }
-    if (Views.Workshops.workQueueCursor>=w.queue.length) {
-      Views.Workshops.workQueueCursor = w.queue.length-1;
+    if (Views.Workshops.workQueueCursor>=w.workshop.queue.length) {
+      Views.Workshops.workQueueCursor = w.workshop.queue.length-1;
     }
     Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
   };
   Views.Workshops.workQueueDown = function() {
     Views.Workshops.workQueueCursor+=1;
-    if (Views.Workshops.workQueueCursor>=Views.Workshops.selectedStructure.queue.length) {
+    if (Views.Workshops.workQueueCursor>=Views.Workshops.selectedStructure.workshop.queue.length) {
       Views.Workshops.workQueueCursor = -1;
     }
     Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
@@ -400,73 +368,74 @@ HTomb = (function(HTomb) {
   Views.Workshops.workQueueUp = function() {
     Views.Workshops.workQueueCursor-=1;
     if (Views.Workshops.workQueueCursor<-1) {
-      Views.Workshops.workQueueCursor = Views.Workshops.selectedStructure.queue.length-1;
+      Views.Workshops.workQueueCursor = Views.Workshops.selectedStructure.workshop.queue.length-1;
     }
     Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
   };
   Views.Workshops.workQueueRight = function() {
     let i = Views.Workshops.workQueueCursor;
     let w = Views.Workshops.selectedStructure;
-    if (i===-1 || w.queue.length===0) {
+    if (i===-1 || w.workshop.queue.length===0) {
       return;
     }
-    if (w.queue[i][1]==="finite") {
-      w.queue[i][1]=1;
-    } else if (parseInt(w.queue[i][1])===w.queue[i][1]) {
-      w.queue[i][1]="infinite";
-    } else if (w.queue[i][1]==="infinite") {
-      w.queue[i][1] = "finite";
+    if (w.workshop.queue[i][1]==="finite") {
+      w.workshop.queue[i][1]=1;
+    } else if (parseInt(w.workshop.queue[i][1])===w.workshop.queue[i][1]) {
+      w.workshop.queue[i][1]="infinite";
+    } else if (w.workshop.queue[i][1]==="infinite") {
+      w.workshop.queue[i][1] = "finite";
     }
     Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
   };
   Views.Workshops.workQueueLeft = function() {
     let i = Views.Workshops.workQueueCursor;
     let w = Views.Workshops.selectedStructure;
-    if (i===-1 || w.queue.length===0) {
+    if (i===-1 || w.workshop.queue.length===0) {
       return;
     }
-    if (w.queue[i][1]==="finite") {
-      w.queue[i][1]="infinite";
-    } else if (parseInt(w.queue[i][1])===w.queue[i][1]) {
-      w.queue[i][1]="finite";
-    } else if (w.queue[i][1]==="infinite") {
-      w.queue[i][1] = 1;
+    if (w.workshop.queue[i][1]==="finite") {
+      w.workshop.queue[i][1]="infinite";
+    } else if (parseInt(w.workshop.queue[i][1])===w.workshop.queue[i][1]) {
+      w.workshop.queue[i][1]="finite";
+    } else if (w.workshop.queue[i][1]==="infinite") {
+      w.workshop.queue[i][1] = 1;
     }
     Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
   };
   Views.Workshops.workQueueMore = function() {
     let i = Views.Workshops.workQueueCursor;
     let w = Views.Workshops.selectedStructure;
-    if (i===-1 || w.queue.length===0) {
+    if (i===-1 || w.workshop.queue.length===0) {
       return;
     }
-    if (w.queue[i][1]==="finite") {
-      w.queue[i][2]+=1;
-    } else if (parseInt(w.queue[i][1])===w.queue[i][1]) {
-      w.queue[i][1]+=1;
-      w.queue[i][2]+=1;
+    if (w.workshop.queue[i][1]==="finite") {
+      w.workshop.queue[i][2]+=1;
+    } else if (parseInt(w.workshop.queue[i][1])===w.workshop.queue[i][1]) {
+      w.workshop.queue[i][1]+=1;
+      w.workshop.queue[i][2]+=1;
     }
     Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
   };
   Views.Workshops.workQueueLess = function() {
     let i = Views.Workshops.workQueueCursor;
     let w = Views.Workshops.selectedStructure;
-    if (i===-1 || w.queue.length===0) {
+    if (i===-1 || w.workshop.queue.length===0) {
       return;
     }
-    if (w.queue[i][1]==="finite" && w.queue[i][2]>1) {
-      w.queue[i][2]-=1;
-    } else if (parseInt(w.queue[i][1])===w.queue[i][1] && w.queue[i][1]>1) {
-      w.queue[i][1]-=1;
-      if (w.queue[i][2]>w.queue[i][1]) {
-        w.queue[i][2] = w.queue[i][1];
+    if (w.workshop.queue[i][1]==="finite" && w.workshop.queue[i][2]>1) {
+      w.workshop.queue[i][2]-=1;
+    } else if (parseInt(w.workshop.queue[i][1])===w.workshop.queue[i][1] && w.workshop.queue[i][1]>1) {
+      w.workshop.queue[i][1]-=1;
+      if (w.workshop.queue[i][2]>w.workshop.queue[i][1]) {
+        w.workshop.queue[i][2] = w.workshop.queue[i][1];
       }
     }
     Views.Workshops.displayWorkshopInfo(Views.Workshops.selectedStructure);
   };
   Views.Workshops.nextWorkshop = function() {
+    Views.Workshops.workQueueCursor = -1;
     if (Views.Workshops.selectedStructure) {
-      Views.Workshops.selectedStructure.unhighlight();
+      Views.Workshops.selectedStructure.structure.unhighlight();
     }
     var p = HTomb.Player;
     if (Views.Workshops.selectedStructure===null && p.master.workshops.length>0) {
@@ -488,8 +457,9 @@ HTomb = (function(HTomb) {
     Views.Workshops.displayWorkshopInfo(p);
   };
   Views.Workshops.previousWorkshop = function() {
+    Views.Workshops.workQueueCursor = -1;
     if (Views.Workshops.selectedStructure) {
-      Views.Workshops.selectedStructure.unhighlight();
+      Views.Workshops.selectedStructure.structure.unhighlight();
     }
     var p = HTomb.Player;
     if (Views.Workshops.selectedStructure===null && p.master.workshops.length>0) {

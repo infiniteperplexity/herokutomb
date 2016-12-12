@@ -3,63 +3,67 @@ HTomb = (function(HTomb) {
   let coord = HTomb.Utils.coord;
 
   // Might like to have animations
-  HTomb.Things.define({
-    template: "Workshop",
-    name: "workshop",
+
+  HTomb.Things.defineBehavior({
+    template: "Structure",
+    name: "structure",
     owner: null,
+    height: 3,
+    width: 3,
     x: null,
     y: null,
     z: null,
-    height: 3,
-    width: 3,
     features: [],
     symbols: [],
-    fg: "white",
     fgs: [],
     ingredients: {},
-    active: false,
-    queue: null,
-    task: null,
-    onDefine: function() {
-      HTomb.Things.defineFeature({
-        template: this.template+"Feature",
-        name: this.name,
-        position: null,
-        onRemove: function() {
-          let c = this.workshop;
-          c.features.splice(c.features.indexOf(this),0);
-          this.workshop.deactivate();
-          if (c.features.length<=0) {
-            c.despawn();
-          }
-        }
-      });
-    },
     onCreate: function() {
       this.features = [];
       return this;
     },
-    activate: function() {
-      this.active = true;
-      this.owner.master.workshops.push(this);
+    onPlace: function() {
+      this.owner.master.workshops.push(this.entity);
+    },
+    onRemove: function() {
+      this.owner.master.workshops.splice(this.owner.master.workshops.indexOf(this.entity),1);
+    },
+    highlight: function(bg) {
+      for (let i=0; i<this.features.length; i++) {
+        this.features[i].highlightColor = bg;
+      }
+    },
+    unhighlight: function() {
+      for (let i=0; i<this.features.length; i++) {
+        if (this.features[i].highlightColor) {
+          delete this.features[i].highlightColor;
+        }
+      }
+    }
+  });
+  HTomb.Things.defineBehavior({
+    template: "Workshop",
+    name: "workshop",
+    queue: null,
+    task: null,
+    onPlace: function() {
       this.queue = [];
     },
-    deactivate: function() {
-      this.active = false;
-      this.owner.master.workshops.splice(this.owner.master.workshops.indexOf(this),1);
+    onRemove: function() {
       for (let i=0; i<this.queue.length; i++) {
-        // not actually correct
         this.task.cancel();
       }
     },
     nextGood: function() {
       if (this.queue.length===0) {
         return;
+      } else if (HTomb.World.zones[HTomb.Utils.coord(this.entity.x,this.entity.y,this.entity.z)]) {
+        HTomb.GUI.pushMessage("Workshop tried to create new task but there was already a zone.");
+        return;
       }
-      let zone = HTomb.Things.templates.ProduceTask.placeZone(this.x,this.y,this.z,this.owner);
+      let zone = HTomb.Things.templates.ProduceTask.placeZone(this.entity.x,this.entity.y,this.entity.z,this.entity.structure.owner);
       this.task = zone.task;
       zone.task.makes = this.queue[0][0];
-      zone.task.workshop = this;
+      zone.task.workshop = this.entity;
       HTomb.GUI.pushMessage("Next good is "+HTomb.Things.templates[zone.task.makes].describe());
       zone.name = "produce "+HTomb.Things.templates[zone.task.makes].name;
       zone.task.name = "produce "+HTomb.Things.templates[zone.task.makes].name;
@@ -112,22 +116,90 @@ HTomb = (function(HTomb) {
       }
       return txt;
     },
-    highlight: function(bg) {
-      for (let i=0; i<this.features.length; i++) {
-        this.features[i].highlightColor = bg;
+    details: function() {
+      let txt = [
+        "Esc: Done.",
+        "%c{yellow}Workshop: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.entity.x +", "+this.entity.y+", "+this.entity.z+".",
+        "Up/Down: Traverse queue.",
+        "Left/Right: Alter repeat.",
+        "[/]: Alter count.",
+        "a-z: Insert good below the >.",
+        "Backspace/Delete: Remove good.",
+        "Tab: Next workshop."
+      ];
+      txt.push(" ");
+      if (this.makes && this.makes.length>0) {
+        txt.push("Goods:");
+        let alphabet = 'abcdefghijklmnopqrstuvwxyz';
+        for (let i=0; i<this.makes.length; i++) {
+          let t = HTomb.Things.templates[this.makes[i]];
+          txt.push(alphabet[i] + ") " + t.describe());
+        }
+        txt.push(" ");
       }
-    },
-    unhighlight: function() {
-      for (let i=0; i<this.features.length; i++) {
-        if (this.features[i].highlightColor) {
-          delete this.features[i].highlightColor;
+      txt.push("Production Queue:");
+      let q = this.formattedQueue();
+      if (q.length>1 && HTomb.GUI.Views.Workshops.workQueueCursor>-1) {
+        let s = q[HTomb.GUI.Views.Workshops.workQueueCursor+1];
+        s = ">" + s.substr(1);
+        q[HTomb.GUI.Views.Workshops.workQueueCursor+1] = s;
+      } else {
+        let s = q[0];
+        s = ">" + s.substr(1);
+        q[0] = s;
+      }
+      txt = txt.concat(q);
+      return txt;
+    }
+  });
+
+  HTomb.Things.defineStructure = function(args) {
+    args = args || {};
+    args.behaviors = args.behaviors || {};
+    let structure = {};
+    if (args.height) {
+      structure.height = args.height;
+    }
+    if (args.width) {
+      structure.width = args.width;
+    }
+    if (args.symbols) {
+      structure.symbols = HTomb.Utils.copy(args.symbols);
+    }
+    if (args.fgs) {
+      structure.fgs = HTomb.Utils.copy(args.fgs);
+    }
+    if (args.ingredients) {
+      structure.ingredients = HTomb.Utils.copy(args.ingredients);
+    }
+    args.behaviors.Structure = structure;
+    HTomb.Things.defineFeature({
+      template: args.template+"Feature",
+      name: args.name,
+      position: null,
+      onRemove: function() {
+        let c = this.workshop;
+        c.features.splice(c.features.indexOf(this),0);
+        this.workshop.remove();
+        if (c.features.length<=0) {
+          c.despawn();
         }
       }
-    },
-  });
-  //    -	Do X times
-  //    -	As many as possible (u221E)
-  //    -	Cycle (u27F3, u21BB, u21C4)
+    });
+    HTomb.Things.defineEntity(args);
+  };
+
+  HTomb.Things.defineWorkshop = function(args) {
+    args = args || {};
+    args.behaviors = args.behaviors || {};
+    let workshop = {};
+    if (args.makes) {
+      workshop.makes = HTomb.Utils.copy(args.makes);
+    }
+    args.behaviors.Workshop = workshop;
+    HTomb.Things.defineStructure(args);
+  };
+
   HTomb.Things.defineWorkshop({
     template: "Mortuary",
     name: "mortuary",
@@ -194,8 +266,8 @@ HTomb = (function(HTomb) {
       }
     },
     onDespawn: function() {
-      this.workshop.task = null;
-      this.workshop.nextGood();
+      this.workshop.workshop.task = null;
+      this.workshop.workshop.nextGood();
     }
   });
 
@@ -230,7 +302,8 @@ HTomb = (function(HTomb) {
             } else if (f && f.template===workshop.template+"Feature") {
               work = f.workshop;
               // if it's already active, or misplaced
-              if (work.active===true || work.x!==squares[0][0] || work.y!==squares[0][1]) {
+              //if (work.active===true || work.x!==squares[0][0] || work.y!==squares[0][1]) {
+              if (work.isPlaced()===true || work.x!==squares[0][0] || work.y!==squares[0][1]) {
                 failed = true;
               }
             // an incomplete version of the same workshop
@@ -247,11 +320,11 @@ HTomb = (function(HTomb) {
             w = work;
           } else {
             w = HTomb.Things[workshop.template]();
-            w.owner = assigner;
+            w.structure.owner = assigner;
             let mid = Math.floor(squares.length/2);
-            w.x = squares[mid][0];
-            w.y = squares[mid][1];
-            w.z = squares[mid][2];
+            w.structure.x = squares[mid][0];
+            w.structure.y = squares[mid][1];
+            w.structure.z = squares[mid][2];
           }
           for (let i=0; i<squares.length; i++) {
             let crd = squares[i];
@@ -262,13 +335,14 @@ HTomb = (function(HTomb) {
             if (zone) {
               zone.task.workshop = w;
               zone.task.makes = workshop.template+"Feature";
-              zone.task.ingredients = HTomb.Utils.clone(w.ingredients);
+              zone.task.ingredients = HTomb.Utils.clone(w.structure.ingredients);
               zone.position = i;
             }
           }
         }
         return function() {
-          HTomb.GUI.selectBox(workshop.width, workshop.height, assigner.z,that.designateBox,{
+          let s = workshop.behaviorTemplate("Structure");
+          HTomb.GUI.selectBox(s.width, s.height, assigner.z,that.designateBox,{
             assigner: assigner,
             context: that,
             callback: placeBox
@@ -288,15 +362,15 @@ HTomb = (function(HTomb) {
       let z = this.zone.z;
       let f = HTomb.World.features[coord(x,y,z)];
       f.workshop = this.workshop;
-      this.workshop.features.push(f);
-      f.fg = this.workshop.fgs[this.zone.position];
-      f.symbol = this.workshop.symbols[this.zone.position];
-      if (this.workshop.features.length===this.workshop.height*this.workshop.width) {
-        this.workshop.activate();
+      this.workshop.structure.features.push(f);
+      f.fg = this.workshop.structure.fgs[this.zone.position];
+      f.symbol = this.workshop.structure.symbols[this.zone.position];
+      if (this.workshop.structure.features.length===this.workshop.structure.height*this.workshop.structure.width) {
+        let w = this.workshop;
+        w.place(w.structure.x, w.structure.y, w.structure.z);
       }
     }
   });
-
   // UseWorkshopTask
     // Each workshop maintains a queue...it spawns tasks one at a time.
     // When the task finished, it tries to assign the next one to the same minion.

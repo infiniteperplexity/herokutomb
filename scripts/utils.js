@@ -36,12 +36,14 @@ HTomb = (function(HTomb) {
         return null;
       }
       // recursively copy arrays and objects
-      var nobj = {};
+      var nobj;
       if (Array.isArray(obj)) {
+        nobj = [];
         for (var i=0; i<obj.length; i++) {
           nobj[i] = HTomb.Utils.copy(obj[i]);
         }
       } else {
+        nobj = {};
         for (var key in obj) {
           nobj[key] = HTomb.Utils.copy(obj[key]);
         }
