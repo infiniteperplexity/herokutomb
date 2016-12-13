@@ -272,6 +272,9 @@ HTomb = (function(HTomb) {
     if (Views.Structures.selectedStructure) {
       Views.Structures.selectedStructure.structure.unhighlight();
     }
+    if (Views.Creatures.selectedCreature) {
+      Views.Creatures.selectedCreature.unhighlight();
+    }
     w = w || HTomb.Player.master.structures[0] || null;
     Views.Structures.selectedStructure = w;
     if (w===null) {
@@ -501,6 +504,9 @@ HTomb = (function(HTomb) {
 
   // *********** Creature view ****************
   Views.creatureView = function(c) {
+    if (Views.Structures.selectedStructure) {
+      Views.Structures.selectedStructure.structure.unhighlight();
+    }
     HTomb.Events.subscribe(Views.Creature, "TurnEnd");
     c = c || HTomb.Player;
     if (Views.Creature.selectedCreature) {
