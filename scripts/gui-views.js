@@ -275,6 +275,7 @@ HTomb = (function(HTomb) {
     if (Views.Creature.selectedCreature) {
       Views.Creature.selectedCreature.unhighlight();
     }
+    HTomb.Events.unsubscribe(Views.Creature,"TurnEnd");
     w = w || HTomb.Player.master.structures[0] || null;
     Views.Structures.selectedStructure = w;
     if (w===null) {
