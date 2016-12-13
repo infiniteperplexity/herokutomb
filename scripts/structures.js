@@ -16,9 +16,11 @@ HTomb = (function(HTomb) {
     features: [],
     symbols: [],
     fgs: [],
+    options: {},
     ingredients: {},
     onCreate: function() {
       this.features = [];
+      this.options = {};
       return this;
     },
     onPlace: function() {
@@ -203,6 +205,9 @@ HTomb = (function(HTomb) {
     if (args.ingredients) {
       structure.ingredients = HTomb.Utils.copy(args.ingredients);
     }
+    if (args.formatOptions) {
+      structure.formatOptions = args.formatOptions;
+    }
     args.behaviors.Structure = structure;
     HTomb.Things.defineFeature({
       template: args.template+"Feature",
@@ -235,8 +240,73 @@ HTomb = (function(HTomb) {
     template: "Farm",
     name: "farm",
     symbols: ["=","=","=","=","=","=","=","=","="],
-    fgs: ["#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922"]
+    fgs: ["#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922"],
+    options: {},
+    formatOptions: function() {
+      let optxt = [];
+      for (let i in this.options) {
+        optxt.push(i);
+      }
+      optxt.sort();
+      let findSeeds = HTomb.Utils.getItems(function(item) {
+        if (item.parent==="Seed" && item.item.isOwned()===true && item.item.onGround()===true) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      let allSeeds = [];
+      for (let i=0; i<findSeeds.length;i++) {
+        let t = findSeeds[i].template;
+        if (allSeeds.indexOf(t)===-1) {
+          allSeeds.push(t);
+        }
+      }
+      let txt = ["Crops permitted:"];
+      for (let i=0; i<optxt.length; i++) {
+        let s = "";
+        if (this.options[optxt[i]===true]) {
+          s = "[X] " + optxt[i]+".";
+        } else {
+          s = "[ ] " + optxt[i]+".";
+        }
+        if (allSeeds.indexOf(opttxt[i])===-1) {
+          s = "%c{gray}"+s;
+        } else {
+          s = "%c{white}"+s;
+        }
+        txt.push(s);
+      }
+      txt.push(" ");
+      return txt;
+    },
+    onPlace: function(x,y,z) {
+      HTomb.Things.templates.Structure.onPlace.call(this,[x,y,z]);
+      HTomb.Events.subscribe(this, "TurnBegin");
+      let crops = HTomb.Types.templates.Crop.types;
+      for (let i=0; i<crops.length; i++) {
+        this.options[crops[i].template] = false;
+      }
+    },
+    onRemove: function() {
+      HTomb.Things.templates.Structure.onPlace.call(this);
+      HTomb.Events.unsubscribeAll(this);
+    },
+    onTurnBegin: function() {
+
+    }
   });
+
+  HTomb.Things.defineStructure({
+    template: "Farm",
+    name: "farm",
+    symbols: ["=","=","=","=","=","=","=","=","="],
+    fgs: ["#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922"],
+    details: {}
+  });
+
+
+
   HTomb.Things.defineStructure({
     template: "Storeroom",
     name: "storeroom",

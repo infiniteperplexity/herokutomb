@@ -29,6 +29,19 @@ HTomb = (function(HTomb) {
     return selected;
   };
 
+  HTomb.Utils.getItems = function(callb) {
+    var items = [];
+    let things = HTomb.World.things
+    for (let i=0; i<things.length; i++) {
+      if (things[i].item) {
+        if (callb===undefined || callb(things[i])===true) {
+          items.push(things[i]);
+        }
+      }
+    }
+    return items;
+  };
+
   // like clone but don't keep the prototype
   HTomb.Utils.copy = function(obj) {
     if (typeof(obj)==="object") {

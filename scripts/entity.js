@@ -187,6 +187,46 @@ HTomb = (function(HTomb) {
     container: null,
     owned: true,
     bulk: 10,
+    isOwned: function() {
+      return owned;
+    },
+    onGround: function() {
+      let parent = this.container.parent;
+      if (parent===HTomb.World.items) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    inStructure: function() {
+      if (this.entity.x===null) {
+        return false;
+      }
+      let x = this.entity.x;
+      let y = this.entity.y;
+      let z = this.entity.z;
+      let f = HTomb.World.features(HTomb.Utils.coord(x,y,z));
+      if (f && f.structure && f.structure.owner===HTomb.Player) {
+        return true;
+      }
+      return false;
+    },
+    carriedByMinion: function() {
+      let parent = this.container.parent;
+      if (parent.entity && HTomb.Player.master.minions.indexOf(parent.entity)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    carriedByCreature: function() {
+      let parent = this.container.parent;
+      if (parent.entity && parent.entity.creature) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     onPlace: function(x,y,z) {
       let c = coord(x,y,z);
       var pile = HTomb.World.items[c] || ItemContainer();
