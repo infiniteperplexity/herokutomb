@@ -327,7 +327,7 @@ HTomb = (function(HTomb) {
     "(Shift+Arrows for diagonal.)",
     "<: Up, >: Down, Space: Wait.",
     "Z: Cast spell, J: Assign job.",
-    "S: Summary, M: Minions, W: Workshops.",
+    "M: Minions, S: Structures, U: Summary.",
     "G: Pick Up, D: Drop, I: Inventory.",
     "+ / -: Change speed.",
     "Click: Pause or unpause.",

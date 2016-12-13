@@ -94,8 +94,8 @@ HTomb = (function(HTomb) {
     }
     // If we clicked on a workshop, go to workshop view
     let f = HTomb.World.features[coord(x,y,gameScreen.z)];
-    if (f && f.workshop && f.workshop.isPlaced() && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
-      GUI.Views.workshopView(f.workshop);
+    if (f && f.structure && f.structure.isPlaced() && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
+      GUI.Views.structureView(f.structure);
       return;
     }
     // Otherwise, toggle time
@@ -517,10 +517,10 @@ HTomb = (function(HTomb) {
     VK_M: function() {
       HTomb.GUI.Views.creatureView();
     },
-    VK_W: function() {
-      HTomb.GUI.Views.workshopView();
-    },
     VK_S: function() {
+      HTomb.GUI.Views.structureView();
+    },
+    VK_U: function() {
       HTomb.GUI.Views.summaryView();
     }
   });
@@ -620,10 +620,10 @@ HTomb = (function(HTomb) {
     VK_M: function() {
       HTomb.GUI.Views.creatureView();
     },
-    VK_W: function() {
-      HTomb.GUI.Views.workshopView();
-    },
     VK_S: function() {
+      HTomb.GUI.Views.structureView();
+    },
+    VK_U: function() {
       HTomb.GUI.Views.summaryView();
     }
   });
@@ -635,7 +635,7 @@ HTomb = (function(HTomb) {
     "(Shift+Arrows for diagonal.)",
     "<: Up, >: Down, Space: Wait.",
     "Z: Cast spell, J: Assign job.",
-    "S: Summary, M: Minions, W: Workshops.",
+    "M: Minions, S: Structures, U: Summary",
     "+ / -: Change speed.",
     "Click: Pause or unpause.",
     "PageUp/Down to scroll messages.",

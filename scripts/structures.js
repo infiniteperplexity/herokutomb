@@ -22,10 +22,10 @@ HTomb = (function(HTomb) {
       return this;
     },
     onPlace: function() {
-      this.owner.master.workshops.push(this.entity);
+      this.owner.master.structures.push(this.entity);
     },
     onRemove: function() {
-      this.owner.master.workshops.splice(this.owner.master.workshops.indexOf(this.entity),1);
+      this.owner.master.structures.splice(this.owner.master.structures.indexOf(this.entity),1);
     },
     highlight: function(bg) {
       for (let i=0; i<this.features.length; i++) {
@@ -38,6 +38,36 @@ HTomb = (function(HTomb) {
           delete this.features[i].highlightColor;
         }
       }
+    },
+    formatControls: function() {
+      let txt = [
+        "Esc: Done.",
+        "%c{yellow}Structure: "+this.entity.name.substr(0,1).toUpperCase()+this.entity.name.substr(1)+" at "+this.entity.x +", "+this.entity.y+", "+this.entity.z+".",
+        "Up/Down: Traverse options.",
+        "Left/Right: Alter options.",
+        "Tab: Next structure.",
+        " "
+      ];
+      return txt;
+    },
+    formatOptions: function() {
+      return [
+        "[ ]: Dummy option.",
+        "[X]: Dummy option.",
+        "%c{gray}[ ]: Dummy option."
+      ];
+    },
+    details: function() {
+      let txt = this.formatControls();
+      if (this.entity.workshop) {
+        txt = this.entity.workshop.formatControls();
+        txt = txt.concat(this.entity.workshop.formatGoods());
+        txt.push(" ");
+        txt = txt.concat(this.entity.workshop.formatQueue());
+      } else {
+        txt = txt.concat(this.formatOptions());
+      }
+      return txt;
     }
   });
   HTomb.Things.defineBehavior({
@@ -64,7 +94,7 @@ HTomb = (function(HTomb) {
       this.task = zone.task;
       zone.task.makes = this.queue[0][0];
       zone.task.workshop = this.entity;
-      HTomb.GUI.pushMessage("Next good is "+HTomb.Things.templates[zone.task.makes].describe());
+      HTomb.GUI.pushMessage("Next good is "+HTomb.Things.templates[zone.task.makes].describe({article: "indefinite"}));
       zone.name = "produce "+HTomb.Things.templates[zone.task.makes].name;
       zone.task.name = "produce "+HTomb.Things.templates[zone.task.makes].name;
       if (this.queue[0][1]==="finite") {
@@ -83,14 +113,21 @@ HTomb = (function(HTomb) {
         // except maybe check to see if there are enough materials???
       }
     },
-    formattedQueue: function() {
+    formatGoods: function() {
+      let txt = [];
+      let alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      for (let i=0; i<this.makes.length; i++) {
+        let t = HTomb.Things.templates[this.makes[i]];
+        txt.push(alphabet[i] + ") " + t.describe({article: "indefinite"}));
+      }
+      return txt;
+    },
+    formatQueue: function() {
       let txt = [];
       if (this.task) {
-        //let s = "\u2692"+" "+this.task.describe();
-        //let s = this.task.describe() + "- (next item to produce)";
-        let s = "@ " + HTomb.Things.templates[this.task.makes].name;
+        let s = "@ " + HTomb.Things.templates[this.task.makes].describe({article: "indefinite"});
         if (this.task.assignee) {
-          s+=": (active: "+this.task.assignee.describe()+")";
+          s+=": (active: "+this.task.assignee.describe({article: "indefinite"})+")";
         } else {
           s+=": (unassigned)";
         }
@@ -100,55 +137,49 @@ HTomb = (function(HTomb) {
       }
       for (let i=0; i<this.queue.length; i++) {
         let item = this.queue[i];
-        //let s = "- " + HTomb.Things.templates[item[0]].describe() + ": ";
-        let s = "- " + HTomb.Things.templates[item[0]].name + ": ";
+        let s = "- " + HTomb.Things.templates[item[0]].describe({article: "indefinite"}) + ": ";
         if (item[1]==="finite") {
-          //s+=item[2] + " #";
           s+=(" (repeat " + item[2] + ")");
         } else if (item[1]==="infinite") {
-          //s+="\u221E";
           s+=" (repeat infinite)";
         } else if (item[1]===parseInt(item[1])) {
-          //s+=item[2]+ " " + "\u27F3" + " " + item[1];
           s+=(" (cycle " + item[2] + ")");
         }
         txt.push(s);
       }
+      if (txt.length>1 && HTomb.GUI.Views.Structures.structureCursor>-1) {
+        let s = txt[HTomb.GUI.Views.Structures.structureCursor+1];
+        s = ">" + s.substr(1);
+        txt[HTomb.GUI.Views.Structures.structureCursor+1] = s;
+      } else {
+        let s = txt[0];
+        s = ">" + s.substr(1);
+        txt[0] = s;
+      }
+      txt.unshift("Production Queue:");
       return txt;
     },
-    details: function() {
+    formatControls: function() {
       let txt = [
         "Esc: Done.",
-        "%c{yellow}Workshop: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.entity.x +", "+this.entity.y+", "+this.entity.z+".",
+        "%c{yellow}Workshop: "+this.entity.name.substr(0,1).toUpperCase()+this.entity.name.substr(1)+" at "+this.entity.x +", "+this.entity.y+", "+this.entity.z+".",
         "Up/Down: Traverse queue.",
         "Left/Right: Alter repeat.",
         "[/]: Alter count.",
         "a-z: Insert good below the >.",
         "Backspace/Delete: Remove good.",
-        "Tab: Next workshop."
+        "Tab: Next structure.",
+        " "
       ];
-      txt.push(" ");
+      return txt;
+    },
+    details: function() {
+      let txt = this.formatControls();
       if (this.makes && this.makes.length>0) {
-        txt.push("Goods:");
-        let alphabet = 'abcdefghijklmnopqrstuvwxyz';
-        for (let i=0; i<this.makes.length; i++) {
-          let t = HTomb.Things.templates[this.makes[i]];
-          txt.push(alphabet[i] + ") " + t.describe());
-        }
-        txt.push(" ");
+        txt = txt.concat(this.formatGoods());
+        txt.push(" ")
       }
-      txt.push("Production Queue:");
-      let q = this.formattedQueue();
-      if (q.length>1 && HTomb.GUI.Views.Workshops.workQueueCursor>-1) {
-        let s = q[HTomb.GUI.Views.Workshops.workQueueCursor+1];
-        s = ">" + s.substr(1);
-        q[HTomb.GUI.Views.Workshops.workQueueCursor+1] = s;
-      } else {
-        let s = q[0];
-        s = ">" + s.substr(1);
-        q[0] = s;
-      }
-      txt = txt.concat(q);
+      txt = txt.concat(this.formatQueue());
       return txt;
     }
   });
@@ -199,6 +230,19 @@ HTomb = (function(HTomb) {
     args.behaviors.Workshop = workshop;
     HTomb.Things.defineStructure(args);
   };
+
+  HTomb.Things.defineStructure({
+    template: "Farm",
+    name: "farm",
+    symbols: ["=","=","=","=","=","=","=","=","="],
+    fgs: ["#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922"]
+  });
+  HTomb.Things.defineStructure({
+    template: "Storeroom",
+    name: "storeroom",
+    symbols: ["\u2554","\u2550","\u2557","\u2551","=","\u2551","\u255A","\u2550","\u255D"],
+    fgs: ["#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB"]
+  });
 
   HTomb.Things.defineWorkshop({
     template: "Mortuary",
@@ -260,7 +304,7 @@ HTomb = (function(HTomb) {
           let z = this.zone.z;
           HTomb.Things[this.makes]().place(x,y,z);
           this.workshop.occupied = null;
-          HTomb.GUI.pushMessage(this.assignee.describe() + " finishes making " + HTomb.Things.templates[this.makes].describe());
+          HTomb.GUI.pushMessage(this.assignee.describe({capitalized: true, article: "indefinite"}) + " finishes making " + HTomb.Things.templates[this.makes].describe({article: "indefinite"}));
           this.complete();
         }
       }
@@ -272,42 +316,41 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineTask({
-    template: "WorkshopTask",
-    name: "build workshop",
+    template: "ConstructTask",
+    name: "construct",
     zoneTemplate: {
-      template: "WorkshopZone",
-      name: "build workshop",
+      template: "ConstructZone",
+      name: "construct",
       bg: "#553300",
       position: null
     },
     makes: null,
-    workshop: null,
-    workshops: ["Mortuary","BoneCarvery","Carpenter"],
+    structures: null,
+    //workshops: ["Mortuary","BoneCarvery","Carpenter"],
+    structures: ["Carpenter","Farm","Storeroom"],
     designate: function(assigner) {
       var arr = [];
-      for (var i=0; i<this.workshops.length; i++) {
-        arr.push(HTomb.Things.templates[this.workshops[i]]);
+      for (var i=0; i<this.structures.length; i++) {
+        arr.push(HTomb.Things.templates[this.structures[i]]);
       }
       var that = this;
-      HTomb.GUI.choosingMenu("Choose a workshop:", arr, function(workshop) {
+      HTomb.GUI.choosingMenu("Choose a structure:", arr, function(structure) {
         function placeBox(squares, options) {
           let failed = false;
-          let work = null;
+          let struc = null;
           for (let i=0; i<squares.length; i++) {
             let crd = squares[i];
             let f = HTomb.World.features[coord(crd[0],crd[1],crd[2])];
             if (HTomb.World.tiles[crd[2]][crd[0]][crd[1]]!==HTomb.Tiles.FloorTile) {
               failed = true;
             // a completed, partial version of the same workshop
-            } else if (f && f.template===workshop.template+"Feature") {
-              work = f.workshop;
-              // if it's already active, or misplaced
-              //if (work.active===true || work.x!==squares[0][0] || work.y!==squares[0][1]) {
-              if (work.isPlaced()===true || work.x!==squares[0][0] || work.y!==squares[0][1]) {
+          } else if (f && f.template===structure.template+"Feature") {
+              struc = f.structure;
+              if (struc.isPlaced()===true || struc.x!==squares[0][0] || struc.y!==squares[0][1]) {
                 failed = true;
               }
             // an incomplete version of the same workshop
-          } else if (f && (f.template!=="IncompleteFeature" || f.makes!==workshop.template+"Feature")) {
+          } else if (f && (f.template!=="IncompleteFeature" || f.makes!==structure.template+"Feature")) {
               failed = true;
             }
           }
@@ -316,10 +359,10 @@ HTomb = (function(HTomb) {
             return;
           }
           let w;
-          if (work!==null) {
-            w = work;
+          if (struc!==null) {
+            w = struc;
           } else {
-            w = HTomb.Things[workshop.template]();
+            w = HTomb.Things[structure.template]();
             w.structure.owner = assigner;
             let mid = Math.floor(squares.length/2);
             w.structure.x = squares[mid][0];
@@ -333,15 +376,15 @@ HTomb = (function(HTomb) {
             }
             let zone = this.placeZone(crd[0],crd[1],crd[2],assigner);
             if (zone) {
-              zone.task.workshop = w;
-              zone.task.makes = workshop.template+"Feature";
+              zone.task.structure = w;
+              zone.task.makes = structure.template+"Feature";
               zone.task.ingredients = HTomb.Utils.clone(w.structure.ingredients);
               zone.position = i;
             }
           }
         }
         return function() {
-          let s = workshop.behaviorTemplate("Structure");
+          let s = structure.behaviorTemplate("Structure");
           HTomb.GUI.selectBox(s.width, s.height, assigner.z,that.designateBox,{
             assigner: assigner,
             context: that,
@@ -361,12 +404,12 @@ HTomb = (function(HTomb) {
       let y = this.zone.y;
       let z = this.zone.z;
       let f = HTomb.World.features[coord(x,y,z)];
-      f.workshop = this.workshop;
-      this.workshop.structure.features.push(f);
-      f.fg = this.workshop.structure.fgs[this.zone.position];
-      f.symbol = this.workshop.structure.symbols[this.zone.position];
-      if (this.workshop.structure.features.length===this.workshop.structure.height*this.workshop.structure.width) {
-        let w = this.workshop;
+      f.structure = this.structure;
+      this.structure.structure.features.push(f);
+      f.fg = this.structure.structure.fgs[this.zone.position];
+      f.symbol = this.structure.structure.symbols[this.zone.position];
+      if (this.structure.structure.features.length===this.structure.structure.height*this.structure.structure.width) {
+        let w = this.structure;
         w.place(w.structure.x, w.structure.y, w.structure.z);
       }
     }

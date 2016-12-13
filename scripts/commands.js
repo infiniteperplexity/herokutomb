@@ -104,7 +104,7 @@ HTomb = (function(HTomb) {
   // This method may be obsolete now that we have "hover"
   Commands.look = function(square) {
     if (square.creature) {
-      HTomb.GUI.pushMessage("There is " + square.creature.describe() + " here.");
+      HTomb.GUI.pushMessage("There is " + square.creature.describe({article: "indefinite"}) + " here.");
     }
     if (square.feature) {
       var seeSquare = null;
@@ -113,12 +113,12 @@ HTomb = (function(HTomb) {
       if (square.feature.zView===+1) {
         seeSquare = HTomb.Tiles.getSquare(square.x,square.y,square.z+1);
         if (seeSquare.creature) {
-          HTomb.GUI.pushMessage("There is " + square.creature.describe() + " above here.");
+          HTomb.GUI.pushMessage("There is " + square.creature.describe({article: "indefinite"}) + " above here.");
         }
         if (seeSquare.items) {
           mesg = "The square above contains";
           for (i = 0; i<seeSquare.items.length; i++) {
-            mesg = mesg + " " + seeSquare.items[i].describe();
+            mesg = mesg + " " + seeSquare.items[i].describe({article: "indefinite"});
             if (i===seeSquare.items.length-2) {
               mesg = mesg + ", and";
             } else if (i<seeSquare.items.length-1) {
@@ -130,12 +130,12 @@ HTomb = (function(HTomb) {
       } else if (square.feature.zView===-1) {
         seeSquare = HTomb.Tiles.getSquare(square.x,square.y,square.z-1);
         if (seeSquare.creature) {
-          HTomb.GUI.pushMessage("There is " + square.creature.describe() + " below here.");
+          HTomb.GUI.pushMessage("There is " + square.creature.describe({article: "indefinite"}) + " below here.");
         }
         if (seeSquare.items) {
           mesg = "The square below contains";
           for (i = 0; i<seeSquare.items.length; i++) {
-            mesg = mesg + " " + seeSquare.items[i].describe();
+            mesg = mesg + " " + seeSquare.items[i].describe({article: "indefinite"});
             if (i===seeSquare.items.length-2) {
               mesg = mesg + ", and";
             } else if (i<seeSquare.items.length-1) {
@@ -157,7 +157,7 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You see " + mesg + " here.");
     }
     if (square.feature) {
-      HTomb.GUI.pushMessage("There is " + square.feature.describe() + " here.");
+      HTomb.GUI.pushMessage("There is " + square.feature.describe({article: "indefinite"}) + " here.");
     }
   };
   // Move the player, glance, and spend an action
@@ -184,7 +184,7 @@ HTomb = (function(HTomb) {
     cr.remove();
     HTomb.Player.place(x,y,z);
     cr.place(x0,y0,z0);
-    HTomb.GUI.pushMessage(HTomb.Player.describe() + " displaces " + cr.describe() + ".");
+    HTomb.GUI.pushMessage(HTomb.Player.describe({capitalized: true, article: "definite"}) + " displaces " + cr.describe({article: "indefinite"}) + ".");
     Commands.glance(HTomb.Tiles.getSquare(x,y,z));
     HTomb.Time.turn();
 

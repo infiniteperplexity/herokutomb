@@ -10,6 +10,13 @@ HTomb = (function(HTomb) {
     name: "player",
     onAdd: function() {
       HTomb.Player = this.entity;
+      //this.entity.definiteArticle = true;
+    },
+    onDescribe: function(options) {
+      if (options.article==="indefinite") {
+        options.article = "definite";
+      }
+      return options;
     }
   });
 
@@ -99,7 +106,7 @@ HTomb = (function(HTomb) {
       var e = this.entity;
       item.item.owned = true;
       item.remove();
-      HTomb.GUI.sensoryEvent(this.entity.describe() + " picks up " + item.describe(),e.x,e.y,e.z);
+      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " picks up " + item.describe({article: "indefinite"}),e.x,e.y,e.z);
       this.add(item);
       this.entity.ai.acted = true;
     },
@@ -123,7 +130,7 @@ HTomb = (function(HTomb) {
       var e = this.entity;
       this.items.remove(item);
       item.place(e.x,e.y,e.z);
-      HTomb.GUI.sensoryEvent(this.entity.describe() + " drops " + item.describe(),e.x,e.y,e.z);
+      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " drops " + item.describe({article: "indefinite"}),e.x,e.y,e.z);
       this.entity.ai.acted = true;
     },
     add: function(item) {
@@ -171,16 +178,16 @@ HTomb = (function(HTomb) {
     template: "Worker",
     name: "worker",
     task: null,
-    allowedTasks: ["DigTask","BuildTask","PatrolTask","CraftTask","HoardTask","FarmTask","WorkshopTask","ProduceTask","DismantleTask"],
+    allowedTasks: ["DigTask","BuildTask","PatrolTask","FurnishTask","HoardTask","FarmTask","ConstructTask","ProduceTask","DismantleTask"],
     onAssign: function(tsk) {
       this.task = tsk;
-      HTomb.Debug.pushMessage(this.entity.describe() + " was assigned " + tsk.describe());
+      HTomb.Debug.pushMessage(this.entity.describe({capitalized: true, article: "indefinite"}) + " was assigned " + tsk.describe());
     },
     unassign: function() {
       if (this.task===null) {
         return;
       }
-      HTomb.Debug.pushMessage(this.entity.describe() + " was unassigned from " + this.task.describe());
+      HTomb.Debug.pushMessage(this.entity.describe({capitalized: true, article: "indefinite"}) + " was unassigned from " + this.task.describe());
       this.task = null;
     }
   });
@@ -197,13 +204,13 @@ HTomb = (function(HTomb) {
       this.tasks = options.tasks || [];
       this.minions = [];
       this.taskList = [];
-      this.workshops = [];
+      this.structures = [];
       HTomb.Events.subscribe(this, "Destroy");
       return this;
     },
     onDestroy: function(event) {
       if (this.minions.indexOf(event.entity)>-1) {
-        HTomb.GUI.sensoryEvent(this.entity.describe() + " mourns the death of " + event.entity.describe()+".",this.entity.x,this.entity.y,this.entity.z);
+        HTomb.GUI.sensoryEvent(this.entity.describe({capitalized:true, article:"indefinite"}) + " mourns the death of " + event.entity.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z);
         this.minions.splice(this.minions.indexOf(event.entity),1);
       }
     },
@@ -304,7 +311,7 @@ HTomb = (function(HTomb) {
       cr.remove();
       this.entity.place(x,y,z);
       cr.place(x0,y0,z0);
-      HTomb.GUI.sensoryEvent(this.entity.describe() + " displaces " + cr.describe() + ".",x,y,z);
+      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " displaces " + cr.describe({article: "indefinite"}) + ".",x,y,z);
       if (this.entity.ai) {
         this.entity.ai.acted = true;
       }
@@ -404,56 +411,9 @@ HTomb = (function(HTomb) {
           var n = damage[d];
           n = Math.max(ROT.RNG.getNormal(n,n/2),0);
           var adjusted = Math.round(n*HTomb.Types.templates.Damage.table[d][m]);
-          console.log(attack.entity.describe() + " deals " + adjusted + " " + d + " damage to " + this.entity.describe() +"'s " + m);
+          console.log(attack.entity.describe({capitalized: true, article:"indefinite"}) + " deals " + adjusted + " " + d + " damage to " + this.entity.describe({article: "indefinite", possessive: true}) +" " + m);
           this.materials[m].has-=adjusted;
-          console.log(this.entity.describe() + " has " + this.materials[m].has + " points left of " + m);
-          //chance of death?
-          //need to deal damage to every material, based on some kind of cress-reference table...
-        }
-        for (var m in this.materials) {
-          //how do we decide how to die first?  just do it in order I guess...
-          if (this.materials[m].has < this.materials[m].needs) {
-            this.entity.creature.die();
-          }
-        }
-      }
-    },
-    onCreate: function(options) {
-      this.materials = {};
-      options = options || {};
-      for (var m in options.materials) {
-        this.materials[m] = {};
-        // if there's just one number, fall back on a default
-        if (typeof(options.materials[m])==="number") {
-          this.materials[m].max = options.materials[m];
-          this.materials[m].has = options.materials[m];
-          this.materials[m].needs = Math.floor(options.materials[m]/2);
-        } else {
-        // otherwise expect maximum and minimum
-          this.materials[m].max = options.materials[m].max;
-          this.materials[m].has = options.materials[m].max;
-          this.materials[m].needs = options.materials[m].needs;
-        }
-      }
-      return this;
-    }
-  });
-
-
-  HTomb.Things.defineBehavior({
-  	template: "Body",
-  	name: "body",
-  	materials: null,
-  	endure: function(attack) {
-      var damage = attack.damage;
-      for (var d in damage) {
-        for (var m in this.materials) {
-          var n = damage[d];
-          n = Math.max(ROT.RNG.getNormal(n,n/2),0);
-          var adjusted = Math.round(n*HTomb.Types.templates.Damage.table[d][m]);
-          console.log(attack.entity.describe() + " deals " + adjusted + " " + d + " damage to " + this.entity.describe() +"'s " + m);
-          this.materials[m].has-=adjusted;
-          console.log(this.entity.describe() + " has " + this.materials[m].has + " points left of " + m);
+          console.log(this.entity.describe({capitalized: true, article: "indefinite"}) + " has " + this.materials[m].has + " points left of " + m);
           //chance of death?
           //need to deal damage to every material, based on some kind of cress-reference table...
         }
@@ -509,11 +469,11 @@ HTomb = (function(HTomb) {
   	// worry about multiple attacks later
   	attack: function(thing) {
       // if it's a combatant, you might miss
-      HTomb.GUI.sensoryEvent(this.entity.describe() + " attacks " + thing.describe()+".",this.entity.x,this.entity.y,this.entity.z);
+      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " attacks " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z);
       var evade = (thing.combat) ? thing.combat.evasion : 0;
       // basic hit roll
       var roll = Math.random()+(this.accuracy-evade)/10;
-      console.log(this.entity.describe() + " rolled " + roll + " to hit.");
+      console.log(this.entity.describe({capitalized: true, article: "indefinite"}) + " rolled " + roll + " to hit.");
       if (roll >= (1/3)) {
         //apply armor in some way?
         thing.body.endure(this);

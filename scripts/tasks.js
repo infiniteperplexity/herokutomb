@@ -660,7 +660,7 @@ HTomb = (function(HTomb) {
           let feature = HTomb.World.features[coord(x,y,z)];
           let cover = HTomb.World.covers[z][x][y];
           if (feature) {
-            menu.middle = ["%c{lime}Dismantle "+feature.describe()+"."];
+            menu.middle = ["%c{lime}Dismantle "+feature.describe({article: "indefinite"})+"."];
           } else if (cover!==HTomb.Covers.NoCover) {
             menu.middle = ["%c{lime}Remove "+cover.describe()+"."];
           } else {
@@ -705,11 +705,11 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineTask({
-    template: "CraftTask",
-    name: "craft",
+    template: "FurnishTask",
+    name: "furnish",
     zoneTemplate: {
-      template: "CraftZone",
-      name: "craft",
+      template: "FurnishZone",
+      name: "furnish",
       bg: "#553300"
     },
     makes: null,
@@ -740,7 +740,7 @@ HTomb = (function(HTomb) {
             }
           }
           function myHover(x,y,z) {
-            HTomb.GUI.Panels.menu.middle = ["%c{lime}Install " + feature.describe() + " here."];
+            HTomb.GUI.Panels.menu.middle = ["%c{lime}Furnish " + feature.describe({article: "indefinite"}) + " here."];
           }
           HTomb.GUI.selectSquare(assigner.z,that.designateSquare,{
             assigner: assigner,

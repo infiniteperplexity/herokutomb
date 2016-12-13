@@ -86,43 +86,18 @@ HTomb = (function(HTomb) {
         this.remove();
       }
     },
-    describe: function() {
-      // add options for capitalization?
-      if (this.zone) {
-        return this.name;
-      }
-      // should I handle this with an "onDescribe" function?
-      if (this.item && this.item.stackable && this.item.n>1) {
-        if (this.plural!==true) {
-          return (this.item.n + " " +this.name+"s");
-        } else {
-          return (this.item.n + " " +this.name);
-        }
-      } else {
-        if (this.plural===true) {
-          return this.name;
-        }
-        // pick the correct article
-        var first = this.name[0];
-        if (first==="a" || first==="e" || first==="i" || first==="o" || first==="u") {
-          return ("an " + this.name);
-        } else {
-          return ("a " + this.name);
-        }
-      }
-    },
     fall: function() {
       var g = HTomb.Tiles.groundLevel(this.x,this.y,this.z);
       if (this.creature) {
         if (HTomb.World.creatures[coord(this.x,this.y,g)]) {
           alert("haven't decided how to handle falling creature collisions");
         } else {
-          HTomb.GUI.sensoryEvent(this.describe() + " falls " + (this.z-g) + " stories!",this.x,this.y,this.z);
+          HTomb.GUI.sensoryEvent(this.describe({capitalized: true, article: "indefinite"}) + " falls " + (this.z-g) + " stories!",this.x,this.y,this.z);
           this.place(this.x,this.y,g);
         }
       }
       if (this.item) {
-        HTomb.GUI.sensoryEvent(this.describe() + " falls " + (this.z-g) + " stories!",this.x,this.y,this.z);
+        HTomb.GUI.sensoryEvent(this.describe({capitalized: true, article: "indefinite"}) + " falls " + (this.z-g) + " stories!",this.x,this.y,this.z);
         this.place(this.x,this.y,g);
       }
       HTomb.GUI.render();
@@ -185,7 +160,7 @@ HTomb = (function(HTomb) {
       //maybe check to see if the parent entity has a different "die" function
       // sometimes things can "multi-die"...how should that be handled?
       if (this.entity.x!==null && this.entity.y!==null && this.entity.z!==null) {
-        HTomb.GUI.sensoryEvent(this.entity.describe() + " dies.",this.entity.x,this.entity.y,this.entity.z);
+        HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " dies.",this.entity.x,this.entity.y,this.entity.z);
         this.entity.destroy();
       }
     },
@@ -233,6 +208,15 @@ HTomb = (function(HTomb) {
           delete HTomb.World.items[c];
         }
       }
+    },
+    onDescribe: function(options) {
+      console.log(this);
+      if (this.stackable && this.n>1) {
+        options.plural = true;
+        options.article = this.n;
+      }
+      console.log(options);
+      return options;
     },
     makeStack: function() {
       if (this.entity.stackSize && this.stackable && this.n===null) {
@@ -326,6 +310,10 @@ HTomb = (function(HTomb) {
         task.zone = null;
         task.cancel();
       }
+    },
+    onDescribe: function(options) {
+      options.article = "none";
+      return options;
     }
   });
 
@@ -566,7 +554,7 @@ HTomb = (function(HTomb) {
         if (i>0) {
           mesg+=" ";
         }
-        mesg+=this[i].describe();
+        mesg+=this[i].describe({article: "indefinite"});
         if (i===this.length-2) {
           mesg = mesg + ", and";
         } else if (i<this.length-1) {
@@ -578,7 +566,7 @@ HTomb = (function(HTomb) {
     lineList: function(spacer) {
       var buffer = [];
       for (var i = 0; i<this.length; i++) {
-        buffer.push([spacer,this[i].describe()]);
+        buffer.push([spacer,this[i].describe({article: "indefinite"})]);
       }
       return buffer;
     },

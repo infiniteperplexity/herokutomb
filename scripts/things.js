@@ -38,8 +38,73 @@ HTomb = (function(HTomb) {
       HTomb.Debug.pushMessage("Not allowed to set thingId");
     },
     // Describe for an in-game message
-    describe: function() {
-      return this.name;
+    describe: function(options) {
+      options = options || {};
+      options.name = this.name || "(nameless)";
+      // behaviors can augment or alter the description via options
+      if (this.behaviors) {
+        let beh = this.getBehaviors();
+        for (let i=0; i<beh.length; i++) {
+          if (beh[i].onDescribe) {
+            options = beh[i].onDescribe(options);
+          }
+        }
+      }
+
+      let article = options.article || "none";
+      // things like the player will always have definite articles, right?
+      if (article==="indefinite" && this.definiteArticle===true) {
+        article = "definite";
+      }
+      let capitalized = options.capitalized || false;
+      let plural = options.plural || false;
+      let possessive = options.possessive || false;
+
+      let beginsWithVowel = this.beginsWithVowel || undefined;
+      let properNoun = this.properNoun || false;
+      let irregularPlural = this.irregularPlural || false;
+
+      let name = options.name;
+      if (plural && irregularPlural) {
+        name = irregularPlural;
+      } else if (plural && this.plural) {
+        name = name;
+      } else if (plural) {
+        let l = name.length;
+        if (name[l-1]==="s" || name[l-1]==="x" || name[l-1]==="s" || name[l-1]==="z" || (
+          name[l-1]==="h" && (name[l-2]==="s" || name[l-2]==="c")
+        )) {
+          name+="e";
+        }
+        name+="s";
+      }
+      if (possessive) {
+        let l = name.length;
+        if (name[l-1]==="s") {
+          name+="'";
+        } else {
+          name+="'s";
+        }
+      }
+      //proper nouns not yet implemented
+      if (article==="indefinite") {
+        // e.g. beginsWithVowel is explicitly false for a "unicorn"
+        if (beginsWithVowel===true || (beginsWithVowel!==false &&
+          (name[0]==="a" || name[0]==="e" || name[0]==="i" || name[0]==="o" || name[0]==="u"
+            || name[0]==="A" || name[0]==="E" || name[0]==="I" || name[0]==="O" || name[0]==="U"))) {
+          name = "an " + name;
+        } else {
+          name = "a " + name;
+        }
+      } else if (article==="definite") {
+        name = "the " + name;
+      } else if (article!=="none") {
+        name = article + " " + name;
+      }
+      if (capitalized) {
+        name = name.substr(0,1).toUpperCase() + name.substr(1);
+      }
+      return name;
     },
     // Describe for an in-game list
     onList: function() {
