@@ -272,8 +272,8 @@ HTomb = (function(HTomb) {
     if (Views.Structures.selectedStructure) {
       Views.Structures.selectedStructure.structure.unhighlight();
     }
-    if (Views.Creatures.selectedCreature) {
-      Views.Creatures.selectedCreature.unhighlight();
+    if (Views.Creature.selectedCreature) {
+      Views.Creature.selectedCreature.unhighlight();
     }
     w = w || HTomb.Player.master.structures[0] || null;
     Views.Structures.selectedStructure = w;
