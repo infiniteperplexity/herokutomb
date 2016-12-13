@@ -546,15 +546,15 @@ HTomb = (function(HTomb) {
   GUI.Contexts.creatures.clickAt = function() {
     HTomb.Time.toggletime();
   };
-  GUI.Contexts.creatures.clickTile = function(x,y) {
-    let crd = HTomb.Utils.coord(x,y, GUI.Panels.gameScreen.z);
-    if (HTomb.World.creatures[crd]) {
-      Views.creatureView(HTomb.World.creatures[crd]);
-    }
-    else {
-      HTomb.Time.toggleTime();
-    }
-  };
+  //GUI.Contexts.creatures.clickTile = function(x,y) {
+  //  let crd = HTomb.Utils.coord(x,y, GUI.Panels.gameScreen.z);
+  //  if (HTomb.World.creatures[crd]) {
+  //    Views.creatureView(HTomb.World.creatures[crd]);
+  //  }
+  //  else {
+  //    HTomb.Time.toggleTime();
+  //  }
+//};
   GUI.Contexts.creatures.rightClickTile = function(x, y) {
     this.clickTile(x,y);
   }
