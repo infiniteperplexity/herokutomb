@@ -77,8 +77,7 @@ HTomb = (function(HTomb) {
         let txt = [
           "Esc: Done.",
           this.showHeaderText(),
-          "Up/Down: Traverse options.",
-          "Left/Right: Alter options.",
+          "a-z: Toggle option.",
           "Tab: Next structure.",
           " "
         ];
@@ -112,6 +111,7 @@ HTomb = (function(HTomb) {
         return this.entity.getOptions();
       } else {
         let txt = [this.showOptionsHeading()];
+        let alphabet = "abcdefghijklmnopqrstuvwxyz";
         for (let i=0; i<this.options.length; i++) {
           let opt = this.options[i];
           let s = "";
@@ -120,6 +120,8 @@ HTomb = (function(HTomb) {
           } else {
             s = "%c{gray}";
           }
+          s+=alphabet[i];
+          s+=") ";
           if (opt.selected) {
             s += "[X] ";
           } else {
@@ -135,8 +137,8 @@ HTomb = (function(HTomb) {
     fireChoiceCommand: function(i) {
       if (this.entity.structureChoice) {
         this.entity.structureChoice(i);
-      } else {
-
+      } else if (i < this.options.length) {
+        this.options[i].selected = !this.options[i].selected;
       }
     },
     fireUpCommand: function() {
@@ -397,8 +399,6 @@ HTomb = (function(HTomb) {
           active: false
         });
       }
-      console.log(this.structure.options[0].name);
-      console.log(this.structure.options);
     },
     allSeeds: function() {
       let findSeeds = HTomb.Utils.getItems(function(item) {
@@ -616,6 +616,13 @@ HTomb = (function(HTomb) {
       if (this.structure.structure.features.length===this.structure.structure.height*this.structure.structure.width) {
         let w = this.structure;
         w.place(w.structure.x, w.structure.y, w.structure.z);
+      }
+    },
+    work: function(x,y,z) {
+      HTomb.Things.templates.Task.work.call(this,x,y,z);
+      let f = HTomb.World.features[HTomb.Utils.coord(x,y,z)];
+      if (f && this.zone && f.makes===this.structure.template+"Feature") {
+        f.fg = this.structure.structure.fgs[this.zone.position];
       }
     }
   });
