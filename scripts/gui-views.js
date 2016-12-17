@@ -288,7 +288,10 @@ HTomb = (function(HTomb) {
     GUI.Contexts.active = GUI.Contexts.structures;
     let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     for (let i=0; i<alphabet.length; i++) {
-      GUI.bindKey(GUI.Contexts.structures,"VK_"+alphabet[i],GUI.Views.Structures.bindableStructureChoice(i));
+      GUI.bindKey(GUI.Contexts.structures,"VK_"+alphabet[i], function() {
+        Views.Structures.selectedStructure.structure.fireChoiceCommand(i);
+        Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
+      });
     }
     Views.Structures.displayStructureInfo(w);
   };
@@ -321,137 +324,41 @@ HTomb = (function(HTomb) {
   GUI.Contexts.structures.mouseTile = function() {};
   Views.Structures = {};
   Views.Structures.selectedStructure = null;
-  Views.Structures.structureCursor = -1;
-  Views.Structures.bindableStructureChoice = function(i) {
-    return function() {
-      if (Views.Structures.selectedStructure.workshop === undefined || Views.Structures.selectedStructure.workshop.makes===undefined || Views.Structures.selectedStructure.workshop.makes.length<=i) {
-        return;
-      }
-      Views.Structures.selectedStructure.workshop.queue.splice(
-        Views.Structures.structureCursor+1,0,[Views.Structures.selectedStructure.workshop.makes[i],"finite",1]
-      );
-      if (Views.Structures.selectedStructure.workshop.task===null) {
-        Views.Structures.selectedStructure.workshop.nextGood();
-      }
-      if (Views.Structures.structureCursor<Views.Structures.selectedStructure.workshop.queue.length-1) {
-        Views.Structures.structureCursor+=1;
-      }
-      Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
-    }
-  };
+  //done!
   Views.Structures.displayStructureInfo = function(w) {
     w.structure.highlight("#557722");
     HTomb.GUI.Views.Main.zoomIfNotVisible(w.x,w.y,w.z);
-    if (w.workshop) {
-      if (Views.Structures.structureCursor>=w.workshop.queue.length) {
-        Views.Structures.structureCursor = w.workshop.queue.length-1;
-      }
-    }
-    GUI.Contexts.structures.menuText = w.structure.details();
+    GUI.Contexts.structures.menuText = w.structure.showDetailsText();
     menu.bottom = menu.defaultBottom;
     menu.render();
     GUI.Contexts.active = GUI.Contexts.structures;
   };
   Views.Structures.structureCancel = function() {
-    let w = Views.Structures.selectedStructure;
-    if (w.workshop) {
-      if (Views.Structures.structureCursor ===-1) {
-        if (w.workshop.task) {
-          w.workshop.task.cancel();
-        }
-      } else if (w.workshop.queue.length>0 && Views.Structures.structureCursor>=0) {
-        w.workshop.queue.splice(Views.Structures.structureCursor,1);
-      }
-      if (Views.Structures.structureCursor>=w.workshop.queue.length) {
-        Views.Structures.structureCursor = w.workshop.queue.length-1;
-      }
-    }
+    Views.Structures.selectedStructure.structure.fireCancelCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureDown = function() {
-    Views.Structures.structureCursor+=1;
-    if (Views.Structures.selectedStructure.workshop) {
-      if (Views.Structures.structureCursor>=Views.Structures.selectedStructure.workshop.queue.length) {
-        Views.Structures.structureCursor = -1;
-      }
-    }
+    Views.Structures.selectedStructure.structure.fireDownCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureUp = function() {
-    Views.Structures.structureCursor-=1;
-    if (Views.Structures.selectedStructure.workshop) {
-      if (Views.Structures.structureCursor<-1) {
-        Views.Structures.structureCursor = Views.Structures.selectedStructure.workshop.queue.length-1;
-      }
-    }
+    Views.Structures.selectedStructure.structure.fireUpCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureRight = function() {
-    let i = Views.Structures.structureCursor;
-    let w = Views.Structures.selectedStructure;
-    if (w.workshop) {
-      if (i===-1 || w.workshop.queue.length===0) {
-        return;
-      }
-      if (w.workshop.queue[i][1]==="finite") {
-        w.workshop.queue[i][1]=1;
-      } else if (parseInt(w.workshop.queue[i][1])===w.workshop.queue[i][1]) {
-        w.workshop.queue[i][1]="infinite";
-      } else if (w.workshop.queue[i][1]==="infinite") {
-        w.workshop.queue[i][1] = "finite";
-      }
-    }
+    Views.Structures.selectedStructure.structure.fireRightCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureLeft = function() {
-    let i = Views.Structures.structureCursor;
-    let w = Views.Structures.selectedStructure;
-    if (w.workshop) {
-      if (i===-1 || w.workshop.queue.length===0) {
-        return;
-      }
-      if (w.workshop.queue[i][1]==="finite") {
-        w.workshop.queue[i][1]="infinite";
-      } else if (parseInt(w.workshop.queue[i][1])===w.workshop.queue[i][1]) {
-        w.workshop.queue[i][1]="finite";
-      } else if (w.workshop.queue[i][1]==="infinite") {
-        w.workshop.queue[i][1] = 1;
-      }
-    }
+    Views.Structures.selectedStructure.structure.fireLeftCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureMore = function() {
-    let i = Views.Structures.structureCursor;
-    let w = Views.Structures.selectedStructure;
-    if (w.workshop) {
-      if (i===-1 || w.workshop.queue.length===0) {
-        return;
-      }
-      if (w.workshop.queue[i][1]==="finite") {
-        w.workshop.queue[i][2]+=1;
-      } else if (parseInt(w.workshop.queue[i][1])===w.workshop.queue[i][1]) {
-        w.workshop.queue[i][1]+=1;
-        w.workshop.queue[i][2]+=1;
-      }
-    }
+    Views.Structures.selectedStructure.structure.fireMoreCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureLess = function() {
-    let i = Views.Structures.structureCursor;
-    let w = Views.Structures.selectedStructure;
-    if (w.workshop) {
-      if (i===-1 || w.workshop.queue.length===0) {
-        return;
-      }
-      if (w.workshop.queue[i][1]==="finite" && w.workshop.queue[i][2]>1) {
-        w.workshop.queue[i][2]-=1;
-      } else if (parseInt(w.workshop.queue[i][1])===w.workshop.queue[i][1] && w.workshop.queue[i][1]>1) {
-        w.workshop.queue[i][1]-=1;
-        if (w.workshop.queue[i][2]>w.workshop.queue[i][1]) {
-          w.workshop.queue[i][2] = w.workshop.queue[i][1];
-        }
-      }
-    }
+    Views.Structures.selectedStructure.structure.fireMoreCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.nextStructure = function() {

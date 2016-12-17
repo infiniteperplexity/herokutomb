@@ -16,18 +16,26 @@ HTomb = (function(HTomb) {
     features: [],
     symbols: [],
     fgs: [],
-    options: {},
+    options: [],
     ingredients: {},
+    cursor: -1,
+    onDefine: function(args) {
+      HTomb.Things.defineFeature({template: args.template+"Feature", name: args.name});
+    },
     onCreate: function() {
       this.features = [];
-      this.options = {};
+      this.options = [];
       return this;
     },
     onPlace: function() {
       this.owner.master.structures.push(this.entity);
+      if (this.entity.structureTurnBegin) {
+        HTomb.Events.subscribe(this,"TurnBegin");
+      }
     },
     onRemove: function() {
       this.owner.master.structures.splice(this.owner.master.structures.indexOf(this.entity),1);
+      HTomb.Events.unsubscribeAll(this);
     },
     highlight: function(bg) {
       for (let i=0; i<this.features.length; i++) {
@@ -41,40 +49,151 @@ HTomb = (function(HTomb) {
         }
       }
     },
-    formatControls: function() {
-      let txt = [
-        "Esc: Done.",
-        "%c{yellow}Structure: "+this.entity.name.substr(0,1).toUpperCase()+this.entity.name.substr(1)+" at "+this.entity.x +", "+this.entity.y+", "+this.entity.z+".",
-        "Up/Down: Traverse options.",
-        "Left/Right: Alter options.",
-        "Tab: Next structure.",
-        " "
-      ];
-      return txt;
-    },
-    formatOptions: function() {
-      return [
-        "[ ]: Dummy option.",
-        "[X]: Dummy option.",
-        "%c{gray}[ ]: Dummy option."
-      ];
-    },
-    details: function() {
-      let txt = this.formatControls();
-      if (this.entity.workshop) {
-        txt = this.entity.workshop.formatControls();
-        txt = txt.concat(this.entity.workshop.formatGoods());
-        txt.push(" ");
-        txt = txt.concat(this.entity.workshop.formatQueue());
+    showHeaderText: function() {
+      if (this.entity.getHeaderText) {
+        return this.entity.getHeaderText();
       } else {
-        txt = txt.concat(this.formatOptions());
+        return "%c{yellow}Structure: "+this.entity.name.substr(0,1).toUpperCase()+this.entity.name.substr(1)+" at "+this.entity.x +", "+this.entity.y+", "+this.entity.z+".";
       }
-      return txt;
+    },
+    onTurnBegin: function() {
+      if (this.entity.structureTurnBegin) {
+        this.entity.structureTurnBegin();
+      }
+    },
+    showDetailsText: function() {
+      if (this.entity.getDetailsText) {
+        return this.entity.getDetailsText();
+      } else {
+        let txt = this.showCommandsText();
+        txt.concat(this.showOptions());
+        return txt;
+      }
+    },
+    showCommandsText: function() {
+      if (this.entity.getCommandsText) {
+        return this.entity.getCommandsText();
+      } else {
+        let txt = [
+          "Esc: Done.",
+          this.showHeaderText(),
+          "Up/Down: Traverse options.",
+          "Left/Right: Alter options.",
+          "Tab: Next structure.",
+          " "
+        ];
+        txt = txt.concat(this.showOptions());
+        return txt;
+      }
+    },
+    fireUpdateOptions: function() {
+      if (this.entity.updateOptions) {
+        this.entity.updateOptions();
+      }
+    },
+    showOptionsHeading: function() {
+      if (this.entity.getOptionsHeading) {
+        return this.entity.getOptionsHeading();
+      }
+    },
+    showNoOptions: function() {
+      if (this.entity.getNoOptions) {
+        return this.entity.getNoOptions();
+      } else {
+        return "(No options.)";
+      }
+    },
+    showOptions: function() {
+      this.fireUpdateOptions();
+      if (this.options.length===0) {
+        return this.showNoOptions();
+      }
+      if (this.entity.getOptions) {
+        return this.entity.getOptions();
+      } else {
+        let txt = [this.showOptionsHeading()];
+        for (let i=0; i<this.options.length; i++) {
+          let opt = this.options[i];
+          let s = "";
+          if (opt.active) {
+            s = "%c{white}";
+          } else {
+            s = "%c{gray}";
+          }
+          if (opt.selected) {
+            s += "[X] ";
+          } else {
+            s += "[ ] ";
+          }
+          s+=opt.name;
+          s+=".";
+          txt.push(s);
+        }
+        return txt;
+      }
+    },
+    fireChoiceCommand: function(i) {
+      if (this.entity.structureChoice) {
+        this.entity.structureChoice(i);
+      } else {
+
+      }
+    },
+    fireUpCommand: function() {
+      if (this.entity.structureUp) {
+        this.entity.structureUp();
+      } else {
+
+      }
+    },
+    fireDownCommand: function() {
+      if (this.entity.structureDown) {
+        this.entity.structureDown();
+      } else {
+
+      }
+    },
+    fireLeftCommand: function() {
+      if (this.entity.structureLeft) {
+        this.entity.structureLeft();
+      } else {
+
+      }
+    },
+    fireRightCommand: function() {
+      if (this.entity.structureRight) {
+        this.entity.structureRight();
+      } else {
+
+      }
+    },
+    fireMoreCommand: function() {
+      if (this.entity.structureMore) {
+        this.entity.structureMore();
+      } else {
+
+      }
+    },
+    fireLessCommand: function() {
+      if (this.entity.structureLess) {
+        this.entity.structureLess();
+      } else {
+
+      }
+    },
+    fireCancelCommand: function() {
+      if (this.entity.structureCancel) {
+        this.entity.structureCancel();
+      } else {
+
+      }
     }
   });
-  HTomb.Things.defineBehavior({
+  HTomb.Things.defineByProxy("Structure","Entity");
+
+  HTomb.Things.defineStructure({
     template: "Workshop",
-    name: "workshop",
+    makes: [],
     queue: null,
     task: null,
     onPlace: function() {
@@ -85,17 +204,105 @@ HTomb = (function(HTomb) {
         this.task.cancel();
       }
     },
+    structureChoice: function(i) {
+      if (this.makes.length<=i) {
+        return;
+      }
+      this.queue.splice(this.structure.cursor+1,0,[this.makes[i],"finite",1]);
+      if (this.task===null) {
+        this.nextGood();
+      }
+      if (this.structure.cursor<this.queue.length-1) {
+        this.structure.cursor+=1;
+      }
+    },
+    structureUp: function() {
+      this.structure.cursor-=1;
+      if (this.structure.cursor<-1) {
+        this.structure.cursor = this.queue.length-1;
+      }
+    },
+    structureDown: function() {
+      this.structure.cursor+=1;
+      if (this.structure.cursor>this.queue.length-1) {
+        this.structure.cursor = -1;
+      }
+    },
+    structureRight: function() {
+      let i = this.structure.cursor;
+      if (i===-1 || this.queue.length===0) {
+        return;
+      }
+      if (this.queue[i][1]==="finite") {
+        this.queue[i][1]=1;
+      } else if (parseInt(this.queue[i][1])===this.queue[i][1]) {
+        this.queue[i][1]="infinite";
+      } else if (this.queue[i][1]==="infinite") {
+        this.queue[i][1] = "finite";
+      }
+    },
+    structureLeft: function() {
+      let i = this.structure.cursor;
+      if (i===-1 || this.queue.length===0) {
+        return;
+      }
+      if (this.queue[i][1]==="finite") {
+        this.queue[i][1]="infinite";
+      } else if (parseInt(this.queue[i][1])===this.queue[i][1]) {
+        this.queue[i][1] = "finite";
+      } else if (this.queue[i][1]==="infinite") {
+        this.queue[i][1]=1;
+      }
+    },
+    structureMore: function() {
+      let i = this.structure.cursor;
+      if (i===-1 || this.queue.length===0) {
+        return;
+      }
+      if (this.queue[i][1]==="finite") {
+        this.queue[i][2]+=1;
+      } else if (parseInt(this.queue[i][1])===this.queue[i][1]) {
+        this.queue[i][1]+=1;
+        this.queue[i][2]+=1;
+      }
+    },
+    structureLess: function() {
+      let i = this.structure.cursor;
+      if (i===-1 || this.queue.length===0) {
+        return;
+      }
+      if (this.queue[i][1]==="finite" && this.queue[i][2]>1) {
+        this.queue[i][2]-=1;
+      } else if (parseInt(this.queue[i][1])===this.queue[i][1] && this.queue[i][1]>1) {
+        this.queue[i][1]-=1;
+        if (this.queue[i][2]>this.queue[i][1]) {
+          this.queue[i][2] = this.queue[i][1];
+        }
+      }
+    },
+    structureCancel: function() {
+      if (this.structure.cursor===-1) {
+        if (this.task) {
+          this.task.cancel();
+        }
+      } else if (this.queue.length>0 && this.structure.cursor>=0) {
+        this.queue.splice(this.structure.cursor,1);
+      }
+      if (this.structure.cursor>=this.queue.length) {
+        this.structure.cursor = this.queue.length-1;
+      }
+    },
     nextGood: function() {
       if (this.queue.length===0) {
         return;
-      } else if (HTomb.World.zones[HTomb.Utils.coord(this.entity.x,this.entity.y,this.entity.z)]) {
+      } else if (HTomb.World.zones[HTomb.Utils.coord(this.x,this.y,this.z)]) {
         HTomb.GUI.pushMessage("Workshop tried to create new task but there was already a zone.");
         return;
       }
-      let zone = HTomb.Things.templates.ProduceTask.placeZone(this.entity.x,this.entity.y,this.entity.z,this.entity.structure.owner);
+      let zone = HTomb.Things.templates.ProduceTask.placeZone(this.x,this.y,this.z,this.structure.owner);
       this.task = zone.task;
       zone.task.makes = this.queue[0][0];
-      zone.task.workshop = this.entity;
+      zone.task.workshop = this;
       HTomb.GUI.pushMessage("Next good is "+HTomb.Things.templates[zone.task.makes].describe({article: "indefinite"}));
       zone.name = "produce "+HTomb.Things.templates[zone.task.makes].name;
       zone.task.name = "produce "+HTomb.Things.templates[zone.task.makes].name;
@@ -115,17 +322,27 @@ HTomb = (function(HTomb) {
         // except maybe check to see if there are enough materials???
       }
     },
-    formatGoods: function() {
-      let txt = [];
+    getDetailsText: function() {
+      let txt = [
+        "Esc: Done.",
+        "%c{yellow}Workshop: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
+        "Up/Down: Traverse queue.",
+        "Left/Right: Alter repeat.",
+        "[/]: Alter count.",
+        "a-z: Insert good below the >.",
+        "Backspace/Delete: Remove good.",
+        "Tab: Next structure.",
+        " ",
+        "Goods:"
+      ];
       let alphabet = 'abcdefghijklmnopqrstuvwxyz';
       for (let i=0; i<this.makes.length; i++) {
         let t = HTomb.Things.templates[this.makes[i]];
         txt.push(alphabet[i] + ") " + t.describe({article: "indefinite"}));
       }
-      return txt;
-    },
-    formatQueue: function() {
-      let txt = [];
+      txt.push(" ");
+      txt.push("Production Queue:");
+      let startQueue = txt.length;
       if (this.task) {
         let s = "@ " + HTomb.Things.templates[this.task.makes].describe({article: "indefinite"});
         if (this.task.assignee) {
@@ -149,91 +366,21 @@ HTomb = (function(HTomb) {
         }
         txt.push(s);
       }
-      if (txt.length>1 && HTomb.GUI.Views.Structures.structureCursor>-1) {
-        let s = txt[HTomb.GUI.Views.Structures.structureCursor+1];
+      if (this.queue.length>0 && this.structure.cursor>-1) {
+        let s = txt[this.structure.cursor+1+startQueue];
         s = ">" + s.substr(1);
-        txt[HTomb.GUI.Views.Structures.structureCursor+1] = s;
+        txt[this.structure.cursor+1+startQueue] = s;
       } else {
-        let s = txt[0];
+        let s = txt[startQueue];
         s = ">" + s.substr(1);
-        txt[0] = s;
+        txt[startQueue] = s;
       }
-      txt.unshift("Production Queue:");
-      return txt;
-    },
-    formatControls: function() {
-      let txt = [
-        "Esc: Done.",
-        "%c{yellow}Workshop: "+this.entity.name.substr(0,1).toUpperCase()+this.entity.name.substr(1)+" at "+this.entity.x +", "+this.entity.y+", "+this.entity.z+".",
-        "Up/Down: Traverse queue.",
-        "Left/Right: Alter repeat.",
-        "[/]: Alter count.",
-        "a-z: Insert good below the >.",
-        "Backspace/Delete: Remove good.",
-        "Tab: Next structure.",
-        " "
-      ];
-      return txt;
-    },
-    details: function() {
-      let txt = this.formatControls();
-      if (this.makes && this.makes.length>0) {
-        txt = txt.concat(this.formatGoods());
-        txt.push(" ")
-      }
-      txt = txt.concat(this.formatQueue());
       return txt;
     }
   });
-
-  HTomb.Things.defineStructure = function(args) {
-    args = args || {};
-    args.behaviors = args.behaviors || {};
-    let structure = {};
-    if (args.height) {
-      structure.height = args.height;
-    }
-    if (args.width) {
-      structure.width = args.width;
-    }
-    if (args.symbols) {
-      structure.symbols = HTomb.Utils.copy(args.symbols);
-    }
-    if (args.fgs) {
-      structure.fgs = HTomb.Utils.copy(args.fgs);
-    }
-    if (args.ingredients) {
-      structure.ingredients = HTomb.Utils.copy(args.ingredients);
-    }
-    if (args.formatOptions) {
-      structure.formatOptions = args.formatOptions;
-    }
-    args.behaviors.Structure = structure;
-    HTomb.Things.defineFeature({
-      template: args.template+"Feature",
-      name: args.name,
-      position: null,
-      onRemove: function() {
-        let c = this.workshop;
-        c.features.splice(c.features.indexOf(this),0);
-        this.workshop.remove();
-        if (c.features.length<=0) {
-          c.despawn();
-        }
-      }
-    });
-    HTomb.Things.defineEntity(args);
-  };
-
-  HTomb.Things.defineWorkshop = function(args) {
-    args = args || {};
-    args.behaviors = args.behaviors || {};
-    let workshop = {};
-    if (args.makes) {
-      workshop.makes = HTomb.Utils.copy(args.makes);
-    }
-    args.behaviors.Workshop = workshop;
-    HTomb.Things.defineStructure(args);
+  HTomb.Things.defineWorkshop = function(opts) {
+    opts.parent = "Workshop";
+    return HTomb.Things.defineStructure(opts);
   };
 
   HTomb.Things.defineStructure({
@@ -241,15 +388,21 @@ HTomb = (function(HTomb) {
     name: "farm",
     symbols: ["=","=","=","=","=","=","=","=","="],
     fgs: ["#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922"],
-    options: {},
-    formatOptions: function() {
-      let optxt = [];
-      for (let i in this.options) {
-        optxt.push(i);
+    onPlace: function() {
+      let crops = HTomb.Types.templates.Crop.types;
+      for (let i=0; i<crops.length; i++) {
+        this.structure.options.push({
+          name: crops[i].template,
+          selected: false,
+          active: false
+        });
       }
-      optxt.sort();
+      console.log(this.structure.options[0].name);
+      console.log(this.structure.options);
+    },
+    allSeeds: function() {
       let findSeeds = HTomb.Utils.getItems(function(item) {
-        if (item.parent==="Seed" && item.item.isOwned()===true && item.item.onGround()===true) {
+        if (item.parent==="Seed" && item.item.isOwned()===true && item.item.isOnGround()===true) {
           return true;
         } else {
           return false;
@@ -262,50 +415,40 @@ HTomb = (function(HTomb) {
           allSeeds.push(t);
         }
       }
-      let txt = ["Crops permitted:"];
-      for (let i=0; i<optxt.length; i++) {
-        let s = "";
-        if (this.options[optxt[i]===true]) {
-          s = "[X] " + optxt[i]+".";
-        } else {
-          s = "[ ] " + optxt[i]+".";
-        }
-        if (allSeeds.indexOf(opttxt[i])===-1) {
-          s = "%c{gray}"+s;
-        } else {
-          s = "%c{white}"+s;
-        }
-        txt.push(s);
-      }
-      txt.push(" ");
-      return txt;
+      return allSeeds;
     },
-    onPlace: function(x,y,z) {
-      HTomb.Things.templates.Structure.onPlace.call(this,[x,y,z]);
-      HTomb.Events.subscribe(this, "TurnBegin");
-      let crops = HTomb.Types.templates.Crop.types;
-      for (let i=0; i<crops.length; i++) {
-        this.options[crops[i].template] = false;
+    getOptionsHeading: function() {
+      return "Crops permitted:";
+    },
+    getNoOptions: function() {
+      return "(No crops defined?)";
+    },
+    updateOptions: function() {
+      let allSeeds = this.allSeeds();
+      for (let i=0; i<this.structure.options.length; i++) {
+        let opt = this.structure.options[i];
+        if (allSeeds.indexOf(opt.name)===-1) {
+          opt.active = false;
+        } else {
+          opt.active = true;
+        }
       }
     },
-    onRemove: function() {
-      HTomb.Things.templates.Structure.onPlace.call(this);
-      HTomb.Events.unsubscribeAll(this);
-    },
-    onTurnBegin: function() {
-
+    structureTurnBegin: function() {
     }
   });
 
-  HTomb.Things.defineStructure({
-    template: "Farm",
-    name: "farm",
-    symbols: ["=","=","=","=","=","=","=","=","="],
-    fgs: ["#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922"],
-    details: {}
+  HTomb.Things.defineWorkshop({
+    template: "Carpenter",
+    name: "carpenter",
+    symbols: ["\u2692","\u2261","\u2692","\u2261","\u2699","\u2261","\u2692","\u2261","\u2692"],
+    fgs: ["#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922"],
+    makes: [
+      "DoorItem",
+      "TorchItem",
+      "ThroneItem"
+    ]
   });
-
-
 
   HTomb.Things.defineStructure({
     template: "Storeroom",
@@ -314,36 +457,28 @@ HTomb = (function(HTomb) {
     fgs: ["#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB"]
   });
 
-  HTomb.Things.defineWorkshop({
+  HTomb.Things.defineStructure({
     template: "Mortuary",
     name: "mortuary",
     symbols: ["\u2744","\u2637","\u2744","\u2637","\u2744","\u2637","\u2744","\u2637","\u2744"],
     fgs: ["#AAAAFF","#999999","#AAAAFF","#999999","#AAAAFF","#999999","#AAAAFF","#999999","#AAAAFF"]
   });
 
-  HTomb.Things.defineWorkshop({
+  HTomb.Things.defineStructure({
     template: "BoneCarvery",
     name: "bone carvery",
     symbols: ["\u2692","\u2620","\u2692","\u2620","\u2699","\u2620","\u2692","\u2620","\u2692"],
     fgs: ["#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB"]
   });
 
-  HTomb.Things.defineWorkshop({
-    template: "Carpenter",
-    name: "carpenter",
-    symbols: ["\u2692","\u2261","\u2692","\u2261","\u2699","\u2261","\u2692","\u2261","\u2692"],
-    fgs: ["#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922"],
-    makes: ["DoorItem","TorchItem","ThroneItem"]
-  });
-
-  HTomb.Things.defineWorkshop({
+  HTomb.Things.defineStructure({
     template: "Library",
     name: "library",
     symbols: ["\u270D","\u270E","\u2710","/","\u25AD","\u26B4/","\u2261","/","\u2261"],
     fgs: ["#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922"]
   });
 
-  HTomb.Things.defineWorkshop({
+  HTomb.Things.defineStructure({
     template: "Laboratory",
     name: "library",
     symbols: ["\u2609","\u263F","\u2640","\u263D","\u2641","\u2697","\u2642","\u2643","\u26A9"],
@@ -380,8 +515,8 @@ HTomb = (function(HTomb) {
       }
     },
     onDespawn: function() {
-      this.workshop.workshop.task = null;
-      this.workshop.workshop.nextGood();
+      this.workshop.task = null;
+      this.workshop.nextGood();
     }
   });
 

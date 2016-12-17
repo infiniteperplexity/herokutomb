@@ -110,9 +110,9 @@ HTomb = (function(HTomb) {
     onList: function() {
       return this.describe();
     },
-    details: function() {
-      return ["This is " + this.describe() + "."];
-    },
+    //details: function() {
+    //  return ["This is " + this.describe() + "."];
+    //},
     highlight: function(bg) {
       this.highlightColor = bg;
     },
@@ -161,6 +161,7 @@ HTomb = (function(HTomb) {
     if (t.onDefine && args.parent!=="Thing") {
       t.onDefine(args);
     }
+    return t;
   };
 
 
@@ -183,6 +184,57 @@ HTomb = (function(HTomb) {
     // return the thing
     return t;
   };
+
+  HTomb.Things.defineByProxy = function(child, parnt) {
+    // This has only ever been tested for Behavior/Entity relationships
+    let ent = HTomb.Things.templates[parnt];
+    let beh = HTomb.Things.templates[child];
+    HTomb.Things["define"+child] = function(args) {
+      args = args || {};
+      let chld = {};
+      let parent = HTomb.Things.templates[args.parent] || {};
+      // I think this next bit is only for subtypes, like Seed, et cetera
+      args.behaviors = args.behaviors || {};
+      if (parent.behaviors) {
+        for (let arg in parent.behaviors) {
+          args.behaviors[arg] = HTomb.Utils.copy(parent.behaviors[arg]);
+        }
+      }
+      // This code makes sure the right arguments get passed to the parent and child
+      let eargs = {};
+      for (let arg in args) {
+        if (arg.substr(0,2)==="on" && (arg.substr(2,1)===arg.substr(2,1).toUpperCase())) {
+          eargs[arg] = args[arg];
+        } else if (ent[arg]!==undefined) {
+          eargs[arg] = args[arg];
+        } else if (beh[arg]!==undefined) {
+          chld[arg] = args[arg];
+        } else {
+          eargs[arg] = args[arg];
+        }
+      }
+      // I think this is for subtypes again
+      if (eargs.behaviors[child]) {
+        for (let arg in chld) {
+          eargs.behaviors[child][arg] = HTomb.Utils.copy(chld[arg]);
+        }
+      } else {
+        eargs.behaviors[child] = chld;
+      }
+      let newdef = HTomb.Things["define"+parnt](eargs);
+      // Make sure that onDefine works at the level it is supposed to
+      if (beh.hasOwnProperty("onDefine")) {
+        beh.onDefine(eargs);
+      }
+      return newdef;
+    };
+    // Make sure that onDefine does not override its parent
+    if (beh.hasOwnProperty("onDefine") && HTomb.Things.templates[beh.parent].hasOwnProperty("onDefine")) {
+      HTomb.Things.templates[beh.parent].onDefine(beh);
+    }
+    return beh;
+  };
+
 
 return HTomb;
 })(HTomb);

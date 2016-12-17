@@ -145,8 +145,8 @@ HTomb = (function(HTomb) {
         this.onAdd(this.options);
       }
     },
-    onDefine: function() {
-      HTomb.Things.behaviors.push(this.name);
+    onDefine: function(args) {
+      HTomb.Things.behaviors.push(args.name);
     }
   });
   HTomb.Things.behaviors = [];
@@ -190,7 +190,7 @@ HTomb = (function(HTomb) {
     isOwned: function() {
       return owned;
     },
-    onGround: function() {
+    isOnGround: function() {
       let parent = this.container.parent;
       if (parent===HTomb.World.items) {
         return true;
@@ -250,16 +250,14 @@ HTomb = (function(HTomb) {
       }
     },
     onDescribe: function(options) {
-      console.log(this);
       if (this.stackable && this.n>1) {
         options.plural = true;
         options.article = this.n;
       }
-      console.log(options);
       return options;
     },
     makeStack: function() {
-      if (this.entity.stackSize && this.stackable && this.n===null) {
+      if (this.stackable) {
         this.n = 1+HTomb.Utils.diceUntil(3,3);
       }
     },
@@ -278,6 +276,18 @@ HTomb = (function(HTomb) {
     name: "feature",
     yields: null,
     integrity: null,
+    onDefine: function(args) {
+      if (args.craftable===true) {
+        let item = HTomb.Utils.copy(args);
+        item.template = args.template+"Item";
+        delete item.behaviors.Feature;
+        HTomb.Things.defineItem(item);
+        let template = HTomb.Things.templates[args.template];
+        // overwrite the item's ingredients
+        template.ingredients = {};
+        template.ingredients[args.template+"Item"] = 1;
+      }
+    },
     onPlace: function(x,y,z) {
       let c = coord(x,y,z);
       if (HTomb.World.features[c]) {
@@ -357,62 +367,10 @@ HTomb = (function(HTomb) {
     }
   });
 
-  HTomb.Things.defineCreature = function(args) {
-    args = args || {};
-    args.behaviors = args.behaviors || {};
-    args.behaviors.Creature = {};
-    HTomb.Things.defineEntity(args);
-  };
-  HTomb.Things.defineItem = function(args) {
-    args = args || {};
-    var parent = HTomb.Things.templates[args.parent] || {};
-    args.behaviors = args.behaviors || {};
-    var item = {};
-    if (args.stackable) {
-      item.stackable = args.stackable;
-      if (args.n) {
-        item.n = args.n;
-      }
-      if (args.maxn) {
-        item.maxn = args.maxn;
-      }
-    } else if (args.stackable===undefined || parent.stackable) {
-      item.stackable = parent.stackable;
-      if (parent.n) {
-        item.n = parent.n;
-      }
-      if (parent.maxn) {
-        item.maxn = parent.maxn;
-      }
-    }
-    args.behaviors.Item = item;
-    HTomb.Things.defineEntity(args);
-
-  };
-  HTomb.Things.defineFeature = function(args) {
-    args = args || {};
-    // this should work since it uses inheritance
-    var parent = HTomb.Things.templates[args.parent]  || {};
-    args.behaviors = args.behaviors || {};
-    var feature = {};
-    feature.yields = args.yields || HTomb.Utils.clone(parent.yields) || null;
-    args.behaviors.Feature = feature;
-    if (args.craftable===true) {
-      let item = HTomb.Utils.copy(args);
-      item.template = args.template+"Item";
-      delete item.behaviors.Feature;
-      HTomb.Things.defineItem(item);
-      args.ingredients = {};
-      args.ingredients[args.template+"Item"] = 1;
-    }
-    HTomb.Things.defineEntity(args);
-  };
-  HTomb.Things.defineZone = function(args) {
-    args = args || {};
-    args.behaviors = args.behaviors || {};
-    args.behaviors.Zone = {};
-    HTomb.Things.defineEntity(args);
-  };
+  HTomb.Things.defineByProxy("Creature","Entity");
+  HTomb.Things.defineByProxy("Item","Entity");
+  HTomb.Things.defineByProxy("Feature","Entity");
+  HTomb.Things.defineByProxy("Zone","Entity");
 
   function ItemContainer(args) {
     var container = Object.create(Array.prototype);
