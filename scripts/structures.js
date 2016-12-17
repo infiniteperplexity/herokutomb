@@ -496,7 +496,7 @@ HTomb = (function(HTomb) {
           this.symbols[0] = String.fromCharCode(parseInt(code,16));
         }
       } else if (this.structure.cursor===1) {
-        let code = prompt("Enter an 16-bit hex value for red.",ROT.Color.fromString[this.fgs[0])[0]);
+        let code = prompt("Enter an 16-bit hex value for red.",ROT.Color.fromString[this.fgs[0]][0]);
         code = code.toUpperCase();
         let pat = /[A-F0-9]{1,2}/;
         let match = pat.exec(code);
@@ -507,7 +507,7 @@ HTomb = (function(HTomb) {
           this.fgs[0] = "#" + code + fg.substr(3,4);
         }
       } else if (this.structure.cursor===2) {
-        let code = prompt("Enter an 16-bit hex value for green.",ROT.Color.fromString[this.fgs[0])[1]);
+        let code = prompt("Enter an 16-bit hex value for green.",ROT.Color.fromString[this.fgs[0]][1]);
         code = code.toUpperCase();
         let pat = /[A-F0-9]{1,2}/;
         let match = pat.exec(code);
@@ -518,7 +518,7 @@ HTomb = (function(HTomb) {
           this.fgs[0] = "#" + fg.substr(1,2) + code + fg.substr(5,2);
         }
       } else if (this.structure.cursor===3) {
-        let code = prompt("Enter an 16-bit hex value for blue.",ROT.Color.fromString[this.fgs[0])[2]);
+        let code = prompt("Enter an 16-bit hex value for blue.",ROT.Color.fromString[this.fgs[0]][2]);
         code = code.toUpperCase();
         let pat = /[A-F0-9]{1,2}/;
         let match = pat.exec(code);
@@ -568,7 +568,7 @@ HTomb = (function(HTomb) {
         if (n>=256) {
           n-=256;
         }
-        let fgs[0] = ROT.Color.toRGB([n,c[1],c[2]]);
+        fgs[0] = ROT.Color.toHex([n,c[1],c[2]]);
       } else if (this.structure.cursor===2) {
         let c = ROT.Color.fromString(this.fgs[0]);
         let n = c[1];
@@ -576,7 +576,7 @@ HTomb = (function(HTomb) {
         if (n>=256) {
           n-=256;
         }
-        let fgs[0] = ROT.Color.toRGB([c[0],n,c[2]]);
+        fgs[0] = ROT.Color.toHex([c[0],n,c[2]]);
       } else if (this.structure.cursor===2) {
         let c = ROT.Color.fromString(this.fgs[0]);
         let n = c[2];
@@ -584,7 +584,7 @@ HTomb = (function(HTomb) {
         if (n>=256) {
           n-=256;
         }
-        let fgs[0] = ROT.Color.toRGB([c[0],c[1],n]);
+        fgs[0] = ROT.Color.toHex([c[0],c[1],n]);
       }
     },
     structureLeft: function() {
@@ -603,7 +603,7 @@ HTomb = (function(HTomb) {
         if (n<0) {
           n+=256;
         }
-        let fgs[0] = ROT.Color.toRGB([n,c[1],c[2]]);
+        fgs[0] = ROT.Color.toHex([n,c[1],c[2]]);
       } else if (this.structure.cursor===2) {
         let c = ROT.Color.fromString(this.fgs[0]);
         let n = c[1];
@@ -611,7 +611,7 @@ HTomb = (function(HTomb) {
         if (n<0) {
           n+=256;
         }
-        let fgs[0] = ROT.Color.toRGB([c[0],n,c[2]]);
+        fgs[0] = ROT.Color.toHex([c[0],n,c[2]]);
       } else if (this.structure.cursor===2) {
         let c = ROT.Color.fromString(this.fgs[0]);
         let n = c[2];
@@ -619,7 +619,7 @@ HTomb = (function(HTomb) {
         if (n<0) {
           n+=256;
         }
-        let fgs[0] = ROT.Color.toRGB([c[0],c[1],n]);
+        fgs[0] = ROT.Color.toHex([c[0],c[1],n]);
       }
     },
     structureMore: function() {
@@ -638,7 +638,7 @@ HTomb = (function(HTomb) {
         if (n>=256) {
           n-=256;
         }
-        let fgs[0] = ROT.Color.toRGB([n,c[1],c[2]]);
+        fgs[0] = ROT.Color.toHex([n,c[1],c[2]]);
       } else if (this.structure.cursor===2) {
         let c = ROT.Color.fromString(this.fgs[0]);
         let n = c[1];
@@ -646,7 +646,7 @@ HTomb = (function(HTomb) {
         if (n>=256) {
           n-=256;
         }
-        let fgs[0] = ROT.Color.toRGB([c[0],n,c[2]]);
+        fgs[0] = ROT.Color.toHex([c[0],n,c[2]]);
       } else if (this.structure.cursor===2) {
         let c = ROT.Color.fromString(this.fgs[0]);
         let n = c[2];
@@ -654,7 +654,7 @@ HTomb = (function(HTomb) {
         if (n>=256) {
           n-=256;
         }
-        let fgs[0] = ROT.Color.toRGB([c[0],c[1],n]);
+        fgs[0] = ROT.Color.toHex([c[0],c[1],n]);
       }
     },
     structureLess: function() {
@@ -673,7 +673,7 @@ HTomb = (function(HTomb) {
         if (n<0) {
           n+=256;
         }
-        let fgs[0] = ROT.Color.toRGB([n,c[1],c[2]]);
+        fgs[0] = ROT.Color.toHex([n,c[1],c[2]]);
       } else if (this.structure.cursor===2) {
         let c = ROT.Color.fromString(this.fgs[0]);
         let n = c[1];
@@ -681,7 +681,7 @@ HTomb = (function(HTomb) {
         if (n<0) {
           n+=256;
         }
-        let fgs[0] = ROT.Color.toRGB([c[0],n,c[2]]);
+        fgs[0] = ROT.Color.toHex([c[0],n,c[2]]);
       } else if (this.structure.cursor===2) {
         let c = ROT.Color.fromString(this.fgs[0]);
         let n = c[2];
@@ -689,7 +689,7 @@ HTomb = (function(HTomb) {
         if (n<0) {
           n+=256;
         }
-        let fgs[0] = ROT.Color.toRGB([c[0],c[1],n]);
+        fgs[0] = ROT.Color.toHex([c[0],c[1],n]);
       }
 
     },
@@ -708,13 +708,14 @@ HTomb = (function(HTomb) {
       ];
       let alphabet = 'abcdefghijklmnopqrstuvwxyz';
       let opts = [
-        ["Unicode",this.symbols[0].charCodeAt()],
-        ["Red (0-255)",ROT.Color.fromString(this.fgs[0])[0]],
-        ["Green (0-255)",ROT.Color.fromString(this.fgs[0])[1]],
-        ["Blue (0-255)",ROT.Color.fromString(this.fgs[0])[2]]
+        [" Unicode",this.symbols[0].charCodeAt()],
+        [" Red (0-255)",ROT.Color.fromString(this.fgs[0])[0]],
+        [" Green (0-255)",ROT.Color.fromString(this.fgs[0])[1]],
+        [" Blue (0-255)",ROT.Color.fromString(this.fgs[0])[2]]
       ];
-      for (let i=0; i<opts.length; i++) {\
-        txt.push(alphabet[i] + ") " + opts[i][0] + ": " + opts[i][1];
+      opts[this.structure.cursor] = ">"+opts[this.structure.cursor].substr(1);
+      for (let i=0; i<opts.length; i++) {
+        txt.push(alphabet[i] + ") " + opts[i][0] + ": " + opts[i][1]);
       }
       return txt;
     }
