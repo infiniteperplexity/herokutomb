@@ -46,6 +46,14 @@ HTomb = (function(HTomb) {
   gameScreen.yoffset = 0;
   // Keep track of which Z level it is on
   gameScreen.z = 1;
+  gameScreen.redraw = function(x,y) {
+    var z = gameScreen.z;
+    var xoffset = gameScreen.xoffset;
+    var yoffset = gameScreen.yoffset;
+    // Draw every symbol in the right
+    var sym = HTomb.Tiles.getSymbol(x,y,z);
+    gameScreen.display.draw(this.x0+x-xoffset,this.y0+y-yoffset, sym[0], sym[1], sym[2]);
+  };
   gameScreen.render = function() {
     var z = gameScreen.z;
     var xoffset = gameScreen.xoffset;
