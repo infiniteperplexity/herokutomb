@@ -358,7 +358,7 @@ HTomb = (function(HTomb) {
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureLess = function() {
-    Views.Structures.selectedStructure.structure.fireMoreCommand();
+    Views.Structures.selectedStructure.structure.fireLessCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.nextStructure = function() {

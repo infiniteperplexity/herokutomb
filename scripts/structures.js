@@ -617,7 +617,7 @@ HTomb = (function(HTomb) {
         if (code>0xFFFF) {
           code-=0xFFFF;
         }
-        this.structure.features[0].symbol = String.fromCharCode(code,16);
+        this.structure.features[0].symbol = String.fromCharCode(code);
       } else if (this.structure.cursor===1) {
         let c = ROT.Color.fromString(this.structure.features[0].fg);
         let n = c[0];
