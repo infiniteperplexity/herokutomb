@@ -188,7 +188,7 @@ HTomb = (function(HTomb) {
     owned: true,
     bulk: 10,
     isOwned: function() {
-      return owned;
+      return this.owned;
     },
     isOnGround: function() {
       let parent = this.container.parent;

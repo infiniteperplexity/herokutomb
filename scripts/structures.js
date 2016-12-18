@@ -435,6 +435,22 @@ HTomb = (function(HTomb) {
       }
     },
     structureTurnBegin: function() {
+      if (this.allSeeds().length===0) {
+        return;
+      }
+      for (let i=0; i<this.structure.features.length; i++) {
+        let f = this.structure.features[i];
+        let z = HTomb.World.zones[coord(f.x,f.y,f.z)];
+        if (z && z.template==="FarmTask" && z.task.makes /*this will eventually be a check of what crop*/) {
+          continue;
+        } else {
+          let seeds = this.allSeeds();
+          HTomb.Utils.shuffle(seeds);
+          HTomb.Things.templates.FarmTask.makes = seeds[0];
+          z = HTomb.Things.templates.FarmTask.placeZone(f.x,f.y,f.z,this.structure.owner);
+          console.log(z);
+        }
+      }
     }
   });
 
@@ -470,6 +486,15 @@ HTomb = (function(HTomb) {
     ],
     getOptionsHeading: function() {
       return "Store items:";
+    },
+    structureTurnBegin: function() {
+      for (let i=0; i<this.structure.features.length; i++) {
+        let f = this.structure.features[i];
+        let z = HTomb.World.zones[coord(f.x,f.y,f.z)];
+        if (z===undefined) {
+          z = HTomb.Things.templates.HoardTask.placeZone(f.x,f.y,f.z,this.structure.owner);
+        }
+      }
     }
   });
 
