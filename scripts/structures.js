@@ -480,11 +480,6 @@ HTomb = (function(HTomb) {
     fgs: ["white"],
     height: 1,
     width: 1,
-    structureChoice: function(i) {
-      if (i<4) {
-        this.structure.cursor = i;
-      }
-    },
     structureCancel: function() {
       console.log("testing");
       if (this.structure.cursor===0) {
@@ -534,30 +529,18 @@ HTomb = (function(HTomb) {
       HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
     },
     structureUp: function() {
-      if (this.structure.cursor===0) {
-        let code = this.structure.features[0].symbol.charCodeAt();
-        code = String.charCodeAt(this.structure.features[0].symbol);
-        code+=256;
-        if (code>=256*256) {
-          code-=256*256;
-        }
-        this.structure.features[0].symbol = String.fromCharCode(parseInt(code,16));
+      this.structure.cursor-=1;
+      if (this.structure.cursor<0) {
+        this.structure.cursor = 3;
       }
-      HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
     },
     structureDown: function() {
-      if (this.structure.cursor===0) {
-        let code = this.structure.features[0].symbol.charCodeAt();
-        code = String.charCodeAt(this.structure.features[0].symbol);
-        code-=256;
-        if (code<256*256) {
-          code+=256*256;
-        }
-        this.structure.features[0].symbol = String.fromCharCode(parseInt(code,16));
+      this.structure.cursor+=1;
+      if (this.structure.cursor>=4) {
+        this.structure.cursor = 0;
       }
-      HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
     },
-    structureRight: function() {
+    structureMore: function() {
       if (this.structure.cursor===0) {
         let code = this.structure.features[0].symbol.charCodeAt();
         code = String.charCodeAt(this.structure.features[0].symbol);
@@ -582,7 +565,7 @@ HTomb = (function(HTomb) {
           n-=256;
         }
         this.structure.features[0].fg = ROT.Color.toHex([c[0],n,c[2]]);
-      } else if (this.structure.cursor===2) {
+      } else if (this.structure.cursor===3) {
         let c = ROT.Color.fromString(this.structure.features[0].fg);
         let n = c[2];
         n+=16;
@@ -593,7 +576,7 @@ HTomb = (function(HTomb) {
       }
       HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
     },
-    structureLeft: function() {
+    structureLess: function() {
       if (this.structure.cursor===0) {
         let code = this.structure.features[0].symbol.charCodeAt();
         code = String.charCodeAt(this.structure.features[0].symbol);
@@ -618,7 +601,7 @@ HTomb = (function(HTomb) {
           n+=256;
         }
         this.structure.features[0].fg = ROT.Color.toHex([c[0],n,c[2]]);
-      } else if (this.structure.cursor===2) {
+      } else if (this.structure.cursor===3) {
         let c = ROT.Color.fromString(this.structure.features[0].fg);
         let n = c[2];
         n-=16;
@@ -629,7 +612,7 @@ HTomb = (function(HTomb) {
       }
       HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
     },
-    structureMore: function() {
+    structureRight: function() {
       if (this.structure.cursor===0) {
         let code = this.structure.features[0].symbol.charCodeAt();
         code = String.charCodeAt(this.structure.features[0].symbol);
@@ -654,7 +637,7 @@ HTomb = (function(HTomb) {
           n-=256;
         }
         this.structure.features[0].fg = ROT.Color.toHex([c[0],n,c[2]]);
-      } else if (this.structure.cursor===2) {
+      } else if (this.structure.cursor===3) {
         let c = ROT.Color.fromString(this.structure.features[0].fg);
         let n = c[2];
         n+=1;
@@ -665,7 +648,7 @@ HTomb = (function(HTomb) {
       }
       HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
     },
-    structureLess: function() {
+    structureLeft: function() {
       if (this.structure.cursor===0) {
         let code = this.structure.features[0].symbol.charCodeAt();
         code = String.charCodeAt(this.structure.features[0].symbol);
@@ -705,28 +688,26 @@ HTomb = (function(HTomb) {
       let txt = [
         "Esc: Done.",
         "%c{yellow}Structure: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
-        "a-z: Choose field.",
-        "Up/Down: Up or down by 256.",
-        "Left/Right: Up or down by 16.",
-        "[/]: Up or down by 1.",
+        "Up/Down: Choose property.",
+        "Left/Right: Up or down by 1.",
+        "[/]: Up or down by 16.",
         "Backspace/Delete: Enter value using prompt.",
         "Tab: Next structure.",
         " ",
-        "Options:"
+        "Properties:"
       ];
-      let alphabet = 'abcdefghijklmnopqrstuvwxyz';
       if (this.structure.cursor===-1) {
         this.structure.cursor = 0;
       }
       let opts = [
-        [" Unicode",this.structure.features[0].symbol.charCodeAt()],
-        [" Red (0-255)",ROT.Color.fromString(this.structure.features[0].fg)[0]],
-        [" Green (0-255)",ROT.Color.fromString(this.structure.features[0].fg)[1]],
-        [" Blue (0-255)",ROT.Color.fromString(this.structure.features[0].fg)[2]]
+        ["  Unicode",this.structure.features[0].symbol.charCodeAt().toString(16)],
+        ["  Red (0-255)",ROT.Color.fromString(this.structure.features[0].fg)[0]],
+        ["  Green (0-255)",ROT.Color.fromString(this.structure.features[0].fg)[1]],
+        ["  Blue (0-255)",ROT.Color.fromString(this.structure.features[0].fg)[2]]
       ];
       opts[this.structure.cursor][0] = ">"+opts[this.structure.cursor][0].substr(1);
       for (let i=0; i<opts.length; i++) {
-        txt.push(alphabet[i] + ") " + opts[i][0] + ": " + opts[i][1]);
+        txt.push(opts[i][0] + ": " + opts[i][1]);
       }
       return txt;
     }
