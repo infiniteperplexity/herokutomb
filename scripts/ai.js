@@ -129,6 +129,8 @@ HTomb = (function(HTomb) {
       if (ai.entity.minion===undefined) {
         return;
       }
+      //if carrying an item that's not relevant to a task, drop it???
+      //insert code for that here...
       if (ai.entity.worker && ai.entity.worker.task) {
         ai.entity.worker.task.ai();
       } else {
