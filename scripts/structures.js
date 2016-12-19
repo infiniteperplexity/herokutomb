@@ -401,7 +401,7 @@ HTomb = (function(HTomb) {
       }
     },
     allSeeds: function() {
-      let findSeeds = HTomb.Utils.getItems(function(item) {
+      let findSeeds = HTomb.Utils.findItems(function(item) {
         if (item.parent==="Seed" && item.item.isOwned()===true && item.item.isOnGround()===true) {
           return true;
         } else {
@@ -447,7 +447,8 @@ HTomb = (function(HTomb) {
           let seeds = this.allSeeds();
           HTomb.Utils.shuffle(seeds);
           HTomb.Things.templates.FarmTask.makes = seeds[0];
-          z = HTomb.Things.templates.FarmTask.placeZone(f.x,f.y,f.z,this.structure.owner);
+          
+          z = HTomb.Things.templates.FarmTask.placeZone.(f.x,f.y,f.z,this.structure.owner);
           console.log(z);
         }
       }

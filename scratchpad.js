@@ -5,8 +5,8 @@ HTomb.Types.defineRoutine({
     if (ai.entity.minion===undefined) {
       return;
     }
-    //if carrying an item that's not relevant to a task, drop it???
-    //insert code for that here...
+    ///*******Newly added code here!
+    
     if (ai.entity.worker && ai.entity.worker.task) {
       ai.entity.worker.task.ai();
     } else {
@@ -78,6 +78,7 @@ HTomb.Types.defineRoutine({
       cr.ai.walkRandom();
     } else if (t!==null) {
       if (t.x===cr.x && t.y===cr.y && t.z===cr.z) {
+        // Does pickupSome work properly?
         cr.inventory.pickupSome(t.template,ingredients[t.template]);
         cr.ai.acted = true;
         cr.ai.target = null;
@@ -211,14 +212,8 @@ HTomb.Things.define({
       HTomb.Things.defineZone(this.zoneTemplate);
     }
   },
-  tryAssign: function(cr) {
-    if (this.canReachZone(cr)) {
-      this.assignTo(cr);
-      return true;
-    } else {
-      return false;
-    }
-  },
+  /////*******newly revised code!
+
   canDesignateTile: function(x,y,z) {
     return true;
   },

@@ -49,8 +49,8 @@ HTomb = (function(HTomb) {
           // if we lack what we need, search for items
           if (cr.inventory.items.countAll(ing)<n) {
             needy = true;
-            var items = HTomb.Utils.findItems(function(v,k,i) {
-              if (v.item.owned!==true) {
+            var items = HTomb.Utils.findItems(function(v) {
+              if (v.item.isOwned()!==true || v.item.isOnGround()!==true) {
                 return false;
               } else if (v.template===ing) {
                 return true;
@@ -129,8 +129,23 @@ HTomb = (function(HTomb) {
       if (ai.entity.minion===undefined) {
         return;
       }
-      //if carrying an item that's not relevant to a task, drop it???
-      //insert code for that here...
+      // Drop items not relevant to current task
+      if (ai.entity.inventory) {
+        let items = ai.entity.inventory.items;
+        for (let i=0; i<items.length; i++) {
+          // drop any item that is not relevant to the current task
+          // ...eventually we'll want to keep equipment and certain other items
+          if (this.task===undefined || !this.task.ingredients) {
+            this.entity.inventory.drop(items[i]);
+            ai.acted = true;
+            break;
+          } else if (Object.keys(this.task.ingredients).indexOf(items[i])===-1) {
+            this.entity.inventory.drop(items[i]);
+            ai.acted = true;
+            break;
+          }
+        }
+      }
       if (ai.entity.worker && ai.entity.worker.task) {
         ai.entity.worker.task.ai();
       } else {

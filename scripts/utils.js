@@ -16,22 +16,8 @@ HTomb = (function(HTomb) {
   };
 
   HTomb.Utils.findItems = function(callb) {
-    var selected = [];
-    for (var k in HTomb.World.items) {
-      var items = HTomb.World.items[k] || [];
-      for (var i=0; i<items.length; i++) {
-        var v = items[i];
-        if (callb===undefined || callb(v,k,i)===true) {
-          selected.push(v);
-        }
-      }
-    }
-    return selected;
-  };
-
-  HTomb.Utils.getItems = function(callb) {
     var items = [];
-    let things = HTomb.World.things
+    let things = HTomb.World.things;
     for (let i=0; i<things.length; i++) {
       if (things[i].item) {
         if (callb===undefined || callb(things[i])===true) {

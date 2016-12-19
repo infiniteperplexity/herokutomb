@@ -57,13 +57,6 @@ HTomb = (function(HTomb) {
         callb.call(options.context,crd[0],crd[1],crd[2],assigner);
       }
     },
-    // designateBox: function(squares, options) {
-    //   options = options || {};
-    //   var assigner = options.assigner;
-    //   var callb = options.callback;
-    //   var crd = squares[0];
-    //   callb.call(options.context,crd[0],crd[1],crd[2],assigner);
-    // },
     placeZone: function(x,y,z,assigner) {
       var zone, t;
       if (this.canDesignateTile(x,y,z)) {
@@ -90,6 +83,27 @@ HTomb = (function(HTomb) {
       }
     },
     tryAssign: function(cr) {
+      let f = HTomb.World.features[coord(this.zone.x, this.zone.y, this.zone.z)];
+      // if there is not an incomplete feature there already started, search for ingredients
+      if (f===undefined || f.template!=="IncompleteFeature" || f.makes!==this.makes) {
+        let ing = [];
+        for (let i in this.ingredients) {
+          ing.push([i,this.ingredients[i]]);
+        }
+        for (let i=0; i<ing.length; i++) {
+          let items = HTomb.Utils.findItem(function(it) {
+            if (it.template===this.ing[i] && it.isOwned() && it.isOnGround()) {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          if (items.length===0) {
+            // if any ingredients are missing, do not assign
+            return false;
+          }
+        }
+      }
       if (this.canReachZone(cr)) {
         this.assignTo(cr);
         return true;
@@ -778,7 +792,7 @@ HTomb = (function(HTomb) {
     },
     makes: null,
     designate: function(assigner) {
-      let seeds = HTomb.Utils.findItems(function(v,k,i) {return (v.parent==="Seed" && v.item.owned!==false);});
+      let seeds = HTomb.Utils.findItems(function(v) {return (v.parent==="Seed" && v.item.isOwned()!==false);});
       function myHover() {
         if (seeds.length===0) {
           HTomb.GUI.Panels.menu.middle = ["%c{orange}No seeds availabe."];
@@ -800,7 +814,7 @@ HTomb = (function(HTomb) {
       options = options || {};
       var assigner = options.assigner;
       var callb = options.callback;
-      var seeds = HTomb.Utils.findItems(function(v,k,i) {return (v.parent==="Seed" && v.item.owned!==false);});
+      var seeds = HTomb.Utils.findItems(function(v) {return (v.parent==="Seed" && v.item.isOwned()!==false);});
       var types = [];
       for (var i=0; i<seeds.length; i++) {
         if (types.indexOf(seeds[i].base)===-1) {
@@ -827,17 +841,6 @@ HTomb = (function(HTomb) {
         HTomb.GUI.Panels.menu.middle = ["%c{lime}Choose a crop."];
         HTomb.GUI.Panels.menu.refresh();
       }
-    },
-    tryAssign: function(cr) {
-      var x = this.zone.x;
-      var y = this.zone.y;
-      var z = this.zone.z;
-      var f = HTomb.World.features[coord(x,y,z)];
-      if (f===undefined && this.canReachZone(cr)) {
-        this.assignTo(cr);
-        return true;
-      }
-      return false;
     },
     canDesignateTile: function(x,y,z) {
       var f = HTomb.World.features[coord(x,y,z)];
