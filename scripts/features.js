@@ -271,9 +271,9 @@ HTomb = (function(HTomb) {
       var x = this.x;
       var y = this.y;
       var z = this.z;
-      this.despawn();
+      // need to swap over the stack, if necessary...
       var f = HTomb.Things[this.makes]();
-      f.place(x,y,z);
+      f.place(x,y,z, {featureConflict: "swap"});
       this.task.complete();
     }
   });

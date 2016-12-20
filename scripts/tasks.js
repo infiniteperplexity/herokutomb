@@ -82,10 +82,18 @@ HTomb = (function(HTomb) {
         HTomb.Things.defineZone(this.zoneTemplate);
       }
     },
+    canPlaceFeature: function() {
+      let f = HTomb.World.features[coord(this.zone.x, this.zone.y, this.zone.z)];
+      if (f===undefined || (f.template==="IncompleteFeature" && f.makes===this.makes)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     tryAssign: function(cr) {
       let f = HTomb.World.features[coord(this.zone.x, this.zone.y, this.zone.z)];
       // if there is not an incomplete feature there already started, search for ingredients
-      if (f===undefined || f.template!=="IncompleteFeature" || f.makes!==this.makes) {
+      if (this.canPlaceFeature()) {
         let ing = [];
         for (let i in this.ingredients) {
           ing.push([i,this.ingredients[i]]);
@@ -215,27 +223,28 @@ HTomb = (function(HTomb) {
       }
     },
     work: function(x,y,z) {
-      var f = HTomb.World.features[coord(x,y,z)];
-      if (f===undefined) {
-        // begin construction
-        if (this.spend()===true) {
-          f = HTomb.Things.IncompleteFeature();
-          f.makes = this.makes;
-          f.task = this;
-          f.place(x,y,z);
+      let f = HTomb.World.features[coord(x,y,z)];
+      if (this.canPlaceFeature()) {
+        if (f && f.template==="IncompleteFeature" && f.makes===this.makes) {
           this.target = f;
+          f.task = this;
+          f.work();
+          this.assignee.ai.acted = true;
+        } else if (f && f.owned!==true) {
+          f.feature.dismantle();
           this.assignee.ai.acted = true;
         } else {
-          return false;
+          if (this.spend()===true) {
+            f = HTomb.Things.IncompleteFeature();
+            f.makes = this.makes;
+            f.task = this;
+            f.place(x,y,z, {featureConflict: "stack"});
+            this.target = f;
+            this.assignee.ai.acted = true;
+          } else {
+            return false;
+          }
         }
-      } else if (f.makes===this.makes) {
-        this.target = f;
-        f.task = this;
-        f.work();
-        this.assignee.ai.acted = true;
-      } else if (f.owned!==true) {
-        f.feature.dismantle();
-        this.assignee.ai.acted = true;
       }
     }
   });
@@ -791,57 +800,6 @@ HTomb = (function(HTomb) {
       bg: "#008800"
     },
     makes: null,
-    designate: function(assigner) {
-      let seeds = HTomb.Utils.findItems(function(v) {return (v.parent==="Seed" && v.item.isOwned()!==false);});
-      function myHover() {
-        if (seeds.length===0) {
-          HTomb.GUI.Panels.menu.middle = ["%c{orange}No seeds availabe."];
-          return;
-        }
-        HTomb.GUI.Panels.menu.middle = ["%c{lime}Build a farm in this area."];
-      }
-      HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
-        context: this,
-        assigner: assigner,
-        callback: this.placeZone,
-        outline: false,
-        bg: this.zoneTemplate.bg,
-        reset: false,
-        hover: myHover
-      });
-    },
-    designateSquares: function(squares, options) {
-      options = options || {};
-      var assigner = options.assigner;
-      var callb = options.callback;
-      var seeds = HTomb.Utils.findItems(function(v) {return (v.parent==="Seed" && v.item.isOwned()!==false);});
-      var types = [];
-      for (var i=0; i<seeds.length; i++) {
-        if (types.indexOf(seeds[i].base)===-1) {
-          types.push(seeds[i].base);
-        }
-      }
-      if (types.length===0) {
-        HTomb.GUI.pushMessage("No seeds available.");
-        HTomb.GUI.reset();
-      } else if (types.length===1) {
-         HTomb.GUI.pushMessage("Assigning " + types[0]);
-         options.context.makes = types[0]+"Sprout";
-         HTomb.Things.templates.Task.designateSquares(squares,options);
-         HTomb.GUI.reset();
-      } else {
-        HTomb.GUI.choosingMenu("Choose a crop:", types, function(crop) {
-          return function() {
-            options.context.makes = crop+"Sprout";
-            HTomb.Things.templates.Task.designateSquares(squares,options);
-            HTomb.GUI.reset();
-          };
-        });
-        HTomb.GUI.Contexts.active.mouseTile = function() {};
-        HTomb.GUI.Panels.menu.middle = ["%c{lime}Choose a crop."];
-        HTomb.GUI.Panels.menu.refresh();
-      }
-    },
     canDesignateTile: function(x,y,z) {
       var f = HTomb.World.features[coord(x,y,z)];
       // if (f && f.template!==this.assignedCrop+"Plant") {
@@ -853,6 +811,16 @@ HTomb = (function(HTomb) {
       }
       var t = HTomb.World.tiles[z][x][y];
       if (t===HTomb.Tiles.FloorTile) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    canPlaceFeature: function() {
+      let f = HTomb.World.features[coord(this.zone.x, this.zone.y, this.zone.z)];
+      // maybe allow overwriting of current crops as well?
+      if (f===undefined || (f.template==="IncompleteFeature" && f.makes===this.makes)
+          || (f.template==="FarmFeature" && f.feature.owner===this.assigner)) {
         return true;
       } else {
         return false;

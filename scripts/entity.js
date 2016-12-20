@@ -292,24 +292,33 @@ HTomb = (function(HTomb) {
     onPlace: function(x,y,z,options) {
       options = options || {};
       let c = coord(x,y,z);
-      if (options.stackFeatures) {
-        // presumably I will need to fire onRemove with some options
-        // I also need to do some graphical stuff
-        let stacked = HTomb.World.features[c];
-        HTomb.World.features[c] = this.entity;
-        if (this.stackedFeatures===null) {
-          this.stackedFeatures = [stacked];
+      let f = HTomb.World.features[c];
+      if (f) {
+        if (options.featureConflict==="stack") {
+          if (this.stackedFeatures===null) {
+            this.stackedFeatures = [f];
+          } else {
+            this.stackedFeatures.push(f);
+          }
+        } else if (options.featureConflict==="swap") {
+          let stacked = f.feature.stackedFeatures;
+          if (this.stackedFeatures===null) {
+            this.stackedFeatures = stacked;
+          } else if (stacked!==null) {
+            this.stackedFeatures.concat(stacked);
+          }
+          console.log("hit this");
+          f.feature.stackedFeatures = null;
+          f.remove();
+          f.despawn();
+        } else if (options.featureConflict==="despawn") {
+          f.remove();
+          f.despawn();
         } else {
-          this.stackedFeatures.push(stacked);
+          throw new Error("unhandled feature conflict!");
         }
-      } else {
-        if (HTomb.World.features[c]) {
-          HTomb.Debug.pushMessage("Overwrote a feature!");
-          HTomb.World.features[c].remove();
-          HTomb.World.features[c].despawn();
-        }
-        HTomb.World.features[c] = this.entity;
       }
+      HTomb.World.features[c] = this.entity;
     },
     onRemove: function(options) {
       let c = coord(this.entity.x,this.entity.y,this.entity.z);
