@@ -136,6 +136,9 @@ HTomb = (function(HTomb) {
     var crd = HTomb.Utils.coord(x,y,z);
     var cbelow = HTomb.Utils.coord(x,y,z-1);
     var covers = HTomb.World.covers;
+    var creatures = HTomb.World.creatures;
+    var features = HTomb.World.features;
+    var items = HTomb.World.items;
     var zones = HTomb.World.zones;
     var visible = HTomb.World.visible;
     var explored = HTomb.World.explored;
@@ -176,6 +179,16 @@ HTomb = (function(HTomb) {
       } else {
         bg = bg || covers[z-1][x][y].darken();
       }
+    } else if (creatures[crd] && creatures[crd].bg) {
+      bg = creatures[crd].bg;
+    } else if (creatures[crd] && creatures[crd].creature.stackedCreature && creatures[crd].creature.stackedCreature.bg) {
+      bg = creatures[crd].creature.stackedCreature.bg;
+    } else if (features[crd] && features[crd].bg) {
+      bg = features[crd].bg;
+    } else if (features[crd] && features[crd].feature.stackedFeature && features[crd].feature.stackedFeature.bg) {
+      bg = features[crd].feature.stackedFeature.bg;
+    } else if (items[crd] && items[crd].tail().bg) {
+      bg = items[crd].tail().bg;
     } else if (zview===-1 && tiles[z-1][x][y].zview===-1 && tiles[z-2][x][y].solid!==true
         && covers[z-2][x][y]!==HTomb.Covers.NoCover && covers[z-2][x][y].liquid) {
       bg = bg || covers[z-2][x][y].darken();

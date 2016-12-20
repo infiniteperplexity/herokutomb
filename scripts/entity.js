@@ -10,7 +10,7 @@ HTomb = (function(HTomb) {
     y: null,
     z: null,
     behaviors: {},
-    place: function(x,y,z) {
+    place: function(x,y,z,options) {
       if (this.isPlaced()) {
         this.remove();
       }
@@ -21,12 +21,12 @@ HTomb = (function(HTomb) {
         var beh = this.getBehaviors();
         for (var i=0; i<beh.length; i++) {
           if (beh[i].onPlace) {
-            beh[i].onPlace(x,y,z);
+            beh[i].onPlace(x,y,z,options);
           }
         }
       }
       if (this.onPlace) {
-        this.onPlace(x,y,z);
+        this.onPlace(x,y,z,options);
       }
       return this;
     },
@@ -55,15 +55,15 @@ HTomb = (function(HTomb) {
       }
       return beh2;
     },
-    remove: function() {
+    remove: function(options) {
       var beh = this.getBehaviors();
       for (var i=0; i<beh.length; i++) {
         if (beh[i].onRemove) {
-          beh[i].onRemove();
+          beh[i].onRemove(options);
         }
       }
       if (this.onRemove) {
-        this.onRemove();
+        this.onRemove(options);
       }
       this.x = null;
       this.y = null;
@@ -276,6 +276,7 @@ HTomb = (function(HTomb) {
     name: "feature",
     yields: null,
     integrity: null,
+    stacked: null,
     onDefine: function(args) {
       if (args.craftable===true) {
         let item = HTomb.Utils.copy(args);
@@ -288,19 +289,34 @@ HTomb = (function(HTomb) {
         template.ingredients[args.template+"Item"] = 1;
       }
     },
-    onPlace: function(x,y,z) {
+    onPlace: function(x,y,z,options) {
+      options = options || {};
       let c = coord(x,y,z);
-      if (HTomb.World.features[c]) {
-        HTomb.Debug.pushMessage("Overwrote a feature!");
-        HTomb.World.features[c].remove();
-        HTomb.World.features[c].despawn();
+      if (options.stackFeatures) {
+        // presumably I will need to fire onRemove with some options
+        // I also need to do some graphical stuff
+        let stacked = HTomb.World.features[c];
+        HTomb.World.features[c] = this.entity;
+        this.stackedFeature = stacked;
+        if (stacked.bg) {
+          this.entity.bg = stacked.bg;
+        }
+      } else {
+        if (HTomb.World.features[c]) {
+          HTomb.Debug.pushMessage("Overwrote a feature!");
+          HTomb.World.features[c].remove();
+          HTomb.World.features[c].despawn();
+        }
+        HTomb.World.features[c] = this.entity;
       }
-      HTomb.World.features[c] = this.entity;
     },
-    onRemove: function() {
+    onRemove: function(options) {
       let c = coord(this.entity.x,this.entity.y,this.entity.z);
       if (HTomb.World.features[c]) {
         delete HTomb.World.features[c];
+      }
+      if (this.stackedFeature) {
+        HTomb.World.features[c] = this.stackedFeature;
       }
     },
     dismantle: function(optionalTask) {
