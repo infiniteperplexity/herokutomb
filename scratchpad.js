@@ -539,201 +539,252 @@ HTomb.Things.defineTask({
 });
 
 
-Tiles.getBackground = function(x,y,z) {
-  var crd = HTomb.Utils.coord(x,y,z);
-  var cbelow = HTomb.Utils.coord(x,y,z-1);
-  var covers = HTomb.World.covers;
-  var creatures = HTomb.World.creatures;
-  var features = HTomb.World.features;
-  var items = HTomb.World.items;
-  var zones = HTomb.World.zones;
-  var visible = HTomb.World.visible;
-  var explored = HTomb.World.explored;
-  var tiles = HTomb.World.tiles;
-  var tile = tiles[z][x][y];
-  var zview = tiles[z][x][y].zview;
-  var vis = (visible[crd]===true || HTomb.Debug.visible===true);
-  var bg;
-  if (zones[crd]!==undefined && zones[crd].assigner===HTomb.Player) {
-    bg = zones[crd].bg;
-  }
-  // ****** If the square has not been explored... ****************
-  if (!explored[z][x][y] && HTomb.Debug.explored!==true) {
-    // unexplored tiles with an explored floor tile above are rendered as non-visible wall tiles
-    if (tiles[z+1][x][y]===Tiles.FloorTile && explored[z+1][x][y]) {
-      return (bg || WALLBG);
-    } else {
-      // otherwise paint the tile black
-      return (bg || "black");
+HTomb.Things.defineFeature({
+  template: "IncompleteFeature",
+  name: "incomplete feature",
+  symbol: "\u25AB",
+  fg: "#BB9922",
+  makes: null,
+  task: null,
+  onPlace: function() {
+    var makes = HTomb.Things.templates[this.makes];
+    this.symbol = makes.incompleteSymbol || this.symbol;
+    this.fg = makes.incompleteFg || makes.fg || this.fg;
+    this.name = "incomplete "+makes.name;
+  },
+  work: function() {
+    if (this.integrity===null || this.integrity===undefined) {
+      this.integrity = -5;
     }
-  }
-  // look for explicit highlight colors
-  if (HTomb.World.creatures[crd] && HTomb.World.creatures[crd].highlightColor) {
-    return HTomb.World.creatures[crd].highlightColor;
-  } else if (HTomb.World.features[crd] && HTomb.World.features[crd].highlightColor) {
-    return HTomb.World.features[crd].highlightColor;
-  }
-  // *********** Choose the background color *******************************
-  if (covers[z][x][y]!==HTomb.Covers.NoCover && covers[z][x][y].liquid && tile.solid!==true) {
-    if (vis) {
-      bg = bg || covers[z][x][y].shimmer();
-    } else {
-      bg = bg || covers[z][x][y].darken();
+    this.integrity+=1;
+    if (this.integrity>=0) {
+      this.finish();
     }
-  } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && tiles[z-1][x][y].solid!==true) {
-    if (vis) {
-      bg = bg || covers[z-1][x][y].shimmer();
-    } else {
-      bg = bg || covers[z-1][x][y].darken();
-    }
-  } else if (creatures[z][x][y]) && creatures[z][x][y].bg) {
-    bg = creatures[z][x][y].bg;
-  } else if (creatures[z][x][y] && creatures[z][x][y].creature.stackedCreature && creatures[z][x][y].creature.stackedCreature.bg) {
-    bg = creatures[z][x][y].creature.stackedCreature.bg;
-  } else if (features[z][x][y]) && features[z][x][y].bg) {
-    bg = features[z][x][y].bg;
-  } else if (items[z][x][y] && items[z][x][y].tail().bg) {
-    bg = items[z][x][y].tail().bg;
-  } else if (features[z][x][y] && features[z][x][y].feature.stackedFeature && features[z][x][y].feature.stackedFeature.bg) {
-    bg = features[z][x][y].feature.stackedFeature.bg;
-  } else if (zview===-1 && tiles[z-1][x][y].zview===-1 && tiles[z-2][x][y].solid!==true
-      && covers[z-2][x][y]!==HTomb.Covers.NoCover && covers[z-2][x][y].liquid) {
-    bg = bg || covers[z-2][x][y].darken();
-  } else if (covers[z][x][y]!==HTomb.Covers.NoCover) {
-    bg = bg || covers[z][x][y].bg;
+  },
+  finish: function() {
+    var x = this.x;
+    var y = this.y;
+    var z = this.z;
+    // need to swap over the stack, if necessary...
+    var f = HTomb.Things[this.makes]();
+    f.place(x,y,z, {featureConflict: "swap"});
+    this.task.complete();
   }
-  // ** An empty tile with an explored floor below...
-  if (zview===-1 && HTomb.World.tiles[z-1][x][y]===Tiles.FloorTile && explored[z-1][x][y]) {
-    bg = bg || BELOWBG;
-  }
-  // ** Otherwise, use the tile background
-  bg = bg || tile.bg;
-  return bg;
-};
+});
 
-Tiles.getGlyph = function(x,y,z) {
-  var crd = HTomb.Utils.coord(x,y,z);
-  var cabove = HTomb.Utils.coord(x,y,z+1);
-  var cbelow = HTomb.Utils.coord(x,y,z-1);
-  var tiles = HTomb.World.tiles;
-  var creatures = HTomb.World.creatures;
-  var items = HTomb.World.items;
-  var features = HTomb.World.features;
-  var covers = HTomb.World.covers;
-  var zones = HTomb.World.zones;
-  var visible = HTomb.World.visible;
-  var explored = HTomb.World.explored;
-  var tile = tiles[z][x][y];
-  var zview = tiles[z][x][y].zview;
-  var vis = (visible[crd]===true || HTomb.Debug.visible===true);
-  var visa = (visible[cabove]===true);
-  var visb = (visible[cbelow]===true);
-  var sym, fg, shade;
-  if (!explored[z][x][y] && HTomb.Debug.explored!==true) {
-    // unexplored tiles with an explored floor tile above are rendered as non-visible wall tiles
-    if (tiles[z+1][x][y]===Tiles.FloorTile && explored[z+1][x][y]) {
-      return [Tiles.WallTile.symbol,SHADOWFG,SHADOWFG];
-    } else {
-      // otherwise paint the tile black
-      return [" ","black","black"];
+HTomb.Things.defineBehavior({
+  template: "Feature",
+  name: "feature",
+  yields: null,
+  integrity: null,
+  stackedFeatures: null,
+  incomplete: 0,
+  dismantled: null,
+  onDefine: function(args) {
+    if (args.craftable===true) {
+      let item = HTomb.Utils.copy(args);
+      item.template = args.template+"Item";
+      delete item.behaviors.Feature;
+      HTomb.Things.defineItem(item);
+      let template = HTomb.Things.templates[args.template];
+      // overwrite the item's ingredients
+      template.ingredients = {};
+      template.ingredients[args.template+"Item"] = 1;
     }
-  }
-  if (vis===false) {
-    fg = SHADOWFG;
-    shade = SHADOWFG;
-  }
-  //*** Symbol and foreground color
-  if (creatures[crd] && vis) {
-    sym = creatures[crd].symbol;
-    fg = fg || creatures[crd].fg;
-  } else if (zview===+1 && creatures[cabove] && (vis || visa)) {
-    sym = creatures[cabove].symbol;
-    fg = fg || WALLFG;
-  } else if (zview===-1 && creatures[cbelow] && (vis || visb)) {
-    sym = creatures[cbelow].symbol;
-    if (covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
-      fg = fg || covers[z-1][x][y].fg;
-    } else {
-      fg = fg || BELOWFG;
+  },
+  work: function() {
+    if (this.integrity===null || this.integrity===undefined) {
+      this.integrity = -5;
     }
-  } else if (items[crd]) {
-    sym = items[crd].tail().symbol;
-    fg = fg || items[crd].tail().fg;
-  } else if (features[crd]) {
-    sym = features[crd].symbol;
-    fg = fg || features[crd].fg;
-  } else if (zview===+1 && items[cabove]) {
-    sym = items[cabove].tail().symbol;
-    fg = fg || WALLFG;
-  } else if (zview===-1 && items[cbelow]) {
-    sym = items[cbelow].tail().symbol;
-    if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
-      fg = fg || covers[z-1][x][y].fg;
-    } else {
-      fg = fg || BELOWFG;
+    this.integrity+=1;
+    if (this.integrity>=0) {
+      this.finish();
     }
-  } else if (zview===+1 && features[cabove]) {
-    sym = features[cabove].symbol;
-    fg = fg || WALLFG;
-  // ** Can't see features down through liquids? or maybe we should color it with the liquid instead?
-  } else if (zview===-1 && features[cbelow]) {
-    sym = features[cbelow].symbol;
-    if (covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
-      fg = fg || covers[z-1][x][y].fg;
-    } else {
-      fg = fg || BELOWFG;
-    }
-  } else {
-    // *** if the square is empty except for cover, handle the symbol and color separately. ***
-    if (covers[z][x][y]===undefined) {
-      console.log([x,y,z]);
-    }
-    if (covers[z][x][y]!==HTomb.Covers.NoCover) {
-      fg = fg || covers[z][x][y].fg;
-    // maybe do show the waterlogged ground?
-  } else if (covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && (tile.solid!==true && tile.zview!==+1)) {
-      fg = fg || covers[z-1][x][y].fg;
-    } else {
-      fg = tile.fg;
-    }
-    // *** symbol ****
-    if ((tile===Tiles.FloorTile || tile===Tiles.EmptyTile) && tiles[z+1][x][y]!==Tiles.EmptyTile) {
-      // roof above
-      sym = "'";
-    } else if (tile===Tiles.FloorTile && explored[z-1][x][y] && tiles[z-1][x][y].solid!==true) {
-    // explored tunnel below
-      sym = "\u25E6";
-    } else if (covers[z][x][y]!==HTomb.Covers.NoCover && tile.solid!==true) {
-      if (covers[z][x][y].liquid) {
-        if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && tiles[z-1][x][y].zmove!==+1) {
-        // deeper liquid
-          sym = "\u2235";
+  },
+  onPlace: function(x,y,z,options) {
+    options = options || {};
+    let c = coord(x,y,z);
+    let f = HTomb.World.features[c];
+    if (f) {
+      if (options.featureConflict==="stack") {
+        if (this.stackedFeatures===null) {
+          this.stackedFeatures = [f];
         } else {
-        // submerged liquid
-          sym = tile.symbol;
+          this.stackedFeatures.push(f);
         }
+      } else if (options.featureConflict==="swap") {
+        let stacked = f.feature.stackedFeatures;
+        if (this.stackedFeatures===null) {
+          this.stackedFeatures = stacked;
+        } else if (stacked!==null) {
+          this.stackedFeatures.concat(stacked);
+        }
+        console.log("hit this");
+        f.feature.stackedFeatures = null;
+        f.remove();
+        f.despawn();
+      } else if (options.featureConflict==="despawn") {
+        f.remove();
+        f.despawn();
       } else {
-        // non-liquid cover
-        sym = covers[z][x][y].symbol;
+        throw new Error("unhandled feature conflict!");
       }
-    } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
-      // liquid surface
-      sym = covers[z-1][x][y].symbol;
-    } else {
-      // ordinary tile
-      sym = tile.symbol;
     }
+    HTomb.World.features[c] = this.entity;
+  },
+  onRemove: function(options) {
+    let c = coord(this.entity.x,this.entity.y,this.entity.z);
+    if (HTomb.World.features[c]) {
+      delete HTomb.World.features[c];
+    }
+    if (this.stackedFeatures) {
+      HTomb.World.features[c] = this.stackedFeatures.shift();
+      if (this.stackedFeatures.length>0) {
+        HTomb.World.features[c].feature.stackedFeatures = this.stackedFeatures;
+      }
+      this.stackedFeatures = null;
+    }
+  },
+  dismantle: function(optionalTask) {
+    if (this.integrity===null) {
+      this.integrity=5;
+    }
+    this.integrity-=1;
+    if (this.integrity<=0) {
+      this.harvest();
+      if (optionalTask) {
+        optionalTask.complete();
+      }
+    }
+  },
+  harvest: function() {
+    if (this.yields!==null) {
+      var x = this.entity.x;
+      var y = this.entity.y;
+      var z = this.entity.z;
+      for (var template in this.yields) {
+        var n = HTomb.Utils.diceUntil(2,2);
+        if (this.yields[template].nozero) {
+          n = Math.max(n,1);
+        }
+        for (var i=0; i<n; i++) {
+          var thing = HTomb.Things[template]().place(x,y,z);
+        }
+      }
+    }
+    this.entity.destroy();
   }
-  sym = sym || "X";
-  fg = fg || "white";
-  if (creatures[crd]) {
-    if (creatures[crd]===HTomb.Player) {
-      return [sym,fg,fg];
+});
+
+HTomb.Things.defineFeature({
+  template: "Excavation",
+  name: "excavation",
+  incompleteSymbol: "\u2717",
+  incompleteFg: HTomb.Constants.BELOW,
+  onPlace: function(x,y,z) {
+    var tiles = HTomb.World.tiles;
+    var EmptyTile = HTomb.Tiles.EmptyTile;
+    var FloorTile = HTomb.Tiles.FloorTile;
+    var WallTile = HTomb.Tiles.WallTile;
+    var UpSlopeTile = HTomb.Tiles.UpSlopeTile;
+    var DownSlopeTile = HTomb.Tiles.DownSlopeTile;
+    var t = tiles[z][x][y];
+    let items = HTomb.World.items[coord(x,y,z)] || [];
+    // If there is a slope below, dig out the floor
+    if (tiles[z-1][x][y]===UpSlopeTile && HTomb.World.explored[z-1][x][y] && (t===WallTile || t===FloorTile)) {
+      tiles[z][x][y] = DownSlopeTile;
+      for (let i=0; i<items.length; i++) {
+        items[i].item.owned = true;
+      }
+    // If it's a wall, dig a tunnel
+    } else if (t===WallTile) {
+      tiles[z][x][y] = FloorTile;
+      for (let i=0; i<items.length; i++) {
+        items[i].item.owned = true;
+      }
+    } else if (t===FloorTile) {
+      // If it's a floor with a wall underneath dig a trench
+      if (tiles[z-1][x][y]===WallTile) {
+        tiles[z][x][y] = DownSlopeTile;
+        tiles[z-1][x][y] = UpSlopeTile;
+      // Otherwise just remove the floor
+      } else {
+        tiles[z][x][y] = EmptyTile;
+        for (let i=0; i<items.length; i++) {
+          items[i].item.owned = true;
+        }
+      }
+    // If it's a down slope tile, remove the slopes
+    } else if (t===DownSlopeTile) {
+      tiles[z][x][y] = EmptyTile;
+      tiles[z-1][x][y] = FloorTile;
+      items = HTomb.World.items[coord(x,y,z-1)] || [];
+      for (let i=0; i<items.length; i++) {
+        items[i].item.owned = true;
+      }
+    // if it's an upward slope, remove the slope
+    } else if (t===UpSlopeTile) {
+      tiles[z][x][y] = FloorTile;
+      if (tiles[z+1][x][y]===DownSlopeTile) {
+        tiles[z+1][x][y] = EmptyTile;
+        for (let i=0; i<items.length; i++) {
+          items[i].item.owned = true;
+        }
+      }
+    } else if (t===EmptyTile) {
+      tiles[z-1][x][y] = FloorTile;
+      items = HTomb.World.items[coord(x,y,z-1)];
+      for (let i=0; i<items.length; i++) {
+        items[i].item.owned = true;
+      }
     }
-    if (creatures[crd].minion && creatures[crd].minion.master===HTomb.Player) {
-      return [sym,fg,fg];
+    HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
+    if (Math.random()<0.25) {
+      var rock = HTomb.Things.Rock();
+      rock.item.n = 1;
+      if (tiles[z][x][y]===DownSlopeTile) {
+        rock.place(x,y,z-1);
+      } else {
+        rock.place(x,y,z);
+      }
     }
+    HTomb.World.validate.cleanNeighbors(x,y,z);
+    this.despawn();
   }
-  shade = shade || HTomb.FOV.shade(fg,x,y,z);
-  return [sym,fg,shade];
-};
+});
+
+
+HTomb.Things.defineFeature({
+  template: "Construction",
+  name: "construction",
+  incompleteSymbol: "\u2692",
+  incompleteFg: HTomb.Constants.ABOVE,
+  onPlace: function(x,y,z) {
+    var tiles = HTomb.World.tiles;
+    var EmptyTile = HTomb.Tiles.EmptyTile;
+    var FloorTile = HTomb.Tiles.FloorTile;
+    var WallTile = HTomb.Tiles.WallTile;
+    var UpSlopeTile = HTomb.Tiles.UpSlopeTile;
+    var DownSlopeTile = HTomb.Tiles.DownSlopeTile;
+    var t = tiles[z][x][y];
+    HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
+    // If it's a floor, build a slope
+    if (t===FloorTile) {
+      tiles[z][x][y] = UpSlopeTile;
+      if (tiles[z+1][x][y]===EmptyTile) {
+        tiles[z+1][x][y] = DownSlopeTile;
+      }
+    // If it's a slope, make it into a wall
+  } else if (t===UpSlopeTile) {
+      tiles[z][x][y] = WallTile;
+      if (tiles[z+1][x][y] === DownSlopeTile) {
+        tiles[z+1][x][y] = FloorTile;
+      }
+    // If it's empty, add a floor
+    } else if (t===DownSlopeTile || t===EmptyTile) {
+      tiles[z][x][y] = FloorTile;
+    }
+    HTomb.World.validate.cleanNeighbors(x,y,z);
+    this.despawn();
+  }
+});
