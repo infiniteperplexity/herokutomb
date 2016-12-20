@@ -181,12 +181,12 @@ HTomb = (function(HTomb) {
       }
     } else if (creatures[crd] && creatures[crd].bg) {
       bg = creatures[crd].bg;
-    } else if (creatures[crd] && creatures[crd].creature.stackedCreature && creatures[crd].creature.stackedCreature.bg) {
-      bg = creatures[crd].creature.stackedCreature.bg;
+    } else if (creatures[crd] && creatures[crd].creature.stackedCreatures && creatures[crd].creature.stackedCreatures[0].bg) {
+      bg = creatures[crd].creature.stackedCreatures[0].bg;
     } else if (features[crd] && features[crd].bg) {
       bg = features[crd].bg;
-    } else if (features[crd] && features[crd].feature.stackedFeature && features[crd].feature.stackedFeature.bg) {
-      bg = features[crd].feature.stackedFeature.bg;
+    } else if (features[crd] && features[crd].feature.stackedFeatures && features[crd].feature.stackedFeatures[0].bg) {
+      bg = features[crd].feature.stackedFeatures[0].bg;
     } else if (items[crd] && items[crd].tail().bg) {
       bg = items[crd].tail().bg;
     } else if (zview===-1 && tiles[z-1][x][y].zview===-1 && tiles[z-2][x][y].solid!==true

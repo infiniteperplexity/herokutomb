@@ -276,7 +276,7 @@ HTomb = (function(HTomb) {
     name: "feature",
     yields: null,
     integrity: null,
-    stacked: null,
+    stackedFeatures: null,
     onDefine: function(args) {
       if (args.craftable===true) {
         let item = HTomb.Utils.copy(args);
@@ -297,9 +297,10 @@ HTomb = (function(HTomb) {
         // I also need to do some graphical stuff
         let stacked = HTomb.World.features[c];
         HTomb.World.features[c] = this.entity;
-        this.stackedFeature = stacked;
-        if (stacked.bg) {
-          this.entity.bg = stacked.bg;
+        if (this.stackedFeatures===null) {
+          this.stackedFeatures = [stacked];
+        } else {
+          this.stackedFeatures.push(stacked);
         }
       } else {
         if (HTomb.World.features[c]) {
@@ -315,8 +316,12 @@ HTomb = (function(HTomb) {
       if (HTomb.World.features[c]) {
         delete HTomb.World.features[c];
       }
-      if (this.stackedFeature) {
-        HTomb.World.features[c] = this.stackedFeature;
+      if (this.stackedFeatures) {
+        HTomb.World.features[c] = this.stackedFeatures.shift();
+        if (this.stackedFeatures.length>0) {
+          HTomb.World.features[c].feature.stackedFeatures = this.stackedFeatures;
+        }
+        this.stackedFeatures = null;
       }
     },
     dismantle: function(optionalTask) {
