@@ -6,7 +6,7 @@ HTomb.Types.defineRoutine({
       return;
     }
     ///*******Newly added code here!
-    
+
     if (ai.entity.worker && ai.entity.worker.task) {
       ai.entity.worker.task.ai();
     } else {
@@ -355,68 +355,6 @@ HTomb.Things.defineTask({
     bg: "#008800"
   },
   makes: null,
-  designate: function(assigner) {
-    let seeds = HTomb.Utils.findItems(function(v,k,i) {return (v.parent==="Seed" && v.item.owned!==false);});
-    function myHover() {
-      if (seeds.length===0) {
-        HTomb.GUI.Panels.menu.middle = ["%c{orange}No seeds availabe."];
-        return;
-      }
-      HTomb.GUI.Panels.menu.middle = ["%c{lime}Build a farm in this area."];
-    }
-    HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
-      context: this,
-      assigner: assigner,
-      callback: this.placeZone,
-      outline: false,
-      bg: this.zoneTemplate.bg,
-      reset: false,
-      hover: myHover
-    });
-  },
-  designateSquares: function(squares, options) {
-    options = options || {};
-    var assigner = options.assigner;
-    var callb = options.callback;
-    var seeds = HTomb.Utils.findItems(function(v,k,i) {return (v.parent==="Seed" && v.item.owned!==false);});
-    var types = [];
-    for (var i=0; i<seeds.length; i++) {
-      if (types.indexOf(seeds[i].base)===-1) {
-        types.push(seeds[i].base);
-      }
-    }
-    if (types.length===0) {
-      HTomb.GUI.pushMessage("No seeds available.");
-      HTomb.GUI.reset();
-    } else if (types.length===1) {
-       HTomb.GUI.pushMessage("Assigning " + types[0]);
-       options.context.makes = types[0]+"Sprout";
-       HTomb.Things.templates.Task.designateSquares(squares,options);
-       HTomb.GUI.reset();
-    } else {
-      HTomb.GUI.choosingMenu("Choose a crop:", types, function(crop) {
-        return function() {
-          options.context.makes = crop+"Sprout";
-          HTomb.Things.templates.Task.designateSquares(squares,options);
-          HTomb.GUI.reset();
-        };
-      });
-      HTomb.GUI.Contexts.active.mouseTile = function() {};
-      HTomb.GUI.Panels.menu.middle = ["%c{lime}Choose a crop."];
-      HTomb.GUI.Panels.menu.refresh();
-    }
-  },
-  tryAssign: function(cr) {
-    var x = this.zone.x;
-    var y = this.zone.y;
-    var z = this.zone.z;
-    var f = HTomb.World.features[coord(x,y,z)];
-    if (f===undefined && this.canReachZone(cr)) {
-      this.assignTo(cr);
-      return true;
-    }
-    return false;
-  },
   canDesignateTile: function(x,y,z) {
     var f = HTomb.World.features[coord(x,y,z)];
     // if (f && f.template!==this.assignedCrop+"Plant") {
@@ -450,8 +388,72 @@ HTomb.Things.defineTask({
       if (assigner.master) {
         assigner.master.taskList.push(t);
       }
+    },
+    work: function(x,y,z) {
+      var f = HTomb.World.features[coord(x,y,z)];
+      if (f && f.template==="FarmFeature") {
+        if (this.spend()===true) {
+          if (!f.crop || f.crop.template!==this.makes) {
+            f.crop = HTomb.Things.templates[this.makes]();
+          }
+          f.task = this;
+          this.target = f;
+          this.assignee.ai.acted = true;
+          f.work();
+        } else {
+          return false;
+        }
+      }
     }
+  });
     return zone;
+  }
+});
+
+let FarmFeature = HTomb.Things.templates.FarmFeature;
+FarmFeature.finish: function() {
+  this.task.complete();
+}
+FarmFeature.work: function() {
+  if (this.integrity===null || this.integrity===undefined) {
+    this.integrity = -5;
+  }
+  this.integrity+=1;
+  if (this.integrity>=0) {
+    this.finish();
+  }
+},
+
+HTomb.Things.defineFeature({
+  template: "IncompleteFeature",
+  name: "incomplete feature",
+  symbol: "\u25AB",
+  fg: "#BB9922",
+  makes: null,
+  task: null,
+  onPlace: function() {
+    var makes = HTomb.Things.templates[this.makes];
+    this.symbol = makes.incompleteSymbol || this.symbol;
+    this.fg = makes.incompleteFg || makes.fg || this.fg;
+    this.name = "incomplete "+makes.name;
+  },
+  work: function() {
+    if (this.integrity===null || this.integrity===undefined) {
+      this.integrity = -5;
+    }
+    this.integrity+=1;
+    if (this.integrity>=0) {
+      this.finish();
+    }
+  },
+  finish: function() {
+    var x = this.x;
+    var y = this.y;
+    var z = this.z;
+    this.despawn();
+    var f = HTomb.Things[this.makes]();
+    f.place(x,y,z);
+    this.task.complete();
   }
 });
 

@@ -202,8 +202,11 @@ HTomb = (function(HTomb) {
       }
       // This code makes sure the right arguments get passed to the parent and child
       let eargs = {};
+      let onDefine = null;
       for (let arg in args) {
-        if (arg.substr(0,2)==="on" && (arg.substr(2,1)===arg.substr(2,1).toUpperCase())) {
+        if (arg==="onDefine") {
+          onDefine = args[arg];
+        } else if (arg.substr(0,2)==="on" && (arg.substr(2,1)===arg.substr(2,1).toUpperCase())) {
           eargs[arg] = args[arg];
         } else if (ent[arg]!==undefined) {
           eargs[arg] = args[arg];
@@ -225,6 +228,10 @@ HTomb = (function(HTomb) {
       // Make sure that onDefine works at the level it is supposed to
       if (beh.hasOwnProperty("onDefine")) {
         beh.onDefine(eargs);
+      }
+      // make the child onDefine kick in after the parent and behavioral onDefines
+      if (onDefine) {
+        onDefine.call(newdef);
       }
       return newdef;
     };

@@ -390,6 +390,11 @@ HTomb = (function(HTomb) {
     name: "farm",
     symbols: ["=","=","=","=","=","=","=","=","="],
     fgs: ["#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922"],
+    onDefine: function() {
+      let f = HTomb.Things.templates.FarmFeature;
+      f.work = function() {};
+      f.finish = function() {};
+    },
     onPlace: function() {
       let crops = HTomb.Types.templates.Crop.types;
       for (let i=0; i<crops.length; i++) {
@@ -447,8 +452,7 @@ HTomb = (function(HTomb) {
           let seeds = this.allSeeds();
           HTomb.Utils.shuffle(seeds);
           HTomb.Things.templates.FarmTask.makes = seeds[0];
-          
-          z = HTomb.Things.templates.FarmTask.placeZone.(f.x,f.y,f.z,this.structure.owner);
+          z = HTomb.Things.templates.FarmTask.placeZone(f.x,f.y,f.z,this.structure.owner);
           console.log(z);
         }
       }
