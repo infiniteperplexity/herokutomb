@@ -180,13 +180,13 @@ HTomb.Things.define({
       callb.call(options.context,crd[0],crd[1],crd[2],assigner);
     }
   },
-  // designateBox: function(squares, options) {
-  //   options = options || {};
-  //   var assigner = options.assigner;
-  //   var callb = options.callback;
-  //   var crd = squares[0];
-  //   callb.call(options.context,crd[0],crd[1],crd[2],assigner);
-  // },
+  designateBox: function(squares, options) {
+    options = options || {};
+    var assigner = options.assigner;
+    var callb = options.callback;
+    var crd = squares[0];
+    callb.call(options.context,crd[0],crd[1],crd[2],assigner);
+  },
   placeZone: function(x,y,z,assigner) {
     var zone, t;
     if (this.canDesignateTile(x,y,z)) {
@@ -430,30 +430,29 @@ HTomb.Things.defineFeature({
   symbol: "\u25AB",
   fg: "#BB9922",
   makes: null,
-  task: null,
-  onPlace: function() {
-    var makes = HTomb.Things.templates[this.makes];
+  steps: 5,
+  onCreate: function(args) {
+    let makes = HTomb.Things[args.makes](args);
+    this.makes = makes;
     this.symbol = makes.incompleteSymbol || this.symbol;
     this.fg = makes.incompleteFg || makes.fg || this.fg;
     this.name = "incomplete "+makes.name;
   },
   work: function() {
-    if (this.integrity===null || this.integrity===undefined) {
-      this.integrity = -5;
+    if (this.steps>0) {
+      this.steps-=1;
     }
-    this.integrity+=1;
-    if (this.integrity>=0) {
-      this.finish();
+    if (this.makes.onWork) {
+      this.makes.onWork(this);
+    },
+    if (this.steps<=0) {
+      this.finished = true;
+      this.makes.place(this.x, this.y, this.z, {featureConflict: "swap"});
+      this.makes.onComplete(this);
     }
   },
-  finish: function() {
-    var x = this.x;
-    var y = this.y;
-    var z = this.z;
-    this.despawn();
-    var f = HTomb.Things[this.makes]();
-    f.place(x,y,z);
-    this.task.complete();
+  onDespawn: function() {
+    this.makes.despawn();
   }
 });
 

@@ -307,7 +307,6 @@ HTomb = (function(HTomb) {
           } else if (stacked!==null) {
             this.stackedFeatures.concat(stacked);
           }
-          console.log("hit this");
           f.feature.stackedFeatures = null;
           f.remove();
           f.despawn();
