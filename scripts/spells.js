@@ -83,6 +83,7 @@ HTomb = (function(HTomb) {
               zombie.ai.setTeam(caster.entity.ai.team);
               caster.entity.master.addMinion(zombie);
               let task = HTomb.Things.DigTask({assigner: caster.entity}).place(x,y,z);
+              console.log(task);
               task.task.assignTo(zombie);
               zombie.ai.acted = true;
               HTomb.GUI.sensoryEvent("You hear an ominous stirring below the earth...",x,y,z);

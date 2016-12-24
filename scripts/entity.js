@@ -141,7 +141,13 @@ HTomb = (function(HTomb) {
     entity: null,
     addToEntity: function(ent) {
       this.entity = ent;
-      ent[this.name] = this;
+      // This is kind of a weird multi-level inheritance thing...
+      if (this.parent==="Behavior") {
+        ent[this.name] = this;
+      } else {
+        let name = HTomb.Things.templates[this.parent].name;
+        ent[name] = this;
+      }
       if (this.onAdd) {
         this.onAdd(this.options);
       }
