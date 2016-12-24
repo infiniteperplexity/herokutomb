@@ -85,6 +85,12 @@ HTomb = (function(HTomb) {
       if (this.isPlaced()) {
         this.remove();
       }
+      var beh = this.getBehaviors();
+      for (var i=0; i<beh.length; i++) {
+        if (beh[i].onDespawn) {
+          beh[i].onDespawn();
+        }
+      }
     },
     fall: function() {
       var g = HTomb.Tiles.groundLevel(this.x,this.y,this.z);
@@ -509,6 +515,16 @@ HTomb = (function(HTomb) {
         items.push(taken);
       }
       return items;
+    },
+    hasAll: function(ingredients) {
+      for (var ing in ingredients) {
+        var n = ingredients[ing];
+        // if we lack what we need, search for items
+        if (this.items.countAll(ing)<n) {
+          return false;
+        }
+      }
+      return true;
     },
     list: function() {
       var mesg = "";

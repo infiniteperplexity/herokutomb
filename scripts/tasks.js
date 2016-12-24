@@ -28,8 +28,8 @@ HTomb = (function(HTomb) {
         }
         t.remove();
         t.despawn();
-        HTomb.World.tasks[coord(x,y,z)] = this.entity;
       }
+      HTomb.World.tasks[coord(x,y,z)] = this.entity;
     },
     designate: function(assigner) {
       HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
@@ -111,6 +111,12 @@ HTomb = (function(HTomb) {
     cancel: function() {
       this.entity.despawn();
     },
+    onRemove: function() {
+      let x = this.entity.x;
+      let y = this.entity.y;
+      let z = this.entity.z;
+      delete HTomb.World.tasks[coord(x,y,z)];
+    },
     onDespawn: function() {
       var master = this.assigner;
       if (master) {
@@ -124,6 +130,7 @@ HTomb = (function(HTomb) {
       }
     },
     workBegun: function() {
+      console.log(".workBegun()");
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
@@ -135,13 +142,16 @@ HTomb = (function(HTomb) {
       }
     },
     beginWork: function() {
+      console.log(".beginWork()");
       // could handle auto-dismantling here...
-      this.assignee.inventory.takeItems(this.ingredients);
-      f = HTomb.Things.IncompleteFeature({makes: HTomb.Things[this.makes]()});
+      let test = this.assignee.inventory.items.takeItems(this.ingredients);
+      console.log(test);
+      let f = HTomb.Things.IncompleteFeature({makes: HTomb.Things[this.makes]()});
       f.place(this.entity.x,this.entity.y,this.entity.z);
       this.assignee.ai.acted = true;
     },
     work: function() {
+      console.log(".work()");
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
@@ -157,8 +167,11 @@ HTomb = (function(HTomb) {
         f.work();
       }
       if (f.finished) {
-        this.entity.despawn();
+        this.completeWork();
       }
+    },
+    completeWork: function(x,y,z) {
+      this.entity.despawn();
     },
     ai: function() {
       if (this.assignee.ai.acted===true) {
@@ -296,6 +309,7 @@ HTomb = (function(HTomb) {
         this.cancel();
         return;
       }
+      // There is a special case of digging upward under a tombstone...
       if (f && f.template==="Tombstone") {
         if (f.integrity===null || f.integrity===undefined) {
           f.integrity=10;
@@ -411,8 +425,8 @@ HTomb = (function(HTomb) {
     designate: function(assigner) {
       var deleteTasks = function(x,y,z, assigner) {
         var zn = HTomb.World.tasks[coord(x,y,z)];
-        if (zn && zn.assigner===assigner) {
-          zn.cancel();
+        if (zn && zn.task.assigner===assigner) {
+          zn.task.cancel();
         }
       };
       function myHover() {

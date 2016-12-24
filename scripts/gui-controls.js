@@ -365,11 +365,16 @@ HTomb = (function(HTomb) {
       }
       next = mainColor + "Items: ";
       if (square.items && (square.visible || HTomb.Debug.visible)) {
-        for (i=0; i<square.items.length; i++) {
-          next+=square.items[i].describe();
+        square.items.forEach(function(e,a,i) {
+          next+=e.describe();
           text.push(next);
           next = "       ";
-        }
+        });
+        //for (i=0; i<square.items.length; i++) {
+        //  next+=square.items[i].describe();
+        //  text.push(next);
+        //  next = "       ";
+        //}
       }
       next = mainColor + "Feature: ";
       if (square.feature) {

@@ -98,9 +98,9 @@ HTomb = (function(HTomb) {
       var cr = ai.entity;
       var task = cr.worker.task;
       if (cr.movement) {
-        var x = task.x;
-        var y = task.y;
-        var z = task.z;
+        var x = task.entity.x;
+        var y = task.entity.y;
+        var z = task.entity.z;
         if (z===null) {
           console.log("why go to work fail?");
         }

@@ -245,7 +245,6 @@ HTomb = (function(HTomb) {
       this.workshops.splice(this.workshops.indexOf(w,1));
     },
     designate: function(tsk) {
-      console.log(tsk);
       tsk.designate(this.entity);
     },
     assignTasks: function() {

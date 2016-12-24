@@ -258,6 +258,7 @@ HTomb = (function(HTomb) {
       this.symbol = this.makes.incompleteSymbol || this.symbol;
       this.fg = this.makes.incompleteFg || this.makes.fg || this.fg;
       this.name = "incomplete "+this.makes.name;
+      return this;
     },
     work: function() {
       this.integrity+=1;
@@ -277,7 +278,7 @@ HTomb = (function(HTomb) {
     }
   });
 
-  
+
   HTomb.Types.define({
     template: "Cover",
     name: "cover",

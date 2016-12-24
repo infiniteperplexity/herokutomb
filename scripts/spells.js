@@ -42,7 +42,6 @@ HTomb = (function(HTomb) {
       var that = this;
       var items, zombie, i;
       function raiseZombie(x,y,z) {
-        console.log("testing");
         if (that.validTile(x,y,z)) {
           HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "black", dist: 1, alpha: 1, fade: 0.9,});
           //HTomb.Particles.addEmitter(x,y,z,{fg: "black", dist: 1, alpha: 1, fade: 0.9});
@@ -82,8 +81,7 @@ HTomb = (function(HTomb) {
               zombie.minion.setMaster(caster.entity);
               zombie.ai.setTeam(caster.entity.ai.team);
               caster.entity.master.addMinion(zombie);
-              let task = HTomb.Things.DigTask({assigner: caster.entity}).place(x,y,z);
-              console.log(task);
+              let task = HTomb.Things.ZombieEmergeTask({assigner: caster.entity}).place(x,y,z);
               task.task.assignTo(zombie);
               zombie.ai.acted = true;
               HTomb.GUI.sensoryEvent("You hear an ominous stirring below the earth...",x,y,z);
@@ -117,6 +115,35 @@ HTomb = (function(HTomb) {
         return true;
       }
       return false;
+    }
+  });
+
+  //Special zombie dig task?
+  HTomb.Things.defineTask({
+    template: "ZombieEmergeTask",
+    name: "dig",
+    bg: "#884400",
+    validTile: function() {
+      // this thing is going to be special...it should keep respawning if thwarted
+      return true;
+    },
+    work: function(x,y,z) {
+      let f = HTomb.World.features[HTomb.Utils.coord(x,y,z)];
+      // There is a special case of digging upward under a tombstone...
+      if (f && f.template==="Tombstone") {
+        if (f.integrity===null || f.integrity===undefined) {
+          f.integrity=10;
+        }
+        f.integrity-=1;
+        this.assignee.ai.acted = true;
+        if (f.integrity<=0) {
+          f.explode();
+          HTomb.GUI.sensoryEvent("A zombie emerges from the earth!",x,y,z);
+          HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
+          this.completeWork(x,y,z);
+          HTomb.World.validate.cleanNeighbors(x,y,z);
+        }
+      }
     }
   });
 
