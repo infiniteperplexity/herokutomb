@@ -25,7 +25,7 @@ HTomb = (function(HTomb) {
   HTomb.World.creatures = {};
   HTomb.World.items = {};
   HTomb.World.features = {};
-  HTomb.World.zones = {};
+  HTomb.World.tasks = {};
   HTomb.World.portals = {};
   HTomb.World.covers = grid3d();
   console.timeEnd("lists");
@@ -47,9 +47,9 @@ HTomb = (function(HTomb) {
     for (let i=0; i<oldkeys.length; i++) {
       delete HTomb.World.items[oldkeys[i]];
     }
-    oldkeys = Object.keys(HTomb.World.zones);
+    oldkeys = Object.keys(HTomb.World.tasks);
     for (let i=0; i<oldkeys.length; i++) {
-      delete HTomb.World.zones[oldkeys[i]];
+      delete HTomb.World.tasks[oldkeys[i]];
     }
     HTomb.World.fillTiles();
     HTomb.World.generators.bestSoFar();

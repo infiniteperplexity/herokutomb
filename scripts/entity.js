@@ -10,7 +10,7 @@ HTomb = (function(HTomb) {
     y: null,
     z: null,
     behaviors: {},
-    place: function(x,y,z,options) {
+    place: function(x,y,z) {
       if (this.isPlaced()) {
         this.remove();
       }
@@ -21,12 +21,12 @@ HTomb = (function(HTomb) {
         var beh = this.getBehaviors();
         for (var i=0; i<beh.length; i++) {
           if (beh[i].onPlace) {
-            beh[i].onPlace(x,y,z,options);
+            beh[i].onPlace(x,y,z);
           }
         }
       }
       if (this.onPlace) {
-        this.onPlace(x,y,z,options);
+        this.onPlace(x,y,z);
       }
       return this;
     },
@@ -55,15 +55,15 @@ HTomb = (function(HTomb) {
       }
       return beh2;
     },
-    remove: function(options) {
+    remove: function() {
       var beh = this.getBehaviors();
       for (var i=0; i<beh.length; i++) {
         if (beh[i].onRemove) {
-          beh[i].onRemove(options);
+          beh[i].onRemove();
         }
       }
       if (this.onRemove) {
-        this.onRemove(options);
+        this.onRemove();
       }
       this.x = null;
       this.y = null;
@@ -108,7 +108,8 @@ HTomb = (function(HTomb) {
         if (typeof(HTomb.Things[b])!=="function") {
             console.log("Problem with behavior " + b + " for " + this.describe());
         }
-        var beh = HTomb.Things[b](this.behaviors[b] || {});
+        //var beh = HTomb.Things[b](this.behaviors[b] || {});
+        var beh = HTomb.Things.create(b,this.behaviors[b] || {});
         beh.addToEntity(this);
       }
       // Randomly choose symbol if necessary
@@ -147,6 +148,27 @@ HTomb = (function(HTomb) {
     },
     onDefine: function(args) {
       HTomb.Things.behaviors.push(args.name);
+      if (args.parent!=="Behavior") {
+        let eargs = {};
+        eargs.parent = "Entity";
+        eargs.name = args.name;
+        if (args.bg) {
+          eargs.bg = args.bg;
+        }
+        if (args.fg) {
+          eargs.fg = args.fg;
+        }
+        if (args.symbol) {
+          eargs.symbol = args.symbol;
+        }
+        eargs.behaviors = {};
+        eargs.behaviors[args.template] = {};
+        eargs.template = args.template+"Entity";
+        HTomb.Things.define(eargs);
+        HTomb.Things[args.template] = function(cargs) {
+          return HTomb.Things[args.template+"Entity"](cargs);
+        };
+      }
     }
   });
   HTomb.Things.behaviors = [];
@@ -229,11 +251,11 @@ HTomb = (function(HTomb) {
     },
     onPlace: function(x,y,z) {
       let c = coord(x,y,z);
-      var pile = HTomb.World.items[c] || ItemContainer();
+      var pile = HTomb.World.items[c] || HTomb.Things.Container();
       pile.push(this.entity);
       if (pile.length>0) {
         HTomb.World.items[c] = pile;
-        pile.parent = HTomb.World.items;
+        //pile.parent = HTomb.World.items;
       }
     },
     onRemove: function() {
@@ -289,47 +311,18 @@ HTomb = (function(HTomb) {
         template.ingredients[args.template+"Item"] = 1;
       }
     },
-    onPlace: function(x,y,z,options) {
-      options = options || {};
+    onPlace: function(x,y,z) {
       let c = coord(x,y,z);
       let f = HTomb.World.features[c];
       if (f) {
-        if (options.featureConflict==="stack") {
-          if (this.stackedFeatures===null) {
-            this.stackedFeatures = [f];
-          } else {
-            this.stackedFeatures.push(f);
-          }
-        } else if (options.featureConflict==="swap") {
-          let stacked = f.feature.stackedFeatures;
-          if (this.stackedFeatures===null) {
-            this.stackedFeatures = stacked;
-          } else if (stacked!==null) {
-            this.stackedFeatures.concat(stacked);
-          }
-          f.feature.stackedFeatures = null;
-          f.remove();
-          f.despawn();
-        } else if (options.featureConflict==="despawn") {
-          f.remove();
-          f.despawn();
-        } else {
-          throw new Error("unhandled feature conflict!");
-        }
+        throw new Error("unhandled feature conflict!");
       }
       HTomb.World.features[c] = this.entity;
     },
-    onRemove: function(options) {
+    onRemove: function() {
       let c = coord(this.entity.x,this.entity.y,this.entity.z);
       if (HTomb.World.features[c]) {
         delete HTomb.World.features[c];
-      }
-      if (this.stackedFeatures) {
-        HTomb.World.features[c] = this.stackedFeatures.shift();
-        if (this.stackedFeatures.length>0) {
-          HTomb.World.features[c].feature.stackedFeatures = this.stackedFeatures;
-        }
-        this.stackedFeatures = null;
       }
     },
     dismantle: function(optionalTask) {
@@ -362,98 +355,39 @@ HTomb = (function(HTomb) {
       this.entity.destroy();
     }
   });
-  HTomb.Things.defineBehavior({
-    template: "Zone",
-    name: "zone",
-    onPlace: function(x,y,z) {
-      let c = coord(x,y,z);
-      let zones = HTomb.World.zones;
-      if (zones[c]) {
-        let zn = zones[c];
-        HTomb.Debug.pushMessage("Overwrote a zone!");
-        zn.remove();
-        zn.despawn();
-      }
-      zones[c] = this.entity;
-    },
-    onRemove: function() {
-      let c = coord(this.entity.x, this.entity.y, this.entity.z);
-      delete HTomb.World.zones[c];
-      // sloppy placement of task!
-      //if (this.task) {
-      if (this.entity.task) {
-        //let task = this.task;
-        //this.task = null;
-        let task = this.entity.task;
-        this.entity.task = null;
-        task.zone = null;
-        task.cancel();
-      }
-    },
-    onDescribe: function(options) {
-      options.article = "none";
-      return options;
-    }
-  });
 
   HTomb.Things.defineByProxy("Creature","Entity");
   HTomb.Things.defineByProxy("Item","Entity");
   HTomb.Things.defineByProxy("Feature","Entity");
-  HTomb.Things.defineByProxy("Zone","Entity");
 
-  function ItemContainer(args) {
-    var container = Object.create(Array.prototype);
-    for (var method in ItemContainer.prototype) {
-      if (ItemContainer.prototype.hasOwnProperty(method)) {
-        container[method] = ItemContainer.prototype[method];
-      }
-    }
-    if (Array.isArray(args)) {
-      for (var i=0; i<args.length; i++) {
-        container.push(args[i]);
-      }
-    }
-    return container;
-  }
-  HTomb.ItemContainer = ItemContainer;
-  ItemContainer.prototype = {
-    parent: null,
-    stringify: function() {
-      let a = [];
-      for (let i=0; i<this.length; i++) {
-        a.push(this[i]);
-      }
-      return {"ItemContainer" : a};
-    },
-    getParent: function() {
-      if (parent===HTomb.World.items) {
-        for (key in HTomb.World.items) {
-          if (HTomb.World.items[key]===this) {
-            return c = HTomb.Utils.decoord(key);
-          }
-        }
-      } else {
-        return parent;
-      }
+  HTomb.Things.define({
+    template: "Container",
+    name: "container",
+    parent: "Thing",
+    items: null,
+    heldby: null,
+    onCreate: function() {
+      this.items = [];
+      return this;
     },
     absorbStack: function(item) {
       var one;
       var two;
-      for (var i=0; i<this.length; i++) {
-        if ((this[i].template===item.template) && (this[i].item.n<this[i].item.maxn)) {
+      for (var i=0; i<this.items.length; i++) {
+        if ((this.items[i].template===item.template) && (this.items[i].item.n<this.items[i].item.maxn)) {
           one = item.item.n;
-          two = this[i].item.n;
+          two = this.items[i].item.n;
           if ((one+two)>item.item.maxn) {
-            this[i].item.n = item.item.maxn;
+            this.items[i].item.n = item.item.maxn;
             item.item.n = one+two-item.item.maxn;
           } else {
-            this[i].item.n = one+two;
+            this.items[i].item.n = one+two;
             item.item.n = 0;
           }
         }
       }
       if (item.item.n>0) {
-        Array.prototype.push.call(this,item)
+        this.items.push(item);
         item.item.container = this;
       } else {
         item.despawn();
@@ -463,20 +397,12 @@ HTomb = (function(HTomb) {
       if (item.item.stackable) {
         this.absorbStack(item);
       } else {
-        Array.prototype.push.call(this,item);
-        item.item.container = this;
-      }
-    },
-    unshift: function(item) {
-      if (item.item.stackable) {
-        this.absorbStack(item);
-      } else {
-        Array.prototype.unshift.call(this,arg);
+        this.items.push(item);
         item.item.container = this;
       }
     },
     contains: function(item) {
-      var indx = this.indexOf(item);
+      var indx = this.items.indexOf(item);
       if (indx>-1) {
         return true;
       } else {
@@ -484,8 +410,8 @@ HTomb = (function(HTomb) {
       }
     },
     containsAny: function(template) {
-      for (var i=0; i<this.length; i++) {
-        if (this[i].template===template) {
+      for (var i=0; i<this.items.length; i++) {
+        if (this.items[i].template===template) {
           return true;
         }
       }
@@ -493,25 +419,25 @@ HTomb = (function(HTomb) {
     },
     countAll: function(template) {
       var tally = 0;
-      for (var i=0; i<this.length; i++) {
-        if (this[i].template===template) {
-          tally+=this[i].item.n;
+      for (var i=0; i<this.items.length; i++) {
+        if (this.items[i].template===template) {
+          tally+=this.items[i].item.n;
         }
       }
       return tally;
     },
     getFirst: function(template) {
-      for (var i=0; i<this.length; i++) {
-        if (this[i].template===template) {
-          return this[i];
+      for (var i=0; i<this.items.length; i++) {
+        if (this.items[i].template===template) {
+          return this.items[i];
         }
       }
       return null;
     },
     getLast: function(template) {
-      for (var i=this.length-1; i>=0; i--) {
-        if (this[i].template===template) {
-          return this[i];
+      for (var i=this.items.length-1; i>=0; i--) {
+        if (this.items[i].template===template) {
+          return this.items[i];
         }
       }
       return null;
@@ -555,36 +481,39 @@ HTomb = (function(HTomb) {
         }
       }
     },
-    shift: function() {
-      var item = Array.prototype.shift.call(this);
-      item.item.container = null;
-      return item;
-    },
-    pop: function() {
-      var item = Array.prototype.pop.call(this);
-      item.item.container = null;
-      return item;
-    },
     remove: function(item) {
-      var indx = this.indexOf(item);
+      var indx = this.items.indexOf(item);
       if (indx>-1) {
         item.item.container = null;
-        this.splice(indx,1);
+        this.items.splice(indx,1);
         // should this only happen if it's on the ground?
         item.remove();
         return item;
       }
     },
+    takeItems: function(ingredients) {
+      let items = [];
+      if (this.hasAll(ingredients)!==true) {
+        return false;
+      }
+      for (let item in ingredients) {
+        let n = ingredients[item];
+        let taken = this.items.take(item,n);
+        // need some error handling?
+        items.push(taken);
+      }
+      return items;
+    },
     list: function() {
       var mesg = "";
-      for (var i = 0; i<this.length; i++) {
+      for (var i = 0; i<this.items.length; i++) {
         if (i>0) {
           mesg+=" ";
         }
-        mesg+=this[i].describe({article: "indefinite"});
-        if (i===this.length-2) {
+        mesg+=this.items[i].describe({article: "indefinite"});
+        if (i===this.items.length-2) {
           mesg = mesg + ", and";
-        } else if (i<this.length-1) {
+        } else if (i<this.items.length-1) {
           mesg = mesg + ",";
         }
       }
@@ -592,18 +521,26 @@ HTomb = (function(HTomb) {
     },
     lineList: function(spacer) {
       var buffer = [];
-      for (var i = 0; i<this.length; i++) {
-        buffer.push([spacer,this[i].describe({article: "indefinite"})]);
+      for (var i = 0; i<this.items.length; i++) {
+        buffer.push([spacer,this.items[i].describe({article: "indefinite"})]);
       }
       return buffer;
     },
     head: function() {
-      return this[0];
+      return this.items[0];
     },
     tail: function() {
-      return this[this.length-1];
+      return this.items[this.items.length-1];
+    },
+    forEach: function(callb) {
+      let ret = [];
+      for (let i=0; i<this.items.length; i++) {
+        ret.push(callb(this.items[i], this, i));
+      }
+      return ret;
     }
-  };
+  });
+  Object.defineProperty(HTomb.Things.templates.Container,"length",{get: function() {return this.items.length;}});
 
 return HTomb;
 })(HTomb);

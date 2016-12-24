@@ -139,7 +139,7 @@ HTomb = (function(HTomb) {
     var creatures = HTomb.World.creatures;
     var features = HTomb.World.features;
     var items = HTomb.World.items;
-    var zones = HTomb.World.zones;
+    var tasks = HTomb.World.tasks;
     var visible = HTomb.World.visible;
     var explored = HTomb.World.explored;
     var tiles = HTomb.World.tiles;
@@ -147,8 +147,8 @@ HTomb = (function(HTomb) {
     var zview = tiles[z][x][y].zview;
     var vis = (visible[crd]===true || HTomb.Debug.visible===true);
     var bg;
-    if (zones[crd]!==undefined && zones[crd].assigner===HTomb.Player) {
-      bg = zones[crd].bg;
+    if (tasks[crd]!==undefined && tasks[crd].assigner===HTomb.Player) {
+      bg = tasks[crd].bg;
     }
     // ****** If the square has not been explored... ****************
     if (!explored[z][x][y] && HTomb.Debug.explored!==true) {
@@ -181,12 +181,8 @@ HTomb = (function(HTomb) {
       }
     } else if (creatures[crd] && creatures[crd].bg) {
       bg = creatures[crd].bg;
-    } else if (creatures[crd] && creatures[crd].creature.stackedCreatures && creatures[crd].creature.stackedCreatures[0].bg) {
-      bg = creatures[crd].creature.stackedCreatures[0].bg;
     } else if (features[crd] && features[crd].bg) {
       bg = features[crd].bg;
-    } else if (features[crd] && features[crd].feature.stackedFeatures && features[crd].feature.stackedFeatures[0].bg) {
-      bg = features[crd].feature.stackedFeatures[0].bg;
     } else if (items[crd] && items[crd].tail().bg) {
       bg = items[crd].tail().bg;
     } else if (zview===-1 && tiles[z-1][x][y].zview===-1 && tiles[z-2][x][y].solid!==true
@@ -213,7 +209,7 @@ HTomb = (function(HTomb) {
     var items = HTomb.World.items;
     var features = HTomb.World.features;
     var covers = HTomb.World.covers;
-    var zones = HTomb.World.zones;
+    var tasks = HTomb.World.tasks;
     var visible = HTomb.World.visible;
     var explored = HTomb.World.explored;
     var tile = tiles[z][x][y];
@@ -339,7 +335,7 @@ HTomb = (function(HTomb) {
     square.items = HTomb.World.items[crd];
     square.feature = HTomb.World.features[crd];
     square.portals = HTomb.World.portals[crd];
-    square.zone = HTomb.World.zones[crd];
+    square.task = HTomb.World.tasks[crd];
     square.cover = HTomb.World.covers[z][x][y];
     square.explored = HTomb.World.explored[z][x][y];
     square.visible = HTomb.World.visible[crd];
@@ -507,7 +503,17 @@ HTomb = (function(HTomb) {
       return false;
     }
   };
-
+  HTomb.Tiles.isReachableFrom = function(x1,y1,z1,x0,y0,z0) {
+    if (HTomb.Tiles.isTouchableFrom(x1,y1,z1,x0,y0,z0)) {
+      return true;
+    }
+    var path = HTomb.Path.aStar(x0,y0,z0,x1,y1,z1,{useLast: false});
+    if (path!==false) {
+      return true;
+    } else {
+      return false;
+    }
+  },
   HTomb.Tiles.isEnclosed = function(x,y,z) {
     var dirs = ROT.DIRS[8];
     for (var i=0; i<dirs.length; dirs++) {

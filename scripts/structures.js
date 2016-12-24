@@ -192,7 +192,6 @@ HTomb = (function(HTomb) {
     }
   });
   HTomb.Things.defineByProxy("Structure","Entity");
-
   HTomb.Things.defineStructure({
     template: "Workshop",
     makes: [],

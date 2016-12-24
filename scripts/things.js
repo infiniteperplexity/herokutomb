@@ -120,6 +120,9 @@ HTomb = (function(HTomb) {
       if (this.highlightColor) {
         delete this.highlightColor;
       }
+    },
+    super: function() {
+      return HTomb.Things.templates[this.parent];
     }
   };
   // The global list of known templates
@@ -136,21 +139,18 @@ HTomb = (function(HTomb) {
     if (args.parent===undefined || (args.parent!=="Thing" && HTomb.Things.templates[args.parent]===undefined)) {
       args.parent = "Thing";
     }
-    if (args.parent==="Thing") {
-      t = Object.create(thing);
-      // Create a new function...maybe not the best way to do this
-      HTomb.Things["define" + args.template] = function(opts) {
-        opts.parent = opts.parent || args.template;
-        return HTomb.Things.define(opts);
-      };
-    } else {
-      t = Object.create(HTomb.Things.templates[args.parent]);
 
-      HTomb.Things[args.template] = function(opts) {
-        // Create a shortcut function to create it
-        return HTomb.Things.create(args.template, opts);
-      };
-    }
+    t = Object.create(HTomb.Things.templates[args.parent]);
+
+    // Create a new function...maybe not the best way to do this
+    HTomb.Things["define" + args.template] = function(opts) {
+      opts.parent = opts.parent || args.template;
+      return HTomb.Things.define(opts);
+    };
+    HTomb.Things[args.template] = function(opts) {
+      // Create a shortcut function to create it
+      return HTomb.Things.create(args.template, opts);
+    };
     // Add the arguments to the template
     for (var arg in args) {
       t[arg] = args[arg];

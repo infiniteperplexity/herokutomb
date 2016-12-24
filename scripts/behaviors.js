@@ -101,7 +101,7 @@ HTomb = (function(HTomb) {
     template: "Inventory",
     name: "inventory",
     capacity: 10,
-    onAdd: function() {this.items = HTomb.ItemContainer(); this.items.parent = this;},
+    onAdd: function() {this.items = HTomb.Things.Container(); /*this.items.parent = this;*/},
     pickup: function(item) {
       var e = this.entity;
       item.item.owned = true;
@@ -145,6 +145,24 @@ HTomb = (function(HTomb) {
         var n = ingredients[ing];
         // if we lack what we need, search for items
         if (this.items.countAll(ing)<n) {
+          return false;
+        }
+      }
+      return true;
+    },
+    canFindAll: function(ingredients) {
+      for (let item in ingredients) {
+        let items = HTomb.Utils.findItem(function(it) {
+          if (it.template===item && it.isOwned() && it.isOnGround()) {
+            // should really check if these things are reachable...
+            // ...should probably allow for it in this inventory as well...
+            return true;
+          } else {
+            return false;
+          }
+        });
+        if (items.length===0) {
+          // if any ingredients are missing, do not assign
           return false;
         }
       }
@@ -227,6 +245,7 @@ HTomb = (function(HTomb) {
       this.workshops.splice(this.workshops.indexOf(w,1));
     },
     designate: function(tsk) {
+      console.log(tsk);
       tsk.designate(this.entity);
     },
     assignTasks: function() {
@@ -346,8 +365,8 @@ HTomb = (function(HTomb) {
       var dy = y-this.entity.y;
       var dz = z-this.entity.z;
       var c = coord(x,y,z);
-      var zone = HTomb.World.zones[c];
-      if (zone && zone.template==="ForbiddenZone" && this.entity.minion && zone.task.assigner===this.entity.minion.master) {
+      var task = HTomb.World.tasks[c];
+      if (task && task.template==="ForbidTask" && this.entity.minion && task.assigner===this.entity.minion.master) {
         return false;
       }
       // can't go through solid feature

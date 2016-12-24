@@ -251,17 +251,15 @@ HTomb = (function(HTomb) {
     symbol: "\u25AB",
     fg: "#BB9922",
     makes: null,
-    task: null,
-    onPlace: function() {
-      var makes = HTomb.Things.templates[this.makes];
-      this.symbol = makes.incompleteSymbol || this.symbol;
-      this.fg = makes.incompleteFg || makes.fg || this.fg;
-      this.name = "incomplete "+makes.name;
+    finished: false,
+    steps: -5,
+    onCreate: function(args) {
+      this.makes = args.makes;
+      this.symbol = this.makes.incompleteSymbol || this.symbol;
+      this.fg = this.makes.incompleteFg || this.makes.fg || this.fg;
+      this.name = "incomplete "+this.makes.name;
     },
     work: function() {
-      if (this.integrity===null || this.integrity===undefined) {
-        this.integrity = -5;
-      }
       this.integrity+=1;
       if (this.integrity>=0) {
         this.finish();
@@ -272,12 +270,14 @@ HTomb = (function(HTomb) {
       var y = this.y;
       var z = this.z;
       // need to swap over the stack, if necessary...
-      var f = HTomb.Things[this.makes]();
-      f.place(x,y,z, {featureConflict: "swap"});
-      this.task.complete();
+      this.finished = true;
+      this.remove();
+      this.makes.place(x,y,z);
+      this.despawn();
     }
   });
 
+  
   HTomb.Types.define({
     template: "Cover",
     name: "cover",

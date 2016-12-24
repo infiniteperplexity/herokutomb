@@ -42,49 +42,50 @@ HTomb = (function(HTomb) {
       var that = this;
       var items, zombie, i;
       function raiseZombie(x,y,z) {
-        if (that.canDesignateTile(x,y,z)) {
+        console.log("testing");
+        if (that.validTile(x,y,z)) {
           HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "black", dist: 1, alpha: 1, fade: 0.9,});
           //HTomb.Particles.addEmitter(x,y,z,{fg: "black", dist: 1, alpha: 1, fade: 0.9});
           HTomb.Particles.addEmitter(x,y,z,{fg: "black", dist: 4, alpha: 1, v: -0.5, fade: 0.9});
           // cast directly on a corpse
           items = HTomb.World.items[coord(x,y,z)]
           if (items) {
-            for (i=0; i<items.length; i++) {
-              if (items[i].template==="Corpse") {
-                that.spendMana();
-                items[i].despawn();
-                zombie = HTomb.Things.Zombie();
-                zombie.place(x,y,z);
-                HTomb.Things.Minion().addToEntity(zombie);
-                zombie.minion.setMaster(caster.entity);
-                zombie.ai.setTeam(caster.entity.ai.team);
-                caster.entity.master.addMinion(zombie);
-                zombie.ai.acted = true;
-                HTomb.GUI.sensoryEvent("The corpse stirs and rises...",x,y,z);
-                HTomb.Time.turn();
-                return;
-              }
+            if (items.containsAny("Corpse")) {
+              let corpse = items.takeOne("Corpse");
+              that.spendMana();
+              corpse.despawn();
+              zombie = HTomb.Things.Zombie();
+              zombie.place(x,y,z);
+              HTomb.Things.Minion().addToEntity(zombie);
+              zombie.minion.setMaster(caster.entity);
+              zombie.ai.setTeam(caster.entity.ai.team);
+              caster.entity.master.addMinion(zombie);
+              zombie.ai.acted = true;
+              HTomb.GUI.sensoryEvent("The corpse stirs and rises...",x,y,z);
+              HTomb.Time.turn();
+              return;
             }
           }
           // if it's a tombstone
-          items = HTomb.World.items[coord(x,y,z-1)] || [];
-          for (i=0; i<items.length; i++) {
-            if (items[i].template==="Corpse") {
+          items = HTomb.World.items[coord(x,y,z-1)];
+          if (items) {
+            if (items.containsAny("Corpse")) {
+              let corpse = items.takeOne("Corpse");
               that.spendMana();
-              items[i].despawn();
+              corpse.despawn();
               if (HTomb.World.tiles[z-1][x][y]===HTomb.Tiles.WallTile) {
                 HTomb.World.tiles[z-1][x][y]=HTomb.Tiles.UpSlopeTile;
               }
-              HTomb.GUI.sensoryEvent("You hear an ominous stirring below the earth...",x,y,z);
               zombie = HTomb.Things.Zombie();
               zombie.place(x,y,z-1);
-              zombie.ai.setTeam(caster.entity.ai.team);
               HTomb.Things.Minion().addToEntity(zombie);
               zombie.minion.setMaster(caster.entity);
+              zombie.ai.setTeam(caster.entity.ai.team);
               caster.entity.master.addMinion(zombie);
+              let task = HTomb.Things.DigTask({assigner: caster.entity}).place(x,y,z);
+              task.task.assignTo(zombie);
               zombie.ai.acted = true;
-              var zone = HTomb.Things.templates.DigTask.placeZone(x,y,z,caster.entity);
-              zone.task.assignTo(zombie);
+              HTomb.GUI.sensoryEvent("You hear an ominous stirring below the earth...",x,y,z);
               HTomb.Time.turn();
               return;
             }
@@ -94,7 +95,7 @@ HTomb = (function(HTomb) {
         }
       }
       function myHover(x, y, z) {
-        if (that.canDesignateTile(x,y,z)) {
+        if (that.validTile(x,y,z)) {
           HTomb.GUI.Panels.menu.middle = ["%c{lime}Raise a zombie here."];
         } else {
           HTomb.GUI.Panels.menu.middle = ["%c{orange}Select a tile with a tombstone or corpse."];
@@ -104,7 +105,7 @@ HTomb = (function(HTomb) {
         hover: myHover
       });
     },
-    canDesignateTile: function(x,y,z) {
+    validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
       }

@@ -456,9 +456,7 @@ timeIt("elevation", function() {
     }
     for (var it in HTomb.World.items) {
       var items = HTomb.World.items[it];
-      for (var i=0; i<items.length; i++) {
-        items[i].item.owned=false;
-      }
+      items.forEach(function(e,a,i) {e.item.owned=false});
     }
   }
   function placePlayer() {

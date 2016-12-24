@@ -376,9 +376,9 @@ HTomb = (function(HTomb) {
         next+=square.feature.describe();
       }
       text.push(next);
-      next = mainColor + "Zone: ";
-      if (square.zone) {
-        next+=square.zone.describe();
+      next = mainColor + "Task: ";
+      if (square.task) {
+        next+=square.task.describe();
       }
       text.
       push(next);
@@ -413,9 +413,9 @@ HTomb = (function(HTomb) {
         next+=above.feature.describe();
       }
       text.push(next);
-      next = otherColor + "Zone: ";
-      if (above.zone) {
-        next+=above.zone.describe();
+      next = otherColor + "Task: ";
+      if (above.task) {
+        next+=above.task.describe();
       }
       text.push(next);
       next = otherColor + "Cover: ";
@@ -449,9 +449,9 @@ HTomb = (function(HTomb) {
         next+=below.feature.describe();
       }
       text.push(next);
-      next = otherColor + "Zone: ";
-      if (below.zone) {
-        next+=below.zone.describe();
+      next = otherColor + "Task: ";
+      if (below.task) {
+        next+=below.task.describe();
       }
       text.push(next);
       next = otherColor + "Cover: ";

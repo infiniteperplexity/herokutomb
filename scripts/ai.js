@@ -26,9 +26,9 @@ HTomb = (function(HTomb) {
       if (Object.keys(ingredients).length===0) {
         return false;
       }
-      var x = task.zone.x;
-      var y = task.zone.y;
-      var z = task.zone.z;
+      var x = task.x;
+      var y = task.y;
+      var z = task.z;
       var f = HTomb.World.features[coord(x,y,z)];
       // no need for ingredients if construction has begun
       if (f && f.template===task.makes) {
@@ -98,14 +98,14 @@ HTomb = (function(HTomb) {
       var cr = ai.entity;
       var task = cr.worker.task;
       if (cr.movement) {
-        var zone = task.zone;
-        var x = zone.x;
-        var y = zone.y;
-        var z = zone.z;
+        var x = task.x;
+        var y = task.y;
+        var z = task.z;
         if (z===null) {
           console.log("why go to work fail?");
         }
         var dist = HTomb.Path.distance(cr.x,cr.y,x,y);
+        // Should I instead check for "beginWork"?
         if (useLast===true && x===cr.x && y===cr.y && z===cr.z) {
           task.work(x,y,z);
         } else if (useLast!==true && HTomb.Tiles.isTouchableFrom(x,y,z,cr.x,cr.y,cr.z)) {

@@ -333,9 +333,9 @@ HTomb = (function(HTomb) {
     for (let i=0; i<oldkeys.length; i++) {
       delete HTomb.World.items[oldkeys[i]];
     }
-    oldkeys = Object.keys(HTomb.World.zones);
+    oldkeys = Object.keys(HTomb.World.tasks);
     for (let i=0; i<oldkeys.length; i++) {
-      delete HTomb.World.zones[oldkeys[i]];
+      delete HTomb.World.tasks[oldkeys[i]];
     }
     for (let t = 0; t<things.length; t++) {
       let thing = things[t];
@@ -349,8 +349,8 @@ HTomb = (function(HTomb) {
       if (thing.feature) {
         HTomb.World.features[coord(x,y,z)]=thing;
       }
-      if (thing.zone) {
-        HTomb.World.zones[coord(x,y,z)]=thing;
+      if (thing.task) {
+        HTomb.World.tasks[coord(x,y,z)]=thing;
       }
       if (thing.item) {
         if (x!==null && y!==null && z!==null) {
