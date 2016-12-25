@@ -249,7 +249,7 @@ HTomb = (function(HTomb) {
     },
     assignTasks: function() {
       for(let i=0; i<this.taskList.length; i++) {
-        var tsk = this.taskList[i];
+        var tsk = this.taskList[i].task;
         if (tsk.assignee!==null) {
           continue;
         }
@@ -265,8 +265,8 @@ HTomb = (function(HTomb) {
           if (minions[j].worker.allowedTasks.indexOf(tsk.template)===-1 && minions[j].worker.allowedTasks.indexOf(tsk.fakeAs)===-1) {
             continue;
           }
-          var assigned = tsk.tryAssign(minions[j]);
-          if (assigned) {
+          if (tsk.canAssign(minions[j])) {
+            tsk.assignTo(minions[j]);
             break;
           }
         }

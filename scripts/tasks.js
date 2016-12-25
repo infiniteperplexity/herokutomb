@@ -58,13 +58,16 @@ HTomb = (function(HTomb) {
     validTile: function(x,y,z) {
       let f = HTomb.World.features[coord(x,y,z)];
       //also check owner?
-      if (f===undefined || (f.template==="IncompleteFeature" && f.makes===this.makes)) {
+      if (f===undefined || (f.template==="IncompleteFeature" && f.makes.template===this.makes)) {
         return true;
       }
-      else return false;
+      else {
+        console.log(f);
+        return false;
+      }
     },
     designateTile: function(x,y,z,assigner) {
-      if (this.validTile(x,y,z)) {
+      if (this.validTile(x,y,z) || HTomb.World.explored[z][x][y]!==true) {
         let t = HTomb.Things[this.template]({assigner: assigner}).place(x,y,z);
         return t;
       }
@@ -130,31 +133,32 @@ HTomb = (function(HTomb) {
       }
     },
     workBegun: function() {
-      console.log(".workBegun()");
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
       let f = HTomb.World.features[coord(x,y,z)];
-      if (f && f.template==="IncompleteFeature" && f.makes===this.makes) {
+      if (f && f.template==="IncompleteFeature" && f.makes.template===this.makes) {
         return true;
       } else {
         return false;
       }
     },
     beginWork: function() {
-      console.log(".beginWork()");
       // could handle auto-dismantling here...
+      // will this work?  or should we check for ingredients before taking?
       let test = this.assignee.inventory.items.takeItems(this.ingredients);
-      console.log(test);
       let f = HTomb.Things.IncompleteFeature({makes: HTomb.Things[this.makes]()});
       f.place(this.entity.x,this.entity.y,this.entity.z);
       this.assignee.ai.acted = true;
     },
     work: function() {
-      console.log(".work()");
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
+      if (this.validTile(x,y,z)!==true) {
+        console.log("invalid tile!");
+        this.cancel();
+      }
       //do I want to make demolishing unowned features the default?
       let f = HTomb.World.features[coord(x,y,z)];
       //if (f && (f.template!=="IncompleteFeature" || f.makes!==this.makes) {
@@ -162,11 +166,14 @@ HTomb = (function(HTomb) {
       //}
       // we could also handle the dismantling in "beginWork"...
       if (this.workBegun()!==true) {
+        console.log("beginning work");
         this.beginWork();
       } else {
+        console.log("continuing work");
         f.work();
       }
-      if (f.finished) {
+      if (f && f.finished) {
+        console.log("finishing work");
         this.completeWork();
       }
     },
@@ -201,16 +208,14 @@ HTomb = (function(HTomb) {
       var t = HTomb.World.tiles[z][x][y];
       var tb = HTomb.World.tiles[z-1][x][y];
       // this is the special part for DigTask
-      if (HTomb.World.explored[z][x][y]!==true) {
-        return true;
-      }
+      let f = HTomb.World.features[coord(x,y,z)];
       if (t===HTomb.Tiles.VoidTile) {
         return false;
-      } else if (HTomb.World.features[coord(x,y,z)] && HTomb.World.features[coord(x,y,z)].owned!==false) {
+      } else if (f && f.owned!==false && (f.template!=="IncompleteFeature" || this.makes!==f.makes.template)) {
         return false;
       } else if (t===HTomb.Tiles.FloorTile && tb===HTomb.Tiles.VoidTile) {
         return false;
-      } else if (t===HTomb.Tiles.EmptyTile && (tb===HTomb.Tiles.EmptyTile || tb===HTomb.Tiles.FloorTile)) {
+      } else if (t===HTomb.Tiles.EmptyTile && (tb===HTomb.Tiles.EmptyTile || tb===HTomb.Tiles.FloorTile)) {;
         return false;
       }
       return true;
@@ -290,41 +295,6 @@ HTomb = (function(HTomb) {
         bg: this.bg,
         hover: myHover
       });
-    },
-    work: function(x,y,z) {
-      // If this was initially placed illegally in unexplored territory, remove it now
-      var t = (HTomb.World.tiles[z][x][y]);
-      var tb = HTomb.World.tiles[z-1][x][y];
-      var f = HTomb.World.features[coord(x,y,z)];
-      if (t===HTomb.Tiles.VoidTile) {
-        this.cancel();
-        return;
-      } else if (f && f.owned!==false && f.makes!=="Excavation") {
-        this.cancel();
-        return;
-      } else if (t===HTomb.Tiles.FloorTile && tb===HTomb.Tiles.VoidTile) {
-        this.cancel();
-        return;
-      } else if (t===HTomb.Tiles.EmptyTile && (tb===HTomb.Tiles.EmptyTile || tb===HTomb.Tiles.FloorTile)) {
-        this.cancel();
-        return;
-      }
-      // There is a special case of digging upward under a tombstone...
-      if (f && f.template==="Tombstone") {
-        if (f.integrity===null || f.integrity===undefined) {
-          f.integrity=10;
-        }
-        f.integrity-=1;
-        this.assignee.ai.acted = true;
-        if (f.integrity<=0) {
-          f.explode();
-          HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
-          this.complete();
-          HTomb.World.validate.cleanNeighbors(x,y,z);
-        }
-      } else {
-        HTomb.Things.templates.Task.work.call(this,x,y,z);
-      }
     }
   });
 

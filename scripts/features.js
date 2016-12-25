@@ -261,8 +261,8 @@ HTomb = (function(HTomb) {
       return this;
     },
     work: function() {
-      this.integrity+=1;
-      if (this.integrity>=0) {
+      this.steps+=1;
+      if (this.steps>=0) {
         this.finish();
       }
     },

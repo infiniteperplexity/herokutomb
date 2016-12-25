@@ -160,25 +160,47 @@ HTomb = (function(HTomb) {
     },
     onDefine: function(args) {
       HTomb.Things.behaviors.push(args.name);
+      let beh = HTomb.Things.templates[args.template];
       if (args.parent!=="Behavior") {
         let eargs = {};
         eargs.parent = "Entity";
         eargs.name = args.name;
         if (args.bg) {
           eargs.bg = args.bg;
+          delete beh.bg;
         }
         if (args.fg) {
           eargs.fg = args.fg;
+          delete beh.fg;
         }
         if (args.symbol) {
           eargs.symbol = args.symbol;
+          delete beh.symbol;
         }
         eargs.behaviors = {};
         eargs.behaviors[args.template] = {};
         eargs.template = args.template+"Entity";
         HTomb.Things.define(eargs);
         HTomb.Things[args.template] = function(cargs) {
-          return HTomb.Things[args.template+"Entity"](cargs);
+          let entargs = {};
+          let bargs = {};
+          let entity = HTomb.Things.templates[args.template+"Entity"];
+          for (let arg in cargs) {
+            if (typeof(cargs[arg])==="function") {
+              entargs[arg] = cargs[arg];
+            } else if (entity[arg]!==undefined) {
+              entargs[arg] = cargs[arg];
+            } else if (beh[arg]!==undefined) {
+              bargs[arg] = cargs[arg];
+            } else {
+              entargs[arg] = cargs[arg];
+            }
+          }
+          // this can't work like this...we need to avoid overwriting behaviors...
+          // this worked okay for Rocks, didn't it?  Or maybe it overwrote...
+          entargs.behaviors = entargs.behaviors || {};
+          entargs.behaviors[args.template] = bargs;
+          return HTomb.Things[args.template+"Entity"](entargs);
         };
       }
     }

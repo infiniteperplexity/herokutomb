@@ -207,7 +207,16 @@ HTomb = (function(HTomb) {
         if (arg==="onDefine") {
           onDefine = args[arg];
         } else if (arg.substr(0,2)==="on" && (arg.substr(2,1)===arg.substr(2,1).toUpperCase())) {
-          eargs[arg] = args[arg];
+          if (ent[arg]) {
+            let func1 = ent[arg];
+            let func2 = args[arg];
+            eargs[arg] = function() {
+              func1.apply(this,arguments);
+              return func2.apply(this,arguments);
+            };
+          } else {
+            eargs[arg] = args[arg];
+          }
         } else if (ent[arg]!==undefined) {
           eargs[arg] = args[arg];
         } else if (beh[arg]!==undefined) {
@@ -233,6 +242,32 @@ HTomb = (function(HTomb) {
       if (onDefine) {
         onDefine.call(newdef);
       }
+      let create = HTomb.Things[args.template];
+      HTomb.Things[args.template] = function(crargs) {
+        crargs = crargs || {};
+        crargs.behaviors = crargs.behaviors || {};
+        let par = HTomb.Things.templates[args.template];
+        if (par.behaviors) {
+          for (let arg in par.behaviors) {
+            crargs.behaviors[arg] = HTomb.Utils.copy(par.behaviors[arg]);
+          }
+        }
+        let entargs = {};
+        let bargs = {};
+        for (let arg in crargs) {
+          if (typeof(crargs[arg])==="function") {
+            entargs[arg] = crargs[arg];
+          } else if (ent[arg]!==undefined) {
+            entargs[arg] = crargs[arg];
+          } else if (beh[arg]!==undefined) {
+            bargs[arg] = crargs[arg];
+          } else {
+            entargs[arg] = crargs[arg];
+          }
+        }
+        entargs.behaviors[child] = bargs;
+        return create(entargs);
+      };
       return newdef;
     };
     // Make sure that onDefine does not override its parent
