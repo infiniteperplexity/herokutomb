@@ -136,7 +136,7 @@ HTomb = (function(HTomb) {
     template: "Excavation",
     name: "excavation",
     incompleteSymbol: "\u2717",
-    incompleteFg: HTomb.Constants.BELOW,
+    incompleteFg: HTomb.Constants.BELOWFG,
     onPlace: function(x,y,z) {
       var tiles = HTomb.World.tiles;
       var EmptyTile = HTomb.Tiles.EmptyTile;
@@ -214,7 +214,7 @@ HTomb = (function(HTomb) {
     template: "Construction",
     name: "construction",
     incompleteSymbol: "\u2692",
-    incompleteFg: HTomb.Constants.ABOVE,
+    incompleteFg: HTomb.Constants.WALLFG,
     onPlace: function(x,y,z) {
       var tiles = HTomb.World.tiles;
       var EmptyTile = HTomb.Tiles.EmptyTile;

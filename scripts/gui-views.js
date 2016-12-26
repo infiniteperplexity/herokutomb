@@ -289,7 +289,7 @@ HTomb = (function(HTomb) {
     let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     for (let i=0; i<alphabet.length; i++) {
       GUI.bindKey(GUI.Contexts.structures,"VK_"+alphabet[i], function() {
-        Views.Structures.selectedStructure.structure.fireChoiceCommand(i);
+        Views.Structures.selectedStructure.structure.choiceCommand(i);
         Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
       });
     }
@@ -328,37 +328,37 @@ HTomb = (function(HTomb) {
   Views.Structures.displayStructureInfo = function(w) {
     w.structure.highlight("#557722");
     HTomb.GUI.Views.Main.zoomIfNotVisible(w.x,w.y,w.z);
-    GUI.Contexts.structures.menuText = w.structure.showDetailsText();
+    GUI.Contexts.structures.menuText = w.structure.detailsText();
     menu.bottom = menu.defaultBottom;
     menu.render();
     GUI.Contexts.active = GUI.Contexts.structures;
   };
   Views.Structures.structureCancel = function() {
-    Views.Structures.selectedStructure.structure.fireCancelCommand();
+    Views.Structures.selectedStructure.structure.cancelCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureDown = function() {
-    Views.Structures.selectedStructure.structure.fireDownCommand();
+    Views.Structures.selectedStructure.structure.downCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureUp = function() {
-    Views.Structures.selectedStructure.structure.fireUpCommand();
+    Views.Structures.selectedStructure.structure.upCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureRight = function() {
-    Views.Structures.selectedStructure.structure.fireRightCommand();
+    Views.Structures.selectedStructure.structure.rightCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureLeft = function() {
-    Views.Structures.selectedStructure.structure.fireLeftCommand();
+    Views.Structures.selectedStructure.structure.leftCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureMore = function() {
-    Views.Structures.selectedStructure.structure.fireMoreCommand();
+    Views.Structures.selectedStructure.structure.moreCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.structureLess = function() {
-    Views.Structures.selectedStructure.structure.fireLessCommand();
+    Views.Structures.selectedStructure.structure.lessCommand();
     Views.Structures.displayStructureInfo(Views.Structures.selectedStructure);
   };
   Views.Structures.nextStructure = function() {

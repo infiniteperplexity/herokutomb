@@ -94,6 +94,10 @@ HTomb = (function(HTomb) {
         }
       }
       function myHover(x, y, z) {
+        if (HTomb.World.explored[z][x][y]!==true) {
+          HTomb.GUI.Panels.menu.middle = ["%c{orange}Unexplored tile."];
+          return;
+        }
         if (that.validTile(x,y,z)) {
           HTomb.GUI.Panels.menu.middle = ["%c{lime}Raise a zombie here."];
         } else {

@@ -31,7 +31,7 @@ HTomb = (function(HTomb) {
       var z = task.z;
       var f = HTomb.World.features[coord(x,y,z)];
       // no need for ingredients if construction has begun
-      if (f && f.template===task.makes) {
+      if (f && f.makes.template===task.makes) {
         return false;
       }
       // check to see if we are already targeting an ingredient
@@ -54,6 +54,8 @@ HTomb = (function(HTomb) {
                 return false;
               } else if (v.template===ing) {
                 return true;
+              } else {
+                return false;
               }
             });
             // if we find an item we need, target it
@@ -71,7 +73,6 @@ HTomb = (function(HTomb) {
         return false;
       // failed to find what we needed
       } else if (needy===true && t===null) {
-        console.log("unassigned by failure to find...");
         cr.worker.task.unassign();
         cr.ai.walkRandom();
       } else if (t!==null) {
@@ -129,24 +130,25 @@ HTomb = (function(HTomb) {
       if (ai.entity.minion===undefined) {
         return;
       }
+      let cr = ai.entity;
       // Drop items not relevant to current task
-      if (ai.entity.inventory) {
-        let items = ai.entity.inventory.items;
+      if (cr.inventory) {
+        let items = cr.inventory.items;
         for (let i=0; i<items.length; i++) {
           // drop any item that is not relevant to the current task
           // ...eventually we'll want to keep equipment and certain other items
-          if (this.task===undefined || !this.task.ingredients) {
-            this.entity.inventory.drop(items[i]);
+          if (!cr.worker.task || !cr.worker.task.ingredients) {
+            cr.inventory.drop(items.expose(i));
             ai.acted = true;
             break;
-          } else if (Object.keys(this.task.ingredients).indexOf(items[i])===-1) {
-            this.entity.inventory.drop(items[i]);
+          } else if (Object.keys(cr.worker.task.ingredients).indexOf(items.expose(i).template)===-1) {
+            cr.inventory.drop(items.expose(i));
             ai.acted = true;
             break;
           }
         }
       }
-      if (ai.entity.worker && ai.entity.worker.task) {
+      if (cr.worker && cr.worker.task) {
         ai.entity.worker.task.ai();
       } else {
         // Otherwise, patrol around the creature's master

@@ -101,7 +101,9 @@ HTomb = (function(HTomb) {
     template: "Inventory",
     name: "inventory",
     capacity: 10,
-    onAdd: function() {this.items = HTomb.Things.Container(); /*this.items.parent = this;*/},
+    onAdd: function() {
+      this.items = HTomb.Things.Container({heldby: this});
+    },
     pickup: function(item) {
       var e = this.entity;
       item.item.owned = true;
@@ -152,8 +154,9 @@ HTomb = (function(HTomb) {
     },
     canFindAll: function(ingredients) {
       for (let item in ingredients) {
-        let items = HTomb.Utils.findItem(function(it) {
-          if (it.template===item && it.isOwned() && it.isOnGround()) {
+        let i = 0;
+        let items = HTomb.Utils.findItems(function(it) {
+          if (it.template===item && it.item.isOwned()===true && it.item.isOnGround()===true) {
             // should really check if these things are reachable...
             // ...should probably allow for it in this inventory as well...
             return true;

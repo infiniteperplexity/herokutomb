@@ -247,7 +247,10 @@ HTomb = (function(HTomb) {
       return this.owned;
     },
     isOnGround: function() {
-      let parent = this.container.parent;
+      if (!this.container) {
+        return false;
+      }
+      let parent = this.container.heldby;
       if (parent===HTomb.World.items) {
         return true;
       } else {
@@ -268,7 +271,11 @@ HTomb = (function(HTomb) {
       return false;
     },
     carriedByMinion: function() {
-      let parent = this.container.parent;
+      if (!this.container) {
+        console.log(this.entity);
+        return false;
+      }
+      let parent = this.container.heldby;
       if (parent.entity && HTomb.Player.master.minions.indexOf(parent.entity)) {
         return true;
       } else {
@@ -276,7 +283,11 @@ HTomb = (function(HTomb) {
       }
     },
     carriedByCreature: function() {
-      let parent = this.container.parent;
+      if (!this.container) {
+        console.log(this.entity);
+        return false;
+      }
+      let parent = this.container.heldby;
       if (parent.entity && parent.entity.creature) {
         return true;
       } else {
@@ -285,11 +296,10 @@ HTomb = (function(HTomb) {
     },
     onPlace: function(x,y,z) {
       let c = coord(x,y,z);
-      var pile = HTomb.World.items[c] || HTomb.Things.Container();
+      var pile = HTomb.World.items[c] || HTomb.Things.Container({heldby: HTomb.World.items});
       pile.push(this.entity);
       if (pile.length>0) {
         HTomb.World.items[c] = pile;
-        //pile.parent = HTomb.World.items;
       }
     },
     onRemove: function() {
@@ -366,12 +376,10 @@ HTomb = (function(HTomb) {
       this.integrity-=1;
       if (this.integrity<=0) {
         this.harvest();
-        if (optionalTask) {
-          optionalTask.complete();
-        }
       }
     },
     harvest: function() {
+      console.log("harvest");
       if (this.yields!==null) {
         var x = this.entity.x;
         var y = this.entity.y;
@@ -435,6 +443,17 @@ HTomb = (function(HTomb) {
         item.item.container = this;
       }
     },
+    insert: function(item,i) {
+      if (item.item.stackable) {
+        this.absorbStack(item);
+      } else {
+        this.items[i] = item;
+        item.item.container = this;
+      }
+    },
+    expose: function(i) {
+      return this.items[i];
+    },
     contains: function(item) {
       var indx = this.items.indexOf(item);
       if (indx>-1) {
@@ -481,7 +500,8 @@ HTomb = (function(HTomb) {
         i_or_t = i_or_t.template;
       }
       if (HTomb.Things.templates[i_or_t].stackable!==true) {
-        return this.getFirst(i_or_t);
+        var first = this.getFirst(i_or_t);
+        return this.remove(first);
       } else {
         var last = this.getLast(i_or_t);
         if (last.item.n===1) {
@@ -501,7 +521,8 @@ HTomb = (function(HTomb) {
         i_or_t = i_or_t.template;
       }
       if (HTomb.Things.templates[i_or_t].stackable!==true) {
-        return this.getFirst(i_or_t);
+        var first = this.getFirst(i_or_t);
+        return this.remove(first);
       } else {
         var last = this.getLast(i_or_t);
         if (last.item.n<=n) {
@@ -532,7 +553,7 @@ HTomb = (function(HTomb) {
       }
       for (let item in ingredients) {
         let n = ingredients[item];
-        let taken = this.items.take(item,n);
+        let taken = this.take(item,n);
         // need some error handling?
         items.push(taken);
       }
@@ -542,7 +563,7 @@ HTomb = (function(HTomb) {
       for (var ing in ingredients) {
         var n = ingredients[ing];
         // if we lack what we need, search for items
-        if (this.items.countAll(ing)<n) {
+        if (this.countAll(ing)<n) {
           return false;
         }
       }

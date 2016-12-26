@@ -265,7 +265,9 @@ HTomb = (function(HTomb) {
             entargs[arg] = crargs[arg];
           }
         }
-        entargs.behaviors[child] = bargs;
+        for (let arg in bargs) {
+          entargs.behaviors[child][arg] = bargs[arg];
+        }
         return create(entargs);
       };
       return newdef;

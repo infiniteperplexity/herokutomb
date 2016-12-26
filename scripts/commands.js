@@ -201,7 +201,7 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You cannot carry any more items.");
     } else {
       if (square.items.length===1) {
-        HTomb.Player.inventory.pickup(square.items[0]);
+        HTomb.Player.inventory.pickup(square.items.head());
         HTomb.Time.turn();
       } else {
         // If there are multiple items, display a menu
@@ -226,7 +226,7 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You have no items.");
     } else {
       if (p.inventory.items.length===1) {
-        p.inventory.drop(p.inventory.items[0]);
+        p.inventory.drop(p.inventory.items.head());
       } else {
         // If the player has multiple items, display a menu
         GUI.choosingMenu("Choose an item:",p.inventory.items,
@@ -249,7 +249,7 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You have no items.");
     } else {
         // If the player has multiple items, display a menu
-      GUI.choosingMenu("You are carrying:",p.inventory.items,
+      GUI.choosingMenu("You are carrying:",p.inventory.items.forEach(function(e) {return e;}),
         function(item) {
           return function() {
             HTomb.GUI.reset();
