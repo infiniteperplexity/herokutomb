@@ -188,7 +188,7 @@ app.post('/saves/*', function (req, res) {
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
   ram("application start");
-  //dbcleanup();
+  dbcleanup();
 });
 setInterval(function() {
   connection.ping();
@@ -228,7 +228,7 @@ function sweepdb() {
 }
 
 function dbcleanup() {
-  connection.query("DELETE FROM saves WHERE filename = 'testing'", function (err) {
+  connection.query("DELETE FROM saves WHERE filename IN ('mySaveGame','afterRevision','allFeaturesTest')", function (err) {
     if (err) {
       return console.log(err);
     }
