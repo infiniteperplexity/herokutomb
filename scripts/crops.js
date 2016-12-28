@@ -42,7 +42,7 @@ HTomb = (function(HTomb) {
         }
         this.despawn();
       }
-    }
+    },
     onTurnBegin: function() {
       this.ripen();
     }
