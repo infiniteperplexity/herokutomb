@@ -37,11 +37,13 @@ HTomb = (function(HTomb) {
         HTomb.World.things,
         {
           splitby: 1000,
-          progress: function(i) {
+          progress: function(i,interm) {
             if (parseInt(100*i/totalN)>=98) {
               HTomb.GUI.Views.progressView(["Waiting for server response..."]);
             } else {
               console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
+              console.log("latest was:");
+              console.log(interm[interm.length-1]);
               HTomb.GUI.Views.progressView(["Stringifying things:",parseInt(100*i/totalN).toString() + "% complete"]);
             }
           },
@@ -167,7 +169,7 @@ HTomb = (function(HTomb) {
           then(retn);
         }
         if (count>0 && count%splitby===0) {
-          progress(count);
+          progress(count,retn);
           count++;
           setTimeout(recurse);
           break;
