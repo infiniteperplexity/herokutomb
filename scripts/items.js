@@ -7,8 +7,8 @@ HTomb = (function(HTomb) {
     symbol: "\u2022",
     fg: "#999999",
     stackable: true,
-    maxn: 10,
-    randomColor: 15
+    randomColor: 15,
+    tags: ["Minerals"]
   });
 
   HTomb.Things.defineItem({
@@ -17,8 +17,8 @@ HTomb = (function(HTomb) {
     symbol: "\u2022",
     fg: "#AAAAAA",
     stackable: true,
-    maxn: 10,
-    randomColor: 15
+    randomColor: 15,
+    tags: ["Minerals"]
   });
 
   HTomb.Things.defineItem({
@@ -45,7 +45,8 @@ HTomb = (function(HTomb) {
     fg: "red",
     stackable: true,
     maxn: 10,
-    randomColor: 10
+    randomColor: 10,
+    tags: ["Minerals"]
   });
 
   HTomb.Things.defineItem({
@@ -56,7 +57,8 @@ HTomb = (function(HTomb) {
     stackable: true,
     maxn: 10,
     plural: true,
-    randomColor: 10
+    randomColor: 10,
+    tags: ["Minerals"]
   });
 
   HTomb.Things.defineItem({
@@ -67,7 +69,8 @@ HTomb = (function(HTomb) {
     stackable: true,
     maxn: 10,
     plural: true,
-    randomColor: 10
+    randomColor: 10,
+    tags: ["Minerals"]
   });
 
   HTomb.Things.defineItem({
@@ -77,7 +80,8 @@ HTomb = (function(HTomb) {
     fg: "cyan",
     stackable: true,
     maxn: 10,
-    randomColor: 10
+    randomColor: 10,
+    tags: ["Minerals"]
   });
 
   HTomb.Things.defineItem({
@@ -88,7 +92,8 @@ HTomb = (function(HTomb) {
     stackable: true,
     maxn: 10,
     plural: true,
-    randomColor: 10
+    randomColor: 10,
+    tags: ["Minerals"]
   });
 
   HTomb.Things.defineItem({
@@ -97,7 +102,8 @@ HTomb = (function(HTomb) {
     symbol: "=",
     fg: "#BB9922",
     stackable: true,
-    maxn: 10
+    maxn: 10,
+    tags: ["Wood"]
   });
 
 

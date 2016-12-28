@@ -243,6 +243,48 @@ HTomb = (function(HTomb) {
     container: null,
     owned: true,
     bulk: 10,
+    value: 1,
+    tags: [],
+    stackSize: [1,0.7,0.4,0.3,0.1],
+    // this method is for when an item is forced onto a square but can't fit
+    tumble: function(x,y,z) {
+      let dirs = HTomb.Utils.copy(ROT.DIRS[8]);
+      HTomb.Utils.shuffle(dirs);
+      for (let i=0; i<8; i++) {
+        let pile = HTomb.World.items[coord(x+dirs[i][0],y+dirs[i][1],z)];
+        if (!pile || (pile.canFit(this) && HTomb.World.tiles[z][x+dirs[i][0]][y+dirs[i][1]].solid!==true)) {
+          this.place(x+dirs[i][0], y+dirs[i][1], z);
+          //make it fall as well?
+          break;
+        }
+        if (i===7) {
+          alert("Item crushed due to lack of space!");
+          this.despawn();
+        }
+      }
+    },
+    getBulk: function(n) {
+      n = n || this.n || 1;
+      let bulk = 0;
+      for (let i=0; i<n; i++) {
+        let j = i;
+        if (j>=this.stackSize.length) {
+          j = this.stackSize.length-1;
+        }
+        bulk+=this.stackSize[j]*this.bulk;
+      }
+      return Math.ceil(bulk);
+    },
+    maxStack: function(b) {
+      b = b || HTomb.Things.templates.Container.maxBulk;
+      let n=0;
+      let blk=0;
+      do {
+        n+=1;
+      } while (this.getBulk(n)<=b);
+      n-=1;
+      return n;
+    },
     isOwned: function() {
       return this.owned;
     },
@@ -347,6 +389,7 @@ HTomb = (function(HTomb) {
       if (args.craftable===true) {
         let item = HTomb.Utils.copy(args);
         item.template = args.template+"Item";
+        item.tags = ["Furnishings"];
         delete item.behaviors.Feature;
         HTomb.Things.defineItem(item);
         let template = HTomb.Things.templates[args.template];
@@ -379,7 +422,6 @@ HTomb = (function(HTomb) {
       }
     },
     harvest: function() {
-      console.log("harvest");
       if (this.yields!==null) {
         var x = this.entity.x;
         var y = this.entity.y;
@@ -408,32 +450,84 @@ HTomb = (function(HTomb) {
     parent: "Thing",
     items: null,
     heldby: null,
+    maxBulk: 25,
+    totalBulk: function() {
+      let total = 0;
+      for (let i=0; i<this.items.length; i++) {
+        total+=this.items[i].item.getBulk();
+      }
+      return total;
+    },
     onCreate: function() {
       this.items = [];
       return this;
     },
+    //absorbStack: function(item) {
+    //  var one;
+    //  var two;
+    //  for (let i=0; i<this.items.length; i++) {
+    //    if ((this.items[i].template===item.template) && (this.items[i].item.n<this.items[i].item.maxn)) {
+    //      one = item.item.n;
+    //      two = this.items[i].item.n;
+    //      if ((one+two)>item.item.maxn) {
+    //        this.items[i].item.n = item.item.maxn;
+    //        item.item.n = one+two-item.item.maxn;
+    //      } else {
+    //        this.items[i].item.n = one+two;
+    //        item.item.n = 0;
+    //        item.despawn();
+    //      }
+    //    }
+    //  }
+    //  if (item.item.n>0) {
+    //    this.items.push(item);
+    //    item.item.container = this;
+    //  } else {
+    //    item.despawn();
+    //  }
+    //},
     absorbStack: function(item) {
-      var one;
-      var two;
-      for (var i=0; i<this.items.length; i++) {
-        if ((this.items[i].template===item.template) && (this.items[i].item.n<this.items[i].item.maxn)) {
-          one = item.item.n;
-          two = this.items[i].item.n;
-          if ((one+two)>item.item.maxn) {
-            this.items[i].item.n = item.item.maxn;
-            item.item.n = one+two-item.item.maxn;
-          } else {
-            this.items[i].item.n = one+two;
-            item.item.n = 0;
-          }
+      //let n = item.item.n;
+      let n = Math.min(item.item.n,this.canFit(item));
+      let existing = false;
+      for (let i=0; i<this.items.length; i++) {
+        if (this.items[i].template===item.template) {
+          this.items[i].item.n+=n;
+          existing = true;
+          break;
         }
       }
-      if (item.item.n>0) {
+      if (existing) {
+        item.item.n-=n;
+        if (item.item.n===0) {
+          item.despawn();
+          item = null;
+        }
+        return item;
+      } else {
         this.items.push(item);
         item.item.container = this;
-      } else {
-        item.despawn();
+        return null;
       }
+    },
+    canFit: function(item) {
+      let one = item.item.n;
+      let two = 0;
+      let bulk = 0;
+      for (let i=0; i<this.items.length; i++) {
+        if (item.template===this.items[i].template) {
+          two = this.items[i].item.n;
+          bulk = this.items[i].item.getBulk();
+          break;
+        }
+      }
+      let room = this.maxBulk - this.totalBulk() + bulk;
+      let n = 0;
+      do {
+        n+=1;
+      } while (item.item.getBulk(n)<=room);
+      n-=1;
+      return n;
     },
     push: function(item) {
       if (item.item.stackable) {
@@ -520,7 +614,12 @@ HTomb = (function(HTomb) {
       if (typeof(i_or_t)!=="string" && i_or_t.template) {
         i_or_t = i_or_t.template;
       }
-      if (HTomb.Things.templates[i_or_t].stackable!==true) {
+      let ing = {};
+      ing[i_or_t] = n;
+      if (this.hasAll(ing)!==true) {
+        return false;
+      }
+      if (HTomb.Things.templates[i_or_t].behaviors.Item.stackable!==true) {
         var first = this.getFirst(i_or_t);
         return this.remove(first);
       } else {
@@ -549,6 +648,7 @@ HTomb = (function(HTomb) {
     takeItems: function(ingredients) {
       let items = [];
       if (this.hasAll(ingredients)!==true) {
+        console.log("can't find the ingredients");
         return false;
       }
       for (let item in ingredients) {
@@ -564,6 +664,7 @@ HTomb = (function(HTomb) {
         var n = ingredients[ing];
         // if we lack what we need, search for items
         if (this.countAll(ing)<n) {
+          console.log("did not find enough "+ing);
           return false;
         }
       }

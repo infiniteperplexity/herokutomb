@@ -365,16 +365,11 @@ HTomb = (function(HTomb) {
       }
       next = mainColor + "Items: ";
       if (square.items && (square.visible || HTomb.Debug.visible)) {
-        square.items.forEach(function(e,a,i) {
-          next+=e.describe();
+        for (i=0; i<square.items.length; i++) {
+          next+=square.items.expose(i).describe();
           text.push(next);
           next = "       ";
-        });
-        //for (i=0; i<square.items.length; i++) {
-        //  next+=square.items[i].describe();
-        //  text.push(next);
-        //  next = "       ";
-        //}
+        }
       }
       next = mainColor + "Feature: ";
       if (square.feature) {
@@ -408,7 +403,7 @@ HTomb = (function(HTomb) {
       next = otherColor + "Items: ";
       if (above.items && square.visibleAbove) {
         for (i=0; i<above.items.length; i++) {
-          next+=above.items[i].describe();
+          next+=above.items.expose(i).describe();
           text.push(next);
           next = "       ";
         }
@@ -444,7 +439,7 @@ HTomb = (function(HTomb) {
       next = otherColor + "Items: ";
       if (below.items && square.visibleBelow) {
         for (i=0; i<below.items.length; i++) {
-          next+=below.items[i].describe();
+          next+=below.items.expose(i).describe();
           text.push(next);
           next = "       ";
         }

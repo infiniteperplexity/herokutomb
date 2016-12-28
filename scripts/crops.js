@@ -7,7 +7,8 @@ HTomb = (function(HTomb) {
     symbol: "\u2026",
     base: null,
     stackable: true,
-    maxn: 10
+    maxn: 10,
+    tags: ["Seeds"]
   });
   HTomb.Things.defineItem({
     template: "Herb",
@@ -15,7 +16,8 @@ HTomb = (function(HTomb) {
     symbol: "\u273F",
     base: null,
     stackable: true,
-    maxn: 10
+    maxn: 10,
+    tags: ["Herbs"]
   });
   HTomb.Things.defineFeature({
     template: "Sprout",

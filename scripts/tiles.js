@@ -180,11 +180,11 @@ HTomb = (function(HTomb) {
         bg = bg || covers[z-1][x][y].darken();
       }
     } else if (creatures[crd] && creatures[crd].bg) {
-      bg = creatures[crd].bg;
+      bg = bg || creatures[crd].bg;
     } else if (features[crd] && features[crd].bg) {
-      bg = features[crd].bg;
+      bg = bg || features[crd].bg;
     } else if (items[crd] && items[crd].tail().bg) {
-      bg = items[crd].tail().bg;
+      bg = bg || items[crd].tail().bg;
     } else if (zview===-1 && tiles[z-1][x][y].zview===-1 && tiles[z-2][x][y].solid!==true
         && covers[z-2][x][y]!==HTomb.Covers.NoCover && covers[z-2][x][y].liquid) {
       bg = bg || covers[z-2][x][y].darken();
@@ -516,9 +516,9 @@ HTomb = (function(HTomb) {
   },
   HTomb.Tiles.isEnclosed = function(x,y,z) {
     var dirs = ROT.DIRS[8];
-    for (var i=0; i<dirs.length; dirs++) {
-      var dx = x+dirs[i][0];
-      var dy = y+dirs[i][1];
+    for (let i=0; i<dirs.length; i++) {
+      let dx = x+dirs[i][0];
+      let dy = y+dirs[i][1];
       if (HTomb.World.tiles[z][dx][dy].solid!==true && HTomb.World.tiles[z][dx][dy].fallable!==true) {
         return false;
       }

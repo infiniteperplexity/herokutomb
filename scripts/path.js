@@ -38,6 +38,10 @@ HTomb = (function(HTomb) {
     if (x0+y0+z0+x1+y1+z1===undefined || x1===null || y1===null || z1===null || x0===null || y0===null || z0===null) {
       alert("bad path arguments!");
     }
+    if (HTomb.Tiles.isEnclosed(x0,y0,z0) || HTomb.Tiles.isEnclosed(x1,y1,z1)) {
+      console.log("One end of the path was enclosed");
+      return false;
+    }
     //perhaps run a quick check to make sure neither end of the path is enclosed?
     //_fastgrid = HTomb.World._fastgrid;
     options = options || {};
@@ -45,7 +49,6 @@ HTomb = (function(HTomb) {
     var useLast = (options.useLast===false) ? false : true;
     var canPass = options.canPass || defaultPassable;
     var usePortals = (options.usePortals===false) ? false : true;
-
     // fastest possible lookup
     // random bias should be okay
     var dirs = [
@@ -101,6 +104,7 @@ HTomb = (function(HTomb) {
       for (var i=-1; i<8; i++) {
         // -1 is the place where we check for portals
         if (i===-1) {
+          //by the way, we don't use portals anymore
           if (usePortals===false) {
             continue;
           }

@@ -31,9 +31,12 @@ HTomb = (function(HTomb) {
       var z = task.z;
       var f = HTomb.World.features[coord(x,y,z)];
       // no need for ingredients if construction has begun
-      if (f && f.makes.template===task.makes) {
+      if (task.workBegun()) {
         return false;
       }
+      //if (f && f.makes.template===task.makes) {
+      //  return false;
+      //}
       // check to see if we are already targeting an ingredient
       var t = cr.ai.target;
       // if the target is not an ingredient
@@ -137,11 +140,9 @@ HTomb = (function(HTomb) {
         for (let i=0; i<items.length; i++) {
           // drop any item that is not relevant to the current task
           // ...eventually we'll want to keep equipment and certain other items
-          if (!cr.worker.task || !cr.worker.task.ingredients) {
-            cr.inventory.drop(items.expose(i));
-            ai.acted = true;
-            break;
-          } else if (Object.keys(cr.worker.task.ingredients).indexOf(items.expose(i).template)===-1) {
+          // For now just drop items if there is no task at all?
+          if (!cr.worker.task || cr.worker.task.template==="PatrolTask") {
+            console.log("dropping an unneeded item");
             cr.inventory.drop(items.expose(i));
             ai.acted = true;
             break;

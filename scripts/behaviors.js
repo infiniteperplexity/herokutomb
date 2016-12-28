@@ -199,7 +199,7 @@ HTomb = (function(HTomb) {
     template: "Worker",
     name: "worker",
     task: null,
-    allowedTasks: ["DigTask","BuildTask","PatrolTask","FurnishTask","HoardTask","FarmTask","ConstructTask","ProduceTask","DismantleTask"],
+    allowedTasks: ["DigTask","BuildTask","PatrolTask","FurnishTask","StockpileTask","FarmTask","ConstructTask","ProduceTask","DismantleTask"],
     onAssign: function(tsk) {
       this.task = tsk;
       HTomb.Debug.pushMessage(this.entity.describe({capitalized: true, article: "indefinite"}) + " was assigned " + tsk.describe());
@@ -251,8 +251,12 @@ HTomb = (function(HTomb) {
       tsk.designate(this.entity);
     },
     assignTasks: function() {
-      for(let i=0; i<this.taskList.length; i++) {
+      for (let i=0; i<this.taskList.length; i++) {
         var tsk = this.taskList[i].task;
+        if (tsk.dormant>0) {
+          tsk.dormant-=1;
+          continue;
+        }
         if (tsk.assignee!==null) {
           continue;
         }
@@ -265,13 +269,17 @@ HTomb = (function(HTomb) {
           if (minions[j].worker.task!==null) {
             continue;
           }
-          if (minions[j].worker.allowedTasks.indexOf(tsk.template)===-1 && minions[j].worker.allowedTasks.indexOf(tsk.fakeAs)===-1) {
+          if (minions[j].worker.allowedTasks.indexOf(tsk.template)===-1) {
             continue;
           }
           if (tsk.canAssign(minions[j])) {
             tsk.assignTo(minions[j]);
             break;
           }
+        }
+        // if assignment failed, go dormant for a while
+        if (tsk.assignee===null) {
+          tsk.dormant = HTomb.Utils.dice(tsk.dormancy[0],tsk.dormancy[1]);
         }
       }
     },
