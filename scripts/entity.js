@@ -704,6 +704,9 @@ HTomb = (function(HTomb) {
         ret.push(callb(this.items[i], this, i));
       }
       return ret;
+    },
+    exposeArray: function() {
+      return this.items;
     }
   });
   Object.defineProperty(HTomb.Things.templates.Container,"length",{get: function() {return this.items.length;}});

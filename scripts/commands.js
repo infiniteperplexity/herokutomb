@@ -205,7 +205,7 @@ HTomb = (function(HTomb) {
         HTomb.Time.turn();
       } else {
         // If there are multiple items, display a menu
-        GUI.choosingMenu("Choose an item:",square.items,
+        GUI.choosingMenu("Choose an item:",square.items.exposeArray(),
           function(item) {
             return function() {
               HTomb.Player.inventory.pickup(item);
@@ -249,7 +249,7 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You have no items.");
     } else {
         // If the player has multiple items, display a menu
-      GUI.choosingMenu("You are carrying:",p.inventory.items.forEach(function(e) {return e;}),
+      GUI.choosingMenu("You are carrying:",p.inventory.items.exposeArray(),
         function(item) {
           return function() {
             HTomb.GUI.reset();

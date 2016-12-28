@@ -38,7 +38,7 @@ HTomb = (function(HTomb) {
       //  return false;
       //}
       // check to see if we are already targeting an ingredient
-      if (t && cr.ai.target.isPlaced()!==true) {
+      if (cr.ai.target && cr.ai.target.isPlaced()!==true) {
         cr.ai.target = null;
       }
       var t = cr.ai.target;
