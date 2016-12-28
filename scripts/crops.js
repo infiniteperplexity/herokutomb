@@ -27,19 +27,24 @@ HTomb = (function(HTomb) {
     base: null,
     yields: null,
     growTurns: 256,
+    inFarm: false,
     onPlace: function() {
       HTomb.Events.subscribe(this,"TurnBegin");
     },
-    onTurnBegin: function() {
+    ripen: function() {
       this.growTurns-=1;
       if (this.growTurns<=0) {
         var plant = HTomb.Things[this.base+"Plant"]();
-        var x = this.x;
-        var y = this.y;
-        var z = this.z;
+        if (this.inFarm) {
+          this.inFarm.growing = plant;
+        } else {
+          plant.place(this.x,this.y,this.z);
+        }
         this.despawn();
-        plant.place(x,y,z);
       }
+    }
+    onTurnBegin: function() {
+      this.ripen();
     }
   });
   HTomb.Things.defineFeature({
