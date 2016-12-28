@@ -38,6 +38,9 @@ HTomb = (function(HTomb) {
       //  return false;
       //}
       // check to see if we are already targeting an ingredient
+      if (cr.ai.target.isPlaced()!==true) {
+        cr.ai.target = null;
+      }
       var t = cr.ai.target;
       // if the target is not an ingredient
       if (t && ingredients[t.template]===undefined) {
