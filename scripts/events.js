@@ -2,7 +2,6 @@
 HTomb = (function(HTomb) {
   "use strict";
 
-  var events = ["TURNEVENT"];
   var Events = HTomb.Events;
   Events.types = [];
   Events.subscribe = function(listener, etype) {

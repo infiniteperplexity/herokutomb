@@ -47,6 +47,7 @@ HTomb = (function(HTomb) {
           },
           then: function(rslt) {
             HTomb.GUI.pushMessage("Finished stringifying " + rslt.length + " entities.");
+            // this is one place we could add the "depedent things concept"
             let things = rslt.join(',');
             things = '['.concat(things,']');
             resolve(things);
@@ -65,7 +66,7 @@ HTomb = (function(HTomb) {
     let cycle = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
     let other = '{'.concat(
                 '"explored": ', explored, ", ",
-    //            '"lights": ', lights, ", ",
+                '"lights": ', lights, ", ",
                 '"cycle": ', cycle,
                 '}'
     );
@@ -287,19 +288,6 @@ HTomb = (function(HTomb) {
     }
     HTomb.Player = player.entity;
     // Fix ItemContainer references
-    for (let i=0; i<icontains.length; i++) {
-      let container = icontains[i][0];
-      if (container.parent.swappedWith) {
-        container.parent = container.parent.swappedWith;
-      }
-      for (let j=1; j<icontains[i].length; j++) {
-        let item = icontains[i][j];
-        if (item.tid) {
-          item = things[item.tid];
-        }
-        item.container = container;
-      }
-    }
     while(HTomb.World.things.length>0) {
       HTomb.World.things.pop();
     }
@@ -327,6 +315,7 @@ HTomb = (function(HTomb) {
       let y = thing.y;
       let z = thing.z;
       HTomb.World.things[t] = thing;
+      // A lot of these things may need explicit placement
       if (thing.creature) {
         HTomb.World.creatures[coord(x,y,z)]=thing;
       }
@@ -342,6 +331,7 @@ HTomb = (function(HTomb) {
           thing.place(x,y,z);
         }
       }
+      // Anything that refers to entities should be re
     }
   }
 
@@ -375,11 +365,31 @@ HTomb = (function(HTomb) {
   function restoreOther(json) {
     let other = JSON.parse(json);
     fillGrid3dFrom(other.explored, HTomb.World.explored);
-    //fillListFrom(other.lights, HTomb.World.lights);
+    fillListFrom(other.lights, HTomb.World.lights);
     HTomb.Time.dailyCycle.turn = other.cycle.turn;
     HTomb.Time.dailyCycle.minute = other.cycle.minute;
     HTomb.Time.dailyCycle.hour = other.cycle.hour;
     HTomb.Time.dailyCycle.day = other.cycle.day;
+    if (other.events) {
+      HTomb.Events = other.events;
+    }
+  }
+
+  // Anything not on the Thing list that contains references to things gets processed here
+  function finalSwap() {
+    for (let i=0; i<HTomb.World.lights.length; i++) {
+      if (HTomb.World.lights[i].tid!==undefined) {
+        HTomb.World.lights[i] = HTomb.World.things[HTomb.World.lights[i].tid];
+      }
+    }
+    for (let i=0; i<HTomb.Events.types.length; i++) {
+      let type = HTomb.Events.types[i];
+      for (let j=0; j<HTomb.Events[type].length; j++) {
+        if (HTomb.Events[type][j].tid!==undefined) {
+          HTomb.Events[type][j] = HTomb.World.Things[HTomb.Events[type][j].tid]
+        }
+      }
+    }
   }
 
   HTomb.Save.deleteGame = function(name) {
@@ -464,6 +474,7 @@ HTomb = (function(HTomb) {
             return;
           }
         }
+        finalSwap();
         HTomb.Save.currentGame = name;
         HTomb.World.validate.lighting();
         HTomb.FOV.resetVisible();
