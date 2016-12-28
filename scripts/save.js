@@ -372,8 +372,21 @@ HTomb = (function(HTomb) {
     HTomb.Time.dailyCycle.minute = other.cycle.minute;
     HTomb.Time.dailyCycle.hour = other.cycle.hour;
     HTomb.Time.dailyCycle.day = other.cycle.day;
+    let saveListeners = [];
+    for (let i=0; i<HTomb.Events.types.length; i++) {
+      let type = HTomb.Events.types[i];
+      for (let j=0; i<HTomb.Events[type].length; j++) {
+        let l = HTomb.Events[type][j];
+        if (l.thingId===undefined) {
+          saveListeners.push([l,type]);
+        }
+      }
+    }
     if (other.events) {
       HTomb.Events = other.events;
+    }
+    for (let i=0; i<saveListeners.length; i++) {
+      HTomb.Events.subscribe(savelisteners[i][0],savelisteners[i][1]);
     }
   }
 

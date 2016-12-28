@@ -170,10 +170,10 @@ HTomb = (function(HTomb) {
     name: "check for hostile",
     act: function(ai) {
       // this performance might be okay
-      if (ai.target===null) {
-        var teams = HTomb.Types.templates.Team.types;
+      if (ai.target===null || ai.target.creature===undefined || ai.isHostile(ai.target)!==true) {
+        var teams = HTomb.Things.templates.Team.teams;
         var hostiles = [];
-        for (var i=0; i<teams.length; i++) {
+        for (let i=0; i<teams.length; i++) {
           if (teams[i].isHostile(ai.team)) {
             hostiles = hostiles.concat(teams[i].members);
           }
@@ -233,20 +233,6 @@ HTomb = (function(HTomb) {
     alert: null,
     goals: null,
     fallback: null,
-    onCreate: function(args) {
-      let handler = {
-        get: function(ai, prop) {
-          if (prop==="target") {
-            if (ai.target!==null && (ai.target.x===null || ai.target.y===null || ai.target.z===null)) {
-              ai.target = null;
-            }
-          }
-          return ai[prop];
-        }
-      }
-      let proxy = new Proxy(this, handler);
-      return proxy;
-    },
     isHostile: function(thing) {
       if (thing.ai===undefined || thing.ai.team===undefined || this.team===undefined) {
         return false;
@@ -263,18 +249,30 @@ HTomb = (function(HTomb) {
       for (var i=0; i<goals.length; i++) {
         this.goals.push(HTomb.Routines[goals[i]]);
       }
+      HTomb.Events.subscribe(this,"Destroy");
       this.fallback = HTomb.Routines.WanderAimlessly;
       if (this.team===null) {
-        this.setTeam(HTomb.Teams.AnimalTeam);
+        this.setTeam("AnimalTeam");
       } else {
         // make sure this gets set properly
-        this.setTeam(HTomb.Teams[this.team]);
+        this.setTeam(this.team);
       }
     },
     setTeam: function(team) {
       //feeling ambivalent about tracking teams...
-      this.team = team;
-      HTomb.Types.templates[team.template].members.push(this.entity);
+      for (let i=0; i<HTomb.Things.templates.Team.teams.length; i++) {
+        let t = HTomb.Things.templates.Team.teams[i];
+        if (t.team===team) {
+          this.team = t;
+          t.members.push(this.entity);
+          return;
+        }
+      }
+    },
+    onDespawn: function() {
+      if (this.team && this.team.members && this.team.members.indexOf(this.entity)!==-1) {
+        this.team.members.splice(this.team.members.indexOf(this.entity),1);
+      }
     },
     onDestroy: function(event) {
       if (event.entity===this.target) {
@@ -402,18 +400,20 @@ HTomb = (function(HTomb) {
     },
   });
 
-
-  HTomb.Types.define({
+  HTomb.Things.define({
     template: "Team",
     name: "team",
+    team: "Team",
     members: null,
     enemies: null,
     allies: null,
-    onDefine: function() {
+    teams: [],
+    onCreate: function(args) {
       this.members = this.members || [];
       this.enemies = this.enemies || [];
       this.allies = this.allies || [];
       HTomb.Events.subscribe(this,"Destroy");
+      HTomb.Things.templates.Team.teams.push(this);
     },
     onDestroy: function(event) {
       if (this.members.indexOf(event.entity)>-1) {
@@ -421,7 +421,16 @@ HTomb = (function(HTomb) {
       }
     },
     isHostile: function(team) {
-      if (team.enemies.indexOf(this.template)>=0 || this.enemies.indexOf(team.template)>=0) {
+      if (team.template!=="Team") {
+        if (team.team) {
+          team = team.team;
+        } else if (team.ai) {
+          team = team.ai.team;
+        } else {
+          return false;
+        }
+      }
+      if (team.enemies.indexOf(this.team)>=0 || this.enemies.indexOf(team.team)>=0) {
         return true;
       } else {
         return false;
@@ -429,30 +438,10 @@ HTomb = (function(HTomb) {
     }
   });
 
-
-  // the player and affiliated minions
-  HTomb.Types.defineTeam({
-    template: "PlayerTeam",
-    name: "player"
-  });
-
-  HTomb.Types.defineTeam({
-    template: "DefaultTeam",
-    name: "default"
-  });
-
-  // non-aggressive animals
-  HTomb.Types.defineTeam({
-    template: "AnimalTeam",
-    name: "animals"
-  });
-
-  HTomb.Types.defineTeam({
-    template: "GhoulTeam",
-    name: "ghouls",
-    enemies: ["PlayerTeam"]
-  });
-
+  HTomb.Things.Team({team: "PlayerTeam"});
+  HTomb.Things.Team({team: "DefaultTeam"});
+  HTomb.Things.Team({team: "AnimalTeam"});
+  HTomb.Things.Team({team: "GhoulTeam", enemies: "PlayerTeam"});
 
   return HTomb;
 })(HTomb);

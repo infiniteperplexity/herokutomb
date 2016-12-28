@@ -57,7 +57,6 @@ HTomb = (function(HTomb) {
               zombie.place(x,y,z);
               HTomb.Things.Minion().addToEntity(zombie);
               zombie.minion.setMaster(caster.entity);
-              zombie.ai.setTeam(caster.entity.ai.team);
               caster.entity.master.addMinion(zombie);
               zombie.ai.acted = true;
               HTomb.GUI.sensoryEvent("The corpse stirs and rises...",x,y,z);

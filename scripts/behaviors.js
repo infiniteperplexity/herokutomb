@@ -185,6 +185,7 @@ HTomb = (function(HTomb) {
     master: null,
     setMaster: function(cr) {
       this.master = cr;
+      this.entity.ai.setTeam(cr.ai.team.team);
       HTomb.Events.subscribe(this,"Destroy");
     },
     onDestroy: function(event) {
