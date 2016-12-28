@@ -185,9 +185,9 @@ HTomb = (function(HTomb) {
       } else if (val===null) {
         //console.log("could I just do null normally?");
         return null;
-      //} else if (key==="container") {
-        // skip item reference to ItemContainers
-      //  return undefined;
+      } else if (key==="heldby" && val===HTomb.World.items) {
+        // definitely do not stringify the global items list
+        return "i";
       }
       // if it has special instructions, use those to stringify
       if (val.stringify) {
@@ -251,31 +251,15 @@ HTomb = (function(HTomb) {
       if (val===null) {
         return null;
       // remove this once parsing is corrected
-      } else if (key==="container") {
-        return undefined;
+    } else if (key==="heldby" && val==="i") {
+        // revive a reference to the global items list
+        return HTomb.World.items;
       } else if (val.Type!==undefined) {
         // should not require tracking swaps
         return HTomb.Types.templates[val.Type];
       } else if (val.tid!==undefined) {
         tids.push([this,key,val]);
         return {tid: val.tid};
-      } else if (val.ItemContainer) {
-        // should require tracking swaps
-        let ic = new HTomb.ItemContainer();
-        ic.parent = this;
-        icontains.push([ic]);
-        for (let i=0; i<val.ItemContainer.length; i++) {
-          // I saw length get messed up sometimes but I'm not sure it still does
-          if (val.ItemContainer[i]===undefined) {
-            continue;
-          }
-          ic[i] = val.ItemContainer[i];
-          // You have to set length manually it seems
-          ic.length=i+1;
-          icontains[icontains.length-1].push(val.ItemContainer[i]);
-        }
-        val.ItemContainer.swappedWith = ic;
-        return ic;
       } else if (val.template) {
         let template = HTomb.Things.templates[val.template];
         let dummy = Object.create(template);
