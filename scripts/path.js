@@ -39,7 +39,6 @@ HTomb = (function(HTomb) {
       alert("bad path arguments!");
     }
     if (HTomb.Tiles.isEnclosed(x0,y0,z0) || HTomb.Tiles.isEnclosed(x1,y1,z1)) {
-      console.log("One end of the path was enclosed");
       return false;
     }
     //perhaps run a quick check to make sure neither end of the path is enclosed?
