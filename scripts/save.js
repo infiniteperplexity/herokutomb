@@ -62,12 +62,14 @@ HTomb = (function(HTomb) {
   // synchronously stringify other stuff
   function stringifyOther() {
     let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
-    //let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
+    let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
     let cycle = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
+    let events = HTomb.Events;
     let other = '{'.concat(
                 '"explored": ', explored, ", ",
                 '"lights": ', lights, ", ",
-                '"cycle": ', cycle,
+                '"cycle": ', cycle, ", ",
+                '"events": ', events,
                 '}'
     );
     return other;
