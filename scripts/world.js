@@ -162,7 +162,7 @@ HTomb = (function(HTomb) {
       }
       var items = HTomb.World.items[coord(x,y,z)] || [];
       while (items && items.length>0) {
-        items[0].fall();
+        items.head().fall();
       }
     }
   };

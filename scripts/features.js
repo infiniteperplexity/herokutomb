@@ -150,13 +150,13 @@ HTomb = (function(HTomb) {
       if (tiles[z-1][x][y]===UpSlopeTile && HTomb.World.explored[z-1][x][y] && (t===WallTile || t===FloorTile)) {
         tiles[z][x][y] = DownSlopeTile;
         for (let i=0; i<items.length; i++) {
-          items[i].item.owned = true;
+          items.expose(i).item.owned = true;
         }
       // If it's a wall, dig a tunnel
       } else if (t===WallTile) {
         tiles[z][x][y] = FloorTile;
         for (let i=0; i<items.length; i++) {
-          items[i].item.owned = true;
+          items.expose(i).item.owned = true;
         }
       } else if (t===FloorTile) {
         // If it's a floor with a wall underneath dig a trench
@@ -167,7 +167,7 @@ HTomb = (function(HTomb) {
         } else {
           tiles[z][x][y] = EmptyTile;
           for (let i=0; i<items.length; i++) {
-            items[i].item.owned = true;
+            items.expose(i).item.owned = true;
           }
         }
       // If it's a down slope tile, remove the slopes
@@ -176,7 +176,7 @@ HTomb = (function(HTomb) {
         tiles[z-1][x][y] = FloorTile;
         items = HTomb.World.items[coord(x,y,z-1)] || [];
         for (let i=0; i<items.length; i++) {
-          items[i].item.owned = true;
+          items.expose(i).item.owned = true;
         }
       // if it's an upward slope, remove the slope
       } else if (t===UpSlopeTile) {
@@ -184,14 +184,14 @@ HTomb = (function(HTomb) {
         if (tiles[z+1][x][y]===DownSlopeTile) {
           tiles[z+1][x][y] = EmptyTile;
           for (let i=0; i<items.length; i++) {
-            items[i].item.owned = true;
+            items.expose(i).item.owned = true;
           }
         }
       } else if (t===EmptyTile) {
         tiles[z-1][x][y] = FloorTile;
         items = HTomb.World.items[coord(x,y,z-1)];
         for (let i=0; i<items.length; i++) {
-          items[i].item.owned = true;
+          items.expose(i).item.owned = true;
         }
       }
       HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
