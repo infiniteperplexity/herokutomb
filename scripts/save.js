@@ -37,13 +37,11 @@ HTomb = (function(HTomb) {
         HTomb.World.things,
         {
           splitby: 1000,
-          progress: function(i,interm) {
+          progress: function(i) {
             if (parseInt(100*i/totalN)>=98) {
               HTomb.GUI.Views.progressView(["Waiting for server response..."]);
             } else {
               console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
-              console.log("latest was:");
-              console.log(interm[interm.length-1]);
               HTomb.GUI.Views.progressView(["Stringifying things:",parseInt(100*i/totalN).toString() + "% complete"]);
             }
           },
@@ -187,9 +185,9 @@ HTomb = (function(HTomb) {
       } else if (val===null) {
         //console.log("could I just do null normally?");
         return null;
-      } else if (key==="container") {
+      //} else if (key==="container") {
         // skip item reference to ItemContainers
-        return undefined;
+      //  return undefined;
       }
       // if it has special instructions, use those to stringify
       if (val.stringify) {
@@ -548,3 +546,19 @@ HTomb = (function(HTomb) {
   return HTomb;
 
 })(HTomb);
+
+/*
+
+This function can help diagnose what went wrong while saving.
+
+function examine() {
+  let seen = new Set();
+  for (let i=0; i<HTomb.World.things.length; i++) {
+    let t = HTomb.World.things[i].template;
+    if (seen.has(t)===false) {
+      console.log("First saw " + t + " at " + i);
+      seen.add(t);
+    }
+  }
+}
+*/
