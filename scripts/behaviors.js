@@ -221,12 +221,14 @@ HTomb = (function(HTomb) {
     taskList: null,
     workshops: null,
     tasks: null,
+    ownedItems: null,
     onCreate: function(options) {
       options = options || {};
       this.tasks = options.tasks || [];
       this.minions = [];
       this.taskList = [];
       this.structures = [];
+      this.ownedItems = [];
       HTomb.Events.subscribe(this, "Destroy");
       return this;
     },

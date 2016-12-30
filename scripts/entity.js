@@ -1,3 +1,6 @@
+x = {set owner(o) {this.owner = o;}, get owner() {return this.owner+1;}}
+
+
 HTomb = (function(HTomb) {
   "use strict";
   var coord = HTomb.Utils.coord;
@@ -10,6 +13,21 @@ HTomb = (function(HTomb) {
     y: null,
     z: null,
     behaviors: {},
+    ownedBy: null,
+    unsetOwner: function() {
+      if (this.owner) {
+        if (this.owner.master.ownedItems.indexOf(this)!==-1) {
+          this.owner.master.ownedItems.splice(this.owner.master.ownedItems.indexOf(this),1);
+        }
+      }
+    },
+    set owner: function(cr) {
+      this.unsetOwner();
+      this.ownedBy = cr;
+    },
+    get owner: function() {
+      return this.ownedBy;
+    },
     place: function(x,y,z) {
       if (this.isPlaced()) {
         this.remove();
@@ -91,6 +109,7 @@ HTomb = (function(HTomb) {
           beh[i].onDespawn();
         }
       }
+      this.unsetOwner();
     },
     fall: function() {
       var g = HTomb.Tiles.groundLevel(this.x,this.y,this.z);
