@@ -337,8 +337,8 @@ HTomb = (function(HTomb) {
       }
     },
     allSeeds: function() {
-      let findSeeds = HTomb.Utils.findItems(function(item) {
-        if (item.parent==="Seed" && item.item.isOwned()===true && item.item.isOnGround()===true) {
+      let findSeeds = this.owner.master.ownedItems.filter(function(item) {
+        if (item.parent==="Seed" && item.item.isOnGround()) {
           return true;
         } else {
           return false;
@@ -542,7 +542,7 @@ HTomb = (function(HTomb) {
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
-      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z) && this.getSomeValidItem()) {
+      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z) && this.getSomeValidItem(cr)) {
         return true;
       } else {
         return false;
@@ -561,26 +561,54 @@ HTomb = (function(HTomb) {
     getSomeValidItem: function(cr) {
       // right now we ignore the creature argument
       let pile = HTomb.World.items[coord(this.x,this.y,this.z)] || HTomb.Things.Container();
-      for (var it in HTomb.World.items) {
-        var items = HTomb.World.items[it];
-        var task = HTomb.World.tasks[it];
-        // if it's already in a stockpile, skip it
+      let that = this;
+      let items = this.assigner.master.ownedItems.filter(function(item) {
+        if (that.itemAllowed(item)!==true) {
+          return false;
+        } else if (pile.canFit(item)<1) {
+          return false;
+        } else if (item.item.isOnGround()!==true) {
+          return false;
+        }
+        let task = HTomb.World.tasks[coord(item.x,item.y,item.z)];
         if (task && task.task.template==="StockpileTask") {
-          continue;
+          return false;
         }
-        let xyz = HTomb.Utils.decoord(it);
-        for (var i=0; i<items.length; i++) {
-          var item = items.expose(i);
-          if (item.item.owned===true
-              && pile.canFit(item)>=1
-              && this.itemAllowed(item)
-              && HTomb.Tiles.isReachableFrom(this.entity.x,this.entity.y,this.entity.z,xyz[0],xyz[1],xyz[2])) {
-            return item;
-          }
+        if (HTomb.Tiles.isReachableFrom(that.entity.x, that.entity.y, that.entity.z, item.x, item.y, item.z)) {
+          return true;
+        } else {
+          return false;
         }
+      });
+      if (items.length>0) {
+        return HTomb.Path.closest(cr,items)[0];
+      } else {
+        return null;
       }
-      return null;
     },
+    //getSomeValidItem: function(cr) {
+    //  // right now we ignore the creature argument
+    //  let pile = HTomb.World.items[coord(this.x,this.y,this.z)] || HTomb.Things.Container();
+    //  for (var it in HTomb.World.items) {
+    //    var items = HTomb.World.items[it];
+    //    var task = HTomb.World.tasks[it];
+    //    // if it's already in a stockpile, skip it
+    //    if (task && task.task.template==="StockpileTask") {
+    //      continue;
+    //    }
+    //    let xyz = HTomb.Utils.decoord(it);
+    //    for (var i=0; i<items.length; i++) {
+    //      var item = items.expose(i);
+    //      if (item.item.isOwned()===true
+    //          && pile.canFit(item)>=1
+    //          && this.itemAllowed(item)
+    //          && HTomb.Tiles.isReachableFrom(this.entity.x,this.entity.y,this.entity.z,xyz[0],xyz[1],xyz[2])) {
+    //        return item;
+    //      }
+    //    }
+    //  }
+    //  return null;
+    //},
     ai: function() {
       var cr = this.assignee;
       var t = cr.ai.target;
@@ -931,7 +959,8 @@ HTomb = (function(HTomb) {
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
-      HTomb.Things[this.makes]().place(x,y,z);
+      let item = HTomb.Things[this.makes]().place(x,y,z);
+      item.item.setOwner(HTomb.Player);
       this.workshop.occupied = null;
       HTomb.GUI.pushMessage(this.assignee.describe({capitalized: true, article: "indefinite"}) + " finishes making " + HTomb.Things.templates[this.makes].describe({article: "indefinite"}));
       this.entity.despawn();

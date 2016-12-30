@@ -106,7 +106,9 @@ HTomb = (function(HTomb) {
     },
     pickup: function(item) {
       var e = this.entity;
-      item.item.owned = true;
+      if (this.entity.minion && this.entity.minion.master) {
+        item.item.owner = this.entity.minion.master;
+      }
       item.remove();
       HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " picks up " + item.describe({article: "indefinite"}),e.x,e.y,e.z);
       this.add(item);
@@ -153,10 +155,15 @@ HTomb = (function(HTomb) {
       return true;
     },
     canFindAll: function(ingredients) {
+      if (!this.entity.minion || !this.entity.minion.master || !this.entity.minion.master.master) {
+        return false;
+      }
+      let master = this.entity.minion.master.master;
       for (let item in ingredients) {
-        let i = 0;
-        let items = HTomb.Utils.findItems(function(it) {
-          if (it.template===item && it.item.isOwned()===true && it.item.isOnGround()===true) {
+        let items = master.ownedItems.filter(function(it) {
+        //let items = HTomb.Utils.findItems(function(it) {
+          if (it.template===item && it.item.isOnGround()===true) {
+          //if (it.template===item && it.item.isOwned()===true && it.item.isOnGround()===true) {
             // should really check if these things are reachable...
             // ...should probably allow for it in this inventory as well...
             return true;

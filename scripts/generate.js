@@ -452,11 +452,11 @@ timeIt("elevation", function() {
   }
   function notOwned() {
     for (var fe in HTomb.World.features) {
-      HTomb.World.features[fe].owned = false;
+      HTomb.World.features[fe].owner = null;
     }
     for (var it in HTomb.World.items) {
       var items = HTomb.World.items[it];
-      items.forEach(function(e,a,i) {e.item.owned=false});
+      items.forEach(function(e,a,i) {e.item.owner=null});
     }
   }
   function placePlayer() {

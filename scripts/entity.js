@@ -1,6 +1,3 @@
-x = {set owner(o) {this.owner = o;}, get owner() {return this.owner+1;}}
-
-
 HTomb = (function(HTomb) {
   "use strict";
   var coord = HTomb.Utils.coord;
@@ -13,21 +10,6 @@ HTomb = (function(HTomb) {
     y: null,
     z: null,
     behaviors: {},
-    ownedBy: null,
-    unsetOwner: function() {
-      if (this.owner) {
-        if (this.owner.master.ownedItems.indexOf(this)!==-1) {
-          this.owner.master.ownedItems.splice(this.owner.master.ownedItems.indexOf(this),1);
-        }
-      }
-    },
-    set owner: function(cr) {
-      this.unsetOwner();
-      this.ownedBy = cr;
-    },
-    get owner: function() {
-      return this.ownedBy;
-    },
     place: function(x,y,z) {
       if (this.isPlaced()) {
         this.remove();
@@ -109,7 +91,6 @@ HTomb = (function(HTomb) {
           beh[i].onDespawn();
         }
       }
-      this.unsetOwner();
     },
     fall: function() {
       var g = HTomb.Tiles.groundLevel(this.x,this.y,this.z);
@@ -260,11 +241,25 @@ HTomb = (function(HTomb) {
     n: 1,
     maxn: 10,
     container: null,
-    owned: true,
     bulk: 10,
     value: 1,
     tags: [],
     stackSize: [1,0.7,0.4,0.3,0.1],
+    owner: null,
+    unsetOwner: function() {
+      if (this.owner) {
+        if (this.owner.master.ownedItems.indexOf(this)!==-1) {
+          this.owner.master.ownedItems.splice(this.owner.master.ownedItems.indexOf(this.entity),1);
+        }
+      }
+    },
+    setOwner: function(cr) {
+      this.unsetOwner();
+      this.owner = cr;
+      if (cr!==null && cr.master) {
+        cr.master.ownedItems.push(this.entity)
+      }
+    },
     // this method is for when an item is forced onto a square but can't fit
     tumble: function(x,y,z) {
       let dirs = HTomb.Utils.copy(ROT.DIRS[8]);
@@ -303,9 +298,6 @@ HTomb = (function(HTomb) {
       } while (this.getBulk(n)<=b);
       n-=1;
       return n;
-    },
-    isOwned: function() {
-      return this.owned;
     },
     isOnGround: function() {
       if (!this.container) {
@@ -452,6 +444,7 @@ HTomb = (function(HTomb) {
           }
           for (var i=0; i<n; i++) {
             var thing = HTomb.Things[template]().place(x,y,z);
+            thing.item.setOwner(HTomb.Player);
           }
         }
       }

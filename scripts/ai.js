@@ -55,8 +55,10 @@ HTomb = (function(HTomb) {
           // if we lack what we need, search for items
           if (cr.inventory.items.countAll(ing)<n) {
             needy = true;
-            var items = HTomb.Utils.findItems(function(v) {
-              if (v.item.isOwned()!==true || v.item.isOnGround()!==true) {
+            var items = task.assigner.master.ownedItems.filter(function(v) {
+            //var items = HTomb.Utils.findItems(function(v) {
+              //if (v.item.isOwned()!==true || v.item.isOnGround()!==true) {
+              if (v.item.isOnGround()!==true) {
                 return false;
               } else if (v.template===ing) {
                 return true;
@@ -195,7 +197,8 @@ HTomb = (function(HTomb) {
           ai.entity.combat.attack(ai.target);
           ai.acted = true;
         } else {
-          ai.walkToward(ai.target.x,ai.target.y,ai.target.z);
+          // we should use approximate walking toward for long distances
+          ai.walkToward(ai.target.x,ai.target.y,ai.target.z,{approxAfter: 25});
         }
       }
     }
@@ -344,10 +347,26 @@ HTomb = (function(HTomb) {
       return this.tryStep(dx,dy,dz);
     },
     // Walk along a path toward the target
-    walkToward: function(x,y,z) {
+    walkToward: function(x,y,z,options) {
+      options = options || {};
       var x0 = this.entity.x;
       var y0 = this.entity.y;
       var z0 = this.entity.z;
+      if (options.approxAfter && HTomb.Path.quickDistance(x0,y0,z0,x,y,z)>=options.approxAfter) {
+        let dx = x-x0;
+        if (dx>0) {
+          dx = 1;
+        } else if (dx<0) {
+          dx = -1;
+        }
+        let dy = y-y0;
+        if (dy>0) {
+          dy = 1;
+        } else if (dy<0) {
+          dy = -1;
+        }
+        return this.tryStep(dx, dy, 0);
+      }
       var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,{useLast: false});
       if (path!==false) {
         var square = path[0];
