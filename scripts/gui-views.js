@@ -500,9 +500,8 @@ HTomb = (function(HTomb) {
       let b = c.worker;
       if (b.task) {
         let s = "Task: " + b.task.describe();
-        if (b.task.zone) {
-          let zone = b.task.zone;
-          s+=" at " + zone.x + ", "+zone.y+", "+zone.z;
+        if (b.task.x>=0) {
+          s+=" at " + b.task.x + ", "+b.task.y+", "+b.task.z;
         }
         s+=".";
         txt.push(s);

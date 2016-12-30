@@ -7,14 +7,7 @@ HTomb = (function(HTomb) {
     name: "spell",
     getCost: function() {
       return 10;
-    },
-    onList: function() {
-      let descrip = this.describe()+" ("+this.getCost()+")";
-      if (this.getCost()>this.caster.mana) {
-        descrip = "%c{gray}"+descrip;
-      }
-      return descrip;
-    },
+    }
   });
 
   HTomb.Things.defineSpell({

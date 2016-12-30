@@ -452,7 +452,7 @@ HTomb = (function(HTomb) {
     template: "PatrolTask",
     name: "patrol",
     bg: "#880088",
-    validTile: function() {
+    validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
       }
@@ -479,7 +479,7 @@ HTomb = (function(HTomb) {
     template: "ForbidTask",
     name: "forbid",
     bg: "#880000",
-    validTile: function() {
+    validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
       }
@@ -607,6 +607,7 @@ HTomb = (function(HTomb) {
               if (feature.ingredients) {
                 task.task.ingredients = HTomb.Utils.clone(feature.ingredients);
               }
+              task.name = task.name + " " + HTomb.Things.templates[feature.template].name;
             }
           }
           function myHover(x,y,z) {
@@ -619,14 +620,46 @@ HTomb = (function(HTomb) {
             hover: myHover
           });
         };
+      },
+      function(feature) {
+        let g = feature.describe();
+        let ings = [];
+        for (let ing in feature.ingredients) {
+          ings.push([ing, feature.ingredients[ing]]);
+        }
+        let hasAll = true;
+        if (ings.length>0) {
+          g+=" ($: ";
+          for (let i=0; i<ings.length; i++) {
+            g+=ings[i][1];
+            g+=" ";
+            g+=HTomb.Things.templates[ings[i][0]].name;
+            if (i<ings.length-1) {
+              g+=", ";
+            } else {
+              g+=")";
+            }
+            if (assigner.master) {
+              let has = false;
+              for (let j=0; j<assigner.master.ownedItems.length; j++) {
+                if (assigner.master.ownedItems[j].template===ings[i][0]) {
+                  has = true;
+                }
+              }
+              if (has===false) {
+                hasAll = false;
+              }
+            }
+          }
+        }
+        if (hasAll!==true) {
+          g = "%c{gray}"+g;
+        }
+        return g;
       });
       HTomb.GUI.Panels.menu.middle = ["%c{orange}Choose a feature before placing it."];
     }
   });
-
-
-  // We'll still need a special system for dealing with crops
-
 
   return HTomb;
 })(HTomb);

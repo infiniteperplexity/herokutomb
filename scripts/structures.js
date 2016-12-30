@@ -275,7 +275,25 @@ HTomb = (function(HTomb) {
       let alphabet = 'abcdefghijklmnopqrstuvwxyz';
       for (let i=0; i<this.makes.length; i++) {
         let t = HTomb.Things.templates[this.makes[i]];
-        txt.push(alphabet[i] + ") " + t.describe({article: "indefinite"}));
+        let g = t.describe({article: "indefinite"});
+        let ings = [];
+        for (let ing in t.ingredients) {
+          ings.push([ing, t.ingredients[ing]]);
+        }
+        if (ings.length>0) {
+          g+=" ($: ";
+          for (let i=0; i<ings.length; i++) {
+            g+=ings[i][1];
+            g+=" ";
+            g+=HTomb.Things.templates[ings[i][0]].name;
+            if (i<ings.length-1) {
+              g+=", ";
+            } else {
+              g+=")";
+            }
+          }
+        }
+        txt.push(alphabet[i] + ") " + g);
       }
       txt.push(" ");
       txt.push("Production Queue:");
@@ -495,6 +513,26 @@ HTomb = (function(HTomb) {
       {text: "Herbs", selected: false, active: false},
       {text: "Furnishings", selected: false, active: false}
     ],
+    updateOptions: function() {
+      let items = this.owner.master.ownedItems;
+      let tags = [];
+      for (let i=0; i<items.length; i++) {
+        if (items[i].item.tags) {
+          for (let j=0; j<items[i].item.tags.length; j++) {
+            if (tags.indexOf(items[i].item.tags[j])===-1) {
+              tags.push(items[i].item.tags[j]);
+            }
+          }
+        }
+      }
+      for (let o in this.options) {
+        if (tags.indexOf(this.options[o].text)===-1) {
+          this.options[o].active = false;
+        } else {
+          this.options[o].active = true;
+        }
+      }
+    },
     optionsHeading: function() {
       return "Store items:";
     },
@@ -517,7 +555,7 @@ HTomb = (function(HTomb) {
             allows: HTomb.Utils.copy(types)
           });
           z.place(f.x,f.y,f.z);
-        } else if (z.template==="Stockpile") {
+        } else if (z.template==="StockpileTaskEntity") {
           z.task.allows = HTomb.Utils.copy(types);
         }
       }
@@ -1032,6 +1070,7 @@ HTomb = (function(HTomb) {
               task.task.makes = structure.template+"Feature";
               task.task.ingredients = HTomb.Utils.clone(w.structure.ingredients);
               task.task.position = i;
+              task.name = task.name + " " + structure.name;
             }
           }
         }
@@ -1042,6 +1081,44 @@ HTomb = (function(HTomb) {
             callback: placeBox
           });
         };
+      },
+      function(structure) {
+        return structure.describe();
+        // eventually we will check for ingredients here
+        let g = structure.describe();
+        let ings = [];
+        for (let ing in structure.ingredients) {
+          ings.push([ing, structure.ingredients[ing]]);
+        }
+        let hasAll = true;
+        if (ings.length>0) {
+          g+=" ($: ";
+          for (let i=0; i<ings.length; i++) {
+            g+=ings[i][1];
+            g+=" ";
+            g+=HTomb.Things.templates[ings[i][0]].name;
+            if (i<ings.length-1) {
+              g+=", ";
+            } else {
+              g+=")";
+            }
+            if (assigner.master) {
+              let has = false;
+              for (let j=0; j<assigner.master.ownedItems.length; j++) {
+                if (assigner.master.ownedItems[j].template===ings[i][0].template) {
+                  has = true;
+                }
+              }
+              if (has===false) {
+                hasAll = false;
+              }
+            }
+          }
+        }
+        if (hasAll!==true) {
+          g = "%c{gray}"+g;
+        }
+        return g;
       });
     },
     beginWork: function() {

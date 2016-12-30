@@ -265,16 +265,41 @@ HTomb = (function(HTomb) {
   };
 
   // Display a menu of letter-bound choices
-  GUI.choosingMenu = function(s, arr, func) {
+  //GUI.choosingMenu = function(s, arr, func) {
+  //  var alpha = "abcdefghijklmnopqrstuvwxyz";
+  //  var contrls = {};
+  //  var choices = ["Esc: Cancel.","%c{yellow}"+s];
+  //  // there is probably a huge danger of memory leaks here
+  //  for (var i=0; i<arr.length; i++) {
+  //    var desc = (arr[i].onList!==undefined) ? arr[i].onList() : arr[i];
+  //    var choice = arr[i];
+  //    // Bind a callback function and its closure to each keystroke
+  //    contrls["VK_" + alpha[i].toUpperCase()] = func(choice);
+  //    choices.push(alpha[i]+") " + desc);
+  //  }
+  //  contrls.VK_ESCAPE = GUI.reset;
+  //  Contexts.active = Contexts.new(contrls);
+  //  Contexts.active.menuText = choices;
+  //  menu.refresh();
+  //};
+
+  GUI.choosingMenu = function(header, items, action, format) {
     var alpha = "abcdefghijklmnopqrstuvwxyz";
     var contrls = {};
-    var choices = ["Esc: Cancel.","%c{yellow}"+s];
+    var choices = ["Esc: Cancel.","%c{yellow}"+header];
     // there is probably a huge danger of memory leaks here
-    for (var i=0; i<arr.length; i++) {
-      var desc = (arr[i].onList!==undefined) ? arr[i].onList() : arr[i];
-      var choice = arr[i];
+    for (var i=0; i<items.length; i++) {
+      var desc;
+      if (format) {
+        desc = format(items[i]);
+      } else if (items[i].describe){
+        desc = items[i].describe();
+      } else {
+        desc = items[i];
+      }
+      var choice = items[i];
       // Bind a callback function and its closure to each keystroke
-      contrls["VK_" + alpha[i].toUpperCase()] = func(choice);
+      contrls["VK_" + alpha[i].toUpperCase()] = action(choice);
       choices.push(alpha[i]+") " + desc);
     }
     contrls.VK_ESCAPE = GUI.reset;
@@ -360,20 +385,20 @@ HTomb = (function(HTomb) {
       text.push(next);
       next = mainColor + "Creature: ";
       if (square.creature && (square.visible || HTomb.Debug.visible)) {
-        next+=square.creature.describe();
+        next+=square.creature.describe({article: "indefinite"});
         text.push(next);
       }
       next = mainColor + "Items: ";
       if (square.items && (square.visible || HTomb.Debug.visible)) {
         for (i=0; i<square.items.length; i++) {
-          next+=square.items.expose(i).describe();
+          next+=square.items.expose(i).describe({article: "indefinite"});
           text.push(next);
-          next = "       ";
+          next = otherColor+"       ";
         }
       }
       next = mainColor + "Feature: ";
       if (square.feature) {
-        next+=square.feature.describe();
+        next+=square.feature.describe({article: "indefinite"});
       }
       text.push(next);
       next = mainColor + "Task: ";
@@ -397,20 +422,20 @@ HTomb = (function(HTomb) {
       text.push(next);
       next = otherColor + "Creature: ";
       if (above.creature && square.visibleAbove) {
-        next+=above.creature.describe();
+        next+=above.creature.describe({article: "indefinite"});
         text.push(next);
       }
       next = otherColor + "Items: ";
       if (above.items && square.visibleAbove) {
         for (i=0; i<above.items.length; i++) {
-          next+=above.items.expose(i).describe();
+          next+=above.items.expose(i).describe({article: "indefinite"});
           text.push(next);
-          next = "       ";
+          next = otherColor+"       ";
         }
       }
       next = otherColor + "Feature: ";
       if (above.feature) {
-        next+=above.feature.describe();
+        next+=above.feature.describe({article: "indefinite"});
       }
       text.push(next);
       next = otherColor + "Task: ";
@@ -433,20 +458,20 @@ HTomb = (function(HTomb) {
       text.push(next);
       next = otherColor + "Creature: ";
       if (below.creature && square.visibleBelow) {
-        next+=below.creature.describe();
+        next+=below.creature.describe({article: "indefinite"});
         text.push(next);
       }
       next = otherColor + "Items: ";
       if (below.items && square.visibleBelow) {
         for (i=0; i<below.items.length; i++) {
-          next+=below.items.expose(i).describe();
+          next+=below.items.expose(i).describe({article: "indefinite"});
           text.push(next);
-          next = "       ";
+          next = otherColor+"       ";
         }
       }
       next = otherColor + "Feature: ";
       if (below.feature) {
-        next+=below.feature.describe();
+        next+=below.feature.describe({article: "indefinite"});
       }
       text.push(next);
       next = otherColor + "Task: ";

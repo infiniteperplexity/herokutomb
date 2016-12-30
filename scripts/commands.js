@@ -273,6 +273,13 @@ HTomb = (function(HTomb) {
             HTomb.GUI.pushMessage("Not enough mana!");
           }
         };
+      },
+      function(spell) {
+        let descrip = spell.describe()+" ("+spell.getCost()+")";
+        if (spell.getCost()>spell.caster.mana) {
+          descrip = "%c{gray}"+descrip;
+        }
+        return descrip;
       }
     );
   };
