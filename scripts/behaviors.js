@@ -207,7 +207,7 @@ HTomb = (function(HTomb) {
     template: "Worker",
     name: "worker",
     task: null,
-    allowedTasks: ["DigTask","BuildTask","PatrolTask","FurnishTask","StockpileTask","FarmTask","ConstructTask","ProduceTask","DismantleTask"],
+    allowedTasks: ["DigTask","BuildTask","PatrolTask","FurnishTask","StockpileTask","FarmTask","ConstructTask","ProduceTask","DismantleTask","HarvestFarmTask"],
     onAssign: function(tsk) {
       this.task = tsk;
       HTomb.Debug.pushMessage(this.entity.describe({capitalized: true, article: "indefinite"}) + " was assigned " + tsk.describe());

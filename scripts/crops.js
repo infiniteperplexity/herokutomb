@@ -37,6 +37,9 @@ HTomb = (function(HTomb) {
         var plant = HTomb.Things[this.base+"Plant"]();
         if (this.inFarm) {
           this.inFarm.growing = plant;
+          this.inFarm.symbol = plant.symbol;
+          this.inFarm.fg = plant.fg;
+          this.inFarm.name = "farm: " + plant.name;
         } else {
           plant.place(this.x,this.y,this.z);
         }

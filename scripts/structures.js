@@ -397,18 +397,21 @@ HTomb = (function(HTomb) {
           seeds.push(o.text);
         }
       }
-      if (seeds.length===0) {
-        return;
-      }
       for (let i=0; i<this.features.length; i++) {
         let f = this.features[i];
         let task = HTomb.World.tasks[coord(f.x,f.y,f.z)];
-        if (!task && !f.growing) {
+        if (!task && !f.growing && seeds.length>0) {
           HTomb.Utils.shuffle(seeds);
           let seed = seeds[0];
           let t = HTomb.Things.FarmTask({makes: seed, assigner: this.owner}).place(f.x,f.y,f.z,this.owner);
           t.task.ingredients = {};
           t.task.ingredients[seed+"Seed"] = 1;
+        } else if (f.growing) {
+          if (f.growing.parent==="Sprout") {
+            f.growing.ripen();
+          } else if (!task && f.growing.parent==="Plant") {
+            let t = HTomb.Things.HarvestFarmTask({assigner: this.owner}).place(f.x,f.y,f.z,this.owner);
+          }
         }
       }
     }
@@ -457,10 +460,13 @@ HTomb = (function(HTomb) {
       //let's avoid the incompleteFeature entirely?
       let c = HTomb.Things[this.makes+"Sprout"]();
       let f = HTomb.World.features[coord(this.entity.x,this.entity.y,this.entity.z)];
+      //c.inFarm = f;
       f.makes = c;
       f.steps = -5;
       f.symbol = c.incompleteSymbol;
       f.fg = c.fg;
+      f.name = "farm: "+c.name;
+      c.inFarm = f;
       this.assignee.ai.acted = true;
     },
     work: function() {
@@ -485,6 +491,49 @@ HTomb = (function(HTomb) {
         f.makes = null;
         f.symbol = f.growing.symbol;
         this.completeWork();
+      }
+    }
+  });
+
+  HTomb.Things.defineTask({
+    template: "HarvestFarmTask",
+    name: "harvest",
+    bg: "#446600",
+    validTile: function(x,y,z) {
+      if (HTomb.World.explored[z][x][y]!==true) {
+        return false;
+      }
+      let f = HTomb.World.features[coord(x,y,z)]
+      if (f && f.growing && f.growing.parent==="Plant") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    work: function(x,y,z) {
+      var f = HTomb.World.features[coord(x,y,z)];
+      if (f && f.growing && f.growing.parent==="Plant") {
+        if (f.feature.integrity===null) {
+          f.feature.integrity=5;
+        }
+        f.feature.integrity-=1;
+        this.assignee.ai.acted = true;
+        if (f.feature.integrity<=0) {
+          if (f.growing.feature.yields!==null) {
+            for (let template in f.growing.feature.yields) {
+              var n = HTomb.Utils.diceUntil(2,2);
+              if (f.growing.feature.yields[template].nozero) {
+                n = Math.max(n,1);
+              }
+              for (var i=0; i<n; i++) {
+                var thing = HTomb.Things[template]().place(x,y,z);
+                thing.item.setOwner(this.assigner);}
+            }
+          }
+          f.growing.destroy();
+          f.growing = null;
+          this.completeWork();
+        }
       }
     }
   });

@@ -187,8 +187,8 @@ HTomb = (function(HTomb) {
       if (this.assignee.ai.acted===true) {
         return;
       }
-      var cr = this.assignee ;
-      if (this.workBegun()!==true && this.ingredients!==null) {
+      var cr = this.assignee;
+      if (this.workBegun()!==true && Object.keys(this.ingredients).length>0) {
         HTomb.Routines.ShoppingList.act(cr.ai);
       }
       if (cr.ai.acted===true) {
