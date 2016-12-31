@@ -379,7 +379,6 @@ HTomb = (function(HTomb) {
     let otherColor = "%c{Gainsboro}";
     var text = [mainColor + "Coord: " + square.x +"," + square.y + "," + square.z];
     var next;
-    var listLines, i;
     if(square.explored || HTomb.Debug.explored) {
       next = mainColor + "Terrain: "+square.terrain.name;
       text.push(next);
@@ -390,10 +389,13 @@ HTomb = (function(HTomb) {
       }
       next = mainColor + "Items: ";
       if (square.items && (square.visible || HTomb.Debug.visible)) {
-        for (i=0; i<square.items.length; i++) {
+        for (let i=0; i<square.items.length; i++) {
           next+=square.items.expose(i).describe({article: "indefinite"});
+          if (i>0) {
+            console.log(next);
+          };
           text.push(next);
-          next = mainColor+"       ";
+          next = "       "+mainColor;
         }
       }
       next = mainColor + "Feature: ";
@@ -427,7 +429,7 @@ HTomb = (function(HTomb) {
       }
       next = otherColor + "Items: ";
       if (above.items && square.visibleAbove) {
-        for (i=0; i<above.items.length; i++) {
+        for (let i=0; i<above.items.length; i++) {
           next+=above.items.expose(i).describe({article: "indefinite"});
           text.push(next);
           next = otherColor+"       ";
@@ -463,7 +465,7 @@ HTomb = (function(HTomb) {
       }
       next = otherColor + "Items: ";
       if (below.items && square.visibleBelow) {
-        for (i=0; i<below.items.length; i++) {
+        for (let i=0; i<below.items.length; i++) {
           next+=below.items.expose(i).describe({article: "indefinite"});
           text.push(next);
           next = otherColor+"       ";
