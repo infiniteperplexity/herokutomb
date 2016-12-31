@@ -1201,13 +1201,6 @@ HTomb = (function(HTomb) {
       var assigner = options.assigner;
       var callb = options.callback;
       callb.call(options.context,squares,assigner);
-    },
-    work: function(x,y,z) {
-      HTomb.Things.templates.Task.work.call(this,x,y,z);
-      let f = HTomb.World.features[HTomb.Utils.coord(x,y,z)];
-      if (f && this.zone && f.makes===this.structure.template+"Feature") {
-        f.fg = this.structure.structure.fgs[this.zone.position];
-      }
     }
   });
   // UseWorkshopTask
