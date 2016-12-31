@@ -391,9 +391,6 @@ HTomb = (function(HTomb) {
       if (square.items && (square.visible || HTomb.Debug.visible)) {
         for (let i=0; i<square.items.length; i++) {
           next+=square.items.expose(i).describe({article: "indefinite"});
-          if (i>0) {
-            console.log(next);
-          };
           text.push(next);
           next = "       "+mainColor;
         }
