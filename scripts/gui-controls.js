@@ -393,7 +393,7 @@ HTomb = (function(HTomb) {
         for (i=0; i<square.items.length; i++) {
           next+=square.items.expose(i).describe({article: "indefinite"});
           text.push(next);
-          next = otherColor+"       ";
+          next = mainColor+"       ";
         }
       }
       next = mainColor + "Feature: ";
