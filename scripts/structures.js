@@ -22,12 +22,13 @@ HTomb = (function(HTomb) {
     cursor: -1,
     onDefine: function(args) {
       if (args.ingredients===undefined || args.ingredients.length===0) {
-        args.ingredients = [];
+        let ings = [];
         let h = args.height || 3;
         let w = args.width || 3;
         for (let i=0; i<w*h; i++) {
-          args.ingredients.push({});
+          ings.push({});
         }
+        HTomb.Things.templates[this.template].ingredients = ings;
       }
       HTomb.Things.templates.Behavior.onDefine.call(this,args);
       HTomb.Things.defineFeature({template: args.template+"Feature", name: args.name});
