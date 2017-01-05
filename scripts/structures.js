@@ -13,11 +13,12 @@ HTomb = (function(HTomb) {
     x: null,
     y: null,
     z: null,
+    squares: [],
     features: [],
     symbols: [],
     fgs: [],
     options: [],
-    ingredients: {},
+    ingredients: [],
     cursor: -1,
     onDefine: function(args) {
       HTomb.Things.templates.Behavior.onDefine.call(this,args);
@@ -124,6 +125,39 @@ HTomb = (function(HTomb) {
     lessCommand: function() {
     },
     cancelCommand: function() {
+    },
+    totalIngredients: function() {
+      let ings = {};
+      for (let i=0; i<this.ingredients.length; i++) {
+        let ingr = this.ingredients[i];
+        for (let ing in ingr) {
+          ings[ing] = ings[ing] || 0;
+          ings[ing] += ingr[ing];
+        }
+      }
+      return ings;
+    },
+    neededIngredients: function() {
+      let ings = {};
+      for (let i=0; i<this.ingredients.length; i++) {
+        if (this.features[i]) {
+          continue;
+        } else {
+          let x = this.squares[i][0];
+          let y = this.squares[i][1];
+          let z = this.squares[i][2];
+          let f = HTomb.World.features[coord(x,y,z)];
+          if (f && f.template==="IncompleteFeature" && f.makes===this.template+"Feature") {
+            continue;
+          }
+        }
+        let ingr = this.ingredients[i];
+        for (let ing in ingr) {
+          ings[ing] = ings[ing] || 0;
+          ings[ing] += ingr[ing];
+        }
+      }
+      return ings;
     }
   });
 
@@ -1103,6 +1137,7 @@ HTomb = (function(HTomb) {
           } else {
             w = HTomb.Things[structure.template]();
             w.structure.owner = assigner;
+            w.squares = squares;
             let mid = Math.floor(squares.length/2);
             w.structure.x = squares[mid][0];
             w.structure.y = squares[mid][1];

@@ -28,6 +28,45 @@ HTomb = (function(HTomb) {
     return items;
   };
 
+  HTomb.Utils.notEmpty = function(obj) {
+    if (!obj) {
+      return false;
+    } else if (Array.isArray(obj) && obj.length===0) {
+      return false;
+    } else if (Object.keys(obj).length===0) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  HTomb.Utils.ingredientArray = function(ingredients) {
+    let arr = [];
+    for (let ing in ingredients) {
+      arr.push([ing, ingredients[ing]]);
+    }
+    return arr;
+  };
+
+  HTomb.Utils.listIngredients = function(ingredients) {
+    let arr = HTomb.Utils.ingredientArray(ingredients);
+    if (arr.length===0) {
+      return "";
+    }
+    let s = "($: )";
+    for (let i=0; i<arr.length; i++) {
+      s+=arr[i][1];
+      s+=" ";
+      s+=HTomb.Things.templates[ings[i][0]].name;
+      if (i<arr.length-1) {
+        s+=", ";
+      } else {
+        s+=")";
+      }
+    }
+    return s;
+  };
+
   // like clone but don't keep the prototype
   HTomb.Utils.copy = function(obj) {
     if (typeof(obj)==="object") {

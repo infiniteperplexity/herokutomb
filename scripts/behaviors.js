@@ -299,9 +299,25 @@ HTomb = (function(HTomb) {
         tasks.push(HTomb.Things.templates[this.tasks[i]]);
       }
       return tasks;
+    },
+    ownsAllIngredients: function(ingredients) {
+      let owned = {};
+      for (let i=0; i<this.ownedItems.length; i++) {
+        let temp = this.ownedItems[i].template
+        if (ingredients[temp]>0) {
+          owned[temp] = owned[temp] || 0;
+          let n = this.ownedItems[i].n || 1;
+          owned[temp]+=n;
+        }
+      }
+      for (let ing in ingredients) {
+        if (!owned[ing] || owned[ing]<ingredients[ing]) {
+          return false;
+        }
+      }
+      return true;
     }
   });
-
 
   // The SpellCaster behavior maintains a list of castable spells
   HTomb.Things.defineBehavior({

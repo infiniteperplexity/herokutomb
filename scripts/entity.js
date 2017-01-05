@@ -687,11 +687,21 @@ HTomb = (function(HTomb) {
         var n = ingredients[ing];
         // if we lack what we need, search for items
         if (this.countAll(ing)<n) {
-          console.log("did not find enough "+ing);
           return false;
         }
       }
       return true;
+    },
+    missingIngredients: function(ingredients) {
+      var miss = {};
+      for (var ing in ingredients) {
+        // if we lack what we need, search for items
+        let n = ingredients[ing] - this.countAll(ing);
+        if (n>0) {
+          miss[ing] = n;
+        }
+      }
+      return miss;
     },
     list: function() {
       var mesg = "";
