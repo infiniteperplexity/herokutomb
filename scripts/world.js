@@ -5,6 +5,13 @@ HTomb = (function(HTomb) {
   var NLEVELS = HTomb.Constants.NLEVELS;
   var coord = HTomb.Utils.coord;
 
+  function timeIt(name,callb) {
+    console.time(name);
+    callb();
+    console.timeEnd(name);
+  }
+
+
   function grid3d() {
     var grid = [];
     for (let k=0; k<NLEVELS; k++) {
@@ -19,6 +26,7 @@ HTomb = (function(HTomb) {
   HTomb.World.things = [];
   HTomb.World.tiles = grid3d();
   HTomb.World.explored = grid3d();
+  HTomb.World.exposed = grid3d();
   HTomb.World.lit = grid3d();
   HTomb.World.lights = [];
   HTomb.World.visible = {};
@@ -28,7 +36,6 @@ HTomb = (function(HTomb) {
   HTomb.World.tasks = {};
   HTomb.World.portals = {};
   HTomb.World.covers = grid3d();
-  console.timeEnd("lists");
 
   HTomb.World.init = function() {
     while(HTomb.World.things.length>0) {
@@ -53,6 +60,9 @@ HTomb = (function(HTomb) {
     }
     HTomb.World.fillTiles();
     HTomb.World.generators.bestSoFar();
+    console.time("lighting");
+    HTomb.World.validate.lighting();
+    console.timeEnd("lighting");
   };
 
   // Add void tiles to the boundaries of the level
@@ -63,10 +73,13 @@ HTomb = (function(HTomb) {
           if (x===0 || x===LEVELW-1 || y===0 || y===LEVELH-1 || z===0 || z===NLEVELS-1) {
             HTomb.World.tiles[z][x][y] = HTomb.Tiles.VoidTile;
             HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
+            HTomb.World.exposed[z][x][y] = false;
           } else {
             HTomb.World.tiles[z][x][y] = HTomb.Tiles.EmptyTile;
             HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
+            HTomb.World.exposed[z][x][y] = true;
           }
+          HTomb.World.lit[z][x][y] = 0;
         }
       }
     }
@@ -75,7 +88,9 @@ HTomb = (function(HTomb) {
 
   HTomb.World.validate = {
     dirty: {},
-    cleaned: {}
+    dirtyColumns: {},
+    cleaned: {},
+    cleanedColumns: {}
   };
   HTomb.World.validate.clean = function() {
     //lighting can only be done all at once?
@@ -83,23 +98,50 @@ HTomb = (function(HTomb) {
       if (this.cleaned[crd]) {
         continue;
       }
-      var d = HTomb.Utils.decoord(crd);
-      var x = d[0];
-      var y = d[1];
-      var z = d[2];
+      let d = HTomb.Utils.decoord(crd);
+      let x = d[0];
+      let y = d[1];
+      let z = d[2];
+      this.dirtyColumns[coord(x,y,0)]=true;
       this.square(x,y,z);
     }
+    for (let xy in this.dirtyColumns) {
+      if (this.cleanedColumns[crd]) {
+        continue;
+      }
+      let d = HTomb.Utils.decoord(crd);
+      let x = d[0];
+      let y = d[2];
+      this.column(x,y);
+    }
+    if (Object.keys(this.dirty).length>0) {
+      HTomb.World.validate.lighting(this.dirtyColumns);
+    }
     this.dirty = {};
+    this.dirtyColumns = {};
     this.cleaned = {};
-    HTomb.World.validate.lighting();
-  };
+    this.cleanedColumns = {};
+  },
+  HTomb.World.validate.exposure = function(x,y) {
+    let blocked = false;
+    for (let z=NLEVELS-2; z>0; z--) {
+      HTomb.World.exposed[z][x][y] = !blocked;
+      if (blocked===false && HTomb.World.tiles[z][x][y].zview!==-1) {
+        blocked = true;
+      }
+    }
+  },
   HTomb.World.validate.square = function(x,y,z) {
     this.slopes(x,y,z);
     this.floors(x,y,z);
     this.falling(x,y,z);
     this.liquids(x,y,z);
     this.cleaned[coord(x,y,z)] = true;
-  }
+  },
+  HTomb.World.validate.column = function(x,y) {
+    this.exposure(x,y);
+    this.cleanedColumns[coord(x,y,0)] = true;
+  },
   HTomb.World.validate.all = function() {
     this.dirty = {};
     for (var x=1; x<LEVELW-1; x++) {
@@ -112,7 +154,7 @@ HTomb = (function(HTomb) {
     HTomb.World.validate.lighting();
   };
   HTomb.World.validate.dirtify = function(x,y,z) {
-    this.dirty[coord(x,y,z)]===true;
+    this.dirty[coord(x,y,z)] = true;
   };
   HTomb.World.validate.dirtyNeighbors = function(x,y,z) {
     this.dirtify(x,y,z);
@@ -169,7 +211,7 @@ HTomb = (function(HTomb) {
   HTomb.World.validate.liquids = function(x,y,z) {
     var t = HTomb.World.covers[z][x][y];
     if (t.liquid) {
-      t.liquid.flood(x,y,z);
+      t.flood(x,y,z);
     }
   };
 

@@ -106,6 +106,14 @@ HTomb = (function(HTomb) {
     tags: ["Wood"]
   });
 
+  HTomb.Things.defineItem({
+    template: "StoneWorkAxe",
+    name: "stone work axe",
+    symbol: "\u26CF",
+    fg: "gray",
+    tags: ["Tool"]
+  });
+
 
   return HTomb;
 })(HTomb);

@@ -151,6 +151,7 @@ timeIt("elevation", function() {
         if (x>0 && x<LEVELW-1 && y>0 && y<LEVELH-1) {
           for (var z=grid[x][y]; z>=0; z--) {
             HTomb.World.tiles[z][x][y] = HTomb.Tiles.WallTile;
+            HTomb.World.exposed[z][x][y] = false;
           }
           z = grid[x][y]+1;
           HTomb.World.tiles[z][x][y] = HTomb.Tiles.FloorTile;

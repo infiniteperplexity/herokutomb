@@ -5,6 +5,7 @@ HTomb = (function(HTomb) {
   var LEVELH = HTomb.Constants.LEVELH;
   var NLEVELS = HTomb.Constants.NLEVELS;
   var coord = HTomb.Utils.coord;
+  var decoord = HTomb.Utils.decoord;
   var grid;
   var x0,y0,z0,r0;
 
@@ -58,39 +59,67 @@ HTomb = (function(HTomb) {
     caster.compute(x,y,r,show);
   };
 
-  // pass the ambient light level
-  HTomb.FOV.ambientLight = function(light) {
-    for (var x=1; x<LEVELW-1; x++) {
-      for (var y=1; y<LEVELH-1; y++) {
-        var blocked = false;
-        for (var z=NLEVELS-2; z>0; z--) {
-          z0 = z;
-          grid = HTomb.World.tiles[z];
-          if (blocked===false) {
-            HTomb.World.lit[z][x][y] = -light;
-            for (var i=0; i<4; i++) {
-              // illuminate neighboring squares if unblocked
-              var d = ROT.DIRS[4][i];
-              var dx = d[0];
-              var dy = d[1];
-              if (passlight(x+dx,y+dy)) {
-                // illuminate it halfway unless
-                if (HTomb.World.lit[z][x+dx][y+dy]===undefined) {
-                  HTomb.World.lit[z][x+dx][y+dy] = 0;
-                }
-                HTomb.World.lit[z][x+dx][y+dy] = Math.min(HTomb.World.lit[z][x+dx][y+dy],-0.75*light);
+
+  HTomb.FOV.resetLight = function(coords) {
+    if (!coords) {
+      for (let x=1; x<LEVELW-1; x++) {
+        for (let y=1; y<LEVELH-1; y++) {
+          for (let z=1; z<NLEVELS-1; z++) {
+            HTomb.World.lit[z][x][y] = 0;
+          }
+        }
+      }
+    } else {
+      for (let crd in coords) {
+        let c = decoord(crd);
+        let x = c[0];
+        let y = c[1];
+        for (let z=1; z<NLEVELS-1; z++) {
+          HTomb.World.lit[z][x][y] = 0;
+        }
+      }
+    }
+  };
+
+  var darkest = 64;
+  HTomb.FOV.ambientLight = function(light, coords) {
+    if (!coords) {
+      for (let x=1; x<LEVELW-1; x++) {
+        for (let y=1; y<LEVELH-1; y++) {
+          for (let z=1; z<NLEVELS-1; z++) {
+            if (HTomb.World.exposed[z][x][y]) {
+              z0 = z;
+              grid = HTomb.World.tiles[z];
+              HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],light);
+              for (let i=0; i<4; i++) {
+                let dx = x+ROT.DIRS[4][i][0];
+                let dy = y+ROT.DIRS[4][i][1];
+                HTomb.World.lit[z][dx][dy] = Math.max(HTomb.World.lit[z][dx][dy],0.75*light);
               }
+            } else {
+              HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],darkest);
             }
-            if (HTomb.World.tiles[z][x][y].zview!==-1) {
-              blocked = true;
+          }
+        }
+      }
+    } else {
+      console.log("doing some lights");
+      for (let crd in coords) {
+        let c = decoord(crd);
+        let x = c[0];
+        let y = c[1];
+        for (let z=1; z<NLEVELS-1; z++) {
+          if (HTomb.World.exposed[z][x][y]) {
+            z0 = z;
+            grid = HTomb.World.tiles[z];
+            HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],light);
+            for (let i=0; i<4; i++) {
+              let dx = x+ROT.DIRS[4][i][0];
+              let dy = y+ROT.DIRS[4][i][1];
+              HTomb.World.lit[z][dx][dy] = Math.max(HTomb.World.lit[z][dx][dy],0.75*light);
             }
           } else {
-            // maybe not have zero as the lowest light level?
-            var darkest = 64;
-            if (HTomb.World.lit[z][x][y]===undefined) {
-              HTomb.World.lit[z][x][y] = 0;
-            }
-            HTomb.World.lit[z][x][y] = Math.min(HTomb.World.lit[z][x][y],-darkest);
+            HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],darkest);
           }
         }
       }
@@ -139,20 +168,11 @@ HTomb = (function(HTomb) {
     }
   }
 
-  HTomb.FOV.resolveLights = function() {
-    for (var x=1; x<LEVELW-1; x++) {
-      for (var y=1; y<LEVELH-1; y++) {
-        for (var z=1; z<NLEVELS-1; z++) {
-          HTomb.World.lit[z][x][y] = -Math.round(HTomb.World.lit[z][x][y]);
-        }
-      }
-    }
-  };
 
-  HTomb.World.validate.lighting = function() {
-    HTomb.FOV.ambientLight(HTomb.Time.dailyCycle.lightLevel());
-    HTomb.FOV.pointLights();
-    HTomb.FOV.resolveLights();
+  HTomb.World.validate.lighting = function(coords) {
+    HTomb.FOV.resetLight(coords)
+    HTomb.FOV.ambientLight(HTomb.Time.dailyCycle.lightLevel(),coords);
+    HTomb.FOV.pointLights(coords);
   };
 
   HTomb.FOV.shade = function(color,x,y,z) {
