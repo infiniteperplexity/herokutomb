@@ -586,6 +586,17 @@ HTomb = (function(HTomb) {
     name: "carpenter",
     symbols: ["\u2692","\u2261","\u2692","\u2261","\u2699","\u2261","\u2692","\u2261","\u2692"],
     fgs: ["#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922","#BB9922"],
+    ingredients: [
+      {WoodPlank: 1},
+      {},
+      {WoodPlank: 1},
+      {},
+      {WoodPlank: 1},
+      {},
+      {WoodPlank: 1},
+      {},
+      {WoodPlank: 1}
+    ],
     makes: [
       "DoorItem",
       "TorchItem",
