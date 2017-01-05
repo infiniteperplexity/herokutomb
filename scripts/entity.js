@@ -37,12 +37,23 @@ HTomb = (function(HTomb) {
         return true;
       }
     },
+    //getBehaviors: function() {
+    //  var behaviors = [];
+    //  for (let i=0; i<HTomb.Things.behaviors.length; i++) {
+    //    let b = HTomb.Things.behaviors[i];
+    //    if (this[b]!==undefined) {
+    //      behaviors.push(this[b]);
+    //    }
+    //  }
+    //  return behaviors;
+    //},
     getBehaviors: function() {
-      var behaviors = [];
-      for (let i=0; i<HTomb.Things.behaviors.length; i++) {
-        let b = HTomb.Things.behaviors[i];
-        if (this[b]!==undefined) {
-          behaviors.push(this[b]);
+      let props = Object.getOwnPropertyNames(this);
+      let behaviors = [];
+      let b = HTomb.Things.behaviors;
+      for (let i=0; i<props.length; i++) {
+        if (b.indexOf(props[i])!==-1) {
+          behaviors.push(this[props[i]]);
         }
       }
       return behaviors;
