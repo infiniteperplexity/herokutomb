@@ -273,11 +273,26 @@ HTomb = (function(HTomb) {
         this.cursor = this.queue.length-1;
       }
     },
+    onTurnBegin: function() {
+      if (this.task===null) {
+        if (HTomb.Utils.dice(2,6)===12) {
+          console.log("trying next good");
+          this.nextGood();
+        }
+      }
+    },
     nextGood: function() {
       if (this.queue.length===0) {
         return;
       } else if (HTomb.World.tasks[HTomb.Utils.coord(this.x,this.y,this.z)]) {
         HTomb.GUI.pushMessage("Workshop tried to create new task but there was already a zone.");
+        return;
+      }
+      // this is a good place to check for ingredients
+      let ings = HTomb.Utils.copy(HTomb.Things.templates[this.queue[0][0]].ingredients);
+      if (this.owner.master.ownsAllIngredients(ings)!==true) {
+        this.task = null;
+        this.queue.push(this.queue.shift());
         return;
       }
       let task = HTomb.Things.templates.ProduceTask.designateTile(this.x,this.y,this.z,this.owner);
@@ -286,6 +301,7 @@ HTomb = (function(HTomb) {
       task.task.workshop = this;
       HTomb.GUI.pushMessage("Next good is "+HTomb.Things.templates[task.task.makes].describe({article: "indefinite"}));
       task.name = "produce "+HTomb.Things.templates[task.task.makes].name;
+      task.task.ingredients = ings;
       if (this.queue[0][1]==="finite") {
         this.queue[0][2]-=1;
         if (this.queue[0][2]<=0) {
@@ -303,6 +319,9 @@ HTomb = (function(HTomb) {
       }
     },
     detailsText: function() {
+      if (this.cursor>=this.queue.length) {
+        this.cursor = this.queue.length-1;
+      }
       let txt = [
         "Esc: Done.",
         "%c{yellow}Workshop: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
@@ -319,24 +338,15 @@ HTomb = (function(HTomb) {
       for (let i=0; i<this.makes.length; i++) {
         let t = HTomb.Things.templates[this.makes[i]];
         let g = t.describe({article: "indefinite"});
-        let ings = [];
-        for (let ing in t.ingredients) {
-          ings.push([ing, t.ingredients[ing]]);
-        }
-        if (ings.length>0) {
-          g+=" ($: ";
-          for (let i=0; i<ings.length; i++) {
-            g+=ings[i][1];
-            g+=" ";
-            g+=HTomb.Things.templates[ings[i][0]].name;
-            if (i<ings.length-1) {
-              g+=", ";
-            } else {
-              g+=")";
-            }
+        let ings = t.ingredients;
+        if (HTomb.Utils.notEmpty(ings)) {
+          g+=" ";
+          g+=HTomb.Utils.listIngredients(ings);
+          if (this.owner && this.owner.master && this.owner.master.ownsAllIngredients(ings)!==true) {
+            g = "%c{gray}"+g;
           }
         }
-        txt.push(alphabet[i] + ") " + g);
+        txt.push(alphabet[i]+") "+g);
       }
       txt.push(" ");
       txt.push("Production Queue:");
@@ -591,7 +601,7 @@ HTomb = (function(HTomb) {
       {},
       {WoodPlank: 1},
       {},
-      {WoodPlank: 1},
+      {Rock: 2},
       {},
       {WoodPlank: 1},
       {},
@@ -811,6 +821,7 @@ HTomb = (function(HTomb) {
     fgs: ["gray"],
     height: 1,
     width: 1,
+    ingredients: [{Jade: 1}],
     cancelCommand: function() {
       if (this.cursor===0) {
         let code = prompt("Enter a unicode value.",this.features[0].symbol.charCodeAt());
@@ -1076,6 +1087,23 @@ HTomb = (function(HTomb) {
     makes: null,
     steps: 10,
     started: false,
+    dormancy: [1,6],
+    canAssign: function(cr) {
+      let x = this.entity.x;
+      let y = this.entity.y;
+      let z = this.entity.z;
+      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z)) {
+        // cancel this task if you can't find the ingredients
+        if (cr.inventory.canFindAll(this.ingredients)!==true) {
+          this.cancel();
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    },
     validTile: function(x,y,z) {
       return true;
     },
@@ -1209,6 +1237,7 @@ HTomb = (function(HTomb) {
       if (HTomb.Things.templates.Task.canAssign.call(this, cr)!==true) {
         return false;
       }
+      // more intuitive if ingredient-needing features are built first
       let ings = this.structure.structure.neededIngredients();
       if (HTomb.Utils.notEmpty(ings) && HTomb.Utils.notEmpty(this.ingredients)!==true) {
         return false;

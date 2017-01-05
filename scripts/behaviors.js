@@ -125,7 +125,7 @@ HTomb = (function(HTomb) {
     pickupSome: function(i_or_t,n) {
       var e = this.entity;
       var items = HTomb.World.items[coord(e.x,e.y,e.z)];
-      var item = items.take(i_or_t,n);
+      var item = items.takeSome(i_or_t,n);
       if (item) {
         this.pickup(item);
       }
@@ -161,17 +161,17 @@ HTomb = (function(HTomb) {
       let master = this.entity.minion.master.master;
       for (let item in ingredients) {
         let items = master.ownedItems.filter(function(it) {
-        //let items = HTomb.Utils.findItems(function(it) {
           if (it.template===item && it.item.isOnGround()===true) {
-          //if (it.template===item && it.item.isOwned()===true && it.item.isOnGround()===true) {
-            // should really check if these things are reachable...
-            // ...should probably allow for it in this inventory as well...
             return true;
           } else {
             return false;
           }
         });
-        if (items.length===0) {
+        let n = 0;
+        for (let i=0; i<items.length; i++) {
+          n+= (items[i].item.n || 1);
+        }
+        if (n<ingredients[item]) {
           // if any ingredients are missing, do not assign
           return false;
         }

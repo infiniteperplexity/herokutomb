@@ -648,6 +648,32 @@ HTomb = (function(HTomb) {
         }
       }
     },
+    takeSome: function(i_or_t, n) {
+      n = n || 1;
+      if (typeof(i_or_t)!=="string" && i_or_t.template) {
+        i_or_t = i_or_t.template;
+      }
+      let ing = {};
+      ing[i_or_t] = n;
+      if (this.hasAll(ing)!==true) {
+        n = this.countAll(i_or_t);
+      }
+      if (HTomb.Things.templates[i_or_t].behaviors.Item.stackable!==true) {
+        var first = this.getFirst(i_or_t);
+        return this.remove(first);
+      } else {
+        var last = this.getLast(i_or_t);
+        if (last.item.n<=n) {
+          this.remove(last);
+          return last;
+        } else {
+          last.item.n-=n;
+          var taken = HTomb.Things[last.template]();
+          taken.item.n = n;
+          return taken;
+        }
+      }
+    },
     remove: function(item) {
       var indx = this.items.indexOf(item);
       if (indx>-1) {
