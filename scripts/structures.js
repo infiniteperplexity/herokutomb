@@ -1188,43 +1188,32 @@ HTomb = (function(HTomb) {
         };
       },
       function(structure) {
-        return structure.describe();
-        // eventually we will check for ingredients here
         let g = structure.describe();
-        let ings = [];
-        for (let ing in structure.ingredients) {
-          ings.push([ing, structure.ingredients[ing]]);
-        }
-        let hasAll = true;
-        if (ings.length>0) {
-          g+=" ($: ";
-          for (let i=0; i<ings.length; i++) {
-            g+=ings[i][1];
-            g+=" ";
-            g+=HTomb.Things.templates[ings[i][0]].name;
-            if (i<ings.length-1) {
-              g+=", ";
-            } else {
-              g+=")";
-            }
-            if (assigner.master) {
-              let has = false;
-              for (let j=0; j<assigner.master.ownedItems.length; j++) {
-                if (assigner.master.ownedItems[j].template===ings[i][0].template) {
-                  has = true;
-                }
-              }
-              if (has===false) {
-                hasAll = false;
-              }
-            }
+        let ings = structure.totalIngredients();
+        if (HTomb.Utils.notEmpty(ings)) {
+          g+=" ";
+          g+=HTomb.Utils.listIngredients(ings);
+          if (!assigner || !assigner.master) {
+            return g;
           }
+          if (assigner.master.ownsAllIngredients(ings)!==true) {
+            g = "%c{gray}"+g;
+          }
+          return g;
+        } else {
+          return g;
         }
-        if (hasAll!==true) {
-          g = "%c{gray}"+g;
-        }
-        return g;
       });
+    },
+    canAssign: function(cr) {
+      if (HTomb.Things.templates.Task.canAssign.call(this, cr)!==true) {
+        return false;
+      }
+      let ings = this.structure.structure.neededIngredients();
+      if (HTomb.Utils.notEmpty(ings) && HTomb.Utils.notEmpty(this.ingredients)!==true) {
+        return false;
+      }
+      return true;
     },
     beginWork: function() {
       HTomb.Things.templates.Task.beginWork.call(this);

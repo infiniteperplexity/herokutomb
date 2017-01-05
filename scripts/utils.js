@@ -53,11 +53,11 @@ HTomb = (function(HTomb) {
     if (arr.length===0) {
       return "";
     }
-    let s = "($: )";
+    let s = "($: ";
     for (let i=0; i<arr.length; i++) {
       s+=arr[i][1];
       s+=" ";
-      s+=HTomb.Things.templates[ings[i][0]].name;
+      s+=HTomb.Things.templates[arr[i][0]].name;
       if (i<arr.length-1) {
         s+=", ";
       } else {

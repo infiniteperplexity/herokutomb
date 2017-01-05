@@ -37,16 +37,6 @@ HTomb = (function(HTomb) {
         return true;
       }
     },
-    //getBehaviors: function() {
-    //  var behaviors = [];
-    ///  for (let i=0; i<HTomb.Things.behaviors.length; i++) {
-    //    let b = HTomb.Things.behaviors[i];
-    //    if (this[b]!==undefined) {
-    //      behaviors.push(this[b]);
-    //    }
-    //  }
-    //  return behaviors;
-    //},
     getBehaviors: function() {
       let props = Object.getOwnPropertyNames(this);
       let behaviors = [];
@@ -58,16 +48,6 @@ HTomb = (function(HTomb) {
       }
       return behaviors;
     },
-    //getBehaviors: function() {
-    //  let behaviors = [];
-    //  let props = Object.keys(this);
-    //  for (let i=0; i<props.length; i++) {
-    //    if (this[props[i]]!==null && this[props[i]].addToEntity) {
-    //      behaviors.push(this[props[i]]);
-    //    }
-    //  }
-    //  return behaviors;
-    //},
     behaviorTemplate: function(beh) {
       let beh1 = HTomb.Utils.copy(this.behaviors[beh]);
       let beh2 = HTomb.Utils.clone(HTomb.Things.templates[beh]);
