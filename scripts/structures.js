@@ -1137,7 +1137,7 @@ HTomb = (function(HTomb) {
           } else {
             w = HTomb.Things[structure.template]();
             w.structure.owner = assigner;
-            w.squares = squares;
+            w.structure.squares = squares;
             let mid = Math.floor(squares.length/2);
             w.structure.x = squares[mid][0];
             w.structure.y = squares[mid][1];
@@ -1152,7 +1152,7 @@ HTomb = (function(HTomb) {
             if (task) {
               task.task.structure = w;
               task.task.makes = structure.template+"Feature";
-              task.task.ingredients = HTomb.Utils.clone(w.structure.ingredients);
+              //task.task.ingredients = HTomb.Utils.clone(w.structure.ingredients);
               task.task.position = i;
               task.name = task.name + " " + structure.name;
             }
