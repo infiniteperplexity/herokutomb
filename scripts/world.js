@@ -92,9 +92,14 @@ HTomb = (function(HTomb) {
     dirtyColumns: {},
     cleaned: {},
     cleanedColumns: {},
-    lowestExposed: NLEVELS-2
+    lowestExposed: NLEVELS-2,
+    trackNesting: 0
   };
   HTomb.World.validate.clean = function() {
+    this.trackNesting+=1;
+    if (this.trackNesting>1) {
+      console.log("Note: Validation checks are running " + this.trackNesting + " layers deep.");
+    }
     //lighting can only be done all at once?
     for (var crd in this.dirty) {
       if (this.cleaned[crd]) {
@@ -123,6 +128,7 @@ HTomb = (function(HTomb) {
     this.dirtyColumns = {};
     this.cleaned = {};
     this.cleanedColumns = {};
+    this.trackNesting = 0;
   };
   HTomb.World.validate.exposure = function(x,y) {
     let blocked = false;
