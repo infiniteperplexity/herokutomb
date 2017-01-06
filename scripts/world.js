@@ -106,12 +106,12 @@ HTomb = (function(HTomb) {
       this.square(x,y,z);
     }
     for (let xy in this.dirtyColumns) {
-      if (this.cleanedColumns[crd]) {
+      if (this.cleanedColumns[xy]) {
         continue;
       }
-      let d = HTomb.Utils.decoord(crd);
+      let d = HTomb.Utils.decoord(xy);
       let x = d[0];
-      let y = d[2];
+      let y = d[1];
       this.column(x,y);
     }
     if (Object.keys(this.dirtyColumns).length>0) {
@@ -121,7 +121,7 @@ HTomb = (function(HTomb) {
     this.dirtyColumns = {};
     this.cleaned = {};
     this.cleanedColumns = {};
-  },
+  };
   HTomb.World.validate.exposure = function(x,y) {
     let blocked = false;
     for (let z=NLEVELS-2; z>0; z--) {
@@ -130,18 +130,18 @@ HTomb = (function(HTomb) {
         blocked = true;
       }
     }
-  },
+  };
   HTomb.World.validate.square = function(x,y,z) {
     this.slopes(x,y,z);
     this.floors(x,y,z);
     this.falling(x,y,z);
     this.liquids(x,y,z);
     this.cleaned[coord(x,y,z)] = true;
-  },
+  };
   HTomb.World.validate.column = function(x,y) {
     this.exposure(x,y);
     this.cleanedColumns[coord(x,y,0)] = true;
-  },
+  };
   HTomb.World.validate.all = function() {
     this.dirty = {};
     for (var x=1; x<LEVELW-1; x++) {
