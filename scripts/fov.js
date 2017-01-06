@@ -94,7 +94,7 @@ HTomb = (function(HTomb) {
               for (let i=0; i<4; i++) {
                 let dx = x+ROT.DIRS[4][i][0];
                 let dy = y+ROT.DIRS[4][i][1];
-                HTomb.World.lit[z][dx][dy] = Math.max(HTomb.World.lit[z][dx][dy],light);
+                HTomb.World.lit[z][dx][dy] = Math.max(HTomb.World.lit[z][dx][dy],0.95*light);
               }
             } else {
               HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],darkest);
@@ -115,7 +115,7 @@ HTomb = (function(HTomb) {
             for (let i=0; i<4; i++) {
               let dx = x+ROT.DIRS[4][i][0];
               let dy = y+ROT.DIRS[4][i][1];
-              HTomb.World.lit[z][dx][dy] = Math.max(HTomb.World.lit[z][dx][dy],light);
+              HTomb.World.lit[z][dx][dy] = Math.max(HTomb.World.lit[z][dx][dy],0.95*light);
             }
           } else {
             HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],darkest);
