@@ -222,9 +222,6 @@ HTomb = (function(HTomb) {
         if (dummy.thingId) {
           delete dummy.thingId;
         }
-        if (val.template==="Team") {
-          console.log(dummy);
-        }
         return dummy;
       // if it's on the global things table, stringify its ID
       } else if (val.thingId!==undefined) {
@@ -234,6 +231,7 @@ HTomb = (function(HTomb) {
       }
     //}," ");
     });
+    console.log(json.substr(0,100));
     return json;
   };
   // End code for saving games
