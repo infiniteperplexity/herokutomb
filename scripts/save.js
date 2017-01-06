@@ -391,8 +391,14 @@ HTomb = (function(HTomb) {
     }
     HTomb.Events.reset();
     if (other.events) {
-      for (let list in other.events) {
-        HTomb.Events[list] = other.events[list];
+      for (let lst in other.events) {
+        let list1 = other.events[lst];
+        let list2 = HTomb.Events[list] = [];
+        for (let i=0; i<list1.length; i++) {
+          if (list1[i].tid!==undefined) {
+            list2.push(list1[i]);
+          }
+        }
       }
     }
     for (let i=0; i<saveListeners.length; i++) {
