@@ -114,7 +114,7 @@ HTomb = (function(HTomb) {
       let y = d[2];
       this.column(x,y);
     }
-    if (Object.keys(this.dirty).length>0) {
+    if (Object.keys(this.dirtyColumns).length>0) {
       HTomb.World.validate.lighting(this.dirtyColumns);
     }
     this.dirty = {};

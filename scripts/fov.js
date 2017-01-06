@@ -103,7 +103,6 @@ HTomb = (function(HTomb) {
         }
       }
     } else {
-      console.log("doing some lights");
       for (let crd in coords) {
         let c = decoord(crd);
         let x = c[0];
