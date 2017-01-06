@@ -292,12 +292,13 @@ HTomb = (function(HTomb) {
         fg = tile.fg;
       }
       // *** symbol ****
-      if ((tile===Tiles.FloorTile || tile===Tiles.EmptyTile) && tiles[z+1][x][y]!==Tiles.EmptyTile) {
+      // !!!Experimental - switch order of roof above/tunnel below checks
+      if (tile===Tiles.FloorTile && explored[z-1][x][y] && tiles[z-1][x][y].solid!==true) {
+        // explored tunnel below
+        sym = "\u25E6";
+      } else if ((tile===Tiles.FloorTile || tile===Tiles.EmptyTile) && tiles[z+1][x][y]!==Tiles.EmptyTile) {
         // roof above
         sym = "'";
-      } else if (tile===Tiles.FloorTile && explored[z-1][x][y] && tiles[z-1][x][y].solid!==true) {
-      // explored tunnel below
-        sym = "\u25E6";
       } else if (covers[z][x][y]!==HTomb.Covers.NoCover && tile.solid!==true) {
         if (covers[z][x][y].liquid) {
           if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && tiles[z-1][x][y].zmove!==+1) {

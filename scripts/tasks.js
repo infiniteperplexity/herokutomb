@@ -337,24 +337,22 @@ HTomb = (function(HTomb) {
         return true;
       }
     },
-    // experiment with a filter to build only one level at a time
     designateSquares: function(squares, options) {
-      var lowest = 1;
+      var tallest = -1;
       for (var j=0; j<squares.length; j++) {
         var s = squares[j];
         let tile = HTomb.World.tiles[s[2]][s[0]][s[1]];
-        if (tile===HTomb.Tiles.EmptyTile || tile===HTomb.Tiles.DownSlopeTile) {
-          lowest = Math.min(lowest,-1);
+        if (tile===HTomb.Tiles.UpSlopeTile) {
+          tallest = Math.max(tallest,1);
         } else if (tile===HTomb.Tiles.FloorTile) {
-          lowest = Math.min(lowest,0);
+          tallest = Math.max(tallest,0);
         }
       }
-      if (lowest===-1) {
+      if (tallest===1) {
         squares = squares.filter(function(e,i,a) {
-          return (HTomb.World.tiles[e[2]][e[0]][e[1]]===HTomb.Tiles.EmptyTile
-                  || HTomb.World.tiles[e[2]][e[0]][e[1]]===HTomb.Tiles.DownSlopeTile);
+          return (HTomb.World.tiles[e[2]][e[0]][e[1]]===HTomb.Tiles.UpSlopeTile);
         });
-      } else if (lowest===0) {
+      } else if (tallest===0) {
         squares = squares.filter(function(e,i,a) {
           return (HTomb.World.tiles[e[2]][e[0]][e[1]]===HTomb.Tiles.FloorTile);
         });
@@ -386,24 +384,24 @@ HTomb = (function(HTomb) {
           }
           return;
         }
-        var lowest = 2;
+        var tallest = -2;
         for (var j=0; j<squares.length; j++) {
           var s = squares[j];
           let tile = HTomb.World.tiles[s[2]][s[0]][s[1]];
-          if (tile===HTomb.Tiles.EmptyTile || tile===HTomb.Tiles.DownSlopeTile) {
-            lowest = Math.min(lowest,-1);
+          if (tile===HTomb.Tiles.UpSlopeTile) {
+            tallest = Math.max(tallest,1);
           } else if (tile===HTomb.Tiles.FloorTile) {
-            lowest = Math.min(lowest,0);
-          } else if (tile===HTomb.Tiles.UpSlopeTile) {
-            lowest = Math.min(lowest,1);
+            tallest = Math.max(tallest,0);
+          } else if (tile===HTomb.Tiles.DownSlopeTile || tile===HTomb.Tiles.EmptyTile) {
+            tallest = Math.max(tallest,-1);
           }
         }
-        if (lowest===-1) {
-          menu.middle = ["%c{lime}Construct new floors in this area."];
-        } else if (lowest===0) {
-          menu.middle = ["%c{lime}Construct new slopes in this area."];
-        } else if (lowest===1){
+        if (tallest===1) {
           menu.middle = ["%c{lime}Construct new walls in this area."];
+        } else if (tallest===0) {
+          menu.middle = ["%c{lime}Construct new slopes in this area."];
+        } else if (tallest===-1) {
+          menu.middle = ["%c{lime}Construct new floors in this area."];
         } else {
           menu.middle = ["%c{orange}Can't build in this area."];
         }
@@ -510,7 +508,7 @@ HTomb = (function(HTomb) {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
       }
-      if (HTomb.World.features[coord(x,y,z)] || (HTomb.World.covers[z][x][y].liquid!==true)) {
+      if (HTomb.World.features[coord(x,y,z)] || (HTomb.World.covers[z][x][y].liquid!==true && HTomb.World.covers[z][x][y]!==HTomb.Covers.NoCover)) {
         return true;
       } else {
         return false;
