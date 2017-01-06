@@ -445,7 +445,8 @@ timeIt("elevation", function() {
     for (var x=0; x<LEVELW; x++) {
       for (var y=0; y<LEVELH; y++) {
         var z = HTomb.Tiles.groundLevel(x,y);
-        if (tiles[z][x][y]===HTomb.Tiles.FloorTile && HTomb.World.covers[z][x][y]===HTomb.Covers.NoCover) {
+        //if (tiles[z][x][y]===HTomb.Tiles.FloorTile && HTomb.World.covers[z][x][y]===HTomb.Covers.NoCover) {
+        if (HTomb.World.covers[z][x][y]===HTomb.Covers.NoCover) {
           HTomb.World.covers[z][x][y] = HTomb.Covers.Grass;
         }
       }

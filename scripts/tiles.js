@@ -173,8 +173,9 @@ HTomb = (function(HTomb) {
       } else {
         bg = bg || covers[z][x][y].darken();
       }
-    } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && tiles[z-1][x][y].solid!==true) {
-      if (vis) {
+    // !!!Experimental - show darkened covers on level below
+    } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && tiles[z-1][x][y].solid!==true) {
+      if (vis && covers[z-1][x][y].liquid) {
         bg = bg || covers[z-1][x][y].shimmer();
       } else {
         bg = bg || covers[z-1][x][y].darken();
@@ -277,8 +278,13 @@ HTomb = (function(HTomb) {
       if (covers[z][x][y]===undefined) {
         console.log([x,y,z]);
       }
+      //!!!Experimental - show foreground color for non-liquids only for floor tiles
       if (covers[z][x][y]!==HTomb.Covers.NoCover) {
-        fg = fg || covers[z][x][y].fg;
+        if (covers[z][x][y].liquid || tile===Tiles.FloorTile) {
+          fg = fg || covers[z][x][y].fg;
+        } else {
+          fg = tile.fg;
+        }
       // maybe do show the waterlogged ground?
     } else if (covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && (tile.solid!==true && tile.zview!==+1)) {
         fg = fg || covers[z-1][x][y].fg;
@@ -302,8 +308,13 @@ HTomb = (function(HTomb) {
             sym = tile.symbol;
           }
         } else {
-          // non-liquid cover
-          sym = covers[z][x][y].symbol;
+          // !!!Experimental - show upward slopes using grass color
+          if (tile===Tiles.FloorTile) {
+            // non-liquid cover
+            sym = covers[z][x][y].symbol;
+          } else {
+            sym = tile.symbol;
+          }
         }
       } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
         // liquid surface
