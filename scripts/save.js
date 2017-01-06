@@ -389,7 +389,6 @@ HTomb = (function(HTomb) {
         }
       }
     }
-    console.log("testing4");
     HTomb.Events.reset();
     if (other.events) {
       for (let list in other.events) {
@@ -412,7 +411,7 @@ HTomb = (function(HTomb) {
       let type = HTomb.Events.types[i];
       for (let j=0; j<HTomb.Events[type].length; j++) {
         if (HTomb.Events[type][j].tid!==undefined) {
-          HTomb.Events[type][j] = HTomb.World.Things[HTomb.Events[type][j].tid]
+          HTomb.Events[type][j] = HTomb.World.things[HTomb.Events[type][j].tid]
         }
       }
     }
