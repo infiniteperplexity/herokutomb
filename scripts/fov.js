@@ -64,11 +64,12 @@ HTomb = (function(HTomb) {
 
   var darkest = 64;
   // we could make this even faster by resetting only ambient light and handling point lights dynamically
-  HTomb.FOV.resetLight = function(coords) {
+  HTomb.FOV.resetLight = function(coords, zLevel) {
+    zLevel = zLevel || 1;
     if (!coords) {
       for (let x=1; x<LEVELW-1; x++) {
         for (let y=1; y<LEVELH-1; y++) {
-          for (let z=1; z<NLEVELS-1; z++) {
+          for (let z=zLevel; z<NLEVELS-1; z++) {
             HTomb.World.lit[z][x][y] = 0;
           }
         }
@@ -78,7 +79,7 @@ HTomb = (function(HTomb) {
         let c = decoord(crd);
         let x = c[0];
         let y = c[1];
-        for (let z=1; z<NLEVELS-1; z++) {
+        for (let z=zLevel; z<NLEVELS-1; z++) {
           HTomb.World.lit[z][x][y] = 0;
         }
       }
@@ -169,8 +170,8 @@ HTomb = (function(HTomb) {
   }
 
 
-  HTomb.World.validate.lighting = function(coords) {
-    HTomb.FOV.resetLight(coords)
+  HTomb.World.validate.lighting = function(coords, z) {
+    HTomb.FOV.resetLight(coords, z)
     HTomb.FOV.ambientLight(HTomb.Time.dailyCycle.lightLevel(),coords);
     HTomb.FOV.pointLights(coords);
   };

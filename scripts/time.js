@@ -162,7 +162,7 @@ HTomb = (function(HTomb) {
       if ((this.hour>=this.times.dawn && this.hour<this.times.dawn+2)
         || (this.hour>=this.times.dusk && this.hour<this.times.dusk+2)) {
         if (this.turn%5===0) {
-          HTomb.World.validate.lighting();
+          HTomb.World.validate.lighting(undefined,HTomb.World.validate.lowestExposed);
         }
       }
     },
