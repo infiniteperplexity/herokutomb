@@ -59,13 +59,14 @@ HTomb = (function(HTomb) {
     caster.compute(x,y,r,show);
   };
 
-
+  var darkest = 64;
+  // we could make this even faster by resetting only ambient light and handling point lights dynamically
   HTomb.FOV.resetLight = function(coords) {
     if (!coords) {
       for (let x=1; x<LEVELW-1; x++) {
         for (let y=1; y<LEVELH-1; y++) {
           for (let z=1; z<NLEVELS-1; z++) {
-            HTomb.World.lit[z][x][y] = 0;
+            HTomb.World.lit[z][x][y] = darkest;
           }
         }
       }
@@ -83,22 +84,16 @@ HTomb = (function(HTomb) {
 
   var darkest = 64;
   HTomb.FOV.ambientLight = function(light, coords) {
+    let e = HTomb.World.exposed;
     if (!coords) {
       for (let x=1; x<LEVELW-1; x++) {
         for (let y=1; y<LEVELH-1; y++) {
-          for (let z=1; z<NLEVELS-1; z++) {
-            if (HTomb.World.exposed[z][x][y]) {
-              z0 = z;
-              grid = HTomb.World.tiles[z];
-              HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],light);
-              for (let i=0; i<4; i++) {
-                let dx = x+ROT.DIRS[4][i][0];
-                let dy = y+ROT.DIRS[4][i][1];
-                HTomb.World.lit[z][dx][dy] = Math.max(HTomb.World.lit[z][dx][dy],0.95*light);
-              }
-            } else {
-              HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],darkest);
-            }
+          for (let z=HTomb.World.exposed[x][y]; z<NLEVELS-1; z++) {
+            HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],light);
+            HTomb.World.lit[z][x+1][y] = Math.max(HTomb.World.lit[z][x+1][y],light)
+            HTomb.World.lit[z][x-1][y] = Math.max(HTomb.World.lit[z][x-1][y],light)
+            HTomb.World.lit[z][x][y+1] = Math.max(HTomb.World.lit[z][x][y+1],light)
+            HTomb.World.lit[z][x][y-1] = Math.max(HTomb.World.lit[z][x][y-1],light)
           }
         }
       }
@@ -107,18 +102,21 @@ HTomb = (function(HTomb) {
         let c = decoord(crd);
         let x = c[0];
         let y = c[1];
-        for (let z=1; z<NLEVELS-1; z++) {
-          if (HTomb.World.exposed[z][x][y]) {
-            z0 = z;
-            grid = HTomb.World.tiles[z];
+        for (let z=HTomb.World.validate.lowestExposed; z<NLEVELS-1; z++) {
+          if (z>=HTomb.World.exposed[x][y]) {
             HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],light);
+          } else {
             for (let i=0; i<4; i++) {
               let dx = x+ROT.DIRS[4][i][0];
               let dy = y+ROT.DIRS[4][i][1];
-              HTomb.World.lit[z][dx][dy] = Math.max(HTomb.World.lit[z][dx][dy],0.95*light);
+              if (z >= HTomb.World.exposed[dx][dy]) {
+                HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],light);
+                break;
+                if (i===3) {
+                  HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],darkest);
+                }
+              }
             }
-          } else {
-            HTomb.World.lit[z][x][y] = Math.max(HTomb.World.lit[z][x][y],darkest);
           }
         }
       }

@@ -26,7 +26,10 @@ HTomb = (function(HTomb) {
   HTomb.World.things = [];
   HTomb.World.tiles = grid3d();
   HTomb.World.explored = grid3d();
-  HTomb.World.exposed = grid3d();
+  HTomb.World.exposed = [];
+  for (let x=0; x<LEVELW; x++) {
+    HTomb.World.exposed.push([]);
+  }
   HTomb.World.lit = grid3d();
   HTomb.World.lights = [];
   HTomb.World.visible = {};
@@ -73,11 +76,9 @@ HTomb = (function(HTomb) {
           if (x===0 || x===LEVELW-1 || y===0 || y===LEVELH-1 || z===0 || z===NLEVELS-1) {
             HTomb.World.tiles[z][x][y] = HTomb.Tiles.VoidTile;
             HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
-            HTomb.World.exposed[z][x][y] = false;
           } else {
             HTomb.World.tiles[z][x][y] = HTomb.Tiles.EmptyTile;
             HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
-            HTomb.World.exposed[z][x][y] = true;
           }
           HTomb.World.lit[z][x][y] = 0;
         }
@@ -90,7 +91,8 @@ HTomb = (function(HTomb) {
     dirty: {},
     dirtyColumns: {},
     cleaned: {},
-    cleanedColumns: {}
+    cleanedColumns: {},
+    lowestExposed: NLEVELS-2
   };
   HTomb.World.validate.clean = function() {
     //lighting can only be done all at once?
@@ -125,11 +127,17 @@ HTomb = (function(HTomb) {
   HTomb.World.validate.exposure = function(x,y) {
     let blocked = false;
     for (let z=NLEVELS-2; z>0; z--) {
-      HTomb.World.exposed[z][x][y] = !blocked;
       if (blocked===false && HTomb.World.tiles[z][x][y].zview!==-1) {
         blocked = true;
+        HTomb.World.exposed[x][y] = z;
+        if (z<this.lowestExposed) {
+          this.lowestExposed = z;
+        }
+        return;
       }
     }
+    HTomb.World.exposed[x][y] = 1;
+    this.lowestExposed = 1;
   };
   HTomb.World.validate.square = function(x,y,z) {
     this.slopes(x,y,z);
