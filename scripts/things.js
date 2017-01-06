@@ -29,14 +29,14 @@ HTomb = (function(HTomb) {
         this.onDespawn();
       }
     },
-    get thingId () {
+    //get thingId () {
       // Calculate thingId dynamically
-      return HTomb.World.things.indexOf(this);
-    },
-    set thingId (arg) {
+    //  return HTomb.World.things.indexOf(this);
+    //},
+    //set thingId (arg) {
       // not allowed
-      HTomb.Debug.pushMessage("Not allowed to set thingId");
-    },
+    //  HTomb.Debug.pushMessage("Not allowed to set thingId");
+    //},
     // Describe for an in-game message
     describe: function(options) {
       options = options || {};

@@ -68,6 +68,7 @@ HTomb = (function(HTomb) {
     for (let i=0; i<HTomb.Events.types.length; i++) {
       events[HTomb.Events.types[i]] = HTomb.Events[HTomb.Events.types[i]];
     }
+    events.types = HTomb.Events.types;
     events = HTomb.Save.stringifyThing(events);
     let other = '{'.concat(
                 '"explored": ', explored, ", ",
@@ -112,6 +113,9 @@ HTomb = (function(HTomb) {
       credentials: "include"
     }
     killsave = false;
+    for (let i=0; i<HTomb.World.things.length; i++) {
+      HTomb.World.things[i].thingId = i;
+    }
     let promises = [
       fetchText(stringifyTiles(0,7),"/saves/tiles0/"+name+"/",args),
       fetchText(stringifyTiles(8,15),"/saves/tiles8/"+name+"/",args),
@@ -146,6 +150,9 @@ HTomb = (function(HTomb) {
         }
         console.log("succeeded: " + values);
         HTomb.GUI.splash(["Finished saving "+"'"+name+"'."]);
+        for (let i=0; i<HTomb.World.things.length; i++) {
+          delete HTomb.World.things[i].thingId;
+        }
         HTomb.GUI.Contexts.locked=false;
         HTomb.Time.unlockTime();
       },
@@ -400,6 +407,7 @@ HTomb = (function(HTomb) {
           }
         }
       }
+      HTomb.Events.types = other.events.types;
     }
     for (let i=0; i<saveListeners.length; i++) {
       HTomb.Events.subscribe(saveListeners[i][0],saveListeners[i][1]);
