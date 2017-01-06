@@ -397,7 +397,7 @@ HTomb = (function(HTomb) {
       }
     }
     for (let i=0; i<saveListeners.length; i++) {
-      HTomb.Events.subscribe(savelisteners[i][0],savelisteners[i][1]);
+      HTomb.Events.subscribe(saveListeners[i][0],saveListeners[i][1]);
     }
   }
 
