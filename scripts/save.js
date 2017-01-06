@@ -491,7 +491,8 @@ HTomb = (function(HTomb) {
         }
         finalSwap();
         HTomb.Save.currentGame = name;
-        HTomb.World.validate.lighting();
+        HTomb.World.validate.reset();
+        HTomb.World.validate.all();
         HTomb.FOV.resetVisible();
         if (HTomb.Player.sight) {
           HTomb.FOV.findVisible(HTomb.Player.x, HTomb.Player.y, HTomb.Player.z, HTomb.Player.sight.range);

@@ -1,9 +1,4 @@
 11/23/16
--- smaller, newer issues
-- lighting doesn't update properly after digging, until you place a light
-- list requirements for making crafts
-- call "craft" something other than "craft"
-
 
 --ideas
 - add ravens, which are diurnal and feed on your zombies
@@ -12,11 +7,5 @@
 
 
 12/7/16
-- rename workshops as "structures"?
-- make farms into workshops
-- make storerooms into workshops
-- add concept of "bulk" to items
-- add monuments
 -- make combat work better somehow
--- make ingredients work more consistently
 -- add research

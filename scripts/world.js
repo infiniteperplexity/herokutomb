@@ -37,7 +37,6 @@ HTomb = (function(HTomb) {
   HTomb.World.items = {};
   HTomb.World.features = {};
   HTomb.World.tasks = {};
-  HTomb.World.portals = {};
   HTomb.World.covers = grid3d();
 
   HTomb.World.init = function() {
@@ -94,6 +93,19 @@ HTomb = (function(HTomb) {
     lowestExposed: NLEVELS-2,
     trackNesting: 0
   };
+  HTomb.World.validate.reset = function() {
+    this.dirty = {};
+    this.dirtyColumns = {};
+    this.cleaned = {};
+    this.cleanedColumns = {};
+    this.lowestExposed = NLEVELS-2;
+    this.trackNesting = 0;
+    for (let x=0; x<HTomb.World.exposed.length; x++) {
+      for (let y=0; y<HTomb.World.exposed[x].length; y++) {
+        HTomb.World.exposed[x][y] = NLEVELS-2;
+      }
+    }
+  }
   HTomb.World.validate.clean = function() {
     this.trackNesting+=1;
     if (this.trackNesting>1) {
