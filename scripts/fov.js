@@ -159,13 +159,13 @@ HTomb = (function(HTomb) {
 
   function light(x,y,r,v) {
     var d = Math.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0));
-    var thisLevel = (r) ? Math.min(-lightLevel+(d*10),-1) : -lightLevel;
-    HTomb.World.lit[z0][x][y] = Math.min(HTomb.World.lit[z0][x][y],thisLevel);
+    var thisLevel = (r) ? Math.max(lightLevel-(d*10),1) : lightLevel;
+    HTomb.World.lit[z0][x][y] = Math.max(HTomb.World.lit[z0][x][y],thisLevel);
     if (HTomb.World.tiles[z0+1][x][y].zview===-1) {
-      HTomb.World.lit[z0+1][x][y] = Math.min(HTomb.World.lit[z0+1][x][y],thisLevel);
+      HTomb.World.lit[z0+1][x][y] = Math.max(HTomb.World.lit[z0+1][x][y],thisLevel);
     }
     if (grid[x][y].zview===-1) {
-      HTomb.World.lit[z0-1][x][y] = Math.min(HTomb.World.lit[z0-1][x][y],thisLevel);
+      HTomb.World.lit[z0-1][x][y] = Math.max(HTomb.World.lit[z0-1][x][y],thisLevel);
     }
   }
 

@@ -401,8 +401,8 @@ HTomb = (function(HTomb) {
       if (args.craftable===true) {
         let item = HTomb.Utils.copy(args);
         item.template = args.template+"Item";
-        item.tags = ["Furnishings"];
-        delete item.behaviors.Feature;
+        item.tags = ["Fixtures"];
+        delete item.behaviors;
         HTomb.Things.defineItem(item);
         let template = HTomb.Things.templates[args.template];
         // overwrite the item's ingredients

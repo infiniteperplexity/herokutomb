@@ -624,7 +624,7 @@ HTomb = (function(HTomb) {
       {text: "Wood", selected: false, active: false},
       {text: "Seeds", selected: false, active: false},
       {text: "Herbs", selected: false, active: false},
-      {text: "Furnishings", selected: false, active: false}
+      {text: "Fixtures", selected: false, active: false}
     ],
     updateOptions: function() {
       let items = this.owner.master.ownedItems;
