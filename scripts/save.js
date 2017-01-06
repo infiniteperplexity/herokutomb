@@ -394,7 +394,7 @@ HTomb = (function(HTomb) {
       let type = HTomb.Events.types[i];
       for (let j=0; j<HTomb.Events[type].length; j++) {
         let l = HTomb.Events[type][j];
-        if (l.thingId===undefined) {
+        if (l.template===undefined) {
           saveListeners.push([l,type]);
         }
       }
