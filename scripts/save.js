@@ -372,7 +372,9 @@ HTomb = (function(HTomb) {
   }
 
   function restoreOther(json) {
+    console.log("testing 1");
     let other = JSON.parse(json);
+    console.log("testing2");
     fillGrid3dFrom(other.explored, HTomb.World.explored);
     fillListFrom(other.lights, HTomb.World.lights);
     HTomb.Time.dailyCycle.turn = other.cycle.turn;
@@ -380,6 +382,7 @@ HTomb = (function(HTomb) {
     HTomb.Time.dailyCycle.hour = other.cycle.hour;
     HTomb.Time.dailyCycle.day = other.cycle.day;
     let saveListeners = [];
+    console.log("testing3");
     for (let i=0; i<HTomb.Events.types.length; i++) {
       let type = HTomb.Events.types[i];
       for (let j=0; i<HTomb.Events[type].length; j++) {
@@ -389,6 +392,7 @@ HTomb = (function(HTomb) {
         }
       }
     }
+    console.log("testing4");
     HTomb.Events.reset();
     if (other.events) {
       for (let list in other.events) {
@@ -485,8 +489,8 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
       fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
       fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
-      fetchParse("/saves/things/" + name + "/", args, restoreThings)//,
-      //fetchParse("/saves/other/" + name + "/", args, restoreOther),
+      fetchParse("/saves/things/" + name + "/", args, restoreThings),
+      fetchParse("/saves/other/" + name + "/", args, restoreOther),
     ];
     Promise.all(promises).then(
       function(values) {
