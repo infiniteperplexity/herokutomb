@@ -398,22 +398,27 @@ HTomb = (function(HTomb) {
       next = mainColor + "Feature: ";
       if (square.feature) {
         next+=square.feature.describe({article: "indefinite"});
+        text.push(next);
       }
-      text.push(next);
       next = mainColor + "Task: ";
       if (square.task) {
         next+=square.task.describe();
+        text.push(next);
       }
-      text.
-      push(next);
       next = mainColor + "Cover: ";
-      if (square.cover) {
+      if (square.cover!==HTomb.Covers.NoCover) {
         next+=square.cover.describe();
+        text.push(next);
+      } else if (square.terrain.zview===-1 && below.cover.liquid) {
+        next+=below.cover.describe();
+        next+=" (surface)";
+        text.push(next);
       }
-      text.push(next);
       next = mainColor + "Lighting: ";
-      next+=Math.round(HTomb.World.lit[z][x][y]);
-      text.push(next);
+      if (square.visible) {
+        next+=Math.round(HTomb.World.lit[z][x][y]);
+        text.push(next);
+      }
       text.push(" ");
     }
     if (square.exploredAbove) {
@@ -435,21 +440,23 @@ HTomb = (function(HTomb) {
       next = otherColor + "Feature: ";
       if (above.feature) {
         next+=above.feature.describe({article: "indefinite"});
+        text.push(next);
       }
-      text.push(next);
       next = otherColor + "Task: ";
       if (above.task) {
         next+=above.task.describe();
+        text.push(next);
       }
-      text.push(next);
       next = otherColor + "Cover: ";
-      if (above.cover) {
+      if (above.cover!==HTomb.Covers.NoCover) {
         next+=above.cover.describe();
+        text.push(next);
       }
-      text.push(next);
       next = otherColor + "Lighting: ";
-      next+=Math.round(HTomb.World.lit[z+1][x][y]);
-      text.push(next);
+      if (square.visibleAbove) {
+        next+=Math.round(HTomb.World.lit[z+1][x][y]);
+        text.push(next);
+      }
       text.push(" ");
     }
     if (square.exploredBelow) {
@@ -471,21 +478,23 @@ HTomb = (function(HTomb) {
       next = otherColor + "Feature: ";
       if (below.feature) {
         next+=below.feature.describe({article: "indefinite"});
+        text.push(next);
       }
-      text.push(next);
       next = otherColor + "Task: ";
       if (below.task) {
         next+=below.task.describe();
+        text.push(next);
       }
-      text.push(next);
       next = otherColor + "Cover: ";
-      if (below.cover) {
+      if (below.cover!==HTomb.Covers.NoCover) {
         next+=below.cover.describe();
+        text.push(next);
       }
-      text.push(next);
       next = otherColor + "Lighting: ";
-      next+=Math.round(HTomb.World.lit[z][x][y]);
-      text.push(next);
+      if (square.visibleBelow) {
+        next+=Math.round(HTomb.World.lit[z][x][y]);
+        text.push(next);
+      }
     }
     return text;
   }

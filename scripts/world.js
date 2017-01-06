@@ -67,7 +67,6 @@ HTomb = (function(HTomb) {
     HTomb.World.validate.lighting();
     console.timeEnd("lighting");
   };
-
   // Add void tiles to the boundaries of the level
   HTomb.World.fillTiles = function() {
     for (var x=0; x<LEVELW; x++) {

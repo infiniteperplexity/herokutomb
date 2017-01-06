@@ -33,9 +33,12 @@ HTomb = (function(HTomb) {
   var show = function(x,y,r,v) {
     var visible = HTomb.World.visible;
     var explored = HTomb.World.explored;
+    //!!!Experimental
+    var tiles = HTomb.World.tiles;
     visible[coord(x,y,z0)] = true;
     explored[z0][x][y] = true;
-    if (grid[x][y].zview===+1) {
+    if (tiles[z0+1][x][y].zview===-1) {
+    //if (grid[x][y].zview===+1) {
       explored[z0+1][x][y] = true;
     } else if (grid[x][y].zview===-1) {
       explored[z0-1][x][y] = true;
@@ -66,7 +69,7 @@ HTomb = (function(HTomb) {
       for (let x=1; x<LEVELW-1; x++) {
         for (let y=1; y<LEVELH-1; y++) {
           for (let z=1; z<NLEVELS-1; z++) {
-            HTomb.World.lit[z][x][y] = darkest;
+            HTomb.World.lit[z][x][y] = 0;
           }
         }
       }

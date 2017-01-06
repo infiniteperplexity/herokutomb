@@ -354,7 +354,13 @@ HTomb = (function(HTomb) {
     name: "grass",
     symbol: '"',
     fg: HTomb.Constants.GRASSFG ||"#668844",
-    bg: HTomb.Constants.GRASSBG || "#334422"
+    bg: HTomb.Constants.GRASSBG || "#334422",
+    darken: function() {
+      var bg = ROT.Color.fromString(this.bg);
+      bg = ROT.Color.multiply(bg,[72,128,128]);
+      bg = ROT.Color.toHex(bg);
+      return bg;
+    },
   });
 
   HTomb.Types.defineCover({
