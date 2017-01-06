@@ -50,6 +50,7 @@ HTomb = (function(HTomb) {
             // this is one place we could add the "depedent things concept"
             let things = rslt.join(',');
             things = '['.concat(things,']');
+            console.log(things.substr(0,100));
             resolve(things);
           },
           killif: function() {
@@ -231,7 +232,6 @@ HTomb = (function(HTomb) {
       }
     //}," ");
     });
-    console.log(json.substr(0,100));
     return json;
   };
   // End code for saving games
