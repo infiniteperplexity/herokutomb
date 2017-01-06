@@ -415,22 +415,22 @@ HTomb = (function(HTomb) {
         text.push(next);
       }
       next = mainColor + "Lighting: ";
-      if (square.visible) {
+      if (square.visible || HTomb.Debug.visible) {
         next+=Math.round(HTomb.World.lit[z][x][y]);
         text.push(next);
       }
       text.push(" ");
     }
-    if (square.exploredAbove) {
+    if (square.exploredAbove || HTomb.Debug.explored) {
       next = otherColor + "Above: "+above.terrain.name;
       text.push(next);
       next = otherColor + "Creature: ";
-      if (above.creature && square.visibleAbove) {
+      if (above.creature && (square.visibleAbove || HTomb.Debug.visible)) {
         next+=above.creature.describe({article: "indefinite"});
         text.push(next);
       }
       next = otherColor + "Items: ";
-      if (above.items && square.visibleAbove) {
+      if (above.items && (square.visibleAbove || HTomb.Debug.visible)) {
         for (let i=0; i<above.items.length; i++) {
           next+=above.items.expose(i).describe({article: "indefinite"});
           text.push(next);
@@ -453,22 +453,22 @@ HTomb = (function(HTomb) {
         text.push(next);
       }
       next = otherColor + "Lighting: ";
-      if (square.visibleAbove) {
+      if (square.visibleAbove || HTomb.Debug.visible) {
         next+=Math.round(HTomb.World.lit[z+1][x][y]);
         text.push(next);
       }
       text.push(" ");
     }
-    if (square.exploredBelow) {
+    if (square.exploredBelow || HTomb.Debug.explored) {
       next = otherColor + "Below: "+below.terrain.name;
       text.push(next);
       next = otherColor + "Creature: ";
-      if (below.creature && square.visibleBelow) {
+      if (below.creature && (square.visibleBelow || HTomb.Debug.visible)) {
         next+=below.creature.describe({article: "indefinite"});
         text.push(next);
       }
       next = otherColor + "Items: ";
-      if (below.items && square.visibleBelow) {
+      if (below.items && (square.visibleBelow || HTomb.Debug.visible)) {
         for (let i=0; i<below.items.length; i++) {
           next+=below.items.expose(i).describe({article: "indefinite"});
           text.push(next);
@@ -491,7 +491,7 @@ HTomb = (function(HTomb) {
         text.push(next);
       }
       next = otherColor + "Lighting: ";
-      if (square.visibleBelow) {
+      if (square.visibleBelow || HTomb.Debug.visible) {
         next+=Math.round(HTomb.World.lit[z][x][y]);
         text.push(next);
       }

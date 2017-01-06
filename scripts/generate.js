@@ -368,7 +368,7 @@ timeIt("elevation", function() {
     }
     HTomb.World.validate.clean();
   }
-  function placeMinerals(options) {
+  function placeMineralsSlow(options) {
     options = options || {};
     var template = options.template || "IronOre";
     var p = options.p || 0.01;
@@ -406,6 +406,31 @@ timeIt("elevation", function() {
       });
     }
   }
+  function placeMinerals(options) {
+    options = options || {};
+    var template = options.template || "IronOre";
+    let nodeChance = 0.0005;
+    let bottom = 15;
+    let oreChance = 0.5;
+    function nonsolids(x,y,z) {return HTomb.World.tiles[z][x][y].solid!==true;}
+    for (let z=bottom; z<highest; z++) {
+      for (let i=0; i<LEVELW*LEVELH*nodeChance; i++) {
+        let dx = HTomb.Utils.dice(1,LEVELW-4);
+        let dy = HTomb.Utils.dice(1,LEVELH-4);
+        for (let x=dx-1; x<=dx+1; x++) {
+          for (let y=dy-1; y<=dy+1; y++) {
+            if (HTomb.Tiles.countNeighborsWhere(x,y,z,nonsolids)>0) {
+              continue;
+            } else if (Math.random()<oreChance) {
+              let mineral = HTomb.Things[template]();
+              placement.stack(mineral,x,y,z);
+            }
+          }
+        }
+      }
+    }
+  };
+
   function growPlants(options) {
     options = options || {};
     var template = options.template || "Shrub";
