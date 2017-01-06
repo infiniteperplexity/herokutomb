@@ -61,6 +61,10 @@ HTomb = (function(HTomb) {
       delete HTomb.World.tasks[oldkeys[i]];
     }
     HTomb.World.fillTiles();
+    HTomb.Things.Team({team: "PlayerTeam"});
+    HTomb.Things.Team({team: "DefaultTeam"});
+    HTomb.Things.Team({team: "AnimalTeam"});
+    HTomb.Things.Team({team: "GhoulTeam", enemies: "PlayerTeam"});
     HTomb.World.generators.bestSoFar();
     console.time("lighting");
     HTomb.World.validate.lighting();

@@ -64,7 +64,11 @@ HTomb = (function(HTomb) {
     let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
     let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
     let cycle = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
-    let events = HTomb.Events;
+    let events = {};
+    for (let i=0; i<HTomb.Events.types.length; i++) {
+      events[HTomb.Events.types[i]] = HTomb.Events[HTomb.Events.types[i]];
+    }
+    events = HTomb.Save.stringifyThing(events);
     let other = '{'.concat(
                 '"explored": ', explored, ", ",
                 '"lights": ', lights, ", ",
@@ -73,6 +77,9 @@ HTomb = (function(HTomb) {
                 '}'
     );
     return other;
+  }
+  HTomb.Save.exposeOther = function() {
+    return stringifyOther();
   }
   // returns a function that several rows of stringified tiles
   function stringifyTiles(z1,z2) {
@@ -382,8 +389,11 @@ HTomb = (function(HTomb) {
         }
       }
     }
+    HTomb.Events.reset();
     if (other.events) {
-      HTomb.Events = other.events;
+      for (let list in other.events) {
+        HTomb.Events[list] = other.events[list];
+      }
     }
     for (let i=0; i<saveListeners.length; i++) {
       HTomb.Events.subscribe(savelisteners[i][0],savelisteners[i][1]);

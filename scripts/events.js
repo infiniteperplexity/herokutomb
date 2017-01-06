@@ -41,6 +41,11 @@ HTomb = (function(HTomb) {
       Events[etype].splice(Events[etype].indexOf(listener),1);
     }
   };
+  Events.reset = function() {
+    for (let i=0; i<this.types.length; i++) {
+      delete this[this.types[i]];
+    }
+  }
 
   return HTomb;
 })(HTomb);

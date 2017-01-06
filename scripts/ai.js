@@ -460,10 +460,5 @@ HTomb = (function(HTomb) {
     }
   });
 
-  HTomb.Things.Team({team: "PlayerTeam"});
-  HTomb.Things.Team({team: "DefaultTeam"});
-  HTomb.Things.Team({team: "AnimalTeam"});
-  HTomb.Things.Team({team: "GhoulTeam", enemies: "PlayerTeam"});
-
   return HTomb;
 })(HTomb);

@@ -320,7 +320,6 @@ HTomb = (function(HTomb) {
     square.creature = HTomb.World.creatures[crd];
     square.items = HTomb.World.items[crd];
     square.feature = HTomb.World.features[crd];
-    square.portals = HTomb.World.portals[crd];
     square.task = HTomb.World.tasks[crd];
     square.cover = HTomb.World.covers[z][x][y];
     square.explored = HTomb.World.explored[z][x][y];
