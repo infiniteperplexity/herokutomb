@@ -372,9 +372,7 @@ HTomb = (function(HTomb) {
   }
 
   function restoreOther(json) {
-    console.log("testing 1");
     let other = JSON.parse(json);
-    console.log("testing2");
     fillGrid3dFrom(other.explored, HTomb.World.explored);
     fillListFrom(other.lights, HTomb.World.lights);
     HTomb.Time.dailyCycle.turn = other.cycle.turn;
@@ -382,10 +380,9 @@ HTomb = (function(HTomb) {
     HTomb.Time.dailyCycle.hour = other.cycle.hour;
     HTomb.Time.dailyCycle.day = other.cycle.day;
     let saveListeners = [];
-    console.log("testing3");
     for (let i=0; i<HTomb.Events.types.length; i++) {
       let type = HTomb.Events.types[i];
-      for (let j=0; i<HTomb.Events[type].length; j++) {
+      for (let j=0; j<HTomb.Events[type].length; j++) {
         let l = HTomb.Events[type][j];
         if (l.thingId===undefined) {
           saveListeners.push([l,type]);
