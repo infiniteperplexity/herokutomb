@@ -50,7 +50,7 @@ HTomb = (function(HTomb) {
             // this is one place we could add the "depedent things concept"
             let things = rslt.join(',');
             things = '['.concat(things,']');
-            console.log(things.substr(0,100));
+            //console.log(things.substr(0,100));
             resolve(things);
           },
           killif: function() {
@@ -286,19 +286,17 @@ HTomb = (function(HTomb) {
             dummy[p] = val[p];
           }
         }
-        val.swappedWith = dummy;
         return dummy;
+        if (val.template==="Team") {
+          console.log(dummy);
+        }
       }
       return val;
     });
     // Swap thingIDs for things
     for (let i=0; i<tids.length; i++) {
       let tid = tids[i];
-      if (tid[0].swappedWith) {
-        tid[0].swappedWith[tid[1]] = things[tid[2].tid];
-      } else {
-        tid[0][tid[1]] = things[tid[2].tid];
-      }
+      tid[0][tid[1]] = things[tid[2].tid];
       if (tid[1]==="player") {
         player = things[tid[2].tid];
       }
