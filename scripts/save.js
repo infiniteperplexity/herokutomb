@@ -213,9 +213,9 @@ HTomb = (function(HTomb) {
         return val.stringify();
         // if it's from the global things table, stringify it normally
       } else if (topLevel===true && val.template!==undefined) {
-        if (val.template==="Team") {
-          console.log(val);
-        }
+        //if (val.template==="Team") {
+        //  console.log(val);
+        //}
         topLevel = false;
         let dummy = {};
         let template = HTomb.Things.templates[val.template];
@@ -263,34 +263,6 @@ HTomb = (function(HTomb) {
     };
     xhttp.open("GET", file, true);
     xhttp.send();
-  }
-
-  HTomb.Save.restoreThing = function (json) {
-    let obj = JSON.parse(json, function (key, val) {
-      if (val===null) {
-        return null;
-      // remove this once parsing is corrected
-      } else if (key==="heldby" && val==="i") {
-        // revive a reference to the global items list
-        return HTomb.World.items;
-      } else if (val.Type!==undefined) {
-        // should not require tracking swaps
-        return HTomb.Types.templates[val.Type];
-      } else if (val.tid!==undefined) {
-        return {tid: val.tid};
-      } else if (val.template) {
-        let template = HTomb.Things.templates[val.template];
-        let dummy = Object.create(template);
-        for (let p in val) {
-          if (p!=="template" || val[p]!==template[p]) {
-            dummy[p] = val[p];
-          }
-        }
-        return dummy;
-      }
-      return val;
-    });
-    return obj;
   }
 
   function restoreThings(json) {
@@ -549,7 +521,7 @@ HTomb = (function(HTomb) {
             return;
           }
         }
-        //finalSwap();
+        finalSwap();
         HTomb.Save.currentGame = name;
         HTomb.World.validate.reset();
         HTomb.World.validate.all();
