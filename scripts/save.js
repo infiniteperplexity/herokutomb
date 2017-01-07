@@ -50,7 +50,7 @@ HTomb = (function(HTomb) {
             // this is one place we could add the "depedent things concept"
             let things = rslt.join(',');
             things = '['.concat(things,']');
-            //console.log(things.substr(0,100));
+            console.log(things.substr(0,500));
             resolve(things);
           },
           killif: function() {
@@ -210,9 +210,13 @@ HTomb = (function(HTomb) {
       }
       // if it has special instructions, use those to stringify
       if (val.stringify) {
+        console.log("do we use this at all?");
         return val.stringify();
         // if it's from the global things table, stringify it normally
       } else if (topLevel===true && val.template!==undefined) {
+        if (val.template==="Team") {
+          console.log(val);
+        }
         topLevel = false;
         let dummy = {};
         let template = HTomb.Things.templates[val.template];
