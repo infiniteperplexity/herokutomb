@@ -527,8 +527,8 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
       fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
       fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
-      fetchParse("/saves/things/" + name + "/", args, restoreThings),
-      fetchParse("/saves/other/" + name + "/", args, restoreOther)
+      fetchParse("/saves/things/" + name + "/", args, restoreThings)//,
+      //fetchParse("/saves/other/" + name + "/", args, restoreOther)
     ];
     Promise.all(promises).then(
       function(values) {
@@ -541,7 +541,7 @@ HTomb = (function(HTomb) {
             return;
           }
         }
-        finalSwap();
+        //finalSwap();
         HTomb.Save.currentGame = name;
         HTomb.World.validate.reset();
         HTomb.World.validate.all();
