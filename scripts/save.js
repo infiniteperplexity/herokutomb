@@ -210,7 +210,6 @@ HTomb = (function(HTomb) {
       }
       // if it has special instructions, use those to stringify
       if (val.stringify) {
-        console.log("do we use this at all?");
         return val.stringify();
         // if it's from the global things table, stringify it normally
       } else if (topLevel===true && val.template!==undefined) {
