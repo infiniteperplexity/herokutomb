@@ -453,8 +453,6 @@ HTomb = (function(HTomb) {
       let type = HTomb.Events.types[i];
       for (let j=0; j<HTomb.Events[type].length; j++) {
         if (HTomb.Events[type][j].tid!==undefined) {
-          console.log(HTomb.Events[type][j]);
-          console.log(HTomb.World.things[HTomb.Events[type][j].tid]);
           HTomb.Events[type][j] = HTomb.World.things[HTomb.Events[type][j].tid]
         }
       }
@@ -530,7 +528,7 @@ HTomb = (function(HTomb) {
       fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
       fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
       fetchParse("/saves/things/" + name + "/", args, restoreThings),
-      fetchParse("/saves/other/" + name + "/", args, restoreOther),
+      fetchParse("/saves/other/" + name + "/", args, restoreOther)
     ];
     Promise.all(promises).then(
       function(values) {
