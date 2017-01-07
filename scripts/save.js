@@ -117,6 +117,7 @@ HTomb = (function(HTomb) {
     for (let i=0; i<HTomb.World.things.length; i++) {
       HTomb.World.things[i].thingId = i;
     }
+    console.log(HTomb.World.things[0]);
     let promises = [
       fetchText(stringifyTiles(0,7),"/saves/tiles0/"+name+"/",args),
       fetchText(stringifyTiles(8,15),"/saves/tiles8/"+name+"/",args),
@@ -290,6 +291,7 @@ HTomb = (function(HTomb) {
   }
 
   function restoreThings(json) {
+    console.log(json.substr(0,500));
     let tids = [];
     let player = null;
     let things = JSON.parse(json, function (key, val) {
