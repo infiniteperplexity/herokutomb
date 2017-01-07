@@ -304,7 +304,7 @@ HTomb = (function(HTomb) {
         return HTomb.Types.templates[val.Type];
       } else if (val.tid!==undefined) {
         tids.push([this,key,val]);
-        return val;
+        return {tid: val.tid};
       } else if (val.template) {
         let template = HTomb.Things.templates[val.template];
         let dummy = Object.create(template);
