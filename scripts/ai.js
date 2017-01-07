@@ -240,7 +240,7 @@ HTomb = (function(HTomb) {
     goals: null,
     fallback: null,
     isHostile: function(thing) {
-      if (thing.ai===undefined || thing.ai.team===undefined || this.team===undefined) {
+      if (thing.ai===undefined || thing.ai.team===null || this.team===null) {
         return false;
       } else {
         return this.team.isHostile(thing.ai.team);
