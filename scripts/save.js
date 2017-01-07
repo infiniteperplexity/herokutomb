@@ -220,7 +220,7 @@ HTomb = (function(HTomb) {
             dummy[p] = val[p];
           }
         }
-        if (dummy.thingId) {
+        if (dummy.thingId!==undefined) {
           delete dummy.thingId;
         }
         return dummy;
@@ -286,10 +286,10 @@ HTomb = (function(HTomb) {
             dummy[p] = val[p];
           }
         }
-        return dummy;
         if (val.template==="Team") {
           console.log(dummy);
         }
+        return dummy;
       }
       return val;
     });
