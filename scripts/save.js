@@ -211,7 +211,7 @@ HTomb = (function(HTomb) {
       if (val.stringify) {
         return val.stringify();
         // if it's from the global things table, stringify it normally
-      } else if (topLevel===true && val.thingId!==undefined) {
+      } else if (topLevel===true && val.template!==undefined) {
         topLevel = false;
         let dummy = {};
         let template = HTomb.Things.templates[val.template];
@@ -225,7 +225,7 @@ HTomb = (function(HTomb) {
         }
         return dummy;
       // if it's on the global things table, stringify its ID
-      } else if (val.thingId!==undefined) {
+      } else if (val.template!==undefined) {
         return {tid: val.thingId};
       } else {
         return val;
@@ -261,9 +261,36 @@ HTomb = (function(HTomb) {
     xhttp.send();
   }
 
+  HTomb.Save.restoreThing = function (json) {
+    let obj = JSON.parse(json, function (key, val) {
+      if (val===null) {
+        return null;
+      // remove this once parsing is corrected
+      } else if (key==="heldby" && val==="i") {
+        // revive a reference to the global items list
+        return HTomb.World.items;
+      } else if (val.Type!==undefined) {
+        // should not require tracking swaps
+        return HTomb.Types.templates[val.Type];
+      } else if (val.tid!==undefined) {
+        return {tid: val.tid};
+      } else if (val.template) {
+        let template = HTomb.Things.templates[val.template];
+        let dummy = Object.create(template);
+        for (let p in val) {
+          if (p!=="template" || val[p]!==template[p]) {
+            dummy[p] = val[p];
+          }
+        }
+        return dummy;
+      }
+      return val;
+    });
+    return obj;
+  }
+
   function restoreThings(json) {
     let tids = [];
-    let icontains = [];
     let player = null;
     let things = JSON.parse(json, function (key, val) {
       if (val===null) {
@@ -285,9 +312,6 @@ HTomb = (function(HTomb) {
           if (p!=="template" || val[p]!==template[p]) {
             dummy[p] = val[p];
           }
-        }
-        if (val.template==="Team") {
-          console.log(dummy);
         }
         return dummy;
       }
