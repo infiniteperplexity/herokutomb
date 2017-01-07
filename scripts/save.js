@@ -453,6 +453,8 @@ HTomb = (function(HTomb) {
       let type = HTomb.Events.types[i];
       for (let j=0; j<HTomb.Events[type].length; j++) {
         if (HTomb.Events[type][j].tid!==undefined) {
+          console.log(HTomb.Events[type][j]);
+          console.log(HTomb.World.things[HTomb.Events[type][j].tid]);
           HTomb.Events[type][j] = HTomb.World.things[HTomb.Events[type][j].tid]
         }
       }
