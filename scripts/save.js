@@ -304,7 +304,7 @@ HTomb = (function(HTomb) {
         return HTomb.Types.templates[val.Type];
       } else if (val.tid!==undefined) {
         tids.push([this,key,val]);
-        return {tid: val.tid};
+        return val;
       } else if (val.template) {
         let template = HTomb.Things.templates[val.template];
         let dummy = Object.create(template);
@@ -313,6 +313,7 @@ HTomb = (function(HTomb) {
             dummy[p] = val[p];
           }
         }
+        val.swappedWith = dummy;
         return dummy;
       }
       return val;
@@ -320,7 +321,11 @@ HTomb = (function(HTomb) {
     // Swap thingIDs for things
     for (let i=0; i<tids.length; i++) {
       let tid = tids[i];
-      tid[0][tid[1]] = things[tid[2].tid];
+      if (tid[0].swappedWith) {
+        tid[0].swappedWith[tid[1]] = things[tid[2].tid];
+      } else {
+        tid[0][tid[1]] = things[tid[2].tid];
+      }
       if (tid[1]==="player") {
         player = things[tid[2].tid];
       }
