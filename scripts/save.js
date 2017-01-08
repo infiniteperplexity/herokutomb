@@ -291,9 +291,6 @@ HTomb = (function(HTomb) {
           }
         }
         val.swappedWith = dummy;
-        if (val.team==="PlayerTeam") {
-          console.log(dummy);
-        }
         return dummy;
       }
       return val;

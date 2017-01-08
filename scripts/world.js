@@ -61,11 +61,8 @@ HTomb = (function(HTomb) {
       delete HTomb.World.tasks[oldkeys[i]];
     }
     HTomb.World.fillTiles();
-    HTomb.Things.Team({team: "PlayerTeam"});
-    HTomb.Things.Team({team: "DefaultTeam"});
-    HTomb.Things.Team({team: "AnimalTeam"});
-    HTomb.Things.Team({team: "GhoulTeam", enemies: "PlayerTeam"});
     HTomb.World.generators.bestSoFar();
+    HTomb.World.validate.teams();
     console.time("lighting");
     HTomb.World.validate.lighting();
     console.timeEnd("lighting");
@@ -97,6 +94,21 @@ HTomb = (function(HTomb) {
     lowestExposed: NLEVELS-2,
     trackNesting: 0
   };
+  HTomb.World.validate.teams = function() {
+    let teams = HTomb.Types.templates.Team.types;
+    let types = {};
+    for (let i=0; i< teams.length; i++) {
+      teams[i].members = [];
+      types[teams[i].template] = teams[i];
+    }
+    for (let c in HTomb.World.creatures) {
+      let cr = HTomb.World.creatures[c];
+      if (cr.ai && cr.ai.team) {
+        types[cr.ai.team].members.push(cr);
+      }
+    }
+    HTomb.Types.templates.Team.teams = types;
+  };
   HTomb.World.validate.reset = function() {
     this.dirty = {};
     this.dirtyColumns = {};
@@ -109,7 +121,7 @@ HTomb = (function(HTomb) {
         HTomb.World.exposed[x][y] = NLEVELS-2;
       }
     }
-  }
+  };
   HTomb.World.validate.clean = function() {
     this.trackNesting+=1;
     if (this.trackNesting>1) {
@@ -180,6 +192,7 @@ HTomb = (function(HTomb) {
         }
       }
     }
+    HTomb.World.validate.teams();
     HTomb.World.validate.lighting();
   };
   HTomb.World.validate.dirtify = function(x,y,z) {
