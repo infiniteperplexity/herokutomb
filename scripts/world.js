@@ -190,6 +190,7 @@ HTomb = (function(HTomb) {
         for (var z=1; z<NLEVELS-1; z++) {
           this.square(x,y,z);
         }
+        this.column(x,y);
       }
     }
     HTomb.World.validate.teams();
