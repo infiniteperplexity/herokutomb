@@ -229,7 +229,7 @@ HTomb = (function(HTomb) {
         }
         return dummy;
       // if it's on the global things table, stringify its ID
-      } else if (val.template!==undefined) {
+      } else if (val.thingId!==undefined) {
         return {tid: val.thingId};
       } else {
         return val;
@@ -396,7 +396,8 @@ HTomb = (function(HTomb) {
       let type = HTomb.Events.types[i];
       for (let j=0; j<HTomb.Events[type].length; j++) {
         let l = HTomb.Events[type][j];
-        if (l.template===undefined) {
+        // everything except for Things
+        if (HTomb.Types.templates[l.template]===undefined) {
           saveListeners.push([l,type]);
         }
       }
