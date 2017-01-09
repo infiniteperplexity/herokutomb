@@ -260,15 +260,19 @@ HTomb = (function(HTomb) {
       }
       HTomb.Events.subscribe(this,"Destroy");
       this.fallback = HTomb.Routines.WanderAimlessly;
-      HTomb.World.validate.teams();
+      this.setTeam(this.team);
     },
     setTeam: function(team) {
       this.team = team;
-      HTomb.World.validate.teams();
+      let myTeam = HTomb.Types.templates.Team.teams[team];
+      if (myTeam.members.indexOf(this.entity)===-1) {
+        myTeam.members.push(this.entity);
+      }
     },
     onDespawn: function() {
-      if (this.team && this.team.members && this.team.members.indexOf(this.entity)!==-1) {
-        this.team.members.splice(this.team.members.indexOf(this.entity),1);
+      let myTeam = HTomb.Types.templates.Team.teams[this.team];
+      if (myTeam.members.indexOf(this.entity)!==-1) {
+        myTeam.members.splice(myTeam.members.indexOf(this.entity),1);
       }
     },
     onDestroy: function(event) {
@@ -425,6 +429,7 @@ HTomb = (function(HTomb) {
       this.enemies = this.enemies || [];
       this.allies = this.allies || [];
       HTomb.Events.subscribe(this,"Destroy");
+      HTomb.Types.templates.Team.teams[this.template] = this;
     },
     onDestroy: function(event) {
       if (this.members.indexOf(event.entity)>-1) {
