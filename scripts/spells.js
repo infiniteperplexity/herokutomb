@@ -49,8 +49,6 @@ HTomb = (function(HTomb) {
               zombie = HTomb.Things.Zombie();
               zombie.place(x,y,z);
               HTomb.Things.Minion().addToEntity(zombie);
-              zombie.minion.setMaster(caster.entity);
-              zombie.ai.setTeam(caster.entity.ai.team);
               caster.entity.master.addMinion(zombie);
               zombie.ai.acted = true;
               HTomb.GUI.sensoryEvent("The corpse stirs and rises...",x,y,z);
@@ -71,8 +69,6 @@ HTomb = (function(HTomb) {
               zombie = HTomb.Things.Zombie();
               zombie.place(x,y,z-1);
               HTomb.Things.Minion().addToEntity(zombie);
-              zombie.minion.setMaster(caster.entity);
-              zombie.ai.setTeam(caster.entity.ai.team);
               caster.entity.master.addMinion(zombie);
               let task = HTomb.Things.ZombieEmergeTask({assigner: caster.entity}).place(x,y,z);
               task.task.assignTo(zombie);

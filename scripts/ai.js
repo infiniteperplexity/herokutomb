@@ -265,6 +265,9 @@ HTomb = (function(HTomb) {
     setTeam: function(team) {
       this.team = team;
       let myTeam = HTomb.Types.templates.Team.teams[team];
+      if (myTeam===undefined) {
+        console.log(team);
+      }
       if (myTeam.members.indexOf(this.entity)===-1) {
         myTeam.members.push(this.entity);
       }

@@ -192,7 +192,7 @@ HTomb = (function(HTomb) {
     master: null,
     setMaster: function(cr) {
       this.master = cr;
-      this.entity.ai.setTeam(cr.ai.team.team);
+      this.entity.ai.setTeam(cr.ai.team);
       HTomb.Events.subscribe(this,"Destroy");
     },
     onDestroy: function(event) {
@@ -247,6 +247,7 @@ HTomb = (function(HTomb) {
     },
     addMinion: function(cr) {
       this.minions.push(cr);
+      cr.minion.setMaster(this.entity);
     },
     removeMinion: function(cr) {
       this.minions.splice(this.minions.indexOf(cr,1));
