@@ -352,7 +352,7 @@ HTomb = (function(HTomb) {
       if (thing.item) {
         if (x!==null && y!==null && z!==null) {
           // should I do this manually instead of using thing.place?
-          thing.place(x,y,z);
+          //thing.place(x,y,z);
         }
       }
       // Anything that refers to entities should be re
