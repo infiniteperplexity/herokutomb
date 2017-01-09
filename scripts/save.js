@@ -355,6 +355,11 @@ HTomb = (function(HTomb) {
           thing.place(x,y,z);
         }
       }
+      for (let i=0; i<HTomb.World.things.length; i++) {
+        if (HTomb.World.things[i].template==="PointLight") {
+          console.log("point light at " + i);
+        }
+      }
       // Anything that refers to entities should be re
     }
   }
@@ -561,13 +566,7 @@ HTomb = (function(HTomb) {
         toList.pop();
       }
       for (let i=0; i<fromList.length; i++) {
-        if (fromList[i].template==="PointLight") {
-          console.log("point light at " + i);
-        }
         toList.push(callb(fromList[i]));
-        if (fromList[i].template==="PointLight") {
-          console.log("end of to list is " + (toList.length-1));
-        }
       }
     // if fromList is an associative array
     } else {
