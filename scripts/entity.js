@@ -305,7 +305,7 @@ HTomb = (function(HTomb) {
         return false;
       }
       let parent = this.container.heldby;
-      if (parent===HTomb.World.items) {
+      if (typeof(parent)==="number") {
         return true;
       } else {
         return false;
