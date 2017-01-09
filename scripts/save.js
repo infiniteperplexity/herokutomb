@@ -561,13 +561,18 @@ HTomb = (function(HTomb) {
         toList.pop();
       }
       for (let i=0; i<fromList.length; i++) {
+        if (fromList[i].template==="PointLight") {
+          console.log("point light at " + i);
+        }
         toList.push(callb(fromList[i]));
       }
     // if fromList is an associative array
     } else {
       for (let t in toList) {
-        toList[t] = null;
-        //delete toList[t];
+        //wait...does this make any sense?
+        //toList[t] = null;
+        // let's try deleting instead
+        delete toList[t];
       }
       for (let f in fromList) {
         toList[f] = callb(fromList[f]);
@@ -605,4 +610,18 @@ function examine() {
     }
   }
 }
+*/
+/*
+for (let i=0; i<HTomb.World.things.length; i++) {
+  if (HTomb.World.things[i].template==="PointLight") {
+    console.log(i);
+  }
+}
+for (let i=0; i<HTomb.World.things.length; i++) {
+  if (HTomb.World.things[i]===null) {
+    console.log(i);
+  }
+}
+128136 - where the light actually is
+128141 - the thing that actually ended up in there
 */
