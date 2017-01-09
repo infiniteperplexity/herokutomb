@@ -233,7 +233,7 @@ HTomb = (function(HTomb) {
     text.push("Unassigned Tasks:");
     for (let k=0; k<HTomb.Player.master.taskList.length; k++) {
       var task = HTomb.Player.master.taskList[k];
-      if (task.assignee===null) {
+      if (task.task.assignee===null) {
         s = "  "+task.describe();
         if (task.x>=0) {
           s+=" at "+task.x+", "+task.y+", "+task.z;
@@ -490,7 +490,7 @@ HTomb = (function(HTomb) {
     if (c.worker) {
       let b = c.worker;
       if (b.task) {
-        let s = "Task: " + b.task.describe();
+        let s = "Task: " + b.task.entity.describe();
         if (b.task.entity.x>=0) {
           s+=" at " + b.task.entity.x + ", "+b.task.entity.y+", "+b.task.entity.z;
         }

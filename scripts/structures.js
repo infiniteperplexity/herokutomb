@@ -540,6 +540,7 @@ HTomb = (function(HTomb) {
       let z = this.entity.z;
       if (this.validTile(x,y,z)!==true) {
         this.cancel();
+        return;
       }
       //do I want to make demolishing unowned features the default?
       let f = HTomb.World.features[coord(x,y,z)];
