@@ -231,12 +231,12 @@ HTomb = (function(HTomb) {
           return val;
         }
       });
+      return json;
     } catch(e) {
       console.log("messed up stringifying");
       console.log(obj);
       throw e;
     }
-    return json;
   };
   // End code for saving games
 
