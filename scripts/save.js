@@ -355,12 +355,12 @@ HTomb = (function(HTomb) {
           thing.place(x,y,z);
         }
       }
-      for (let i=0; i<HTomb.World.things.length; i++) {
-        if (HTomb.World.things[i].template==="PointLight") {
-          console.log("point light at " + i);
-        }
-      }
       // Anything that refers to entities should be re
+    }
+    for (let i=0; i<HTomb.World.things.length; i++) {
+      if (HTomb.World.things[i].template==="PointLight") {
+        console.log("point light at " + i);
+      }
     }
   }
 
