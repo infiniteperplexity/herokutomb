@@ -354,6 +354,9 @@ HTomb = (function(HTomb) {
       pile.push(this.entity);
       if (pile.length>0) {
         HTomb.World.items[c] = pile;
+      } else {
+        console.log("despawning stupid pile");
+        pile.despawn();
       }
     },
     onRemove: function() {
@@ -363,9 +366,6 @@ HTomb = (function(HTomb) {
       if (pile) {
         if (pile.contains(this.entity)) {
           pile.remove(this.entity);
-        }
-        if (pile.length===0) {
-          delete HTomb.World.items[c];
         }
       }
     },
@@ -391,72 +391,6 @@ HTomb = (function(HTomb) {
     }
   });
 
-  HTomb.Things.defineBehavior({
-    template: "Feature",
-    name: "feature",
-    yields: null,
-    integrity: null,
-    stackedFeatures: null,
-    onDefine: function(args) {
-      if (args.craftable===true) {
-        let item = HTomb.Utils.copy(args);
-        item.template = args.template+"Item";
-        item.tags = ["Fixtures"];
-        delete item.behaviors;
-        HTomb.Things.defineItem(item);
-        let template = HTomb.Things.templates[args.template];
-        // overwrite the item's ingredients
-        template.ingredients = {};
-        template.ingredients[args.template+"Item"] = 1;
-      }
-    },
-    onPlace: function(x,y,z) {
-      let c = coord(x,y,z);
-      let f = HTomb.World.features[c];
-      if (f) {
-        throw new Error("unhandled feature conflict!");
-      }
-      HTomb.World.features[c] = this.entity;
-    },
-    onRemove: function() {
-      let c = coord(this.entity.x,this.entity.y,this.entity.z);
-      if (HTomb.World.features[c]) {
-        delete HTomb.World.features[c];
-      }
-    },
-    dismantle: function(optionalTask) {
-      if (this.integrity===null) {
-        this.integrity=5;
-      }
-      this.integrity-=1;
-      if (this.integrity<=0) {
-        this.harvest();
-      }
-    },
-    harvest: function() {
-      if (this.yields!==null) {
-        var x = this.entity.x;
-        var y = this.entity.y;
-        var z = this.entity.z;
-        for (var template in this.yields) {
-          var n = HTomb.Utils.diceUntil(2,2);
-          if (this.yields[template].nozero) {
-            n = Math.max(n,1);
-          }
-          for (var i=0; i<n; i++) {
-            var thing = HTomb.Things[template]().place(x,y,z);
-            thing.item.setOwner(HTomb.Player);
-          }
-        }
-      }
-      this.entity.destroy();
-    }
-  });
-
-  HTomb.Things.defineByProxy("Creature","Entity");
-  HTomb.Things.defineByProxy("Item","Entity");
-  HTomb.Things.defineByProxy("Feature","Entity");
-
   HTomb.Things.define({
     template: "Container",
     name: "container",
@@ -475,30 +409,6 @@ HTomb = (function(HTomb) {
       this.items = [];
       return this;
     },
-    //absorbStack: function(item) {
-    //  var one;
-    //  var two;
-    //  for (let i=0; i<this.items.length; i++) {
-    //    if ((this.items[i].template===item.template) && (this.items[i].item.n<this.items[i].item.maxn)) {
-    //      one = item.item.n;
-    //      two = this.items[i].item.n;
-    //      if ((one+two)>item.item.maxn) {
-    //        this.items[i].item.n = item.item.maxn;
-    //        item.item.n = one+two-item.item.maxn;
-    //      } else {
-    //        this.items[i].item.n = one+two;
-    //        item.item.n = 0;
-    //        item.despawn();
-    //      }
-    //    }
-    //  }
-    //  if (item.item.n>0) {
-    //    this.items.push(item);
-    //    item.item.container = this;
-    //  } else {
-    //    item.despawn();
-    //  }
-    //},
     absorbStack: function(item) {
       //let n = item.item.n;
       let n = Math.min(item.item.n,this.canFit(item));
@@ -660,7 +570,8 @@ HTomb = (function(HTomb) {
       }
       if (HTomb.Things.templates[i_or_t].behaviors.Item.stackable!==true) {
         var first = this.getFirst(i_or_t);
-        return this.remove(first);
+        this.remove(first);
+        return (first);
       } else {
         var last = this.getLast(i_or_t);
         if (last.item.n<=n) {
@@ -680,7 +591,13 @@ HTomb = (function(HTomb) {
         item.item.container = null;
         this.items.splice(indx,1);
         // should this only happen if it's on the ground?
-        item.remove();
+        if (typeof(this.heldby)==="number") {
+          item.remove();
+          if (this.items.length===0) {
+            delete HTomb.World.items[this.heldby];
+            this.despawn();
+          }
+        }
         return item;
       }
     },
@@ -759,6 +676,72 @@ HTomb = (function(HTomb) {
     }
   });
   Object.defineProperty(HTomb.Things.templates.Container,"length",{get: function() {return this.items.length;}});
+
+  HTomb.Things.defineBehavior({
+    template: "Feature",
+    name: "feature",
+    yields: null,
+    integrity: null,
+    stackedFeatures: null,
+    onDefine: function(args) {
+      if (args.craftable===true) {
+        let item = HTomb.Utils.copy(args);
+        item.template = args.template+"Item";
+        item.tags = ["Fixtures"];
+        delete item.behaviors;
+        HTomb.Things.defineItem(item);
+        let template = HTomb.Things.templates[args.template];
+        // overwrite the item's ingredients
+        template.ingredients = {};
+        template.ingredients[args.template+"Item"] = 1;
+      }
+    },
+    onPlace: function(x,y,z) {
+      let c = coord(x,y,z);
+      let f = HTomb.World.features[c];
+      if (f) {
+        throw new Error("unhandled feature conflict!");
+      }
+      HTomb.World.features[c] = this.entity;
+    },
+    onRemove: function() {
+      let c = coord(this.entity.x,this.entity.y,this.entity.z);
+      if (HTomb.World.features[c]) {
+        delete HTomb.World.features[c];
+      }
+    },
+    dismantle: function(optionalTask) {
+      if (this.integrity===null) {
+        this.integrity=5;
+      }
+      this.integrity-=1;
+      if (this.integrity<=0) {
+        this.harvest();
+      }
+    },
+    harvest: function() {
+      if (this.yields!==null) {
+        var x = this.entity.x;
+        var y = this.entity.y;
+        var z = this.entity.z;
+        for (var template in this.yields) {
+          var n = HTomb.Utils.diceUntil(2,2);
+          if (this.yields[template].nozero) {
+            n = Math.max(n,1);
+          }
+          for (var i=0; i<n; i++) {
+            var thing = HTomb.Things[template]().place(x,y,z);
+            thing.item.setOwner(HTomb.Player);
+          }
+        }
+      }
+      this.entity.destroy();
+    }
+  });
+
+  HTomb.Things.defineByProxy("Creature","Entity");
+  HTomb.Things.defineByProxy("Item","Entity");
+  HTomb.Things.defineByProxy("Feature","Entity");
 
 return HTomb;
 })(HTomb);
