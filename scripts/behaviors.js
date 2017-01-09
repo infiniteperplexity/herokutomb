@@ -154,6 +154,11 @@ HTomb = (function(HTomb) {
       }
       return true;
     },
+    onDespawn: function() {
+      if (this.items) {
+        this.items.despawn();
+      }
+    },
     canFindAll: function(ingredients) {
       if (!this.entity.minion || !this.entity.minion.master || !this.entity.minion.master.master) {
         return false;
