@@ -32,7 +32,8 @@ HTomb = (function(HTomb) {
     return new Promise(function(resolve, reject) {
       batchMap(
         function(v, i, a) {
-          return HTomb.Save.stringifyThing(v, true);
+          let thing = HTomb.Save.stringifyThing(v, true);
+          return thing;
         },
         HTomb.World.things,
         {
@@ -197,38 +198,44 @@ HTomb = (function(HTomb) {
   }
   // Custom JSON encoding
   HTomb.Save.stringifyThing = function(obj, topLevel) {
-    let json = JSON.stringify(obj, function(key, val) {
-      if (val===undefined) {
-        //console.log("why is val undefined?");
-        return undefined;
-      } else if (val===null) {
-        //console.log("could I just do null normally?");
-        return null;
-      }
-      // if it has special instructions, use those to stringify
-      else if (val.stringify) {
-        return val.stringify();
-        // if it's from the global things table, stringify it normally
-      } else if (topLevel===true && val.template!==undefined) {
-        topLevel = false;
-        let dummy = {};
-        let template = HTomb.Things.templates[val.template];
-        for (let p in val) {
-          if (p==="template" || val[p]!==template[p]) {
-            dummy[p] = val[p];
+    try {
+      let json = JSON.stringify(obj, function(key, val) {
+        if (val===undefined) {
+          //console.log("why is val undefined?");
+          return undefined;
+        } else if (val===null) {
+          //console.log("could I just do null normally?");
+          return null;
+        }
+        // if it has special instructions, use those to stringify
+        else if (val.stringify) {
+          return val.stringify();
+          // if it's from the global things table, stringify it normally
+        } else if (topLevel===true && val.template!==undefined) {
+          topLevel = false;
+          let dummy = {};
+          let template = HTomb.Things.templates[val.template];
+          for (let p in val) {
+            if (p==="template" || val[p]!==template[p]) {
+              dummy[p] = val[p];
+            }
           }
+          if (dummy.thingId!==undefined) {
+            delete dummy.thingId;
+          }
+          return dummy;
+        // if it's on the global things table, stringify its ID
+        } else if (val.thingId!==undefined) {
+          return {tid: val.thingId};
+        } else {
+          return val;
         }
-        if (dummy.thingId!==undefined) {
-          delete dummy.thingId;
-        }
-        return dummy;
-      // if it's on the global things table, stringify its ID
-      } else if (val.thingId!==undefined) {
-        return {tid: val.thingId};
-      } else {
-        return val;
-      }
-    });
+      });
+    } catch(e) {
+      console.log("messed up stringifying");
+      console.log(obj);
+      throw e;
+    }
     return json;
   };
   // End code for saving games
