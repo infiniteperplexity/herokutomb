@@ -386,6 +386,7 @@ HTomb = (function(HTomb) {
   function restoreOther(json) {
     let other = JSON.parse(json);
     fillGrid3dFrom(other.explored, HTomb.World.explored);
+    console.log(other.lights);
     fillListFrom(other.lights, HTomb.World.lights);
     HTomb.Time.dailyCycle.turn = other.cycle.turn;
     HTomb.Time.dailyCycle.minute = other.cycle.minute;
