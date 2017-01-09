@@ -565,6 +565,9 @@ HTomb = (function(HTomb) {
           console.log("point light at " + i);
         }
         toList.push(callb(fromList[i]));
+        if (fromList[i].template==="PointLight") {
+          console.log("end of to list is " + (toList.length-1));
+        }
       }
     // if fromList is an associative array
     } else {
