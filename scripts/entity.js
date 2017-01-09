@@ -350,7 +350,7 @@ HTomb = (function(HTomb) {
     },
     onPlace: function(x,y,z) {
       let c = coord(x,y,z);
-      var pile = HTomb.World.items[c] || HTomb.Things.Container({heldby: HTomb.World.items});
+      var pile = HTomb.World.items[c] || HTomb.Things.Container({heldby: c});
       pile.push(this.entity);
       if (pile.length>0) {
         HTomb.World.items[c] = pile;

@@ -64,9 +64,6 @@ HTomb = (function(HTomb) {
   function stringifyOther() {
     let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
     let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
-    console.log("look at the lights");
-    console.log(lights);
-    console.log(HTomb.World.lights);
     let cycle = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
     let events = {};
     for (let i=0; i<HTomb.Events.types.length; i++) {
@@ -207,18 +204,12 @@ HTomb = (function(HTomb) {
       } else if (val===null) {
         //console.log("could I just do null normally?");
         return null;
-      } else if (key==="heldby" && val===HTomb.World.items) {
-        // definitely do not stringify the global items list
-        return "i";
       }
       // if it has special instructions, use those to stringify
-      if (val.stringify) {
+      else if (val.stringify) {
         return val.stringify();
         // if it's from the global things table, stringify it normally
       } else if (topLevel===true && val.template!==undefined) {
-        //if (val.template==="Team") {
-        //  console.log(val);
-        //}
         topLevel = false;
         let dummy = {};
         let template = HTomb.Things.templates[val.template];
@@ -237,7 +228,6 @@ HTomb = (function(HTomb) {
       } else {
         return val;
       }
-    //}," ");
     });
     return json;
   };
@@ -335,9 +325,16 @@ HTomb = (function(HTomb) {
     }
     for (let t = 0; t<things.length; t++) {
       let thing = things[t];
+      //load floor item containers into the items list
+      if (typeof(thing.heldby)==="number") {
+        HTomb.World.items[thing.heldby] = thing;
+      }
       let x = thing.x;
       let y = thing.y;
       let z = thing.z;
+      if (x===null || y===null || z===null) {
+        continue;
+      }
       HTomb.World.things[t] = thing;
       // A lot of these things may need explicit placement
       if (thing.creature) {
@@ -348,18 +345,6 @@ HTomb = (function(HTomb) {
       }
       if (thing.task) {
         HTomb.World.tasks[coord(x,y,z)]=thing;
-      }
-      if (thing.item) {
-        if (x!==null && y!==null && z!==null) {
-          // should I do this manually instead of using thing.place?
-          //thing.place(x,y,z);
-        }
-      }
-      // Anything that refers to entities should be re
-    }
-    for (let i=0; i<HTomb.World.things.length; i++) {
-      if (HTomb.World.things[i].template==="PointLight") {
-        console.log("point light at " + i);
       }
     }
   }
