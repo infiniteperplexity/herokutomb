@@ -465,6 +465,14 @@ HTomb = (function(HTomb) {
           } else if (!task && f.growing.parent==="Plant") {
             let t = HTomb.Things.HarvestFarmTask({assigner: this.owner}).place(f.x,f.y,f.z,this.owner);
           }
+        } else if (task && !f.growing && seeds.length>0 && !task.assignee) {
+          if (seeds.indexOf(task.task.makes)===-1) {
+            HTomb.Utils.shuffle(seeds);
+            let seed = seeds[0];
+            task.task.makes = seed;
+            task.task.ingredients = {};
+            task.task.ingredients[seed+"Seed"] = 1;
+          }
         }
       }
     }

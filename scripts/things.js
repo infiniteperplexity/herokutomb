@@ -20,10 +20,10 @@ HTomb = (function(HTomb) {
     },
     despawn: function() {
     // remove from the global things table
-      //if (HTomb.World.things.indexOf(this)===-1) {
-      //  return;
-      //}
-      HTomb.World.things.splice(this.thingId,1);
+      let i = HTomb.World.things.indexOf(this);
+      if (i!==-1) {
+        HTomb.World.things.splice(i,1);
+      }
       HTomb.Events.unsubscribeAll(this);
       if (this.onDespawn) {
         this.onDespawn();

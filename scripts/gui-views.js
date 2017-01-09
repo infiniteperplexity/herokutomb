@@ -113,13 +113,12 @@ HTomb = (function(HTomb) {
         controls["VK_"+alpha[i].toUpperCase()] = function() {
             let fragment = saves[i];
             return function() {
-              if (i===saves.length-1 || confirm("Really overwrite save file?")) {
+              if (confirm("Really overwrite save file?")) {
                 Views.progressView(["Saving game..."]);
-                setTimeout(HTomb.Save.saveGame,500);
+                setTimeout(HTomb.Save.saveGame,500,fragment);
               } else {
                 return;
               }
-              console.log("We need some kind of way to manage the async...");
             }
         }();
         saves[i] = alpha[i]+") " + saves[i];
@@ -131,7 +130,6 @@ HTomb = (function(HTomb) {
         entered = entered.replace(/[.,\/#!$%\^&\*;:{}=\-`~()]/g,"");
         HTomb.GUI.Views.progressView(["Saving game..."]);
         setTimeout(HTomb.Save.saveGame, 500, entered);
-        console.log("Probably got saved as " + entered);
       };
       saves.push("%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
       GUI.Contexts.active = GUI.Contexts.new(controls);
