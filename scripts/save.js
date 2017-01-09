@@ -64,6 +64,9 @@ HTomb = (function(HTomb) {
   function stringifyOther() {
     let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
     let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
+    console.log("look at the lights");
+    console.log(lights);
+    console.log(HTomb.World.lights);
     let cycle = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
     let events = {};
     for (let i=0; i<HTomb.Events.types.length; i++) {
@@ -386,7 +389,6 @@ HTomb = (function(HTomb) {
   function restoreOther(json) {
     let other = JSON.parse(json);
     fillGrid3dFrom(other.explored, HTomb.World.explored);
-    console.log(other.lights);
     fillListFrom(other.lights, HTomb.World.lights);
     HTomb.Time.dailyCycle.turn = other.cycle.turn;
     HTomb.Time.dailyCycle.minute = other.cycle.minute;
