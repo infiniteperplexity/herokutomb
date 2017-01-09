@@ -265,10 +265,6 @@ HTomb = (function(HTomb) {
     let things = JSON.parse(json, function (key, val) {
       if (val===null) {
         return null;
-      // remove this once parsing is corrected
-    } else if (key==="heldby" && val==="i") {
-        // revive a reference to the global items list
-        return HTomb.World.items;
       } else if (val.Type!==undefined) {
         // should not require tracking swaps
         return HTomb.Types.templates[val.Type];
