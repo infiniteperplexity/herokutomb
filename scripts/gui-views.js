@@ -220,14 +220,6 @@ HTomb = (function(HTomb) {
     for (let i=0; i<HTomb.Player.master.minions.length; i++) {
       var cr = HTomb.Player.master.minions[i];
       s = "  "+cr.describe() + " at "+cr.x+", "+cr.y+", "+cr.z;
-      // we have better ways to see this stuff now
-      //if (cr.minion.task) {
-        //s+=" working on " + cr.minion.task.describe();
-        //if (cr.minion.task.x) {
-        //  var task = cr.minion.task;
-        //  s+=" at "+task.x+", "+task.y+", "+task.z;
-        //}
-      //}
       text.push(s);
     }
     text.push(" ");
@@ -499,8 +491,8 @@ HTomb = (function(HTomb) {
       let b = c.worker;
       if (b.task) {
         let s = "Task: " + b.task.describe();
-        if (b.task.x>=0) {
-          s+=" at " + b.task.x + ", "+b.task.y+", "+b.task.z;
+        if (b.task.entity.x>=0) {
+          s+=" at " + b.task.entity.x + ", "+b.task.entity.y+", "+b.task.entity.z;
         }
         s+=".";
         txt.push(s);

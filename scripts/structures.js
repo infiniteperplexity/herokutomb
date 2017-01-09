@@ -522,6 +522,10 @@ HTomb = (function(HTomb) {
       let c = HTomb.Things[this.makes+"Sprout"]();
       let f = HTomb.World.features[coord(this.entity.x,this.entity.y,this.entity.z)];
       //c.inFarm = f;
+      if (f===undefined) {
+        console.log("What is going on here?");
+        console.log(this);
+      }
       f.makes = c;
       f.steps = -5;
       f.symbol = c.incompleteSymbol;
