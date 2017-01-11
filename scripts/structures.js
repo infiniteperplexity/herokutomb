@@ -745,7 +745,7 @@ HTomb = (function(HTomb) {
         }
       });
       if (items.length>0) {
-        return HTomb.Path.closest(cr,items)[0];
+        return HTomb.Path.closest(cr.x,cr.y,cr.z,items)[0];
       } else {
         return null;
       }
