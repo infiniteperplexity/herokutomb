@@ -43,6 +43,12 @@ HTomb = (function(HTomb) {
     GUI.Panels.overlay.update(arr);
   };
 
+  Views.died = function() {
+    Views.parentView = Views.died;
+    GUI.Panels.overlay.update(["%c{red}You have died!","%c{yellow}Click or press any key to continue."]);
+    GUI.Contexts.active = GUI.Contexts.new();
+    setTimeout(function(){Views.parentView = Views.startup;},500);
+  }
   // ****** Start-up screen *******
   Views.startup = function() {
     GUI.Contexts.active = GUI.Contexts.startup;

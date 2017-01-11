@@ -10,13 +10,16 @@ HTomb = (function(HTomb) {
     name: "player",
     onAdd: function() {
       HTomb.Player = this.entity;
-      //this.entity.definiteArticle = true;
+      HTomb.Events.subscribe(this,"Destroy");
     },
     onDescribe: function(options) {
       if (options.article==="indefinite") {
         options.article = "definite";
       }
       return options;
+    },
+    destroy: function() {
+      HTomb.GUI.Views.died();
     }
   });
 

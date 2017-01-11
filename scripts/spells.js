@@ -54,9 +54,7 @@ HTomb = (function(HTomb) {
       HTomb.GUI.selectSquare(
         c.z,
         castBolt,
-        {
-          hover: myHover
-        }
+        {hover: myHover}
       );
     }
   });
