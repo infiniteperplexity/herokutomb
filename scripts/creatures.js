@@ -39,7 +39,7 @@ HTomb = (function(HTomb) {
     template: "Dryad",
     name: "dryad",
     symbol: "n",
-    fg: "#55AA00",
+    fg: "#44AA44",
     onDefine: function(args) {
       HTomb.Events.subscribe(this, "Destroy");
     },
@@ -49,7 +49,7 @@ HTomb = (function(HTomb) {
         let x = t.x;
         let y = t.y;
         let z = t.z;
-        if (HTomb.Utils.dice(1,5)===1) {
+        if (HTomb.Utils.dice(1,10)===1) {
           let trees = HTomb.Utils.where(HTomb.World.features,
             function(e) {
               let d = HTomb.Path.quickDistance(e.x,e.y,e.z,x,y,z);
@@ -61,7 +61,7 @@ HTomb = (function(HTomb) {
             let dryad = HTomb.Things.Dryad();
             dryad.place(tree.x,tree.y,tree.z);
             HTomb.Particles.addEmitter(tree.x,tree.y,tree.z,{
-              fg: "#55AA00",
+              fg: "#88AA00",
               chars: ["\u2663","\u2660","\u2698","\u273F"],
               dist: 3,
               alpha: 1,
@@ -135,7 +135,7 @@ HTomb = (function(HTomb) {
     behaviors: {
       AI: {
         team: "GhoulTeam",
-        goals: ["HuntDeadThings"]
+        goals: ["LongRangeRoam"]
       },
       Movement: {swims: true},
       Sight: {},
@@ -152,6 +152,39 @@ HTomb = (function(HTomb) {
           Flesh: 10,
           Bone: 10
         }
+      }
+    },
+    onDefine: function(args) {
+      HTomb.Events.subscribe(this, "TurnBegin");
+    },
+    onTurnBegin: function(args) {
+      if (HTomb.Utils.dice(1,360)===1) {
+        let graves = HTomb.Utils.where(HTomb.World.features,function(e) {
+          if (e.template==="Tombstone") {
+            let x = e.x;
+            let y = e.y;
+            let z = e.z;
+            if (HTomb.World.tasks[HTomb.Utils.coord(x,y,z)]) {
+              return false;
+            }
+            if (HTomb.World.items[HTomb.Utils.coord(x,y,z-1)] && HTomb.World.items[HTomb.Utils.coord(x,y,z-1)].containsAny("Corpse")) {
+              return true;
+            }
+          }
+          return false;
+        });
+        HTomb.Utils.shuffle(graves);
+        let grave = graves[0];
+        let x = grave.x;
+        let y = grave.y;
+        let z = grave.z;
+        HTomb.Particles.addEmitter(x,y,z,{fg: "red", dist: 3, alpha: 1, v: -0.5, fade: 0.9});
+        grave.explode();
+        HTomb.World.tiles[z-1][x][y] = HTomb.Tiles.UpSlopeTile;
+        HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
+        let ghoul = HTomb.Things.Ghoul().place(x,y,z-1);
+        HTomb.GUI.sensoryEvent("A ravenous ghouls bursts forth from its grave!",x,y,z,"red");
+        console.log("A ghoul popped up at " + x + " " + y + " " + z);
       }
     }
   });

@@ -18,11 +18,11 @@ HTomb = (function(HTomb) {
     }
   });
   HTomb.Encounters.check = function() {
-    if (HTomb.Time.dailyCycle.turn===1) {
-      return true;
-    } else {
-      return false;
-    }
+    //if (HTomb.Time.dailyCycle.turn===1) {
+    //  return true;
+    //} else {
+    //  return false;
+    //}
   };
   HTomb.Encounters.roll = function(callb) {
     //for now we don't use this

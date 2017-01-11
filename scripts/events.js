@@ -23,11 +23,7 @@ HTomb = (function(HTomb) {
     }
     var listeners = Events[event.type] || [];
     for (var j=0; j<listeners.length; j++) {
-      try {
-        listeners[j]["on"+event.type](event);
-      } catch(e) {
-        console.log(listeners[j]);
-      }
+      listeners[j]["on"+event.type](event);
       //listeners[j].onEvent(event);
     }
   };

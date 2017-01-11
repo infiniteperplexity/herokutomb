@@ -15,7 +15,7 @@ HTomb = (function(HTomb) {
       // Bury a corpse beneath the tombstone
       HTomb.Things.create("Corpse").place(x,y,z-1);
     },
-    explode: function() {
+    explode: function(cause) {
       var x = this.x;
       var y = this.y;
       var z = this.z;
@@ -33,7 +33,10 @@ HTomb = (function(HTomb) {
             var rock = HTomb.Things.Rock();
             rock.item.n = 1;
             rock.place(x1,y1,z);
-            rock.item.setOwner(HTomb.Player);
+            if (cause) {
+              rock.item.setOwner(cause);
+            }
+            //rock.item.setOwner(HTomb.Player);
           }
         }
       }

@@ -129,7 +129,7 @@ HTomb = (function(HTomb) {
         f.integrity-=1;
         this.assignee.ai.acted = true;
         if (f.integrity<=0) {
-          f.explode();
+          f.explode(this.assigner);
           HTomb.GUI.sensoryEvent("A zombie emerges from the earth!",x,y,z);
           HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
           this.completeWork(x,y,z);

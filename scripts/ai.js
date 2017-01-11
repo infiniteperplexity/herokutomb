@@ -208,6 +208,29 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Types.defineRoutine({
+    template: "LongRangeRoam",
+    name: "long range roam",
+    act: function(ai) {
+      if (ai.target===null) {
+        let x = HTomb.Utils.dice(1,LEVELW-2);
+        let y = HTomb.Utils.dice(1,LEVELH-2);
+        let z = HTomb.Tiles.groundLevel(x,y);
+        let cr = ai.entity;
+        if (HTomb.Tiles.isReachableFrom(x,y,z,cr.x,cr.y,cr.z)) {
+          // is this allowed?
+          ai.target = {x: x, y: y, z: z, template: "Square"};
+        }
+      }
+      if (HTomb.Tiles.isTouchableFrom(ai.target.x, ai.target.y, ai.target.z, ai.entity.x, ai.entity.y, ai.entity.z)) {
+        ai.target = null;
+        return;
+      }
+      if (ai.target!==null) {
+        ai.walkToward(ai.target.x, ai.target.y, ai.target.z, {approxAfter: 25});
+      }
+    }
+  });
+  HTomb.Types.defineRoutine({
     template: "HuntDeadThings",
     name: "hunt dead things",
     act: function(ai) {
