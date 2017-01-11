@@ -530,7 +530,7 @@ HTomb = (function(HTomb) {
   	// worry about multiple attacks later
   	attack: function(thing) {
       // if it's a combatant, you might miss
-      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " attacks " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z);
+      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " attacks " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z,"orange");
       var evade = (thing.combat) ? thing.combat.evasion : 0;
       // basic hit roll
       var roll = Math.random()+(this.accuracy-evade)/10;

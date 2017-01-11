@@ -68,7 +68,7 @@ HTomb = (function(HTomb) {
             });
             // if we find an item we need, target it
             if (items.length>0) {
-              items = HTomb.Path.closest(cr,items);
+              items = HTomb.Path.closest(cr.x,cr.y,cr.z,items);
               cr.ai.target = items[0];
               break;
             }
@@ -190,7 +190,7 @@ HTomb = (function(HTomb) {
           return (HTomb.Path.quickDistance(ai.entity.x,ai.entity.y,ai.entity.z,e.x,e.y,e.z)<=10);
         });
         if (hostiles.length>0) {
-          hostiles = HTomb.Path.closest(ai.entity,hostiles);
+          hostiles = HTomb.Path.closest(ai.entity.x,ai.entity.y,ai.entity.z,hostiles);
           ai.target = hostiles[0];
         }
       }
@@ -476,6 +476,12 @@ HTomb = (function(HTomb) {
     template: "GhoulTeam",
     name: "ghouls",
     enemies: ["PlayerTeam"]
+  });
+
+  HTomb.Types.defineTeam({
+    template: "AngryNatureTeam",
+    name: "angryNature",
+    enemies: ["PlayerTeam","GhoulTeam"]
   });
 
   return HTomb;

@@ -36,6 +36,66 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineCreature({
+    template: "Dryad",
+    name: "dryad",
+    symbol: "n",
+    fg: "#55AA00",
+    onDefine: function(args) {
+      HTomb.Events.subscribe(this, "Destroy");
+    },
+    onDestroy: function(event) {
+      let t = event.entity;
+      if (t.template==="Tree") {
+        let x = t.x;
+        let y = t.y;
+        let z = t.z;
+        if (HTomb.Utils.dice(1,5)===1) {
+          let trees = HTomb.Utils.where(HTomb.World.features,
+            function(e) {
+              let d = HTomb.Path.quickDistance(e.x,e.y,e.z,x,y,z);
+              return (e.template==="Tree" && d>=5 && d<=9);
+            }
+          );
+          if (trees.length>0) {
+            let tree = HTomb.Path.closest(x,y,z,trees)[0];
+            let dryad = HTomb.Things.Dryad();
+            dryad.place(tree.x,tree.y,tree.z);
+            HTomb.Particles.addEmitter(tree.x,tree.y,tree.z,{
+              fg: "#55AA00",
+              chars: ["\u2663","\u2660","\u2698","\u273F"],
+              dist: 3,
+              alpha: 1,
+              v: -0.5,
+              fade: 0.9
+            });
+            HTomb.GUI.sensoryEvent("An angry dryad emerges from a nearby tree!",tree.x,tree.y,tree.z,"red");
+          }
+        }
+      }
+    },
+    behaviors: {
+      AI: {
+        team: "AngryNatureTeam"
+      },
+      Movement: {swims: true},
+      Sight: {},
+      Combat: {
+        accuracy: 0,
+        damage: {
+          Crushing: 1
+        }
+      },
+      Body: {
+        materials: {
+          Wood: 10,
+          Flesh: 10,
+          Bone: 10
+        }
+      }
+    }
+  });
+
+  HTomb.Things.defineCreature({
     template: "Zombie",
     name: "zombie",
     symbol: "z",

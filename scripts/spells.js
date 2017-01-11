@@ -36,9 +36,8 @@ HTomb = (function(HTomb) {
       var items, zombie, i;
       function raiseZombie(x,y,z) {
         if (that.validTile(x,y,z)) {
-          HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "black", dist: 1, alpha: 1, fade: 0.9,});
-          //HTomb.Particles.addEmitter(x,y,z,{fg: "black", dist: 1, alpha: 1, fade: 0.9});
-          HTomb.Particles.addEmitter(x,y,z,{fg: "black", dist: 4, alpha: 1, v: -0.5, fade: 0.9});
+          HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "black", dist: 1, alpha: 1, fade: 0.9, alwaysVisible: true});
+          HTomb.Particles.addEmitter(x,y,z,{fg: "black", dist: 4, alpha: 1, v: -0.5, fade: 0.9, alwaysVisible: true});
           // cast directly on a corpse
           items = HTomb.World.items[coord(x,y,z)]
           if (items) {

@@ -119,10 +119,12 @@ HTomb = (function(HTomb) {
         //  continue;
         //}
         c = coord(x,y,z);
-        if (squares[c]===undefined) {
-          squares[c] = [];
+        if (p.alwaysVisible===true || HTomb.World.visible[c]) {
+          if (squares[c]===undefined) {
+            squares[c] = [];
+          }
+          squares[c].push(p);
         }
-        squares[c].push(p);
       }
     }
     // process the particles
@@ -148,12 +150,14 @@ HTomb = (function(HTomb) {
         //fg = HTomb.Utils.alphaHex(pfg, fg, particles[k].alpha);
         fg = HTomb.Utils.alphaHex(pfg, fg, particles[k].alpha);
       }
-      fg[0] = Math.round(fg[0]);
-      fg[1] = Math.round(fg[1]);
-      fg[2] = Math.round(fg[2]);
-      fg = ROT.Color.toHex(fg);
-      ch = particles[particles.length-1].symbol;
-      gameScreen.drawGlyph(x,y,ch,fg);
+      if (particles.length>0) {
+        fg[0] = Math.round(fg[0]);
+        fg[1] = Math.round(fg[1]);
+        fg[2] = Math.round(fg[2]);
+        fg = ROT.Color.toHex(fg);
+        ch = particles[particles.length-1].symbol;
+        gameScreen.drawGlyph(x,y,ch,fg);
+      }
     }
     // clean up expired particles
     for (var o in oldSquares) {
@@ -198,10 +202,14 @@ HTomb = (function(HTomb) {
       if (s+this.bufferIndex>this.buffer.length) {
         return;
       }
+      let message = this.buffer[this.buffer.length-s-this.bufferIndex];
       if (s+this.bufferIndex === 1) {
-        scrollDisplay.drawText(this.x0,this.y0+s+1,"%c{cyan}"+this.buffer[this.buffer.length-s-this.bufferIndex]);
+        if (message.substr(0,3)!=="%c{") {
+          message = "%c{cyan}"+message;
+        }
+        scrollDisplay.drawText(this.x0,this.y0+s+1,message);
       } else {
-        scrollDisplay.drawText(this.x0,this.y0+s+1,this.buffer[this.buffer.length-s-this.bufferIndex]);
+        scrollDisplay.drawText(this.x0,this.y0+s+1,message);
       }
     }
   };
@@ -293,12 +301,15 @@ HTomb = (function(HTomb) {
     GUI.Views.parentView();
   };
   // This should probably be an Event, not a GUI method
-  GUI.sensoryEvent = function(strng,x,y,z) {
+  GUI.sensoryEvent = function(strng,x,y,z,color) {
     if (HTomb.World.visible[HTomb.Utils.coord(x,y,z)]) {
-      GUI.pushMessage(strng);
+      GUI.pushMessage(strng, color);
     }
   };
-  GUI.pushMessage = function(strng) {
+  GUI.pushMessage = function(strng, color) {
+    if (color!==undefined) {
+      strng = "%c{" + color + "}"+strng;
+    }
     scroll.bufferIndex = 1;
     scroll.buffer.push(strng);
     //if (scroll.buffer.length>=SCROLLH) {

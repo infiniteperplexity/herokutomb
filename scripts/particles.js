@@ -39,6 +39,7 @@ HTomb = (function(HTomb) {
     br: 10,
     alpha: 0.75,
     fade: 0.9,
+    alwaysVisible: false,
     particles : null,
     //chars: "abcdefghijlmnopqrstuvwxyz",
     chars: ["\u037C","\u037D","\u03A6","\u03A8","\u03A9","\u03B1","\u03B3","\u03B4","\u03B6"],
@@ -77,6 +78,7 @@ HTomb = (function(HTomb) {
       p.fg = ROT.Color.randomize(s,this.rr,this.gr,this.br);
       p.symbol = this.randomChar();
       p.alpha = this.alpha;
+      p.alwaysVisible = this.alwaysVisible;
       this.onEmit(p);
       this.particles.push(p);
     },

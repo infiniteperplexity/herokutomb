@@ -26,6 +26,11 @@ HTomb = (function(HTomb) {
     name: "bone"
   });
 
+  HTomb.Types.defineMaterial({
+    template: "Wood",
+    name: "wood"
+  });
+
   //******Types of damage
   HTomb.Types.define({
   	template: "Damage",
@@ -50,7 +55,8 @@ HTomb = (function(HTomb) {
   	name: "slashing",
     Bone: 0.5,
     Flesh: 1,
-    Blood: 1.5
+    Blood: 1.5,
+    Wood: 1.5
   });
 
   HTomb.Types.defineDamage({
@@ -58,7 +64,8 @@ HTomb = (function(HTomb) {
   	name: "piercing",
     Bone: 0.5,
     Flesh: 1.5,
-    Blood: 1
+    Blood: 1,
+    Wood: 0.5
   });
 
 
@@ -67,7 +74,8 @@ HTomb = (function(HTomb) {
     name: "crushing",
     Bone: 1.5,
     Flesh: 1,
-    Blood: 0.5
+    Blood: 0.5,
+    Wood: 1
   });
 
 

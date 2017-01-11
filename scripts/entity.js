@@ -217,7 +217,7 @@ HTomb = (function(HTomb) {
       //maybe check to see if the parent entity has a different "die" function
       // sometimes things can "multi-die"...how should that be handled?
       if (this.entity.x!==null && this.entity.y!==null && this.entity.z!==null) {
-        HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " dies.",this.entity.x,this.entity.y,this.entity.z);
+        HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " dies.",this.entity.x,this.entity.y,this.entity.z,"orange");
         this.entity.destroy();
       }
     },

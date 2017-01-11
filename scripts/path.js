@@ -197,15 +197,15 @@ HTomb = (function(HTomb) {
     return Math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0)+(z1-z0)+(z1-z0));
   };
 
-  HTomb.Path.closest = function(e,arr) {
+  HTomb.Path.closest = function(x,y,z,arr) {
     arr.sort(function(a,b) {
-      return HTomb.Path.quickDistance(e.x,e.y,e.z,a.x,a.y,a.z) - HTomb.Path.quickDistance(e.x,e.y,e.z,b.x,b.y,b.z);
+      return HTomb.Path.quickDistance(x,y,z,a.x,a.y,a.z) - HTomb.Path.quickDistance(x,y,z,b.x,b.y,b.z);
     });
     return arr;
   };
-  HTomb.Path.closestCallback = function(e) {
+  HTomb.Path.closestCallback = function(x,y,z) {
     return function(a,b) {
-      return HTomb.Path.quickDistance(e.x,e.y,e.z,a.x,a.y,a.z) - HTomb.Path.quickDistance(e.x,e.y,e.z,b.x,b.y,b.z);
+      return HTomb.Path.quickDistance(x,y,z,a.x,a.y,a.z) - HTomb.Path.quickDistance(x,y,z,b.x,b.y,b.z);
     };
   };
 
