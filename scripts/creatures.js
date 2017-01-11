@@ -49,7 +49,7 @@ HTomb = (function(HTomb) {
         let x = t.x;
         let y = t.y;
         let z = t.z;
-        if (HTomb.Utils.dice(1,10)===1) {
+        if (HTomb.Utils.dice(1,25)===1) {
           let trees = HTomb.Utils.where(HTomb.World.features,
             function(e) {
               let d = HTomb.Path.quickDistance(e.x,e.y,e.z,x,y,z);
@@ -158,7 +158,7 @@ HTomb = (function(HTomb) {
       HTomb.Events.subscribe(this, "TurnBegin");
     },
     onTurnBegin: function(args) {
-      if (HTomb.Utils.dice(1,360)===1) {
+      if (HTomb.Utils.dice(1,180)===1) {
         let graves = HTomb.Utils.where(HTomb.World.features,function(e) {
           if (e.template==="Tombstone") {
             let x = e.x;
@@ -178,7 +178,7 @@ HTomb = (function(HTomb) {
         let x = grave.x;
         let y = grave.y;
         let z = grave.z;
-        HTomb.Particles.addEmitter(x,y,z,{fg: "red", dist: 3, alpha: 1, v: -0.5, fade: 0.9});
+        HTomb.Particles.addEmitter(x,y,z,{fg: "red", dist: 3 a, alpha: 1, v: -0.5, fade: 0.9});
         grave.explode();
         HTomb.World.tiles[z-1][x][y] = HTomb.Tiles.UpSlopeTile;
         HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
