@@ -388,6 +388,7 @@ HTomb = (function(HTomb) {
       // unimplemented...use action points?
     },
     // If the square is crossable and unoccupied
+    // we need to be able to pass this as a function, not a method
     canPass: function(x,y,z) {
       if (this.canMove(x,y,z)===false) {
         return false;
@@ -397,6 +398,9 @@ HTomb = (function(HTomb) {
         return false;
       }
       return true;
+    },
+    passFunction: function(x,y,z) {
+
     },
     // If the square is crossable for this creature
     canMove: function(x,y,z) {
@@ -472,10 +476,8 @@ HTomb = (function(HTomb) {
           var n = damage[d];
           n = Math.max(ROT.RNG.getNormal(n,n/2),0);
           var adjusted = Math.round(n*HTomb.Types.templates.Damage.table[d][m]);
-          console.log(attack.entity.describe({capitalized: true, article:"indefinite"}) + " deals " + adjusted + " " + d + " damage to " + this.entity.describe({article: "indefinite", possessive: true}) +" " + m);
           this.materials[m].has-=adjusted;
-          console.log(this.entity.describe({capitalized: true, article: "indefinite"}) + " has " + this.materials[m].has + " points left of " + m);
-          //chance of death?
+              //chance of death?
           //need to deal damage to every material, based on some kind of cress-reference table...
         }
         for (var m in this.materials) {

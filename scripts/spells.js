@@ -7,6 +7,57 @@ HTomb = (function(HTomb) {
     name: "spell",
     getCost: function() {
       return 10;
+    },
+    spendMana: function() {
+      this.caster.mana-=this.getCost();
+    },
+  });
+
+  HTomb.Things.defineSpell({
+    template: "AcidBolt",
+    name: "acid bolt",
+    attack: {
+      damage: {
+        Acid: 5
+      }
+    },
+    cast: function() {
+      let caster = this.caster;
+      var c = caster.entity;
+      let that = this;
+      function castBolt(x,y,z) {
+        let cr = HTomb.World.creatures[HTomb.Utils.coord(x,y,z)]
+        if (cr) {
+          that.spendMana();
+          HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "green", chars: ["\u25CB","\u25CF","\u25C9","\u25CE","\u25E6","\u2022"], dist: 1, alpha: 1, fade: 0.9, alwaysVisible: true});
+          HTomb.Particles.addEmitter(x,y,z,{fg: "green", chars: ["\u25CB","\u25CF","\u25C9","\u25CE","\u25E6","\u2022"], dist: 2, alpha: 1, v: -0.5, fade: 0.9, alwaysVisible: true});
+          HTomb.GUI.sensoryEvent(c.describe({capitalized: true, article: "indefinite"}) + " casts an acid bolt at " + cr.describe({article: "indefinite"})+".",c.x,c.y,c.z,"orange");
+          if (cr.body) {
+            cr.body.endure(that.attack);
+          }
+        } else {
+          HTomb.GUI.pushMessage("Can't cast the spell there.");
+        }
+      }
+      function myHover(x, y, z) {
+        if (HTomb.World.explored[z][x][y]!==true) {
+          HTomb.GUI.Panels.menu.middle = ["%c{orange}Unexplored tile."];
+          return;
+        }
+        let cr = HTomb.World.creatures[HTomb.Utils.coord(x,y,z)]
+        if (cr) {
+          HTomb.GUI.Panels.menu.middle = ["%c{lime}Fire an acid bolt at " + cr.describe({article: "indefinite"})];
+        } else {
+          HTomb.GUI.Panels.menu.middle = ["%c{orange}Select a creature to target."];
+        }
+      }
+      HTomb.GUI.selectSquare(
+        c.z,
+        castBolt,
+        {
+          hover: myHover
+        }
+      );
     }
   });
 
@@ -25,9 +76,6 @@ HTomb = (function(HTomb) {
       else {
         return cost[cost.length-1];
       }
-    },
-    spendMana: function() {
-      this.caster.mana-=this.getCost();
     },
     cast: function() {
       let caster = this.caster;

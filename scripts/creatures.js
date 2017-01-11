@@ -18,7 +18,7 @@ HTomb = (function(HTomb) {
         },
         Master: {tasks: ["DigTask","BuildTask","ConstructTask","DismantleTask","PatrolTask","FurnishTask","ForbidTask","Undesignate"]},
         //Master: {tasks: ["DigTask","BuildTask","CraftTask","DismantleTask","PatrolTask","FarmTask","WorkshopTask","ForbidTask","HoardTask","Undesignate"]},
-        SpellCaster: {spells: ["RaiseZombie"]},
+        SpellCaster: {spells: ["RaiseZombie","AcidBolt"]},
         Body: {
           materials: {
             Flesh: 10,
@@ -178,7 +178,7 @@ HTomb = (function(HTomb) {
         let x = grave.x;
         let y = grave.y;
         let z = grave.z;
-        HTomb.Particles.addEmitter(x,y,z,{fg: "red", dist: 3 a, alpha: 1, v: -0.5, fade: 0.9});
+        HTomb.Particles.addEmitter(x,y,z,{fg: "red", dist: 3, alpha: 1, v: -0.5, fade: 0.9});
         grave.explode();
         HTomb.World.tiles[z-1][x][y] = HTomb.Tiles.UpSlopeTile;
         HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
@@ -196,7 +196,7 @@ HTomb = (function(HTomb) {
     fg: "#999999",
     behaviors: {
       AI: {},
-      Movement: {flies: true},
+      Movement: {flies: true, swims: false},
       Sight: {},
       Combat: {},
       Body: {
@@ -215,7 +215,7 @@ HTomb = (function(HTomb) {
     fg: "#BBBBBB",
     behaviors: {
       AI: {},
-      Movement: {},
+      Movement: {swims: false},
       Combat: {},
       Body: {
         materials: {
@@ -223,6 +223,60 @@ HTomb = (function(HTomb) {
           Bone: 2
         }
       }
+    }
+  });
+
+  HTomb.Things.defineCreature({
+    template: "DeathCarp",
+    name: "death carp",
+    symbol: "p",
+    fg: "red",
+    behaviors: {
+      AI: {
+        team: "HungryPredatorTeam"
+      },
+      Movement: {swims: true, walks: false},
+      Combat: {
+        accuracy: 1,
+        damage: {
+          Slashing: 2
+        }
+      },
+      Body: {
+        materials: {
+          Flesh: 10,
+          Bone: 10,
+          Blood: 10
+        }
+      }
+    },
+    onDefine: function() {
+      HTomb.Events.subscribe(this, "TurnBegin");
+    },
+    onTurnBegin: function() {
+      if (HTomb.Utils.dice(1,180)===1) {
+        let fishes = HTomb.Utils.where(HTomb.World.creatures, function(e) {
+          let x = e.x;
+          let y = e.y;
+          let z = e.z;
+          if (HTomb.World.visible[HTomb.Utils.coord(x,y,z)]) {
+            return false;
+          }
+          return (e.template==="Fish");
+        });
+        if (fishes.length>0) {
+          HTomb.Utils.shuffle(fishes);
+          let fish = fishes[0];
+          let x = fish.x;
+          let y = fish.y;
+          let z = fish.z;
+          fish.destroy();
+          HTomb.Things.DeathCarp().place(x,y,z);
+          HTomb.GUI.sensoryEvent("A peaceful-looking fish turns out to be a ravenous death carp!",x,y,z,"red");
+          console.log("Death carp placed at " + x + " " + y + " " + z);
+        }
+      }
+
     }
   });
 

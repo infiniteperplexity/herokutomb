@@ -78,6 +78,15 @@ HTomb = (function(HTomb) {
     Wood: 1
   });
 
+  HTomb.Types.defineDamage({
+    template: "Acid",
+    name: "acid",
+    Bone: 1.5,
+    Flesh: 1,
+    Blood: 0.5,
+    Wood: 1.5
+  });
+
 
 
   //maybe this should just be a huge table?

@@ -100,6 +100,12 @@ HTomb = (function(HTomb) {
   Commands.wait = function() {
     HTomb.Time.turn();
   };
+
+  HTomb.Debug.teleport = function(x,y,z) {
+    HTomb.Player.remove();
+    HTomb.Player.place(x,y,z);
+    HTomb.Time.turn();
+  }
   // Describe creatures, items, and features in this square and adjoined slopes
   // This method may be obsolete now that we have "hover"
   Commands.look = function(square) {

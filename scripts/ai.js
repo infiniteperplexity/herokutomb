@@ -187,7 +187,10 @@ HTomb = (function(HTomb) {
           }
         }
         hostiles = hostiles.filter(function(e,i,a) {
-          return (HTomb.Path.quickDistance(ai.entity.x,ai.entity.y,ai.entity.z,e.x,e.y,e.z)<=10);
+          return (
+            HTomb.Path.quickDistance(ai.entity.x,ai.entity.y,ai.entity.z,e.x,e.y,e.z)<=10
+            && HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,ai.entity.x,ai.entity.y,ai.entity.z)
+          );
         });
         if (hostiles.length>0) {
           hostiles = HTomb.Path.closest(ai.entity.x,ai.entity.y,ai.entity.z,hostiles);
@@ -449,6 +452,8 @@ HTomb = (function(HTomb) {
     members: null,
     enemies: null,
     allies: null,
+    xenophobic: false,
+    berserk: false,
     teams: {},
     onDefine: function() {
       this.members = this.members || [];
@@ -469,7 +474,11 @@ HTomb = (function(HTomb) {
       if (typeof(team)==="string") {
         team = HTomb.Types.templates[team];
       }
-      if (team.enemies.indexOf(this.template)>=0 || this.enemies.indexOf(team.template)>=0) {
+      if (this.berserk || team.berserk) {
+        return true;
+      } else if ((this.xenophobic || team.xenophobic) && (this!==team)) {
+        return true;
+      } else if (team.enemies.indexOf(this.template)>=0 || this.enemies.indexOf(team.template)>=0) {
         return true;
       } else {
         return false;
@@ -499,6 +508,12 @@ HTomb = (function(HTomb) {
     template: "GhoulTeam",
     name: "ghouls",
     enemies: ["PlayerTeam"]
+  });
+
+  HTomb.Types.defineTeam({
+    template: "HungryPredatorTeam",
+    name: "predators",
+    xenophobic: true
   });
 
   HTomb.Types.defineTeam({
