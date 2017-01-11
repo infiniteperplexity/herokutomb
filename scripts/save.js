@@ -392,8 +392,8 @@ HTomb = (function(HTomb) {
       let type = HTomb.Events.types[i];
       for (let j=0; j<HTomb.Events[type].length; j++) {
         let l = HTomb.Events[type][j];
-        // everything except for Things
-        if (HTomb.Types.templates[l.template]===undefined) {
+        // everything except for instances Things
+        if (l.template===undefined || l.hasOwnProperty("template")) {
           saveListeners.push([l,type]);
         }
       }
