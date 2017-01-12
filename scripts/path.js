@@ -101,10 +101,6 @@ HTomb = (function(HTomb) {
       for (var i=-1; i<8; i++) {
         // -1 is the place where we check for portals
         if (i===-1) {
-          //by the way, we don't use portals anymore
-          if (usePortals===false) {
-            continue;
-          }
           // right now cannot handle multiple portals in one square
           if (tiles[current[2]][current[0]][current[1]].zmove!==undefined) {
             next = [current[0],current[1],current[2]+tiles[current[2]][current[0]][current[1]].zmove];

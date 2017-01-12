@@ -189,7 +189,9 @@ HTomb = (function(HTomb) {
         hostiles = hostiles.filter(function(e,i,a) {
           return (
             HTomb.Path.quickDistance(ai.entity.x,ai.entity.y,ai.entity.z,e.x,e.y,e.z)<=10
-            && HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,ai.entity.x,ai.entity.y,ai.entity.z)
+            && HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,ai.entity.x,ai.entity.y,ai.entity.z
+              //,{canPass: ai.entity.movement.bindPass()})
+            )
           );
         });
         if (hostiles.length>0) {
@@ -392,6 +394,7 @@ HTomb = (function(HTomb) {
         return this.tryStep(dx, dy, 0);
       }
       var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,{useLast: false});
+      //var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,{canPass: this.entity.movement.bindPass(), useLast: false});
       if (path!==false) {
         var square = path[0];
         if (path.length===0) {

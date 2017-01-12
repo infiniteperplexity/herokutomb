@@ -10,7 +10,6 @@ HTomb = (function(HTomb) {
     name: "player",
     onAdd: function() {
       HTomb.Player = this.entity;
-      HTomb.Events.subscribe(this,"Destroy");
     },
     onDescribe: function(options) {
       if (options.article==="indefinite") {
@@ -391,7 +390,6 @@ HTomb = (function(HTomb) {
       // unimplemented...use action points?
     },
     // If the square is crossable and unoccupied
-    // we need to be able to pass this as a function, not a method
     canPass: function(x,y,z) {
       if (this.canMove(x,y,z)===false) {
         return false;
@@ -402,8 +400,8 @@ HTomb = (function(HTomb) {
       }
       return true;
     },
-    passFunction: function(x,y,z) {
-
+    bindPass: function() {
+      return this.canMove.bind(this);
     },
     // If the square is crossable for this creature
     canMove: function(x,y,z) {

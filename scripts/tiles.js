@@ -488,11 +488,13 @@ HTomb = (function(HTomb) {
       return false;
     }
   };
-  HTomb.Tiles.isReachableFrom = function(x1,y1,z1,x0,y0,z0) {
-    if (HTomb.Tiles.isTouchableFrom(x1,y1,z1,x0,y0,z0)) {
+  HTomb.Tiles.isReachableFrom = function(x1,y1,z1,x0,y0,z0, options) {
+    if (HTomb.Tiles.isTouchableFrom(x1,y1,z1,x0,y0,z0, options)) {
       return true;
     }
-    var path = HTomb.Path.aStar(x0,y0,z0,x1,y1,z1,{useLast: false});
+    options = options || {};
+    options.useLast = options.useLast || false;
+    var path = HTomb.Path.aStar(x0,y0,z0,x1,y1,z1,options);
     if (path!==false) {
       return true;
     } else {
