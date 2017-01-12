@@ -780,7 +780,7 @@ HTomb = (function(HTomb) {
         var x = this.entity.x;
         var y = this.entity.y;
         var z = this.entity.z;
-        var path = HTomb.Path.aStar(cr.x,cr.y,cr.z,x,y,z);
+        var path = HTomb.Path.aStar(cr.x,cr.y,cr.z,x,y,z,{canPass: cr.movement.bindPass()});
         if (path===false) {
           this.unassign();
           cr.ai.walkRandom();

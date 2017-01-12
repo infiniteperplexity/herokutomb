@@ -204,8 +204,8 @@ HTomb = (function(HTomb) {
     },
     onDestroy: function(event) {
       if (event.entity===this.master) {
-        this.master = null;
-        alert("My master died, haven't set how to handle this yet.");
+        this.removeFromEntity();
+        this.despawn();
       }
     }
   });
@@ -404,13 +404,10 @@ HTomb = (function(HTomb) {
       return this.canMove.bind(this);
     },
     // If the square is crossable for this creature
-    canMove: function(x,y,z) {
+    canMove: function(x,y,z,x0,y0,z0) {
       if (x<0 || x>=LEVELW || y<0 || y>=LEVELH) {
         return false;
       }
-      var dx = x-this.entity.x;
-      var dy = y-this.entity.y;
-      var dz = z-this.entity.z;
       var c = coord(x,y,z);
       var task = HTomb.World.tasks[c];
       if (task && task.template==="ForbidTask" && this.entity.minion && task.assigner===this.entity.minion.master) {
@@ -434,6 +431,9 @@ HTomb = (function(HTomb) {
       if (cover!==HTomb.Covers.NoCover && cover.liquid && this.swims!==true) {
         return false;
       }
+      var dx = x-(x0 || this.entity.x);
+      var dy = y-(y0 || this.entity.y);
+      var dz = z-(z0 || this.entity.z);
       // non-flyers can't climb diagonally
       if (this.flies!==true && dz!==0 && (dx!==0 || dy!==0)) {
         return false;

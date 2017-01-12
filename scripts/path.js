@@ -10,7 +10,7 @@ HTomb = (function(HTomb) {
   var levels = World.levels;
   // default passability function
   var t;
-  function defaultPassable(x,y,z) {
+  function defaultPassable(x,y,z,x0,y0,z0) {
     if (x<0 || x>=LEVELW || y<0 || y>=LEVELH || z<0 || z>=NLEVELS) {
       return false;
     }
@@ -126,7 +126,8 @@ HTomb = (function(HTomb) {
           continue;
         }
         // if the move is not valid then skip it
-        if (canPass(next[0],next[1],next[2])===false) {
+        if (canPass(next[0],next[1],next[2],current[0],current[1],current[2])===false) {
+        //if (canPass(next[0],next[1],next[2])===false) {
           //HTomb.GUI.drawAt(next[0],next[1],"X","red","black");
           continue;
         }

@@ -159,6 +159,12 @@ HTomb = (function(HTomb) {
         this.onAdd(this.options);
       }
     },
+    removeFromEntity: function() {
+      let ent = this.entity;
+      this.entity = null;
+      ent[this.name] = undefined;
+      //onRemove stuff?
+    },
     onDefine: function(args) {
       HTomb.Things.behaviors.push(args.name);
       let beh = HTomb.Things.templates[args.template];
