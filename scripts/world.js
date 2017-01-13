@@ -62,10 +62,11 @@ HTomb = (function(HTomb) {
     }
     HTomb.World.fillTiles();
     HTomb.World.generators.bestSoFar();
-    HTomb.World.validate.teams();
-    console.time("lighting");
-    HTomb.World.validate.lighting();
-    console.timeEnd("lighting");
+    HTomb.Path.reset();
+    HTomb.Types.templates.Team.hostilityMatrix.reset();
+    console.time("validation");
+    HTomb.World.validate.all();
+    console.timeEnd("validation");
   };
   // Add void tiles to the boundaries of the level
   HTomb.World.fillTiles = function() {

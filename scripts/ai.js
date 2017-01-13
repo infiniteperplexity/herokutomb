@@ -193,34 +193,37 @@ HTomb = (function(HTomb) {
     name: "check for hostile",
     act: function(ai) {
       // this performance might be okay
-      if (ai.team===undefined) {
-        console.log("what in the world???");
-      }
-      let matrix = HTomb.Types.templates.Team.hostilityMatrix.matrix;
-      let m = matrix[ai.entity.spawnId];
-      let hostiles = [];
-      let ids = HTomb.Things.templates.Thing.spawnIds;
-      for (let n in m) {
-        if (m[n]<=10) {
-          hostiles.push(ids[n]);
-        }
-      }
       let cr = ai.entity;
-      let canMove = HTomb.Utils.bind(ai.entity.movement,"canMove");
-      hostiles = hostiles.filter(function(e) {
-        if (!e.isPlaced()) {
-          return false;
+      if (ai.target===null || ai.target.creature===undefined || ai.isHostile(ai.target)!==true || HTomb.Path.quickDistance(cr.x,cr.y,cr.z,ai.target.x,ai.target.y,ai.target.z)>15) {
+        if (ai.team===undefined) {
+          console.log("what in the world???");
         }
-        return HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,cr.x,cr.y,cr.z,
-        { canPass: canMove,
-          searcher: cr,
-          searchee: e,
-          searchTimeout: 10
+        let matrix = HTomb.Types.templates.Team.hostilityMatrix.matrix;
+        let m = matrix[ai.entity.spawnId];
+        let hostiles = [];
+        let ids = HTomb.Things.templates.Thing.spawnIds;
+        for (let n in m) {
+          if (m[n]<=10) {
+            hostiles.push(ids[n]);
+          }
+        }
+
+        let canMove = HTomb.Utils.bind(ai.entity.movement,"canMove");
+        hostiles = hostiles.filter(function(e) {
+          if (!e.isPlaced()) {
+            return false;
+          }
+          return HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,cr.x,cr.y,cr.z,
+          { canPass: canMove,
+            searcher: cr,
+            searchee: e,
+            searchTimeout: 10
+          });
         });
-      });
-      if (hostiles.length>0) {
-        hostiles = HTomb.Path.closest(ai.entity.x,ai.entity.y,ai.entity.z,hostiles);
-        ai.target = hostiles[0];
+        if (hostiles.length>0) {
+          hostiles = HTomb.Path.closest(ai.entity.x,ai.entity.y,ai.entity.z,hostiles);
+          ai.target = hostiles[0];
+        }
       }
       // should this test for a valid target?
       if (ai.target && ai.isHostile(ai.target)) {
@@ -259,8 +262,8 @@ HTomb = (function(HTomb) {
         ai.walkToward(ai.target.x, ai.target.y, ai.target.z, {
           searcher: ai.entity,
           searchee: ai.target,
-          cacheAfter: 10,
-          searchTimeout: 8
+          cacheAfter: 25,
+          cacheTimeout: 20
         });
       }
     }

@@ -58,6 +58,14 @@ HTomb = (function(HTomb) {
       }
     }
   };
+  HTomb.Path.reset = function() {
+    for (let i in HTomb.Path.failures) {
+      delete HTomb.Path.failures[i];
+    }
+    for (let i in HTomb.Path.successes) {
+      delete HTomb.Path.successes[i];
+    }
+  };
   HTomb.Path.aStar = function(x0,y0,z0,x1,y1,z1,options) {
     if (x0+y0+z0+x1+y1+z1===undefined || x1===null || y1===null || z1===null || x0===null || y0===null || z0===null) {
       alert("bad path arguments!");
@@ -70,17 +78,18 @@ HTomb = (function(HTomb) {
     var searchee = options.searchee;
     var searchTimeout = options.searchTimeout;
     var cacheAfter = options.cacheAfter;
+    var cacheTimeout = options.cacheTimeout;
     var maxTries = options.maxTries || LEVELW*LEVELH;
     if (searcher && searchee && searchTimeout) {
       if (HTomb.Path.failures[searcher.spawnId + "," + searchee.spawnId]) {
         return false;
       }
     }
-    if (searcher && searchee && searchTimeout && cacheAfter!==undefined) {
+    if (searcher && searchee && cacheTimeout && cacheAfter!==undefined) {
       let t = HTomb.Path.successes[searcher.spawnId + "," + searchee.spawnId];
       if (t) {
         t = t[1];
-        if (HTomb.Path.quickDistance(x0,y0,z0,t.x,t.y,t.z)<2) {
+        if (HTomb.Path.quickDistance(x0,y0,z0,t.x,t.y,t.z)<2 || HTomb.Path.quickDistance(x0,y0,z0,searchee.x,searchee.y,searchee.z)<2) {
           delete HTomb.Path.successes[searcher.spawnId + "," + searchee.spawnId];
         } else {
           options.searchee = undefined;
@@ -124,8 +133,9 @@ HTomb = (function(HTomb) {
       // calculate the fast lookup
       crd = coord(current[0],current[1],current[2]);
       // check if we have found the target square (or maybe distance==1?)
-      if ((current[0]===x1 && current[1]===y1 && current[2]===z1) || (useLast===false &&
-          HTomb.Utils.arrayInArray([x1,y1,z1],HTomb.Tiles.touchableFrom(current[0],current[1],current[2]))>-1)) {
+      if (  (current[0]===x1 && current[1]===y1 && current[2]===z1)
+            || (useLast===false && HTomb.Utils.arrayInArray([x1,y1,z1],HTomb.Tiles.touchableFrom(current[0],current[1],current[2]))>-1)
+        ) {
       // if (current[6]===1) {
         // start with the goal square
         path = [[current[0],current[1],current[2]]];
@@ -142,11 +152,11 @@ HTomb = (function(HTomb) {
         if (path.length>0 && useFirst===false) {
           path.shift();
         }
-        if (searcher && searchee && searchTimeout && cacheAfter!==undefined && path.length>cacheAfter) {
+        if (searcher && searchee && cacheTimeout && cacheAfter!==undefined && path.length>cacheAfter) {
           let t = path[cacheAfter];
           t = HTomb.Tiles.getTileDummy(t[0],t[1],t[2]);
-          searchTimeout = HTomb.Utils.perturb(searchTimeout);
-          HTomb.Path.successes[searcher.spawnId+","+searchee.spawnId] = [searchTimeout,t];
+          cacheTimeout = HTomb.Utils.perturb(cacheTimeout);
+          HTomb.Path.successes[searcher.spawnId+","+searchee.spawnId] = [cacheTimeout,t];
         }
         //if (path.length>0 && useLast===false) {
         //  path.pop();

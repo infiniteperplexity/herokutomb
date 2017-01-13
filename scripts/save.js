@@ -521,7 +521,8 @@ HTomb = (function(HTomb) {
         }
         finalSwap();
         HTomb.Save.currentGame = name;
-        HTomb.Path.failures = {};
+        HTomb.Path.reset();
+        HTomb.Types.templates.Team.hostilityMatrix.reset();
         HTomb.World.validate.reset();
         HTomb.World.validate.all();
         HTomb.FOV.resetVisible();
