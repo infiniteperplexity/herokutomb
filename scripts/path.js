@@ -42,9 +42,19 @@ HTomb = (function(HTomb) {
   HTomb.Events.subscribe(HTomb.Path,"TurnBegin");
   HTomb.Path.onTurnBegin = function() {
     for (let f in HTomb.Path.failures) {
-      HTomb.Path.failures[f]-=1;
-      if (HTomb.Path.failures[f]<=0) {
+      HTomb.Path.failures[f][0]-=1;
+      if (HTomb.Path.failures[f][0]<=0) {
         delete HTomb.Path.failures[f];
+      }
+    }
+  };
+  HTomb.Path.successes = {};
+  HTomb.Events.subscribe(HTomb.Path,"TurnBegin");
+  HTomb.Path.onTurnBegin = function() {
+    for (let f in HTomb.Path.successes) {
+      HTomb.Path.successes[f][0]-=1;
+      if (HTomb.Path.successes[f][0]<=0) {
+        delete HTomb.Path.successes[f];
       }
     }
   };
@@ -59,11 +69,27 @@ HTomb = (function(HTomb) {
     var searcher = options.searcher;
     var searchee = options.searchee;
     var searchTimeout = options.searchTimeout;
+    var cacheAfter = options.cacheAfter;
+    var maxTries = options.maxTries || LEVELW*LEVELH;
     if (searcher && searchee && searchTimeout) {
       if (HTomb.Path.failures[searcher.spawnId + "," + searchee.spawnId]) {
         return false;
       }
     }
+    if (searcher && searchee && searchTimeout && cacheAfter!==undefined) {
+      let t = HTomb.Path.successes[searcher.spawnId + "," + searchee.spawnId];
+      if (t) {
+        t = t[1];
+        if (HTomb.Path.quickDistance(x0,y0,z0,t.x,t.y,t.z)<2) {
+          delete HTomb.Path.successes[searcher.spawnId + "," + searchee.spawnId];
+        } else {
+          options.searchee = undefined;
+          options.cacheAfter = undefined;
+          return HTomb.Path.aStar(x0,y0,z0,t.x,t.y,t.z,options);
+        }
+      }
+    }
+    let squaresTried = 0;
     //let stats = {
     //  squaresTried: 0,
     //  pathLength: 0,
@@ -116,6 +142,12 @@ HTomb = (function(HTomb) {
         if (path.length>0 && useFirst===false) {
           path.shift();
         }
+        if (searcher && searchee && searchTimeout && cacheAfter!==undefined && path.length>cacheAfter) {
+          let t = path[cacheAfter];
+          t = HTomb.Tiles.getTileDummy(t[0],t[1],t[2]);
+          searchTimeout = HTomb.Utils.perturb(searchTimeout);
+          HTomb.Path.successes[searcher.spawnId+","+searchee.spawnId] = [searchTimeout,t];
+        }
         //if (path.length>0 && useLast===false) {
         //  path.pop();
         //}
@@ -143,7 +175,7 @@ HTomb = (function(HTomb) {
           //HTomb.GUI.drawAt(next[0],next[1],"X","purple","black");
           continue;
         }
-        //stats.squaresTried+=1;
+        squaresTried+=1;
         // otherwise set the score equal to the distance from the starting square
           // this assumes a uniform edge cost of 1
         this_score = scores[coord(current[0],current[1],current[2])]+1;
@@ -188,11 +220,15 @@ HTomb = (function(HTomb) {
         // save the new best score for this square
         scores[crd] = this_score;
       }
+      if (squaresTried>=maxTries) {
+        break;
+      }
     }
-    console.log("path failed");
+    console.log("path failed after " + squaresTried);
     if (searcher && searchee && searchTimeout) {
       let combo = searcher.spawnId+","+searchee.spawnId;
-      HTomb.Path.failures[combo] = searchTimeout;
+      searchTimeout = HTomb.Utils.perturb(searchTimeout);
+      HTomb.Path.failures[combo] = [searchTimeout,squaresTried];
     }
     //for (let len in pathLength) {
     //  stats.maxLength = Math.max(stats.maxLength,pathLength[len]);

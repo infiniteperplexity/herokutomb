@@ -4,16 +4,26 @@ HTomb = (function(HTomb) {
 
   var thing = {
     template: "Thing",
-    maxSpawnId: 0,
-    spawnId: 0,
+    maxSpawnId: -1,
+    spawnIds: {},
+    spawnId: -1,
+    resetSpawnIds: function() {
+      this.spawnIds = {};
+      this.maxSpawnId = -1;
+      this.spawnId = -1;
+      let things = HTomb.World.things;
+      for (let i=0; i<things.length; i++) {
+        things[i].acquireSpawnId();
+      }
+    },
     acquireSpawnId: function() {
       this.spawnId = HTomb.Things.templates.Thing.maxSpawnId+1;
       HTomb.Things.templates.Thing.maxSpawnId = this.spawnId;
+      HTomb.Things.templates.Thing.spawnIds[this.spawnId] = this;
     },
     spawn: function() {
       // Add to the global things table
       HTomb.World.things.push(this);
-
       if (this.onSpawn) {
         this.onSpawn();
       }

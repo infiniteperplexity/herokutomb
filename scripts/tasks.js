@@ -13,7 +13,7 @@ HTomb = (function(HTomb) {
     feature: null,
     ingredients: {},
     dormant: 0,
-    dormancy: [2,6],
+    dormancy: 6,
     onCreate: function(args) {
       HTomb.Events.subscribe(this,"Destroy");
       return this;
@@ -207,7 +207,7 @@ HTomb = (function(HTomb) {
     name: "dig",
     bg: "#884400",
     makes: "Excavation",
-    dormancy: [0,0],
+    dormancy: 0,
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
         return true;

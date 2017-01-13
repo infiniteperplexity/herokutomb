@@ -310,12 +310,9 @@ HTomb = (function(HTomb) {
     // Fix ItemContainer references
     while(HTomb.World.things.length>0) {
       let thing = HTomb.World.things.pop();
-      delete thing.spawnId;
     }
     fillListFrom(things, HTomb.World.things);
-    for (let i=0; i<HTomb.World.things.length; i++) {
-      HTomb.World.things[i].acquireSpawnId();
-    }
+    HTomb.Things.templates.Thing.resetSpawnIds();
     var oldkeys;
     oldkeys = Object.keys(HTomb.World.creatures);
     for (let i=0; i<oldkeys.length; i++) {

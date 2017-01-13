@@ -534,6 +534,16 @@ HTomb = (function(HTomb) {
     return true;
   };
 
+  HTomb.Tiles.getTileDummy = function(x,y,z) {
+    let e = {
+      x: x,
+      y: y,
+      z: z,
+      spawnId: "xyz"+coord(x,y,z),
+      isPlaced: function() {return true;}
+    }
+    return e;
+  };
   //
   HTomb.Tiles.squaresWithinSquare = function(x,y,z,n) {
     var squares = [];

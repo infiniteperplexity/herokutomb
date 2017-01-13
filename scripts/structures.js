@@ -1098,7 +1098,7 @@ HTomb = (function(HTomb) {
     makes: null,
     steps: 10,
     started: false,
-    dormancy: [1,6],
+    dormancy: 4,
     canAssign: function(cr) {
       let x = this.entity.x;
       let y = this.entity.y;

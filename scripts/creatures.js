@@ -127,6 +127,7 @@ HTomb = (function(HTomb) {
     }
   });
 
+  var totalGhouls = 0;
   HTomb.Things.defineCreature({
     template: "Ghoul",
     name: "ghoul",
@@ -158,7 +159,7 @@ HTomb = (function(HTomb) {
       HTomb.Events.subscribe(this, "TurnBegin");
     },
     onTurnBegin: function(args) {
-      if (HTomb.Utils.dice(1,180)===1) {
+      if (HTomb.Utils.dice(1,120)===1) {
         let graves = HTomb.Utils.where(HTomb.World.features,function(e) {
           if (e.template==="Tombstone") {
             let x = e.x;
@@ -183,8 +184,7 @@ HTomb = (function(HTomb) {
         HTomb.World.tiles[z-1][x][y] = HTomb.Tiles.UpSlopeTile;
         HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
         let ghoul = HTomb.Things.Ghoul().place(x,y,z-1);
-        HTomb.GUI.sensoryEvent("A ravenous ghouls bursts forth from its grave!",x,y,z,"red");
-        console.log("A ghoul popped up at " + x + " " + y + " " + z);
+        HTomb.GUI.sensoryEvent("A ravenous ghoul bursts forth from its grave!",x,y,z,"red");
       }
     }
   });

@@ -297,7 +297,7 @@ HTomb = (function(HTomb) {
         }
         // if assignment failed, go dormant for a while
         if (tsk.assignee===null) {
-          tsk.dormant = HTomb.Utils.dice(tsk.dormancy[0],tsk.dormancy[1]);
+          tsk.dormant = HTomb.Utils.perturb(tsk.dormancy);
         }
       }
     },
@@ -431,6 +431,10 @@ HTomb = (function(HTomb) {
       var dx = x-(x0 || this.entity.x);
       var dy = y-(y0 || this.entity.y);
       var dz = z-(z0 || this.entity.z);
+      //if (dx===null || dy===null || dz===null) {
+      //  console.log("probably a bound canMove left hanging around somehow?");
+      //  return false;
+      //}
       // a way to check whether the square itself is allowed
       if (dx===0 && dy===0 && dz===0) {
         return true;
@@ -534,14 +538,17 @@ HTomb = (function(HTomb) {
   	// worry about multiple attacks later
   	attack: function(thing) {
       // if it's a combatant, you might miss
-      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " attacks " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z,"orange");
+      //HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " attacks " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z,"orange");
       var evade = (thing.combat) ? thing.combat.evasion : 0;
       // basic hit roll
       var roll = Math.random()+(this.accuracy-evade)/10;
-      console.log(this.entity.describe({capitalized: true, article: "indefinite"}) + " rolled " + roll + " to hit.");
+      //console.log(this.entity.describe({capitalized: true, article: "indefinite"}) + " rolled " + roll + " to hit.");
       if (roll >= (1/3)) {
+        HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " hits " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z,"orange");
         //apply armor in some way?
         thing.body.endure(this);
+      } else {
+        HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " misses " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z,"yellow");
       }
   	},
   	//should be on the damage packet..//hit: function() {},

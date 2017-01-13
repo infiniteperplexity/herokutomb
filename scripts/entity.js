@@ -223,7 +223,7 @@ HTomb = (function(HTomb) {
       //maybe check to see if the parent entity has a different "die" function
       // sometimes things can "multi-die"...how should that be handled?
       if (this.entity.x!==null && this.entity.y!==null && this.entity.z!==null) {
-        HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " dies.",this.entity.x,this.entity.y,this.entity.z,"orange");
+        HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " dies.",this.entity.x,this.entity.y,this.entity.z,"red");
         this.entity.destroy();
       }
     },
@@ -231,8 +231,9 @@ HTomb = (function(HTomb) {
       let c = coord(x,y,z);
       if (HTomb.World.creatures[c]) {
         HTomb.Debug.pushMessage("Overwrote a creature!");
-        HTomb.World.creatures[c].remove();
-        HTomb.World.creatures[c].despawn();
+        let cr = HTomb.World.creatures[c];
+        cr.remove();
+        cr.despawn();
       }
       HTomb.World.creatures[c] = this.entity;
     },

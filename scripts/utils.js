@@ -13,6 +13,20 @@ HTomb = (function(HTomb) {
     return newfunc;
   };
 
+  HTomb.Utils.perturb = function(n) {
+    if (n===0) {
+      return n;
+    }
+    let r = Math.random();
+    if (r<0.33) {
+      return Math.max(n-1,1);
+    } else if (r<0.67) {
+      return n;
+    } else {
+      return n+1;
+    }
+  };
+
   HTomb.Utils.grid3d = function(filling) {
     var grid = [];
     for (let z=0; z<NLEVELS; z++) {

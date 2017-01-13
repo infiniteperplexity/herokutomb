@@ -187,6 +187,7 @@ HTomb = (function(HTomb) {
       ai.wander();
     }
   });
+
   HTomb.Types.defineRoutine({
     template: "CheckForHostile",
     name: "check for hostile",
@@ -195,38 +196,40 @@ HTomb = (function(HTomb) {
       if (ai.team===undefined) {
         console.log("what in the world???");
       }
-      if (ai.target===null || ai.target.creature===undefined || ai.isHostile(ai.target)!==true) {
-        var teams = HTomb.Types.templates.Team.types;
-        var hostiles = [];
-        for (let i=0; i<teams.length; i++) {
-          if (teams[i].isHostile(ai.team)) {
-            hostiles = hostiles.concat(teams[i].members);
-          }
+      let matrix = HTomb.Types.templates.Team.hostilityMatrix.matrix;
+      let m = matrix[ai.entity.spawnId];
+      let hostiles = [];
+      let ids = HTomb.Things.templates.Thing.spawnIds;
+      for (let n in m) {
+        if (m[n]<=10) {
+          hostiles.push(ids[n]);
         }
-        hostiles = hostiles.filter(function(e,i,a) {
-          return (
-            HTomb.Path.quickDistance(ai.entity.x,ai.entity.y,ai.entity.z,e.x,e.y,e.z)<=10
-            && HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,ai.entity.x,ai.entity.y,ai.entity.z,
-            { canPass: HTomb.Utils.bind(ai.entity.movement,"canMove"),
-              searcher: ai.entity,
-              searchee: e,
-              searchTimeout: 10
-            })
-          );
+      }
+      let cr = ai.entity;
+      let canMove = HTomb.Utils.bind(ai.entity.movement,"canMove");
+      hostiles = hostiles.filter(function(e) {
+        if (!e.isPlaced()) {
+          return false;
+        }
+        return HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,cr.x,cr.y,cr.z,
+        { canPass: canMove,
+          searcher: cr,
+          searchee: e,
+          searchTimeout: 10
         });
-        if (hostiles.length>0) {
-          hostiles = HTomb.Path.closest(ai.entity.x,ai.entity.y,ai.entity.z,hostiles);
-          ai.target = hostiles[0];
-        }
+      });
+      if (hostiles.length>0) {
+        hostiles = HTomb.Path.closest(ai.entity.x,ai.entity.y,ai.entity.z,hostiles);
+        ai.target = hostiles[0];
       }
       // should this test for a valid target?
       if (ai.target && ai.isHostile(ai.target)) {
-        if (HTomb.Tiles.isTouchableFrom(ai.target.x, ai.target.y,ai.target.z, ai.entity.x, ai.entity.y, ai.entity.z)) {
+        if (HTomb.Tiles.isTouchableFrom(ai.target.x, ai.target.y,ai.target.z, cr.x, cr.y, cr.z)) {
           ai.entity.combat.attack(ai.target);
           ai.acted = true;
         } else {
           ai.walkToward(ai.target.x,ai.target.y,ai.target.z,{
-            searcher: ai.entity,
+            searcher: cr,
             searchee: ai.target,
             searchTimeout: 10
           });
@@ -245,16 +248,20 @@ HTomb = (function(HTomb) {
         let z = HTomb.Tiles.groundLevel(x,y);
         let cr = ai.entity;
         if (HTomb.Tiles.isReachableFrom(x,y,z,cr.x,cr.y,cr.z)) {
-          // is this allowed?
-          ai.target = {x: x, y: y, z: z, template: "Square"};
+          ai.target = HTomb.Tiles.getTileDummy(x,y,z) || null;
         }
       }
-      if (HTomb.Tiles.isTouchableFrom(ai.target.x, ai.target.y, ai.target.z, ai.entity.x, ai.entity.y, ai.entity.z)) {
+      if (ai.target && HTomb.Tiles.isTouchableFrom(ai.target.x, ai.target.y, ai.target.z, ai.entity.x, ai.entity.y, ai.entity.z)) {
         ai.target = null;
         return;
       }
       if (ai.target!==null) {
-        ai.walkToward(ai.target.x, ai.target.y, ai.target.z);
+        ai.walkToward(ai.target.x, ai.target.y, ai.target.z, {
+          searcher: ai.entity,
+          searchee: ai.target,
+          cacheAfter: 10,
+          searchTimeout: 8
+        });
       }
     }
   });
@@ -406,29 +413,14 @@ HTomb = (function(HTomb) {
       var x0 = this.entity.x;
       var y0 = this.entity.y;
       var z0 = this.entity.z;
-      if (options.approxAfter && HTomb.Path.quickDistance(x0,y0,z0,x,y,z)>=options.approxAfter) {
-        let dx = x-x0;
-        if (dx>0) {
-          dx = 1;
-        } else if (dx<0) {
-          dx = -1;
-        }
-        let dy = y-y0;
-        if (dy>0) {
-          dy = 1;
-        } else if (dy<0) {
-          dy = -1;
-        }
-        return this.tryStep(dx, dy, 0);
-      }
       //var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,{useLast: false});
-      var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,{
-        canPass: HTomb.Utils.bind(this.entity.movement,"canMove"),
-        useLast: false,
-        searcher: options.searcher,
-        searchee: options.searchee,
-        searchTimeout: options.searchTimeout
-      });
+      if (options.useLast===undefined) {
+        options.useLast = false;
+      }
+      if (options.canMove===undefined) {
+        options.canPass = HTomb.Utils.bind(this.entity.movement,"canMove");
+      }
+      var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,options);
       if (path!==false) {
         var square = path[0];
         if (path.length===0) {
@@ -492,7 +484,45 @@ HTomb = (function(HTomb) {
     xenophobic: false,
     berserk: false,
     teams: {},
-    onDefine: function() {
+    hostilityMatrix: {
+      matrix: {},
+      reset: function() {
+        this.matrix = {};
+      },
+      onTurnBegin: function() {
+        let matrix = this.matrix = {};
+        let teams = HTomb.Types.templates.Team.teams
+        let keys = Object.keys(teams);
+        for (let i=0; i<keys.length; i++) {
+          for (let j=i; j<keys.length; j++) {
+            let one = teams[keys[i]];
+            let two = teams[keys[j]];
+            if (one.isHostile(two)) {
+              for (let m=0; m<one.members.length; m++) {
+                let a = one.members[m];
+                let s = a.spawnId;
+                for (let n=0; n<two.members.length; n++) {
+                  if (n===0) {
+                    matrix[s] = matrix[s] || {};
+                  }
+                  let b = two.members[n];
+                  // no creature is ever hostile toward itself, even if it is berserk
+                  if (a===b) {
+                    continue;
+                  }
+                  let t = b.spawnId;
+                  let q = HTomb.Path.quickDistance(a.x,a.y,a.z,b.x,b.y,b.z);
+                  matrix[s][t] = q;
+                  matrix[t] = matrix[t] || {};
+                  matrix[t][s] = q;
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    onDefine: function(args) {
       this.members = this.members || [];
       this.enemies = this.enemies || [];
       this.allies = this.allies || [];
@@ -522,6 +552,7 @@ HTomb = (function(HTomb) {
       }
     }
   });
+  HTomb.Events.subscribe(HTomb.Types.templates.Team.hostilityMatrix,"TurnBegin");
 
 
   // the player and affiliated minions
@@ -550,7 +581,8 @@ HTomb = (function(HTomb) {
   HTomb.Types.defineTeam({
     template: "HungryPredatorTeam",
     name: "predators",
-    xenophobic: true
+    enemies: ["PlayerTeam"]
+    //xenophobic: true
   });
 
   HTomb.Types.defineTeam({
