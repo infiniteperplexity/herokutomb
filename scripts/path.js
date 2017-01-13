@@ -32,20 +32,46 @@ HTomb = (function(HTomb) {
 
   var _fastgrid;
   //function aStar(x0,y0,z0,x1,y1,z1,canPass) {
+
+  HTomb.Path.benchmarks = {
+    succeeded: [],
+    failed: []
+  };
+
+  HTomb.Path.failures = {};
+  HTomb.Events.subscribe(HTomb.Path,"TurnBegin");
+  HTomb.Path.onTurnBegin = function() {
+    for (let f in HTomb.Path.failures) {
+      HTomb.Path.failures[f]-=1;
+      if (HTomb.Path.failures[f]<=0) {
+        delete HTomb.Path.failures[f];
+      }
+    }
+  };
   HTomb.Path.aStar = function(x0,y0,z0,x1,y1,z1,options) {
     if (x0+y0+z0+x1+y1+z1===undefined || x1===null || y1===null || z1===null || x0===null || y0===null || z0===null) {
       alert("bad path arguments!");
     }
-    if (HTomb.Tiles.isEnclosed(x0,y0,z0) || HTomb.Tiles.isEnclosed(x1,y1,z1)) {
-      return false;
-    }
-    //perhaps run a quick check to make sure neither end of the path is enclosed?
-    //_fastgrid = HTomb.World._fastgrid;
     options = options || {};
     var useFirst = options.useFirst || false;
     var useLast = (options.useLast===false) ? false : true;
     var canPass = options.canPass || defaultPassable;
-    var usePortals = (options.usePortals===false) ? false : true;
+    var searcher = options.searcher;
+    var searchee = options.searchee;
+    var searchTimeout = options.searchTimeout;
+    if (searcher && searchee && searchTimeout) {
+      if (HTomb.Path.failures[searcher.spawnId + "," + searchee.spawnId]) {
+        return false;
+      }
+    }
+    //let stats = {
+    //  squaresTried: 0,
+    //  pathLength: 0,
+    //  maxLength: 0
+    //};
+    if (HTomb.Tiles.isEnclosed(x0,y0,z0,canPass) || HTomb.Tiles.isEnclosed(x1,y1,z1,canPass)) {
+      return false;
+    }
     // fastest possible lookup
     // random bias should be okay
     var dirs = [
@@ -59,7 +85,7 @@ HTomb = (function(HTomb) {
       [-1, -1]
     ].randomize();
     var current, next, this_score, h_score, crd;
-    var checked = {}, scores = {}, retrace = {}, path = [];
+    var checked = {}, scores = {}, retrace = {}, path = [], pathLength = {};
     // it costs zero to get to the starting square
     scores[coord(x0,y0,z0)] = 0;
     //square that need to be checked
@@ -117,6 +143,7 @@ HTomb = (function(HTomb) {
           //HTomb.GUI.drawAt(next[0],next[1],"X","purple","black");
           continue;
         }
+        //stats.squaresTried+=1;
         // otherwise set the score equal to the distance from the starting square
           // this assumes a uniform edge cost of 1
         this_score = scores[coord(current[0],current[1],current[2])]+1;
@@ -157,11 +184,20 @@ HTomb = (function(HTomb) {
         }
         // set the parent square in the potential path
         retrace[crd] = [current[0],current[1],current[2]];
+        //pathLength[crd] = pathLength[coord(current[0],current[1],current[2])]+1 || 0;
         // save the new best score for this square
         scores[crd] = this_score;
       }
     }
     console.log("path failed");
+    if (searcher && searchee && searchTimeout) {
+      let combo = searcher.spawnId+","+searchee.spawnId;
+      HTomb.Path.failures[combo] = searchTimeout;
+    }
+    //for (let len in pathLength) {
+    //  stats.maxLength = Math.max(stats.maxLength,pathLength[len]);
+    //}
+    //HTomb.Path.benchmarks.failed.push(stats);
     return false;
   };
 

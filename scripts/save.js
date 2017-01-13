@@ -223,6 +223,9 @@ HTomb = (function(HTomb) {
           if (dummy.thingId!==undefined) {
             delete dummy.thingId;
           }
+          if (dummy.spawnId!==undefined) {
+            delete dummy.spawnId;
+          }
           return dummy;
         // if it's on the global things table, stringify its ID
         } else if (val.thingId!==undefined) {
@@ -306,9 +309,13 @@ HTomb = (function(HTomb) {
     HTomb.Player = player.entity;
     // Fix ItemContainer references
     while(HTomb.World.things.length>0) {
-      HTomb.World.things.pop();
+      let thing = HTomb.World.things.pop();
+      delete thing.spawnId;
     }
     fillListFrom(things, HTomb.World.things);
+    for (let i=0; i<HTomb.World.things.length; i++) {
+      HTomb.World.things[i].acquireSpawnId();
+    }
     var oldkeys;
     oldkeys = Object.keys(HTomb.World.creatures);
     for (let i=0; i<oldkeys.length; i++) {
@@ -517,6 +524,7 @@ HTomb = (function(HTomb) {
         }
         finalSwap();
         HTomb.Save.currentGame = name;
+        HTomb.Path.failures = {};
         HTomb.World.validate.reset();
         HTomb.World.validate.all();
         HTomb.FOV.resetVisible();

@@ -706,7 +706,11 @@ HTomb = (function(HTomb) {
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
-      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z) && this.getSomeValidItem(cr)) {
+      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z,{
+        searcher: cr,
+        searchee: this.entity,
+        searchTimeout: 10
+      }) && this.getSomeValidItem(cr)) {
         return true;
       } else {
         return false;
@@ -738,7 +742,11 @@ HTomb = (function(HTomb) {
         if (task && task.task.template==="StockpileTask") {
           return false;
         }
-        if (HTomb.Tiles.isReachableFrom(that.entity.x, that.entity.y, that.entity.z, item.x, item.y, item.z)) {
+        if (HTomb.Tiles.isReachableFrom(that.entity.x, that.entity.y, that.entity.z, item.x, item.y, item.z, {
+          searcher: cr,
+          searchee: item,
+          searchTimeout: 10
+        })) {
           return true;
         } else {
           return false;
@@ -750,29 +758,6 @@ HTomb = (function(HTomb) {
         return null;
       }
     },
-    //getSomeValidItem: function(cr) {
-    //  // right now we ignore the creature argument
-    //  let pile = HTomb.World.items[coord(this.x,this.y,this.z)] || HTomb.Things.Container();
-    //  for (var it in HTomb.World.items) {
-    //    var items = HTomb.World.items[it];
-    //    var task = HTomb.World.tasks[it];
-    //    // if it's already in a stockpile, skip it
-    //    if (task && task.task.template==="StockpileTask") {
-    //      continue;
-    //    }
-    //    let xyz = HTomb.Utils.decoord(it);
-    //    for (var i=0; i<items.length; i++) {
-    //      var item = items.expose(i);
-    //      if (item.item.isOwned()===true
-    //          && pile.canFit(item)>=1
-    //          && this.itemAllowed(item)
-    //          && HTomb.Tiles.isReachableFrom(this.entity.x,this.entity.y,this.entity.z,xyz[0],xyz[1],xyz[2])) {
-    //        return item;
-    //      }
-    //    }
-    //  }
-    //  return null;
-    //},
     ai: function() {
       var cr = this.assignee;
       var t = cr.ai.target;
@@ -780,7 +765,12 @@ HTomb = (function(HTomb) {
         var x = this.entity.x;
         var y = this.entity.y;
         var z = this.entity.z;
-        var path = HTomb.Path.aStar(cr.x,cr.y,cr.z,x,y,z,{canPass: cr.movement.bindPass()});
+        var path = HTomb.Path.aStar(cr.x,cr.y,cr.z,x,y,z,{
+          canPass: HTomb.Utils.bind(cr.movement,canMove),
+          searcher: cr,
+          searchee: t,
+          searchTimeout: 10
+        });
         if (path===false) {
           this.unassign();
           cr.ai.walkRandom();
@@ -795,7 +785,11 @@ HTomb = (function(HTomb) {
                 cr.ai.target = null;
                 this.unassign();
               } else {
-                cr.ai.walkToward(x,y,z);
+                cr.ai.walkToward(x,y,z, {
+                  searcher: cr,
+                  searchee: item,
+                  searchTimeout: 10
+                });
               }
               break;
             }
@@ -818,7 +812,11 @@ HTomb = (function(HTomb) {
                 cr.ai.target = null;
               }
             } else {
-              cr.ai.walkToward(cr.ai.target.x,cr.ai.target.y,cr.ai.target.z);
+              cr.ai.walkToward(cr.ai.target.x,cr.ai.target.y,cr.ai.target.z, {
+                searcher: cr,
+                searchee: cr.ai.target,
+                searchTimeout: 10
+              });
             }
           }
         }
@@ -1105,7 +1103,11 @@ HTomb = (function(HTomb) {
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
-      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z)) {
+      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z, {
+        searcher: cr,
+        searchee: this.entity,
+        searchTimeout: 10
+      })) {
         // cancel this task if you can't find the ingredients
         if (cr.inventory.canFindAll(this.ingredients)!==true) {
           this.cancel();

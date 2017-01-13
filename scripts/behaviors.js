@@ -400,9 +400,6 @@ HTomb = (function(HTomb) {
       }
       return true;
     },
-    bindPass: function() {
-      return this.canMove.bind(this);
-    },
     // If the square is crossable for this creature
     canMove: function(x,y,z,x0,y0,z0) {
       if (x<0 || x>=LEVELW || y<0 || y>=LEVELH) {
@@ -434,6 +431,10 @@ HTomb = (function(HTomb) {
       var dx = x-(x0 || this.entity.x);
       var dy = y-(y0 || this.entity.y);
       var dz = z-(z0 || this.entity.z);
+      // a way to check whether the square itself is allowed
+      if (dx===0 && dy===0 && dz===0) {
+        return true;
+      }
       // non-flyers can't climb diagonally
       if (this.flies!==true && dz!==0 && (dx!==0 || dy!==0)) {
         return false;

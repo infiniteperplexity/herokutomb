@@ -4,9 +4,16 @@ HTomb = (function(HTomb) {
 
   var thing = {
     template: "Thing",
+    maxSpawnId: 0,
+    spawnId: 0,
+    acquireSpawnId: function() {
+      this.spawnId = HTomb.Things.templates.Thing.maxSpawnId+1;
+      HTomb.Things.templates.Thing.maxSpawnId = this.spawnId;
+    },
     spawn: function() {
       // Add to the global things table
       HTomb.World.things.push(this);
+
       if (this.onSpawn) {
         this.onSpawn();
       }
@@ -178,6 +185,7 @@ HTomb = (function(HTomb) {
     }
     // Do all "on spawn" tasks
     t.spawn();
+    t.acquireSpawnId();
     if (t.onCreate) {
       return t.onCreate(args);
     }

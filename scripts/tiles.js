@@ -500,21 +500,36 @@ HTomb = (function(HTomb) {
     } else {
       return false;
     }
-  },
-  HTomb.Tiles.isEnclosed = function(x,y,z) {
+  };
+
+  function defaultPassable(x,y,z) {
+    //if (x<0 || x>=LEVELW || y<0 || y>=LEVELH || z<0 || z>=NLEVELS) {
+    //  return false;
+    //}
+    let t = HTomb.World.tiles[z][x][y];
+    return (t.solid===undefined && t.fallable===undefined);
+  }
+
+
+  HTomb.Tiles.isEnclosed = function(x,y,z,callb) {
+    callb = callb || defaultPassable;
     var dirs = ROT.DIRS[8];
     for (let i=0; i<dirs.length; i++) {
       let dx = x+dirs[i][0];
       let dy = y+dirs[i][1];
-      if (HTomb.World.tiles[z][dx][dy].solid!==true && HTomb.World.tiles[z][dx][dy].fallable!==true) {
+      if (callb(dx,dy,z,x,y,z)) {
         return false;
       }
     }
     if (HTomb.World.tiles[z+1][x][y].zmove===-1) {
-      return false;
+      if (callb(x,y,z+1,x,y,z)) {
+        return false;
+      }
     }
     if (HTomb.World.tiles[z-1][x][y].zmove===+1) {
-      return false;
+      if (callb(x,y,z-1,x,y,z)) {
+        return false;
+      }
     }
     return true;
   };

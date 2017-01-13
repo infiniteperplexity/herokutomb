@@ -61,10 +61,15 @@ HTomb = (function(HTomb) {
               if (v.item.isOnGround()!==true) {
                 return false;
               } else if (v.template===ing) {
-                return true;
-              } else {
-                return false;
+                if (HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,v.x,v.y,v.z, {
+                  searcher: cr,
+                  searchee: v,
+                  searchTimeout: 10
+                })) {
+                  return true;
+                }
               }
+              return false;
             });
             // if we find an item we need, target it
             if (items.length>0) {
@@ -92,7 +97,11 @@ HTomb = (function(HTomb) {
           if (t.z===null) {
             console.log("why did this shopping list fail?");
           }
-          cr.ai.walkToward(t.x,t.y,t.z);
+          cr.ai.walkToward(t.x,t.y,t.z, {
+            searcher: cr,
+            searchee: t,
+            searchTimeout: 10
+          });
         }
       }
     }
@@ -120,7 +129,11 @@ HTomb = (function(HTomb) {
         } else if (useLast!==true && HTomb.Tiles.isTouchableFrom(x,y,z,cr.x,cr.y,cr.z)) {
           task.work(x,y,z);
         } else if (dist>0 || cr.z!==z) {
-          cr.ai.walkToward(x,y,z);
+          cr.ai.walkToward(x,y,z, {
+            searcher: cr,
+            searchee: task.entity,
+            searchTimeout: 10
+          });
         } else if (dist===0) {
           cr.ai.walkRandom();
         } else {
@@ -159,7 +172,11 @@ HTomb = (function(HTomb) {
       } else {
         // Otherwise, patrol around the creature's master
         // or maybe check for tasks now?
-        ai.patrol(ai.entity.minion.master.x,ai.entity.minion.master.y,ai.entity.minion.master.z);
+        ai.patrol(ai.entity.minion.master.x,ai.entity.minion.master.y,ai.entity.minion.master.z, {
+          searcher: ai.entity,
+          searchee: ai.entity.minion.master,
+          searchTimeout: 10
+        });
       }
     }
   });
@@ -190,7 +207,11 @@ HTomb = (function(HTomb) {
           return (
             HTomb.Path.quickDistance(ai.entity.x,ai.entity.y,ai.entity.z,e.x,e.y,e.z)<=10
             && HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,ai.entity.x,ai.entity.y,ai.entity.z,
-            {canPass: ai.entity.movement.bindPass()})
+            { canPass: HTomb.Utils.bind(ai.entity.movement,"canMove"),
+              searcher: ai.entity,
+              searchee: e,
+              searchTimeout: 10
+            })
           );
         });
         if (hostiles.length>0) {
@@ -204,8 +225,11 @@ HTomb = (function(HTomb) {
           ai.entity.combat.attack(ai.target);
           ai.acted = true;
         } else {
-          // we should use approximate walking toward for long distances
-          ai.walkToward(ai.target.x,ai.target.y,ai.target.z,{approxAfter: 25});
+          ai.walkToward(ai.target.x,ai.target.y,ai.target.z,{
+            searcher: ai.entity,
+            searchee: ai.target,
+            searchTimeout: 10
+          });
         }
       }
     }
@@ -230,7 +254,7 @@ HTomb = (function(HTomb) {
         return;
       }
       if (ai.target!==null) {
-        ai.walkToward(ai.target.x, ai.target.y, ai.target.z, {approxAfter: 25});
+        ai.walkToward(ai.target.x, ai.target.y, ai.target.z);
       }
     }
   });
@@ -339,7 +363,8 @@ HTomb = (function(HTomb) {
       this.acted = false;
     },
     // A patrolling creature tries to stay within a certain orbit of a target square
-    patrol: function(x,y,z,min,max) {
+    patrol: function(x,y,z,min,max,options) {
+      options = options || {};
       min = min || 2;
       max = max || 5;
       if (!this.entity.movement) {
@@ -352,7 +377,11 @@ HTomb = (function(HTomb) {
       if (dist<min) {
         this.acted = this.walkAway(x,y,z);
       } else if (dist>max) {
-        this.acted = this.walkToward(x,y,z);
+        this.acted = this.walkToward(x,y,z, {
+          searcher: options.searcher,
+          searchee: options.searchee,
+          searchTimeout: options.searchTimeout
+        });
       } else {
         this.acted = this.walkRandom();
       }
@@ -393,7 +422,13 @@ HTomb = (function(HTomb) {
         return this.tryStep(dx, dy, 0);
       }
       //var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,{useLast: false});
-      var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,{canPass: this.entity.movement.bindPass(), useLast: false});
+      var path = HTomb.Path.aStar(x0,y0,z0,x,y,z,{
+        canPass: HTomb.Utils.bind(this.entity.movement,"canMove"),
+        useLast: false,
+        searcher: options.searcher,
+        searchee: options.searchee,
+        searchTimeout: options.searchTimeout
+      });
       if (path!==false) {
         var square = path[0];
         if (path.length===0) {

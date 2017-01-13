@@ -82,7 +82,11 @@ HTomb = (function(HTomb) {
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
-      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z) && cr.inventory.canFindAll(this.ingredients)) {
+      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z,{
+        searcher: cr,
+        searchee: this.entity,
+        searchTimeout: 10
+      }) && cr.inventory.canFindAll(this.ingredients)) {
         return true;
       } else {
         return false;
@@ -469,7 +473,11 @@ HTomb = (function(HTomb) {
     },
     ai: function() {
       var cr = this.assignee;
-      cr.ai.patrol(this.entity.x,this.entity.y,this.entity.z);
+      cr.ai.patrol(this.entity.x,this.entity.y,this.entity.z, {
+        searcher: cr,
+        searchee: this.entity,
+        searchTimeout: 10
+      });
     }
   });
 

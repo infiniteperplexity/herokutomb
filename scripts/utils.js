@@ -5,6 +5,30 @@ HTomb = (function(HTomb) {
   var LEVELH = HTomb.Constants.LEVELH;
   var NLEVELS = HTomb.Constants.NLEVELS;
 
+  HTomb.Utils.bind = function(obj, method) {
+    let newfunc = obj[method].bind(obj);
+    newfunc.getBoundThis = function() {
+      return obj;
+    }
+    return newfunc;
+  };
+
+  HTomb.Utils.grid3d = function(filling) {
+    var grid = [];
+    for (let z=0; z<NLEVELS; z++) {
+      grid.push([]);
+      for (let x=0; x<LEVELW; x++) {
+        grid[z].push([]);
+        if (filling!==undefined) {
+          for (let y=0; y<LEVELH; y++) {
+            grid[z][x].push(filling);
+          }
+        }
+      }
+    }
+    return grid;
+  };
+
   HTomb.Utils.where = function(obj,callb) {
     var result = [];
     for (var key in obj) {
