@@ -165,6 +165,7 @@ HTomb = (function(HTomb) {
       let ent = this.entity;
       this.entity = null;
       ent[this.name] = undefined;
+      this.entity.validateBehaviors();
       //onRemove stuff?
     },
     onDefine: function(args) {
