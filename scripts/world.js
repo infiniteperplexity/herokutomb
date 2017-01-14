@@ -5,39 +5,21 @@ HTomb = (function(HTomb) {
   var NLEVELS = HTomb.Constants.NLEVELS;
   var coord = HTomb.Utils.coord;
 
-  function timeIt(name,callb) {
-    console.time(name);
-    callb();
-    console.timeEnd(name);
-  }
-
-
-  function grid3d() {
-    var grid = [];
-    for (let k=0; k<NLEVELS; k++) {
-      grid.push([]);
-      for (let i=0; i<LEVELW; i++) {
-        grid[k].push([]);
-      }
-    }
-    return grid;
-  }
-
   HTomb.World.things = [];
-  HTomb.World.tiles = grid3d();
-  HTomb.World.explored = grid3d();
+  HTomb.World.tiles = HTomb.Utils.grid3d();
+  HTomb.World.explored = HTomb.Utils.grid3d();
   HTomb.World.exposed = [];
   for (let x=0; x<LEVELW; x++) {
     HTomb.World.exposed.push([]);
   }
-  HTomb.World.lit = grid3d();
+  HTomb.World.lit = HTomb.Utils.grid3d();
   HTomb.World.lights = [];
   HTomb.World.visible = {};
   HTomb.World.creatures = {};
   HTomb.World.items = {};
   HTomb.World.features = {};
   HTomb.World.tasks = {};
-  HTomb.World.covers = grid3d();
+  HTomb.World.covers = HTomb.Utils.grid3d();
 
   HTomb.World.init = function() {
     while(HTomb.World.things.length>0) {
