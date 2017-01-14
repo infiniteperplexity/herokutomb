@@ -766,7 +766,7 @@ HTomb = (function(HTomb) {
         var y = this.entity.y;
         var z = this.entity.z;
         var path = HTomb.Path.aStar(cr.x,cr.y,cr.z,x,y,z,{
-          canPass: HTomb.Utils.bind(cr.movement,canMove),
+          canPass: HTomb.Utils.bind(cr.movement,"canMove"),
           searcher: cr,
           searchee: t,
           searchTimeout: 10
