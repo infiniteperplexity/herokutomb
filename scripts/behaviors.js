@@ -486,6 +486,9 @@ HTomb = (function(HTomb) {
           n = Math.max(ROT.RNG.getNormal(n,n/2),0);
           var adjusted = Math.round(n*HTomb.Types.templates.Damage.table[d][m]);
           this.materials[m].has-=adjusted;
+          if (adjusted>1) {
+            HTomb.Particles.addEmitter(this.entity.x,this.entity.y,this.entity.z,{fg: "red", chars: ["."], t: 2 ,dist: 1, alpha: 0.1, fade: 0.1});;
+          }
               //chance of death?
           //need to deal damage to every material, based on some kind of cress-reference table...
         }
