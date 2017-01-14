@@ -29,8 +29,8 @@ HTomb = (function(HTomb) {
         let cr = HTomb.World.creatures[HTomb.Utils.coord(x,y,z)]
         if (cr) {
           that.spendMana();
-          HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "green", chars: ["\u25CB","\u25CF","\u25C9","\u25CE","\u25E6","\u2022"], dist: 1, alpha: 1, fade: 0.9, alwaysVisible: true});
-          HTomb.Particles.addEmitter(x,y,z,{fg: "green", chars: ["\u25CB","\u25CF","\u25C9","\u25CE","\u25E6","\u2022"], dist: 2, alpha: 1, v: -0.5, fade: 0.9, alwaysVisible: true});
+          HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "#55FF11", chars: ["\u25CB","\u25CF","\u25C9","\u25CE","\u25E6","\u2022"], dist: 1, alpha: 0.8, fade: 0.5, alwaysVisible: true});
+          HTomb.Particles.addEmitter(x,y,z,{fg: "#55FF11", chars: ["\u25CB","\u25CF","\u25C9","\u25CE","\u25E6","\u2022"], dist: 2, alpha: 0.8, v: -0.1, fade: 0.5, alwaysVisible: true});
           HTomb.GUI.sensoryEvent(c.describe({capitalized: true, article: "indefinite"}) + " casts an acid bolt at " + cr.describe({article: "indefinite"})+".",c.x,c.y,c.z,"orange");
           if (cr.body) {
             cr.body.endure(that.attack);
