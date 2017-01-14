@@ -3,6 +3,7 @@ HTomb = (function(HTomb) {
   "use strict";
   var LEVELW = HTomb.Constants.LEVELW;
   var LEVELH = HTomb.Constants.LEVELH;
+  var NLEVELS = HTomb.Constants.NLEVELS;
   var coord = HTomb.Utils.coord;
 
   HTomb.Things.defineBehavior({
@@ -402,19 +403,11 @@ HTomb = (function(HTomb) {
     },
     // If the square is crossable for this creature
     canMove: function(x,y,z,x0,y0,z0) {
-      if (x<0 || x>=LEVELW || y<0 || y>=LEVELH) {
+      if (x<0 || x>=LEVELW || y<0 || y>=LEVELH || z<0 || z>=NLEVELS) {
         return false;
       }
       var c = coord(x,y,z);
-      var task = HTomb.World.tasks[c];
-      if (task && task.template==="ForbidTask" && this.entity.minion && task.assigner===this.entity.minion.master) {
-        return false;
-      }
-      // can't go through solid feature
-      var feature = HTomb.World.features[c];
-      if (feature && feature.solid===true && this.phases!==true) {
-        return false;
-      }
+      ////Passability independent of position
       // can't go through solid terrain
       var terrain = HTomb.World.tiles[z][x][y];
       if (terrain.solid===true && this.phases!==true) {
@@ -428,14 +421,24 @@ HTomb = (function(HTomb) {
       if (cover!==HTomb.Covers.NoCover && cover.liquid && this.swims!==true) {
         return false;
       }
-      var dx = x-(x0 || this.entity.x);
-      var dy = y-(y0 || this.entity.y);
-      var dz = z-(z0 || this.entity.z);
-      //if (dx===null || dy===null || dz===null) {
-      //  console.log("probably a bound canMove left hanging around somehow?");
-      //  return false;
-      //}
-      // a way to check whether the square itself is allowed
+      let e = this.entity;
+      // can't go through a zone your master forbids
+      if (e.minion) {
+        let task = HTomb.World.tasks[c];
+        if (task && task.template==="ForbidTask" && task.assigner===e.minion.master) {
+          return false;
+        }
+      }
+      // can't go through solid feature
+      var feature = HTomb.World.features[c];
+      if (feature && feature.solid===true && this.phases!==true) {
+        return false;
+      }
+      ////Passability dependent on position
+      var dx = x-(x0 || e.x);
+      var dy = y-(y0 || e.y);
+      var dz = z-(z0 || e.z);
+      // a way to check whether the square itself is allowed, for certain checks
       if (dx===0 && dy===0 && dz===0) {
         return true;
       }
