@@ -206,6 +206,8 @@ HTomb = (function(HTomb) {
         } else if (val===null) {
           //console.log("could I just do null normally?");
           return null;
+        } else if (key==="behaviors") {
+          return undefined;
         }
         // if it has special instructions, use those to stringify
         else if (val.stringify) {
@@ -352,6 +354,12 @@ HTomb = (function(HTomb) {
       }
       if (thing.task) {
         HTomb.World.tasks[coord(x,y,z)]=thing;
+      }
+      for (let i=0; i<HTomb.World.things.length; i++) {
+        let thing = HTomb.World.things[i];
+        if (thing.validateBehaviors) {
+          thing.validateBehaviors();
+        }
       }
     }
   }

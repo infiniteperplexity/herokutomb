@@ -59,8 +59,8 @@ HTomb = (function(HTomb) {
       options = options || {};
       options.name = this.name || "(nameless)";
       // behaviors can augment or alter the description via options
-      if (this.behaviors) {
-        let beh = this.getBehaviors();
+      if (this.Behaviors) {
+        let beh = this.behaviors;
         for (let i=0; i<beh.length; i++) {
           if (beh[i].onDescribe) {
             options = beh[i].onDescribe(options);
@@ -212,10 +212,10 @@ HTomb = (function(HTomb) {
       let chld = {};
       let parent = HTomb.Things.templates[args.parent] || {};
       // I think this next bit is only for subtypes, like Seed, et cetera
-      args.behaviors = args.behaviors || {};
-      if (parent.behaviors) {
-        for (let arg in parent.behaviors) {
-          args.behaviors[arg] = HTomb.Utils.copy(parent.behaviors[arg]);
+      args.Behaviors = args.Behaviors || {};
+      if (parent.Behaviors) {
+        for (let arg in parent.Behaviors) {
+          args.Behaviors[arg] = HTomb.Utils.copy(parent.Behaviors[arg]);
         }
       }
       // This code makes sure the right arguments get passed to the parent and child
@@ -244,12 +244,12 @@ HTomb = (function(HTomb) {
         }
       }
       // I think this is for subtypes again
-      if (eargs.behaviors[child]) {
+      if (eargs.Behaviors[child]) {
         for (let arg in chld) {
-          eargs.behaviors[child][arg] = HTomb.Utils.copy(chld[arg]);
+          eargs.Behaviors[child][arg] = HTomb.Utils.copy(chld[arg]);
         }
       } else {
-        eargs.behaviors[child] = chld;
+        eargs.Behaviors[child] = chld;
       }
       let newdef = HTomb.Things["define"+parnt](eargs);
       // Make sure that onDefine works at the level it is supposed to
@@ -263,11 +263,11 @@ HTomb = (function(HTomb) {
       let create = HTomb.Things[args.template];
       HTomb.Things[args.template] = function(crargs) {
         crargs = crargs || {};
-        crargs.behaviors = crargs.behaviors || {};
+        crargs.Behaviors = crargs.Behaviors || {};
         let par = HTomb.Things.templates[args.template];
-        if (par.behaviors) {
-          for (let arg in par.behaviors) {
-            crargs.behaviors[arg] = HTomb.Utils.copy(par.behaviors[arg]);
+        if (par.Behaviors) {
+          for (let arg in par.Behaviors) {
+            crargs.Behaviors[arg] = HTomb.Utils.copy(par.Behaviors[arg]);
           }
         }
         let entargs = {};
@@ -284,7 +284,7 @@ HTomb = (function(HTomb) {
           }
         }
         for (let arg in bargs) {
-          entargs.behaviors[child][arg] = bargs[arg];
+          entargs.Behaviors[child][arg] = bargs[arg];
         }
         return create(entargs);
       };

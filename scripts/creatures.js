@@ -9,7 +9,7 @@ HTomb = (function(HTomb) {
       name: "necromancer",
       symbol: "@",
       fg: "#DD66FF",
-      behaviors: {
+      Behaviors: {
         Movement: {swims: true},
         Inventory: {},
         Sight: {},
@@ -73,7 +73,7 @@ HTomb = (function(HTomb) {
         }
       }
     },
-    behaviors: {
+    Behaviors: {
       AI: {
         team: "AngryNatureTeam"
       },
@@ -100,7 +100,7 @@ HTomb = (function(HTomb) {
     name: "zombie",
     symbol: "z",
     fg: "#99FF66",
-    behaviors: {
+    Behaviors: {
       AI: {
         goals: ["ServeMaster"]
       },
@@ -133,7 +133,7 @@ HTomb = (function(HTomb) {
     name: "ghoul",
     symbol: "z",
     fg: "#FF5522",
-    behaviors: {
+    Behaviors: {
       AI: {
         team: "GhoulTeam",
         goals: ["LongRangeRoam"]
@@ -194,7 +194,7 @@ HTomb = (function(HTomb) {
     name: "bat",
     symbol: "b",
     fg: "#999999",
-    behaviors: {
+    Behaviors: {
       AI: {},
       Movement: {flies: true, swims: false},
       Sight: {},
@@ -213,7 +213,7 @@ HTomb = (function(HTomb) {
     name: "spider",
     symbol: "s",
     fg: "#BBBBBB",
-    behaviors: {
+    Behaviors: {
       AI: {},
       Movement: {swims: false},
       Combat: {},
@@ -231,7 +231,7 @@ HTomb = (function(HTomb) {
     name: "death carp",
     symbol: "p",
     fg: "red",
-    behaviors: {
+    Behaviors: {
       AI: {
         team: "HungryPredatorTeam"
       },
@@ -285,7 +285,7 @@ HTomb = (function(HTomb) {
     name: "fish",
     symbol: "p",
     fg: "#FF8888",
-    behaviors: {
+    Behaviors: {
       AI: {},
       Movement: {swims: true, walks: false},
       Combat: {},

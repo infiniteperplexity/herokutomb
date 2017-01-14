@@ -104,7 +104,7 @@ HTomb = (function(HTomb) {
     craftable: true,
     symbol: "\u2AEF",
     fg: "yellow",
-    behaviors: {PointLight: {}},
+    Behaviors: {PointLight: {}},
     ingredients: {WoodPlank: 1}
   });
 

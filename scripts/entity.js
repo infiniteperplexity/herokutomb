@@ -9,7 +9,7 @@ HTomb = (function(HTomb) {
     x: null,
     y: null,
     z: null,
-    behaviors: {},
+    Behaviors: {},
     place: function(x,y,z) {
       if (this.isPlaced()) {
         this.remove();
@@ -18,7 +18,7 @@ HTomb = (function(HTomb) {
       this.y = y;
       this.z = z;
       if (this.isPlaced()) {
-        var beh = this.getBehaviors();
+        var beh = this.behaviors;
         for (var i=0; i<beh.length; i++) {
           if (beh[i].onPlace) {
             beh[i].onPlace(x,y,z);
@@ -37,7 +37,7 @@ HTomb = (function(HTomb) {
         return true;
       }
     },
-    getBehaviors: function() {
+    validateBehaviors: function() {
       let props = Object.getOwnPropertyNames(this);
       let behaviors = [];
       let b = HTomb.Things.behaviors;
@@ -46,10 +46,11 @@ HTomb = (function(HTomb) {
           behaviors.push(this[props[i]]);
         }
       }
-      return behaviors;
+      //return behaviors;
+      this.behaviors = behaviors;
     },
     behaviorTemplate: function(beh) {
-      let beh1 = HTomb.Utils.copy(this.behaviors[beh]);
+      let beh1 = HTomb.Utils.copy(this.Behaviors[beh]);
       let beh2 = HTomb.Utils.clone(HTomb.Things.templates[beh]);
       for (let v in beh1) {
         beh2[v] = beh1[v];
@@ -57,7 +58,7 @@ HTomb = (function(HTomb) {
       return beh2;
     },
     remove: function() {
-      var beh = this.getBehaviors();
+      var beh = this.behaviors;
       for (var i=0; i<beh.length; i++) {
         if (beh[i].onRemove) {
           beh[i].onRemove();
@@ -71,7 +72,7 @@ HTomb = (function(HTomb) {
       this.z = null;
     },
     destroy: function() {
-      var beh = this.getBehaviors();
+      var beh = this.behaviors;
       for (var i=0; i<beh.length; i++) {
         var b = beh[i];
         if (b.destroy) {
@@ -86,7 +87,7 @@ HTomb = (function(HTomb) {
       if (this.isPlaced()) {
         this.remove();
       }
-      var beh = this.getBehaviors();
+      var beh = this.behaviors;
       for (var i=0; i<beh.length; i++) {
         if (beh[i].onDespawn) {
           beh[i].onDespawn();
@@ -111,12 +112,12 @@ HTomb = (function(HTomb) {
     },
     onCreate: function() {
       // Add behaviors to entity
-      for (var b in this.behaviors) {
+      for (var b in this.Behaviors) {
         if (typeof(HTomb.Things[b])!=="function") {
             console.log("Problem with behavior " + b + " for " + this.describe());
         }
         //var beh = HTomb.Things[b](this.behaviors[b] || {});
-        var beh = HTomb.Things.create(b,this.behaviors[b] || {});
+        var beh = HTomb.Things.create(b,this.Behaviors[b] || {});
         beh.addToEntity(this);
       }
       // Randomly choose symbol if necessary
@@ -158,6 +159,7 @@ HTomb = (function(HTomb) {
       if (this.onAdd) {
         this.onAdd(this.options);
       }
+      this.entity.validateBehaviors();
     },
     removeFromEntity: function() {
       let ent = this.entity;
@@ -184,8 +186,8 @@ HTomb = (function(HTomb) {
           eargs.symbol = args.symbol;
           delete beh.symbol;
         }
-        eargs.behaviors = {};
-        eargs.behaviors[args.template] = {};
+        eargs.Behaviors = {};
+        eargs.Behaviors[args.template] = {};
         eargs.template = args.template+"Entity";
         HTomb.Things.define(eargs);
         HTomb.Things[args.template] = function(cargs) {
@@ -205,8 +207,8 @@ HTomb = (function(HTomb) {
           }
           // this can't work like this...we need to avoid overwriting behaviors...
           // this worked okay for Rocks, didn't it?  Or maybe it overwrote...
-          entargs.behaviors = entargs.behaviors || {};
-          entargs.behaviors[args.template] = bargs;
+          entargs.Behaviors = entargs.Behaviors || {};
+          entargs.Behaviors[args.template] = bargs;
           return HTomb.Things[args.template+"Entity"](entargs);
         };
       }
@@ -549,7 +551,7 @@ HTomb = (function(HTomb) {
       if (this.hasAll(ing)!==true) {
         return false;
       }
-      if (HTomb.Things.templates[i_or_t].behaviors.Item.stackable!==true) {
+      if (HTomb.Things.templates[i_or_t].Behaviors.Item.stackable!==true) {
         var first = this.getFirst(i_or_t);
         return this.remove(first);
       } else {
@@ -575,7 +577,7 @@ HTomb = (function(HTomb) {
       if (this.hasAll(ing)!==true) {
         n = this.countAll(i_or_t);
       }
-      if (HTomb.Things.templates[i_or_t].behaviors.Item.stackable!==true) {
+      if (HTomb.Things.templates[i_or_t].Behaviors.Item.stackable!==true) {
         var first = this.getFirst(i_or_t);
         this.remove(first);
         return (first);
@@ -695,7 +697,7 @@ HTomb = (function(HTomb) {
         let item = HTomb.Utils.copy(args);
         item.template = args.template+"Item";
         item.tags = ["Fixtures"];
-        delete item.behaviors;
+        delete item.Behaviors;
         HTomb.Things.defineItem(item);
         let template = HTomb.Things.templates[args.template];
         // overwrite the item's ingredients
