@@ -220,13 +220,16 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineBehavior({
     template: "Creature",
     name: "creature",
-    maxhp: 10,
-    hp: 10,
+    // this will eventually create corpses with Material values
+    leavesCorpse: true,
     die: function() {
-      //maybe check to see if the parent entity has a different "die" function
-      // sometimes things can "multi-die"...how should that be handled?
       if (this.entity.x!==null && this.entity.y!==null && this.entity.z!==null) {
+        HTomb.Particles.addEmitter(this.entity.x, this.entity.y, this.entity.z, HTomb.Particles.Blood, HTomb.Particles.Spray);
         HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " dies.",this.entity.x,this.entity.y,this.entity.z,"red");
+        if (this.leavesCorpse) {
+          let corpse = HTomb.Things.Corpse({sourceCreature: this.entity});
+          corpse.place(this.entity.x, this.entity.y, this.entity.z);
+        }
         this.entity.destroy();
       }
     },

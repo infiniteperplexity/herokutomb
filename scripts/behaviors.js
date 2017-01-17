@@ -478,30 +478,31 @@ HTomb = (function(HTomb) {
   	template: "Body",
   	name: "body",
   	materials: null,
+    armor: null,
   	endure: function(attack) {
-      var damage = attack.damage;
-      for (var d in damage) {
-        for (var m in this.materials) {
-          var n = damage[d];
-          n = Math.max(ROT.RNG.getNormal(n,n/2),0);
+      let damage = attack.damage;
+      for (let d in damage) {
+        for (let m in this.materials) {
+          let dice = damage[d];
+          let n = HTomb.Utils.dice(dice[0],dice[1]);
+          if (dice[2]) {
+            n+=dice[2];
+          }
           var adjusted = Math.round(n*HTomb.Types.templates.Damage.table[d][m]);
           this.materials[m].has-=adjusted;
           if (adjusted>1) {
-            HTomb.Particles.addEmitter(this.entity.x,this.entity.y,this.entity.z,{fg: "red", chars: [".","\u2022","\u2234"], t: 2 ,dist: 1, alpha: 0.5, fade: 0.5, n: 25});;
+            HTomb.Particles.addEmitter(this.entity.x,this.entity.y,this.entity.z,HTomb.Particles.Blood);
           }
-              //chance of death?
-          //need to deal damage to every material, based on some kind of cress-reference table...
         }
+        let died = false;
         for (var m in this.materials) {
           //how do we decide how to die first?  just do it in order I guess...
           if (this.materials[m].has < this.materials[m].needs) {
-            this.entity.creature.die();
-            // this is an ad hoc solution...I think what was happening is some later AI script in the same turn used the target?
-            /// try commenting this out...
-            //if (attack.entity.ai && attack.entity.ai.target===this.entity) {
-            //  attack.entity.ai.target = null;
-            //}
+            died = true;
           }
+        }
+        if (died) {
+          this.entity.creature.die();
         }
       }
     },
@@ -534,22 +535,16 @@ HTomb = (function(HTomb) {
     armor: 0,
     damage: null,
     onCreate: function(options) {
-      //options = options || {};
-      // is this even necessary?
-      //for (var d in options.damage) {
-      //  this.damage[d] = options.damage[d];
-      //}
       return this;
     },
   	// worry about multiple attacks later
   	attack: function(thing) {
       // if it's a combatant, you might miss
-      //HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " attacks " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z,"orange");
       var evade = (thing.combat) ? thing.combat.evasion : 0;
+      var accuracy = this.accuracy;
       // basic hit roll
-      var roll = Math.random()+(this.accuracy-evade)/10;
-      //console.log(this.entity.describe({capitalized: true, article: "indefinite"}) + " rolled " + roll + " to hit.");
-      if (roll >= (1/3)) {
+      var roll = HTomb.Utils.dice(1,20);
+      if (roll+accuracy >= 10+evade) {
         HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " hits " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z,"orange");
         //apply armor in some way?
         thing.body.endure(this);

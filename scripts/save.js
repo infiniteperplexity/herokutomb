@@ -541,6 +541,7 @@ HTomb = (function(HTomb) {
         HTomb.Time.unlockTime();
         HTomb.GUI.Contexts.locked=false;
         HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.reset;
+        HTomb.GUI.Panels.scroll.reset();
         HTomb.GUI.splash(["Game restored."]);
         HTomb.GUI.Panels.gameScreen.recenter();
         if (HTomb.GUI.Views.Main.inSurveyMode) {

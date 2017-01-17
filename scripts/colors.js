@@ -57,7 +57,7 @@ HTomb = (function(HTomb) {
     BELOWBG: "#111122"
   };
 
-  var notGrassy  = {
+  var defaultScheme = {
     WALLFG: "#AAAAAA",
     FLOORFG: "#777799",
     BELOWFG: "#553355",
@@ -73,7 +73,7 @@ HTomb = (function(HTomb) {
   };
 
   //var scheme = standardPurple;
-  var scheme = notGrassy;
+  var scheme = defaultScheme;
 
   for (var c in scheme) {
     HTomb.Constants[c] = scheme[c];

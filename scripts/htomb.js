@@ -51,6 +51,7 @@ var HTomb = (function() {
       console.timeEnd("worldInit");
       // Prepare the GUI and throw up an intro screen
       GUI.Views.parentView = GUI.Views.Main.reset;
+      GUI.Panels.scroll.reset();
       GUI.reset();
       HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
       HTomb.GUI.render();

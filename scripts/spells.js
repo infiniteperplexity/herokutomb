@@ -13,12 +13,38 @@ HTomb = (function(HTomb) {
     },
   });
 
+
+  HTomb.Debug.testParticles = function(args, modifiers) {
+    for (let arg in args) {
+      HTomb.Things.templates.ParticleTest.args[arg] = args[arg];
+    }
+    for (let arg in modifiers) {
+      HTomb.Things.templates.ParticleTest.args[arg] = modifiers[arg];
+    }
+  };
+  HTomb.Debug.resetParticles = function() {
+    HTomb.Things.templates.ParticleTest.args = {};
+  }
+  HTomb.Things.defineSpell({
+    template: "ParticleTest",
+    name: "particle test",
+    args: {},
+    getCost: function() {
+      return 0;
+    },
+    cast: function() {
+      var c = this.caster.entity;
+      HTomb.Particles.addEmitter(c.x,c.y,c.z,this.args);
+    }
+  });
+
+
   HTomb.Things.defineSpell({
     template: "AcidBolt",
     name: "acid bolt",
     attack: {
       damage: {
-        Acid: 5
+        Acid: [1,10,1]
       }
     },
     cast: function() {
@@ -29,8 +55,10 @@ HTomb = (function(HTomb) {
         let cr = HTomb.World.creatures[HTomb.Utils.coord(x,y,z)]
         if (cr) {
           that.spendMana();
-          HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "#55FF11", chars: ["\u25CB","\u25CF","\u25C9","\u25CE","\u25E6","\u2022"], dist: 1, alpha: 0.8, fade: 0.5, alwaysVisible: true});
-          HTomb.Particles.addEmitter(x,y,z,{fg: "#55FF11", chars: ["\u25CB","\u25CF","\u25C9","\u25CE","\u25E6","\u2022"], dist: 2, alpha: 0.8, v: -0.1, fade: 0.5, alwaysVisible: true});
+          //HTomb.Particles.addEmitter(c.x,c.y,c.z,HTomb.Utils.merge(HTomb.Particles.SpellCast,HTomb.Particles.Acid,{alwaysVisible: true}));
+          //HTomb.Particles.addEmitter(x,y,z,HTomb.Utils.merge(HTomb.Particles.SpellTarget,HTomb.Particles.Acid,{alwaysVisible: true}));
+          HTomb.Particles.addEmitter(c.x,c.y,c.z,HTomb.Particles.Acid,{alwaysVisible: true});
+          HTomb.Particles.addEmitter(x,y,z,HTomb.Particles.Acid,{alwaysVisible: true});
           HTomb.GUI.sensoryEvent(c.describe({capitalized: true, article: "indefinite"}) + " casts an acid bolt at " + cr.describe({article: "indefinite"})+".",c.x,c.y,c.z,"orange");
           if (cr.body) {
             cr.body.endure(that.attack);
@@ -82,16 +110,21 @@ HTomb = (function(HTomb) {
       var items, zombie, i;
       function raiseZombie(x,y,z) {
         if (that.validTile(x,y,z)) {
-          HTomb.Particles.addEmitter(c.x,c.y,c.z,{fg: "black", dist: 1, alpha: 1, fade: 0.9, alwaysVisible: true});
-          HTomb.Particles.addEmitter(x,y,z,{fg: "black", dist: 4, alpha: 1, v: -0.5, fade: 0.9, alwaysVisible: true});
+          HTomb.Particles.addEmitter(c.x,c.y,c.z,HTomb.Particles.SpellCast,{alwaysVisible: true});
+          HTomb.Particles.addEmitter(x,y,z,HTomb.Particles.SpellTarget,{alwaysVisible: true});
           // cast directly on a corpse
           items = HTomb.World.items[coord(x,y,z)]
           if (items) {
             if (items.containsAny("Corpse")) {
               let corpse = items.takeOne("Corpse");
+              let sourceCreature = corpse.sourceCreature;
               that.spendMana();
               corpse.despawn();
-              zombie = HTomb.Things.Zombie();
+              if (sourceCreature) {
+                zombie = HTomb.Things.Zombie({sourceCreature: sourceCreature});
+              } else {
+                zombie = HTomb.Things.Zombie();
+              }
               zombie.place(x,y,z);
               HTomb.Things.Minion().addToEntity(zombie);
               caster.entity.master.addMinion(zombie);
@@ -106,12 +139,17 @@ HTomb = (function(HTomb) {
           if (items) {
             if (items.containsAny("Corpse")) {
               let corpse = items.takeOne("Corpse");
+              let sourceCreature = corpse.sourceCreature;
               that.spendMana();
               corpse.despawn();
               if (HTomb.World.tiles[z-1][x][y]===HTomb.Tiles.WallTile) {
                 HTomb.World.tiles[z-1][x][y]=HTomb.Tiles.UpSlopeTile;
               }
-              zombie = HTomb.Things.Zombie();
+              if (sourceCreature) {
+                zombie = HTomb.Things.Zombie({sourceCreature: sourceCreature});
+              } else {
+                zombie = HTomb.Things.Zombie();
+              }
               zombie.place(x,y,z-1);
               HTomb.Things.Minion().addToEntity(zombie);
               caster.entity.master.addMinion(zombie);

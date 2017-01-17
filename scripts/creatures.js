@@ -18,18 +18,18 @@ HTomb = (function(HTomb) {
         },
         Master: {tasks: ["DigTask","BuildTask","ConstructTask","DismantleTask","PatrolTask","FurnishTask","ForbidTask","Undesignate"]},
         //Master: {tasks: ["DigTask","BuildTask","CraftTask","DismantleTask","PatrolTask","FarmTask","WorkshopTask","ForbidTask","HoardTask","Undesignate"]},
-        SpellCaster: {spells: ["RaiseZombie","AcidBolt"]},
+        SpellCaster: {spells: ["RaiseZombie","AcidBolt","ParticleTest"]},
         Body: {
           materials: {
-            Flesh: 10,
-            Bone: 10
+            Flesh: 25,
+            Bone: 25
           }
         },
         Combat: {
           accuracy: 1,
           evasion: 2,
           damage: {
-            Slashing: 2
+            Slashing: [1,4]
           }
         }
       }
@@ -60,14 +60,7 @@ HTomb = (function(HTomb) {
             let tree = HTomb.Path.closest(x,y,z,trees)[0];
             let dryad = HTomb.Things.Dryad();
             dryad.place(tree.x,tree.y,tree.z);
-            HTomb.Particles.addEmitter(tree.x,tree.y,tree.z,{
-              fg: "#88AA00",
-              chars: ["\u2663","\u2660","\u2698","\u273F"],
-              dist: 3,
-              alpha: 1,
-              v: -0.5,
-              fade: 0.9
-            });
+            HTomb.Particles.addEmitter(tree.x,tree.y,tree.z,HTomb.Particles.SpellTarget, HTomb.Particles.DryadEffect);
             HTomb.GUI.sensoryEvent("An angry dryad emerges from a nearby tree!",tree.x,tree.y,tree.z,"red");
           }
         }
@@ -82,14 +75,14 @@ HTomb = (function(HTomb) {
       Combat: {
         accuracy: 0,
         damage: {
-          Crushing: 1
+          Crushing: [1,4]
         }
       },
       Body: {
         materials: {
-          Wood: 10,
-          Flesh: 10,
-          Bone: 10
+          Wood: 25,
+          Flesh: 25,
+          Bone: 25
         }
       }
     }
@@ -98,8 +91,16 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineCreature({
     template: "Zombie",
     name: "zombie",
+    leavesCorpse: false,
     symbol: "z",
     fg: "#99FF66",
+    onCreate: function(args) {
+      if (args.sourceCreature) {
+        let creature = HTomb.Things.templates[args.sourceCreature];
+        this.name = creature.name + " " + this.name;
+      }
+      return this;
+    },
     Behaviors: {
       AI: {
         goals: ["ServeMaster"]
@@ -111,17 +112,17 @@ HTomb = (function(HTomb) {
       Combat: {
         accuracy: 1,
         damage: {
-          Slashing: 1,
-          Crushing: 1
+          Slashing: [1,3],
+          Crushing: [1,3]
         }
       },
       Body: {
         materials: {
           Flesh: {
-            max: 10,
+            max: 25,
             needs: 1
           },
-          Bone: 10
+          Bone: 25
         }
       }
     }
@@ -145,7 +146,7 @@ HTomb = (function(HTomb) {
       Combat: {
         accuracy: 0,
         damage: {
-          Slashing: 1
+          Slashing: [1,6]
         }
       },
       Body: {
@@ -179,7 +180,7 @@ HTomb = (function(HTomb) {
         let x = grave.x;
         let y = grave.y;
         let z = grave.z;
-        HTomb.Particles.addEmitter(x,y,z,{fg: "red", dist: 3, alpha: 1, v: -0.5, fade: 0.9});
+        HTomb.Particles.addEmitter(x,y,z,HTomb.Particles.SpellTarget,{fg: "red"});
         grave.explode();
         HTomb.World.tiles[z-1][x][y] = HTomb.Tiles.UpSlopeTile;
         HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
@@ -239,7 +240,7 @@ HTomb = (function(HTomb) {
       Combat: {
         accuracy: 1,
         damage: {
-          Slashing: 2
+          Slashing: [1,8]
         }
       },
       Body: {

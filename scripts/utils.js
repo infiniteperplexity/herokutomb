@@ -5,6 +5,16 @@ HTomb = (function(HTomb) {
   var LEVELH = HTomb.Constants.LEVELH;
   var NLEVELS = HTomb.Constants.NLEVELS;
 
+  HTomb.Utils.merge = function() {
+    let template = {};
+    for (let i = 0; i<arguments.length; i++) {
+      let args = arguments[i];
+      for (let arg in args) {
+        template[arg] = args[arg];
+      }
+    }
+    return template;
+  };
   HTomb.Utils.bind = function(obj, method) {
     let newfunc = obj[method].bind(obj);
     newfunc.getBoundThis = function() {

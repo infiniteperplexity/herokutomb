@@ -143,14 +143,17 @@ HTomb = (function(HTomb) {
     }
   };
 
-  HTomb.Particles.addEmitter = function(x,y,z,args) {
+  HTomb.Particles.addEmitter = function(x,y,z,args,modifiers) {
     args = args || {};
     var e = Object.create(emitter);
     e.x = x;
     e.y = y;
     e.z = z;
-    for (var arg in args) {
+    for (let arg in args) {
       e[arg] = args[arg];
+    }
+    for (let arg in modifiers) {
+      e[arg] = modifiers[arg];
     }
     e.fg = ROT.Color.fromString(e.fg);
     e.particles = [];
@@ -158,6 +161,15 @@ HTomb = (function(HTomb) {
     HTomb.Particles.emitters.push(e);
     HTomb.Time.startParticles();
   }
+
+  HTomb.Particles.Liquid = {chars: [".","\u2022","\u2234","\u2235","\u25CB","\u25CF","\u25E6"]};
+  HTomb.Particles.Blood = HTomb.Utils.merge(HTomb.Particles.Liquid,{fg: "red"});
+  HTomb.Particles.Acid = HTomb.Utils.merge(HTomb.Particles.Liquid,{fg: "#55FF11"});
+  HTomb.Particles.Spatter = {t: 2, alpha: 0.5, fade: 0.5, n: 25};
+  HTomb.Particles.Spray = {dist: 1, alpha: 0.75, fade: 0.75, n: 50};
+  HTomb.Particles.SpellTarget = {fg: "black", dist: 3, v: -0.5};
+  HTomb.Particles.SpellCast = {fg: "black", v: 0.5, dist: 1};
+  HTomb.Particles.DryadEffect = {fg: "#88AA00", rr: 30, chars: ["\u2663","\u2660","\u2698","\u2618"]};
 
 
   return HTomb;

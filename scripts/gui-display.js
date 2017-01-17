@@ -195,6 +195,9 @@ HTomb = (function(HTomb) {
   scroll.bufferMax = 100;
   scroll.buffer = [];
   scroll.bufferIndex = 1;
+  scroll.reset = function() {
+    scroll.buffer = [];
+  }
   scroll.render = function() {
     scrollDisplay.clear();
     status.render();
