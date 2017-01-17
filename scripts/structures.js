@@ -70,7 +70,7 @@ HTomb = (function(HTomb) {
     },
     commandsText: function() {
       let txt = [
-        "Esc: Done.",
+        "%c{orange}Esc: Done.",
         this.headerText(),
         "a-z: Toggle option.",
         "Tab: Next structure.",
@@ -323,7 +323,7 @@ HTomb = (function(HTomb) {
         this.cursor = this.queue.length-1;
       }
       let txt = [
-        "Esc: Done.",
+        "%c{orange}Esc: Done.",
         "%c{yellow}Workshop: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
         "Up/Down: Traverse queue.",
         "Left/Right: Alter repeat.",
@@ -1034,7 +1034,7 @@ HTomb = (function(HTomb) {
     },
     detailsText: function() {
       let txt = [
-        "Esc: Done.",
+        "%c{orange}Esc: Done.",
         "%c{yellow}Structure: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
         "Up/Down: Choose property.",
         "Left/Right: Up or down by 1.",

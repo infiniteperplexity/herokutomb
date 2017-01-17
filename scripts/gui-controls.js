@@ -117,7 +117,7 @@ HTomb = (function(HTomb) {
     var context = HTomb.Utils.clone(survey);
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
-      "Esc: Cancel.",
+      "%c{orange}Esc: Cancel.",
       "%c{yellow}Select first corner.",
       "Move screen: NumPad / Arrows.",
       "(Shift+Arrows for diagonal.)",
@@ -219,7 +219,7 @@ HTomb = (function(HTomb) {
     var context = HTomb.Utils.clone(survey);
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
-      "Esc: Cancel.",
+      "%c{orange}Esc: Cancel.",
       "%c{yellow}Select an area.",
       "Move screen: NumPad / Arrows.",
       "(Shift+Arrows for diagonal.)",
@@ -286,7 +286,7 @@ HTomb = (function(HTomb) {
   GUI.choosingMenu = function(header, items, action, format) {
     var alpha = "abcdefghijklmnopqrstuvwxyz";
     var contrls = {};
-    var choices = ["Esc: Cancel.","%c{yellow}"+header];
+    var choices = ["%c{orange}Esc: Cancel.","%c{yellow}"+header];
     // there is probably a huge danger of memory leaks here
     for (var i=0; i<items.length; i++) {
       var desc;
@@ -316,7 +316,7 @@ HTomb = (function(HTomb) {
     var context = HTomb.Utils.clone(survey);
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
-      "Esc: Cancel.",
+      "%c{orange}Esc: Cancel.",
       "%c{yellow}Select a square.",
       "Move screen: NumPad / Arrows.",
       "(Shift+Arrows for diagonal.)",
