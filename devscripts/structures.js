@@ -892,145 +892,48 @@ HTomb = (function(HTomb) {
         this.cursor = 0;
       }
     },
-    moreCommand: function() {
+    scrollChoices: function(n) {
       if (this.cursor===0) {
         let code = this.features[0].symbol.charCodeAt();
-        code+=16;
+        code+=n;
         if (code>0xFFFF) {
           code-=0xFFFF;
+        } else if (code<0) {
+          code+=0xFFFF;
         }
         this.features[0].symbol = String.fromCharCode(code);
-      } else if (this.cursor===1) {
+      } else if (this.cursor>=1 && this.cursor<=3){
         let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[0];
-        n+=16;
-        if (n>=256) {
-          n-=256;
+        let color = c[this.cursor-1];
+        if (color>=256) {
+          color-=256;
+        } else if (color<0) {
+          color+=256;
         }
-        this.features[0].fg = ROT.Color.toHex([n,c[1],c[2]]);
-      } else if (this.cursor===2) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[1];
-        n+=16;
-        if (n>=256) {
-          n-=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([c[0],n,c[2]]);
-      } else if (this.cursor===3) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[2];
-        n+=16;
-        if (n>=256) {
-          n-=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([c[0],c[1],n]);
+        c[this.cursor-1] = color;
+        this.features[0].fg = ROT.Color.toHex([c[0],c[1],c[2]]);
       }
       HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
+    },
+    moreCommand: function() {
+      if (HTomb.GUI.shiftDown() && this.cursor===0) {
+        this.scrollChoices(+256);
+      } else {
+        this.scrollChoices(+16);
+      }
     },
     lessCommand: function() {
-      if (this.cursor===0) {
-        let code = this.features[0].symbol.charCodeAt();
-        code-=16;
-        if (code<0) {
-          code+=0xFFFF;
-        }
-        this.features[0].symbol = String.fromCharCode(code);
-      } else if (this.cursor===1) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[0];
-        n-=16;
-        if (n<0) {
-          n+=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([n,c[1],c[2]]);
-      } else if (this.cursor===2) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[1];
-        n-=16;
-        if (n<0) {
-          n+=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([c[0],n,c[2]]);
-      } else if (this.cursor===3) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[2];
-        n-=16;
-        if (n<0) {
-          n+=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([c[0],c[1],n]);
+      if (HTomb.GUI.shiftDown() && this.cursor===0) {
+        this.scrollChoices(-256);
+      } else {
+        this.scrollChoices(-16);
       }
-      HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
     },
     rightCommand: function() {
-      if (this.cursor===0) {
-        let code = this.features[0].symbol.charCodeAt();
-        code+=1;
-        if (code>0xFFFF) {
-          code-=0xFFFF;
-        }
-        this.features[0].symbol = String.fromCharCode(code);
-      } else if (this.cursor===1) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[0];
-        n+=1;
-        if (n>=256) {
-          n-=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([n,c[1],c[2]]);
-      } else if (this.cursor===2) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[1];
-        n+=1;
-        if (n>=256) {
-          n-=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([c[0],n,c[2]]);
-      } else if (this.cursor===3) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[2];
-        n+=1;
-        if (n>=256) {
-          n-=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([c[0],c[1],n]);
-      }
-      HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
+      this.scrollChoices(+1);
     },
     leftCommand: function() {
-      if (this.cursor===0) {
-        let code = this.features[0].symbol.charCodeAt();
-        code-=1;
-        if (code<0) {
-          code+=0xFFFF;
-        }
-        this.features[0].symbol = String.fromCharCode(code);
-      } else if (this.cursor===1) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[0];
-        n-=1;
-        if (n<0) {
-          n+=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([n,c[1],c[2]]);
-      } else if (this.cursor===2) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[1];
-        n-=1;
-        if (n<0) {
-          n+=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([c[0],n,c[2]]);
-      } else if (this.cursor===3) {
-        let c = ROT.Color.fromString(this.features[0].fg);
-        let n = c[2];
-        n-=1;
-        if (n<0) {
-          n+=256;
-        }
-        this.features[0].fg = ROT.Color.toHex([c[0],c[1],n]);
-      }
-      HTomb.GUI.Panels.gameScreen.redraw(this.x, this.y);
+      this.scrollChoices(-1);
     },
     detailsText: function() {
       let txt = [

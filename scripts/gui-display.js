@@ -295,7 +295,11 @@ HTomb = (function(HTomb) {
             }
           }
         }
-        menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
+        if (menuText[i]==="K: Toggle mouse cursor." && GUI.getKeyCursor()) {
+          menuDisplay.drawText(this.x0+j, this.y0+i, "%c{cyan}" + menuText[i]);
+        } else {
+          menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
+        }
       }
     }
   };
@@ -346,7 +350,8 @@ HTomb = (function(HTomb) {
     "Esc: System view.",
     "%c{yellow}Avatar mode (Tab: Move viewing window)",
     "Movement: NumPad / Arrows.",
-    "(Shift+Arrows for diagonal.)",
+    "(Control+Arrows for diagonal.)",
+    "K: Toggle mouse cursor.",
     "<: Up, >: Down, Space: Wait.",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary.",

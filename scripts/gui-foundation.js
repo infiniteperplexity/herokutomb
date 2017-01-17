@@ -86,7 +86,8 @@ HTomb = (function(HTomb) {
   };
 
   // Attach input events
-  var shiftArrow = null;
+  var controlArrow = null;
+  var shiftDown = null;
   var keydown = function(key) {
     key.preventDefault();
     // VK_RETURN is often used to toggle time, and stopping time first breaks that
@@ -96,42 +97,45 @@ HTomb = (function(HTomb) {
     if (GUI.Contexts.locked===true) {
       return;
     }
+    if (key.shiftKey) {
+      shiftDown = true;
+    }
     // Pass the keystroke to the current control context
     var diagonal = null;
-    if (key.shiftKey && [ROT.VK_UP,ROT.VK_DOWN,ROT.VK_LEFT,ROT.VK_RIGHT].indexOf(key.keyCode)>-1) {
-      if (shiftArrow===null) {
-        shiftArrow = key.keyCode;
-      } else if (shiftArrow===ROT.VK_UP) {
+    if (key.ctrlKey && [ROT.VK_UP,ROT.VK_DOWN,ROT.VK_LEFT,ROT.VK_RIGHT].indexOf(key.keyCode)>-1) {
+      if (controlArrow===null) {
+        controlArrow = key.keyCode;
+      } else if (controlArrow===ROT.VK_UP) {
         if (key.keyCode===ROT.VK_LEFT) {
           diagonal = ROT.VK_NUMPAD7;
         } else if (key.keyCode===ROT.VK_RIGHT) {
           diagonal = ROT.VK_NUMPAD9;
         } else {
-          shiftArrow = key.keyCode;
+          controlArrow = key.keyCode;
         }
-      } else if (shiftArrow===ROT.VK_DOWN) {
+      } else if (controlArrow===ROT.VK_DOWN) {
         if (key.keyCode===ROT.VK_LEFT) {
           diagonal = ROT.VK_NUMPAD1;
         } else if (key.keyCode===ROT.VK_RIGHT) {
           diagonal = ROT.VK_NUMPAD3;
         } else {
-          shiftArrow = key.keyCode;
+          controlArrow = key.keyCode;
         }
-      } else if (shiftArrow===ROT.VK_LEFT) {
+      } else if (controlArrow===ROT.VK_LEFT) {
         if (key.keyCode===ROT.VK_UP) {
           diagonal = ROT.VK_NUMPAD7;
         } else if (key.keyCode===ROT.VK_DOWN) {
           diagonal = ROT.VK_NUMPAD1;
         } else {
-          shiftArrow = key.keyCode;
+          controlArrow = key.keyCode;
         }
-      } else if (shiftArrow===ROT.VK_RIGHT) {
+      } else if (controlArrow===ROT.VK_RIGHT) {
         if (key.keyCode===ROT.VK_UP) {
           diagonal = ROT.VK_NUMPAD9;
         } else if (key.keyCode===ROT.VK_DOWN) {
           diagonal = ROT.VK_NUMPAD3;
         } else {
-          shiftArrow = key.keyCode;
+          controlArrow = key.keyCode;
         }
       }
       if (diagonal!==null) {
@@ -142,14 +146,40 @@ HTomb = (function(HTomb) {
     }
   };
   function keyup(key) {
-    if (key.keyCode===shiftArrow) {
-      shiftArrow=null;
+    if (key.keyCode===controlArrow) {
+      controlArrow=null;
+    } else if (key.shiftKey) {
+      shiftDown = false;
     }
   }
+  HTomb.GUI.shiftDown = function() {
+    return shiftDown;
+  };
+  var keyCursor = false;
+  HTomb.GUI.toggleKeyCursor = function() {
+    keyCursor = !keyCursor;
+    //HTomb.GUI.reset();
+    if (keyCursor) {
+      let k = HTomb.GUI.getKeyCursor();
+      HTomb.GUI.Contexts.active.mouseTile(k[0],k[1]);
+    }
+    HTomb.GUI.Panels.menu.refresh();
+  };
+  HTomb.GUI.getKeyCursor = function() {
+    if (keyCursor) {
+      return [HTomb.GUI.Panels.gameScreen.xoffset+Math.floor(HTomb.Constants.SCREENW/2+1),HTomb.GUI.Panels.gameScreen.yoffset+Math.floor(HTomb.Constants.SCREENH/2+1)];
+    } else {
+      return false;
+    }
+  };
+
   // this may change a bit if I add click functionality to other canvases
   var mousedown = function(click) {
     click.preventDefault();
     if (GUI.Contexts.locked===true) {
+      return;
+    }
+    if (GUI.getKeyCursor()) {
       return;
     }
     // Convert X and Y from pixels to characters
@@ -164,6 +194,9 @@ HTomb = (function(HTomb) {
   };
   var mousemove = function(move) {
     if (GUI.Contexts.locked===true) {
+      return;
+    }
+    if (GUI.getKeyCursor()) {
       return;
     }
     // Convert X and Y from pixels to characters
