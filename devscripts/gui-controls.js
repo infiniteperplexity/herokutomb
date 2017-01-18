@@ -552,12 +552,12 @@ HTomb = (function(HTomb) {
     //VK_TILDE: function() {Views.summaryView();},
     VK_ESCAPE: function() {Views.systemView();},
     VK_HYPHEN_MINUS: function() {
-      HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
-      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.slowDown();
+      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
     },
     VK_EQUALS: function() {
-      HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
-      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.speedUp();
+      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
       HTomb.Time.startTime();
     },
     VK_PAGE_UP: function() {scroll.scrollUp();},
@@ -672,12 +672,12 @@ HTomb = (function(HTomb) {
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
     VK_HYPHEN_MINUS: function() {
-      HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
-      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.slowDown();
+      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
     },
     VK_EQUALS: function() {
-      HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
-      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.speedUp();
+      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
       HTomb.Time.startTime();
     },
     VK_SPACE: function() {

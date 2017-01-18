@@ -55,6 +55,7 @@ var HTomb = (function() {
       GUI.reset();
       HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
       HTomb.GUI.render();
+      HTomb.Time.turn();
     }, 500);
   };
   return {

@@ -107,6 +107,9 @@ HTomb = (function(HTomb) {
     return [glyph[0],glyph[2],bg];
   }
   Tiles.getBackground = function(x,y,z) {
+    if (x<0 || y<0 || z<0 || x>=LEVELW || y>=LEVELH || z>=NLEVELS) {
+      return "black";
+    }
     var crd = HTomb.Utils.coord(x,y,z);
     var cbelow = HTomb.Utils.coord(x,y,z-1);
     var covers = HTomb.World.covers;
@@ -176,6 +179,9 @@ HTomb = (function(HTomb) {
   };
 
   Tiles.getGlyph = function(x,y,z) {
+    if (x<0 || y<0 || z<0 || x>=LEVELW || y>=LEVELH || z>=NLEVELS) {
+      return [" ","black","black"];
+    }
     var crd = HTomb.Utils.coord(x,y,z);
     var cabove = HTomb.Utils.coord(x,y,z+1);
     var cbelow = HTomb.Utils.coord(x,y,z-1);
@@ -249,10 +255,6 @@ HTomb = (function(HTomb) {
       }
     } else {
       // *** if the square is empty except for cover, handle the symbol and color separately. ***
-      if (covers[z][x][y]===undefined) {
-        console.log([x,y,z]);
-      }
-      //!!!Experimental - show foreground color for non-liquids only for floor tiles
       if (covers[z][x][y]!==HTomb.Covers.NoCover) {
         if (covers[z][x][y].liquid || tile===Tiles.FloorTile) {
           fg = fg || covers[z][x][y].fg;
@@ -326,10 +328,20 @@ HTomb = (function(HTomb) {
     square.visible = HTomb.World.visible[crd];
     //square.visible = HTomb.World.visible[z][x][y];
     // until we get the real code in place...
-    square.visibleBelow = (square.visible && square.terrain.zview===-1) || HTomb.Debug.visible || false;
-    square.visibleAbove = (square.visible && (square.terrain.zview===+1 || HTomb.World.tiles[z+1][x][y].zview===-1)) || HTomb.Debug.visible || false;
-    square.exploredBelow = ((square.explored && square.terrain.zview===-1) || HTomb.World.explored[z-1][x][y]) || HTomb.Debug.explored || false;
-    square.exploredAbove = ((square.explored && (square.terrain.zview===+1 || HTomb.World.tiles[z+1][x][y].zview===-1)) || HTomb.World.explored[z+1][x][y]) || HTomb.Debug.explored || false;
+    if (z>=1) {
+      square.visibleBelow = (square.visible && square.terrain.zview===-1) || HTomb.Debug.visible || false;
+      square.exploredBelow = ((square.explored && square.terrain.zview===-1) || HTomb.World.explored[z-1][x][y]) || HTomb.Debug.explored || false;
+    } else {
+      square.visibleBelow = false;
+      square.exploredBelow = false;
+    }
+    if (z<NLEVELS-1) {
+      square.visibleAbove = (square.visible && (square.terrain.zview===+1 || HTomb.World.tiles[z+1][x][y].zview===-1)) || HTomb.Debug.visible || false;
+      square.exploredAbove = ((square.explored && (square.terrain.zview===+1 || HTomb.World.tiles[z+1][x][y].zview===-1)) || HTomb.World.explored[z+1][x][y]) || HTomb.Debug.explored || false;
+    } else {
+      square.visibleAbove = false;
+      square.exploredAbove = false;
+    }
     square.x = x;
     square.y = y;
     square.z = z;

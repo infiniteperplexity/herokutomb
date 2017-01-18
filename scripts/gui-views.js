@@ -43,12 +43,6 @@ HTomb = (function(HTomb) {
     GUI.Panels.overlay.update(arr);
   };
 
-  Views.died = function() {
-    Views.parentView = Views.died;
-    GUI.Panels.overlay.update(["%c{red}You have died!","%c{yellow}Click or press any key to continue."]);
-    GUI.Contexts.active = GUI.Contexts.new();
-    setTimeout(function(){Views.parentView = Views.startup;},500);
-  }
   // ****** Start-up screen *******
   Views.startup = function() {
     GUI.Contexts.active = GUI.Contexts.startup;
@@ -197,12 +191,12 @@ HTomb = (function(HTomb) {
       HTomb.Time.toggleTime();
     },
     VK_HYPHEN_MINUS: function() {
-      HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
-      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.slowDown();
+      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
     },
     VK_EQUALS: function() {
-      HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
-      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.speedUp();
+      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
       HTomb.Time.startTime();
     },
     VK_SPACE: function() {
@@ -433,12 +427,12 @@ HTomb = (function(HTomb) {
       HTomb.Time.toggleTime();
     },
     VK_HYPHEN_MINUS: function() {
-      HTomb.Time.setSpeed(HTomb.Time.getSpeed()/1.25);
-      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.slowDown();
+      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
     },
     VK_EQUALS: function() {
-      HTomb.Time.setSpeed(HTomb.Time.getSpeed()*1.25);
-      HTomb.GUI.pushMessage("Speed set to " + parseInt(HTomb.Time.getSpeed()) + ".");
+      HTomb.Time.speedUp();
+      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
       HTomb.Time.startTime();
     },
     VK_SPACE: function() {

@@ -299,10 +299,21 @@ HTomb = (function(HTomb) {
     team: "AnimalTeam",
     //allegiance: null,
     acted: false,
+    actionPoints: 16,
     priority: null,
     alert: null,
     goals: null,
     fallback: null,
+    regainPoints: function() {
+      this.acted = false;
+      if (this.actionPoints<0) {
+        do {
+          this.actionPoints+=16;
+        } while (this.actionPoints<0);
+      } else {
+        this.actionPoints = 16;
+      }
+    },
     isHostile: function(thing) {
       if (thing.ai===undefined || thing.ai.team===null || this.team===null) {
         return false;
@@ -350,10 +361,6 @@ HTomb = (function(HTomb) {
         return false;
       }
       // If the creature has already acted, bail out
-      if (this.acted===true) {
-        this.acted = false;
-        return false;
-      }
       if (this.acted===false) {
         this.alert.act(this);
       }
@@ -366,11 +373,12 @@ HTomb = (function(HTomb) {
         this.fallback.act(this);
       }
       if (this.acted===false) {
-        // console.log(this.entity);
-        // HTomb.Debug.pushMessage("creature failed to act!");
+         console.log(this.entity);
+         throw new Error("Creature failed to act!");
       }
       // Reset activity for next turn
       this.acted = false;
+      this.actionPoints-=16;
     },
     // A patrolling creature tries to stay within a certain orbit of a target square
     patrol: function(x,y,z,min,max,options) {

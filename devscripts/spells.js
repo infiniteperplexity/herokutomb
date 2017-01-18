@@ -131,7 +131,7 @@ HTomb = (function(HTomb) {
               zombie.ai.acted = true;
               zombie.ai.actionPoints-=16;
               HTomb.GUI.sensoryEvent("The corpse stirs and rises...",x,y,z);
-              HTomb.Time.turn();
+              HTomb.Time.resumeActors();
               return;
             }
           }
@@ -159,7 +159,7 @@ HTomb = (function(HTomb) {
               zombie.ai.acted = true;
               zombie.ai.actionPoints-=16;
               HTomb.GUI.sensoryEvent("You hear an ominous stirring below the earth...",x,y,z);
-              HTomb.Time.turn();
+              HTomb.Time.resumeActors();
               return;
             }
           }

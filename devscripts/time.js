@@ -4,13 +4,17 @@ HTomb = (function(HTomb) {
   var Time = HTomb.Time;
 
   var timePassing = null;
-  var speed = 1000;
+  var speed = 5;
+  var speeds = ["1/8","1/4","1/2","3/4","1/1","5/4","3/2","2/1","3/1","5/1","10/1"];
   var timeLocked = false;
-  HTomb.Time.setSpeed = function(spd) {
-    speed = Math.min(Math.max(100,spd),5000);
+  HTomb.Time.speedUp = function(spd) {
+    speed = Math.min(speed+1,speeds.length-1);
+  };
+  HTomb.Time.slowDown = function(spd) {
+    speed = Math.max(0,speed-1);
   };
   HTomb.Time.getSpeed = function() {
-    return speed;
+    return speeds[speed];
   };
   HTomb.Time.lockTime = function() {
     HTomb.Time.stopTime();
@@ -26,7 +30,8 @@ HTomb = (function(HTomb) {
     if (timeLocked===true) {
       return;
     }
-    timePassing = setInterval(HTomb.Time.passTime,speed);
+    let split = speeds[speed].split("/");
+    timePassing = setInterval(HTomb.Time.passTime,1000*split[1]/split[0]);
     HTomb.GUI.Panels.scroll.render();
   };
   HTomb.Time.stopTime = function() {
@@ -42,14 +47,13 @@ HTomb = (function(HTomb) {
     }
   };
   HTomb.Time.passTime = function() {
-    HTomb.Time.turn();
+    HTomb.Time.resumeActors();
   };
   var particleTime;
   var particleSpeed = 50;
   HTomb.Time.startParticles = function() {
     if (particleTime===undefined) {
       particleTime = setInterval(function() {
-        //console.log("updating particles");
         HTomb.Particles.update(particleSpeed);
         HTomb.GUI.Panels.gameScreen.renderParticles();
       },particleSpeed);
@@ -63,109 +67,111 @@ HTomb = (function(HTomb) {
     particleTime = undefined;
   };
 
+  //// ****Handle turns and actions with recursive breaking ******************
+  // Actors that still need to be checked
+  let queue = [];
+  // Actors that have already been checked
+  let deck = [];
+  // Recursive function for interruptable actions
+  function nextActor() {
+    if (queue.length===0) {
+      if (deck.length===0) {
+        // If the queue and deck are both exhausted, halt recursion
+        HTomb.Events.publish({type: "TurnEnd"});
+        HTomb.Time.turn();
+        return;
+      } else {
+        // If the queue is exhausted but the deck is not, reverse the deck onto the queue
+        queue = deck.reverse();
+        deck = [];
+      }
+    }
+    // Take the next actor off the queue
+    let actor = queue.pop();
+    // Eventually we will do this in a more complex way to allow for round-robin combat mode
+    if (actor===HTomb.Player) {
+      // When we hit the player, halt recursion and update visibility
+      HTomb.Player.player.visibility();
+      if (HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
+        // maybe should center on active actor?
+        HTomb.GUI.Panels.gameScreen.recenter();
+      }
+      HTomb.GUI.Panels.menu.render();
+      HTomb.GUI.render();
+      actor.ai.acted = false;
+      return;
+    } else {
+      // If the actor can't act, skip it
+      if (actor.ai.actionPoints>0 && actor.isPlaced()) {
+        // Act
+        actor.ai.acted = false;
+        let points = actor.ai.actionPoints;
+        actor.ai.act();
+        if (points===actor.ai.actionPoints) {
+          console.log("Danger of infinite recursion from " + actor);
+        }
+        // If the actor can still act, put it on deck
+        if (actor.ai.actionPoints>0 && actor.isPlaced()) {
+          deck.push(actor);
+        }
+      }
+    }
+    // Activate recursion
+    nextActor();
+  }
+  // Expose a method to resume queue recursion
+  HTomb.Time.resumeActors = function(actor) {
+    actor = actor || HTomb.Player;
+    if (actor.ai.actionPoints>0 && actor.isPlaced()) {
+      deck.push(actor);
+    }
+    nextActor();
+  };
   // Process a turn of play
   HTomb.Time.turn = function() {
+    // 1) Check to make sure time is unlocked
     if (timeLocked===true) {
       return;
     }
     HTomb.Time.startParticles();
-    HTomb.Events.publish({type: "TurnBegin"});
-    //HTomb.Time.stopTime();
-    var Player = HTomb.Player;
-    // Assign tasks to minions
-    if (Player.master) {
-      HTomb.Utils.shuffle(Player.master.taskList);
-      Player.master.assignTasks();
-    }
-    // Run the AI for each creature...should I deal with action points here?
-    var creatureDeck = [];
-    for (var creature in HTomb.World.creatures) {
-      let c = HTomb.World.creatures[creature];
-      if (c.ai) {
-        c.ai.regainPoints();
-      }
-      creatureDeck.push(c);
-    }
-    /// Begin experimental code
-    HTomb.Utils.shuffle(creatureDeck);
-    do {
-      creatureDeck.sort(function(a,b) {
-        if (!a.ai && !b.ai) {
-          return HTomb.Utils.dice(1,2)*2-3;
-        } else if (!a.ai) {
-          return -1;
-        } else if (!b.ai) {
-          return 1;
-        } else if (a.ai.actionPoints===b.ai.actionPoints) {
-          return HTomb.Utils.dice(1,2)*2-3;
-        } else if (a.ai.actionPoints<b.ai.actionPoints) {
-          return 1;
-        } else {
-          return -1;
-        }
-      });
-      for (let c=creatureDeck.length-1; c>=0; c--) {
-        let cr = creatureDeck[c];
-        if (cr.x===null || cr.y===null || cr.z===null) {
-          continue;
-        }
-        if (cr.ai && cr.isPlaced()) {
-          if (cr.ai.actionPoints>=0) {
-            cr.ai.acted = false;
-            cr.ai.passes+=1;
-            if (cr.ai.passes>=3) {
-              console.log(cr.ai);
-              throw new Error("too many passes!");
-            }
-            cr.ai.act();
-          }
-          if (cr.ai.actionPoints<=0) {
-            creatureDeck.pop();
-          }
-        } else {
-          creatureDeck.pop();
-        }
-      }
-    } while(creatureDeck.length>0)
-    ////end experimental code
-    // Calculate visibility
-    HTomb.FOV.resetVisible();
-    if (Player.sight) {
-      HTomb.FOV.findVisible(Player.x, Player.y, Player.z, Player.sight.range);
-    }
-    if (Player.master) {
-      for (let i=0; i<Player.master.minions.length; i++) {
-        let cr = Player.master.minions[i];
-        if (cr.sight) {
-          HTomb.FOV.findVisible(cr.x,cr.y,cr.z, cr.sight.range);
-        }
-      }
-      //for (let i=0; i<Player.master.workshops.length; i++) {
-      //  let w = Player.master.workshops[i];
-      //  for (let j=0; j<w.features.length; j++) {
-      //    let f = w.features[j];
-      //    HTomb.World.visible[HTomb.Utils.coord(f.x,f.y,f.z)] = true;
-      //  }
-      //}
-    }
-    // Recenter the GUI on the player
-    if (HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
-      HTomb.GUI.Panels.gameScreen.recenter();
-    }
-    HTomb.GUI.Panels.menu.render();
-    // Render the GUI
-    HTomb.GUI.render();
-    //if (HTomb.Debug.paused!==true) {
-    //  HTomb.Time.startTime();
-    //}
-    if (HTomb.Encounters.check()) {
-        HTomb.Encounters.roll();
-    }
+    // 2) Handle TurnBegin listeners
     HTomb.Time.dailyCycle.onTurnBegin();
-    HTomb.Events.publish({type: "TurnEnd"});
+    HTomb.Events.publish({type: "TurnBegin"});
+    // 3) Assign tasks
+    HTomb.Utils.shuffle(HTomb.Player.master.taskList);
+    HTomb.Player.master.assignTasks();
+    // 4) Deal with actors
+    for (let c in HTomb.World.creatures) {
+      let cr = HTomb.World.creatures[c];
+      if (cr.ai) {
+        cr.ai.regainPoints();
+        queue.push(cr);
+      }
+    }
+    // Sort according to priority
+    queue.sort(function(a,b) {
+      if (a.ai.actionPoints < b.ai.actionPoints) {
+        return -1;
+      } else if (a.ai.actionPoints > b.ai.actionPoints) {
+        return 1;
+      } else if (a===HTomb.Player) {
+        return -1;
+      } else if (b===HTomb.Player) {
+        return 1;
+      } else if (a.spawnId < b.spawnId) {
+        return -1;
+      } else if (a.spawnId > b.spawnId) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    // Begin recursive traversal of the queue
+    nextActor();
   };
 
 
+  // **** Handle daily cycle
   HTomb.Constants.STARTHOUR = 8;
   //HTomb.Constants.STARTHOUR = 16;
   HTomb.Constants.DAWN = 6;

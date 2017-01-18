@@ -18,8 +18,34 @@ HTomb = (function(HTomb) {
       }
       return options;
     },
-    destroy: function() {
-      HTomb.GUI.Views.died();
+    playerDeath: function() {
+      HTomb.Time.lockTime();
+      HTomb.GUI.Contexts.locked=true;
+      HTomb.GUI.pushMessage("%c{red}You have died!");
+      setTimeout(function(){
+        HTomb.GUI.Views.parentView = HTomb.GUI.Views.startup;
+        let context = HTomb.GUI.Contexts.new();
+        context.clickTile = context.rightClickTile = context.keydown = function() {
+          HTomb.GUI.reset();
+        };
+        HTomb.GUI.Contexts.active = context;
+        HTomb.GUI.Contexts.locked = false;
+      },500);
+    },
+    visibility: function() {
+      let p = this.entity;
+      HTomb.FOV.resetVisible();
+      if (p.sight) {
+        HTomb.FOV.findVisible(p.x, p.y, p.z, p.sight.range);
+      }
+      if (p.master) {
+        for (let i=0; i<p.master.minions.length; i++) {
+          let cr = p.master.minions[i];
+          if (cr.sight) {
+            HTomb.FOV.findVisible(cr.x,cr.y,cr.z, cr.sight.range);
+          }
+        }
+      }
     }
   });
 
@@ -116,6 +142,7 @@ HTomb = (function(HTomb) {
       HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " picks up " + item.describe({article: "indefinite"}),e.x,e.y,e.z);
       this.add(item);
       this.entity.ai.acted = true;
+      this.entity.ai.actionPoints-=16;
     },
     pickupOne: function(i_or_t) {
       var e = this.entity;
@@ -139,6 +166,7 @@ HTomb = (function(HTomb) {
       item.place(e.x,e.y,e.z);
       HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " drops " + item.describe({article: "indefinite"}),e.x,e.y,e.z);
       this.entity.ai.acted = true;
+      this.entity.ai.actionPoints-=16;
     },
     add: function(item) {
       if (this.items.length>=this.capacity) {
@@ -378,15 +406,18 @@ HTomb = (function(HTomb) {
       HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " displaces " + cr.describe({article: "indefinite"}) + ".",x,y,z);
       if (this.entity.ai) {
         this.entity.ai.acted = true;
+        this.entity.ai.actionPoints-=16;
       }
       if (cr.ai) {
         cr.ai.acted = true;
+        this.entity.ai.actionPoints-=16;
       }
     },
     stepTo: function(x,y,z) {
       this.entity.place(x,y,z);
       if (this.entity.ai) {
         this.entity.ai.acted = true;
+        this.entity.ai.actionPoints-=16;
       }
       // unimplemented...use action points?
     },
@@ -551,6 +582,8 @@ HTomb = (function(HTomb) {
       } else {
         HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " misses " + thing.describe({article: "indefinite"})+".",this.entity.x,this.entity.y,this.entity.z,"yellow");
       }
+      this.entity.ai.acted = true;
+      this.entity.ai.actionPoints-=16;
   	},
   	//should be on the damage packet..//hit: function() {},
   	defend: function() {

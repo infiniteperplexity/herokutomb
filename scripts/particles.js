@@ -162,7 +162,7 @@ HTomb = (function(HTomb) {
     HTomb.Time.startParticles();
   }
 
-  HTomb.Particles.Liquid = {chars: [".","\u2022","\u2234","\u2235","\u25CB","\u25CF","\u25E6"]};
+  HTomb.Particles.Liquid = {chars: ["\u00B7","\u2022","\u2234","\u2235","\u25CB","\u25CF","\u25E6"]};
   HTomb.Particles.Blood = HTomb.Utils.merge(HTomb.Particles.Liquid,{fg: "red"});
   HTomb.Particles.Acid = HTomb.Utils.merge(HTomb.Particles.Liquid,{fg: "#55FF11"});
   HTomb.Particles.Spatter = {t: 2, alpha: 0.5, fade: 0.5, n: 25};

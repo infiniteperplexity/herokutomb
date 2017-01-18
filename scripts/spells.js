@@ -129,8 +129,9 @@ HTomb = (function(HTomb) {
               HTomb.Things.Minion().addToEntity(zombie);
               caster.entity.master.addMinion(zombie);
               zombie.ai.acted = true;
+              zombie.ai.actionPoints-=16;
               HTomb.GUI.sensoryEvent("The corpse stirs and rises...",x,y,z);
-              HTomb.Time.turn();
+              HTomb.Time.resumeActors();
               return;
             }
           }
@@ -156,8 +157,9 @@ HTomb = (function(HTomb) {
               let task = HTomb.Things.ZombieEmergeTask({assigner: caster.entity}).place(x,y,z);
               task.task.assignTo(zombie);
               zombie.ai.acted = true;
+              zombie.ai.actionPoints-=16;
               HTomb.GUI.sensoryEvent("You hear an ominous stirring below the earth...",x,y,z);
-              HTomb.Time.turn();
+              HTomb.Time.resumeActors();
               return;
             }
           }
@@ -212,6 +214,7 @@ HTomb = (function(HTomb) {
         }
         f.integrity-=1;
         this.assignee.ai.acted = true;
+        this.assignee.ai.actionPoints-=16;
         if (f.integrity<=0) {
           f.explode(this.assigner);
           HTomb.GUI.sensoryEvent("A zombie emerges from the earth!",x,y,z);

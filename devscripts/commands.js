@@ -56,7 +56,7 @@ HTomb = (function(HTomb) {
     } else if (square.creature && square.creature.ai && square.creature.ai.isHostile(HTomb.Player) && HTomb.Tiles.isTouchableFrom(newx, newy, newz, x, y, z)) {
     //} else if (square.creature && square.creature.ai && square.creature.ai.hostile && HTomb.Tiles.isTouchableFrom(newx, newy, newz, x, y, z)) {
       HTomb.Player.combat.attack(square.creature);
-      HTomb.Time.turn();
+      HTomb.Time.resumeActors();
       return;
     // if you can move, either move or displace
     } else if (HTomb.Player.movement.canMove(newx,newy,newz)) {
@@ -91,7 +91,7 @@ HTomb = (function(HTomb) {
       var f = HTomb.World.features[coord(x,y,z)];
       if (f && f.activate) {
         f.activate();
-        HTomb.Time.turn();
+        HTomb.Time.resumeActors();
       }
     }
     HTomb.GUI.pickDirection(activate);
@@ -99,14 +99,14 @@ HTomb = (function(HTomb) {
   // Do nothing
   Commands.wait = function() {
     HTomb.Player.ai.acted = true;
-    HTomb.Player.ai.actionPoints-=16;
-    HTomb.Time.turn();
+    HTomb.Player.ai.actionPoints-=5;
+    HTomb.Time.resumeActors();
   };
 
   HTomb.Debug.teleport = function(x,y,z) {
     HTomb.Player.remove();
     HTomb.Player.place(x,y,z);
-    HTomb.Time.turn();
+    HTomb.Time.resumeActors();
   }
 
   Commands.centerOnPlayer = function() {
@@ -192,7 +192,7 @@ HTomb = (function(HTomb) {
     //HTomb.Player.place(x,y,z);
     var square = HTomb.Tiles.getSquare(x,y,z);
     Commands.glance(square);
-    HTomb.Time.turn();
+    HTomb.Time.resumeActors();
   };
   Commands.displaceCreature = function(x,y,z) {
     var p = HTomb.Player;
@@ -202,7 +202,7 @@ HTomb = (function(HTomb) {
     var cr = HTomb.World.creatures[coord(x,y,z)];
     HTomb.Player.movement.displaceCreature(cr);
     Commands.glance(HTomb.Tiles.getSquare(x,y,z));
-    HTomb.Time.turn();
+    HTomb.Time.resumeActors();
 
   };
   // Try to pick up items
@@ -218,14 +218,14 @@ HTomb = (function(HTomb) {
     } else {
       if (square.items.length===1) {
         HTomb.Player.inventory.pickup(square.items.head());
-        HTomb.Time.turn();
+        HTomb.Time.resumeActors();
       } else {
         // If there are multiple items, display a menu
         GUI.choosingMenu("Choose an item:",square.items.exposeArray(),
           function(item) {
             return function() {
               HTomb.Player.inventory.pickup(item);
-              HTomb.Time.turn();
+              HTomb.Time.resumeActors();
               HTomb.GUI.reset();
             };
           }
@@ -249,7 +249,7 @@ HTomb = (function(HTomb) {
           function(item) {
             return function() {
               HTomb.Player.inventory.drop(item);
-              HTomb.Time.turn();
+              HTomb.Time.resumeActors();
               HTomb.GUI.reset();
             };
           }
@@ -305,7 +305,7 @@ HTomb = (function(HTomb) {
       function(task) {
         return function() {
           HTomb.Player.master.designate(task);
-          //HTomb.Time.turn();
+          //HTomb.Time.resumeActors();
         };
       }
     );

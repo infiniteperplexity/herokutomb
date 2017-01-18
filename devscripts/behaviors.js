@@ -31,6 +31,21 @@ HTomb = (function(HTomb) {
         HTomb.GUI.Contexts.active = context;
         HTomb.GUI.Contexts.locked = false;
       },500);
+    },
+    visibility: function() {
+      let p = this.entity;
+      HTomb.FOV.resetVisible();
+      if (p.sight) {
+        HTomb.FOV.findVisible(p.x, p.y, p.z, p.sight.range);
+      }
+      if (p.master) {
+        for (let i=0; i<p.master.minions.length; i++) {
+          let cr = p.master.minions[i];
+          if (cr.sight) {
+            HTomb.FOV.findVisible(cr.x,cr.y,cr.z, cr.sight.range);
+          }
+        }
+      }
     }
   });
 

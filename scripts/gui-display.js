@@ -71,7 +71,7 @@ HTomb = (function(HTomb) {
     gameScreen.renderParticles();
   };
   gameScreen.recenter = function() {
-    var Player = HTomb.Player;
+    /*var Player = HTomb.Player;
     gameScreen.z = Player.z;
     if (Player.x >= gameScreen.xoffset+SCREENW-2) {
       gameScreen.xoffset = Player.x-SCREENW+2;
@@ -82,18 +82,23 @@ HTomb = (function(HTomb) {
       gameScreen.yoffset = Player.y-SCREENH+2;
     } else if (Player.y <= gameScreen.yoffset) {
       gameScreen.yoffset = Player.y-1;
-    }
+    }*/
+    let p = HTomb.Player;
+    gameScreen.center(p.x,p.y,p.z);
   };
   gameScreen.center = function(x,y,z) {
-    x = x-Math.floor(SCREENW/2)-1;
-    y = y-Math.floor(SCREENH/2)-1;
+    x = x-Math.floor(SCREENW/2);
+    y = y-Math.floor(SCREENH/2);
     z = z || HTomb.Player.z;
-    x = Math.max(x,Math.ceil(SCREENW/2));
-    y = Math.max(y,Math.ceil(SCREENW/2));
-    x = Math.min(x,Math.floor(LEVELW-1-SCREENW/2));
-    y = Math.min(y,Math.floor(LEVELH-1-SCREENH/2));
+    //x = Math.max(x,0);
+    //y = Math.max(y,0);
+    //x = Math.min(x,LEVELW-1-SCREENW);
+    //y = Math.min(y,LEVELH-1-SCREENH);
     gameScreen.xoffset = x;
     gameScreen.yoffset = y;
+    if (z!==undefined) {
+      gameScreen.z = z;
+    }
   };
   var oldSquares;
   gameScreen.renderParticles = function() {
@@ -353,6 +358,7 @@ HTomb = (function(HTomb) {
     "(Control+Arrows for diagonal.)",
     "K: Toggle mouse cursor.",
     "<: Up, >: Down, Space: Wait.",
+    "Backspace / Delete: Center on player.",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary.",
     "G: Pick Up, D: Drop, I: Inventory.",

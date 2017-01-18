@@ -23,7 +23,12 @@ HTomb = (function(HTomb) {
     }
     var listeners = Events[event.type] || [];
     for (var j=0; j<listeners.length; j++) {
-      listeners[j]["on"+event.type](event);
+      if (listeners[j]["on"+event.type]) {
+        listeners[j]["on"+event.type](event);
+      } else {
+        console.log([listeners[j],event.type]);
+        throw new Error("listener lacked method!");
+      }
       //listeners[j].onEvent(event);
     }
   };

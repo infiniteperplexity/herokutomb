@@ -226,11 +226,15 @@ HTomb = (function(HTomb) {
       if (this.entity.x!==null && this.entity.y!==null && this.entity.z!==null) {
         HTomb.Particles.addEmitter(this.entity.x, this.entity.y, this.entity.z, HTomb.Particles.Blood, HTomb.Particles.Spray);
         HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " dies.",this.entity.x,this.entity.y,this.entity.z,"red");
-        if (this.leavesCorpse) {
-          let corpse = HTomb.Things.Corpse({sourceCreature: this.entity});
-          corpse.place(this.entity.x, this.entity.y, this.entity.z);
+        if (this.entity.player) {
+          this.entity.player.playerDeath();
+        } else {
+          if (this.leavesCorpse) {
+            let corpse = HTomb.Things.Corpse({sourceCreature: this.entity});
+            corpse.place(this.entity.x, this.entity.y, this.entity.z);
+          }
+          this.entity.destroy();
         }
-        this.entity.destroy();
       }
     },
     onPlace: function(x,y,z) {

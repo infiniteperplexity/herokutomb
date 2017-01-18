@@ -305,12 +305,13 @@ HTomb = (function(HTomb) {
     goals: null,
     fallback: null,
     regainPoints: function() {
-      this.passes = 0;
       this.acted = false;
-      if (this.actionPoints<=0) {
+      if (this.actionPoints<0) {
         do {
           this.actionPoints+=16;
-        } while (this.actionPoints<=0);
+        } while (this.actionPoints<0);
+      } else {
+        this.actionPoints = 16;
       }
     },
     isHostile: function(thing) {
