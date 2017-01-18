@@ -358,7 +358,7 @@ HTomb = (function(HTomb) {
       console.time("validate behaviors");
       for (let i=0; i<HTomb.World.things.length; i++) {
         let thing = HTomb.World.things[i];
-        if (thing.Behaviors) {) {
+        if (thing.Behaviors) {
           thing.validateBehaviors();
         }
       }
