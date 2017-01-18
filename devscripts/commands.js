@@ -99,7 +99,7 @@ HTomb = (function(HTomb) {
   // Do nothing
   Commands.wait = function() {
     HTomb.Player.ai.acted = true;
-    HTomb.Player.ai.actionPoints-=5;
+    HTomb.Player.ai.actionPoints-=16;
     HTomb.Time.resumeActors();
   };
 
