@@ -183,6 +183,12 @@ HTomb = (function(HTomb) {
     minute: 0,
     day: 0,
     turn: 0,
+    reset: function() {
+      this.hour = HTomb.Constants.STARTHOUR;
+      this.minute = 0;
+      this.day = 0;
+      this.turn = 0;
+    },
     onTurnBegin: function() {
       this.turn+=1;
       this.minute+=1;

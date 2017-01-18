@@ -60,6 +60,7 @@ HTomb = (function(HTomb) {
       options.name = this.name || "(nameless)";
       // behaviors can augment or alter the description via options
       if (this.Behaviors) {
+        this.validateBehaviors();
         let beh = this.behaviors;
         for (let i=0; i<beh.length; i++) {
           if (beh[i].onDescribe) {

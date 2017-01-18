@@ -22,6 +22,7 @@ HTomb = (function(HTomb) {
   HTomb.World.covers = HTomb.Utils.grid3d();
 
   HTomb.World.init = function() {
+    HTomb.Time.dailyCycle.reset();
     while(HTomb.World.things.length>0) {
       HTomb.World.things.pop();
     }
