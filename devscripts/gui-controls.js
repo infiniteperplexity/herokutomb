@@ -392,6 +392,9 @@ HTomb = (function(HTomb) {
     var next;
     if(square.explored || HTomb.Debug.explored) {
       next = mainColor + "Terrain: "+square.terrain.name;
+      if (square.terrain.zview!==-1 && below.cover.liquid) {
+        next = next + " (sodden)";
+      }
       text.push(next);
       next = mainColor + "Creature: ";
       if (square.creature && (square.visible || HTomb.Debug.visible)) {
