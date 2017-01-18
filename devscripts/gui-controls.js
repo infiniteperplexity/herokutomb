@@ -123,7 +123,8 @@ HTomb = (function(HTomb) {
       "(Control+Arrows for diagonal.)",
       "K: Toggle mouse cursor.",
       "Click or Space: Select.",
-      "<: Up, >: Down"
+      "<: Up, >: Down",
+      "Backspace / Delete: Center on player."
     ];
     if (options.message) {
       context.menuText.unshift("");
@@ -144,6 +145,7 @@ HTomb = (function(HTomb) {
       var context2 = HTomb.Utils.clone(survey);
       Contexts.active = context2;
       context2.menuText = context.menuText;
+      menu.refresh();
       context2.clickTile = secondSquare(x,y);
       context2.mouseTile = drawSquareBox(x,y);
       let keyCursor2 = GUI.getKeyCursor();
@@ -235,7 +237,8 @@ HTomb = (function(HTomb) {
       "(Control+Arrows for diagonal.)",
       "K: Toggle mouse cursor.",
       "Click or Space: Select.",
-      "<: Up, >: Down"
+      "<: Up, >: Down",
+      "Backspace / Delete: Center on player."
     ];
     context.mouseTile = function(x0,y0) {
       var bg = options.bg || "#550000";
@@ -296,7 +299,11 @@ HTomb = (function(HTomb) {
       }
       var choice = items[i];
       // Bind a callback function and its closure to each keystroke
-      contrls["VK_" + alpha[i].toUpperCase()] = action(choice);
+      let func = action(choice);
+      contrls["VK_" + alpha[i].toUpperCase()] = function() {
+        func();
+        menu.refresh();
+      }
       choices.push(alpha[i]+") " + desc);
     }
     contrls.VK_ESCAPE = GUI.reset;
@@ -319,7 +326,8 @@ HTomb = (function(HTomb) {
       "(Control+Arrows for diagonal.)",
       "K: Toggle mouse cursor.",
       "Click or Space: Select.",
-      "<: Up, >: Down"
+      "<: Up, >: Down",
+      "Backspace / Delete: Center on player."
     ];
     Contexts.active = context;
     if (options.message) {
@@ -559,7 +567,9 @@ HTomb = (function(HTomb) {
     },
     VK_U: function() {
       HTomb.GUI.Views.summaryView();
-    }
+    },
+    VK_DELETE: Commands.centerOnPlayer,
+    VK_BACK_SPACE: Commands.centerOnPlayer
   });
   // ***** Survey mode *********
   Main.surveyMode = function() {
@@ -584,13 +594,13 @@ HTomb = (function(HTomb) {
         n = 8;
       }
       for (let i=0; i<n; i++) {
-        if (gameScreen.z+dz < NLEVELS || gameScreen.z+dz >= 0) {
+        if (gameScreen.z+dz < NLEVELS-1 && gameScreen.z+dz > 0) {
           gameScreen.z+=dz;
         }
-        if (gameScreen.xoffset+dx < LEVELW-SCREENW && gameScreen.xoffset+dx >= 0) {
+        if (gameScreen.xoffset+dx < LEVELW-Math.floor(SCREENW/2) && gameScreen.xoffset+dx >= Math.ceil(-SCREENW/2)) {
           gameScreen.xoffset+=dx;
         }
-        if (gameScreen.yoffset+dy < LEVELH-SCREENH && gameScreen.yoffset+dy >= 0) {
+        if (gameScreen.yoffset+dy < LEVELH-Math.floor(SCREENH/2) && gameScreen.yoffset+dy >= Math.ceil(-SCREENH/2)) {
           gameScreen.yoffset+=dy;
         }
       }
@@ -685,6 +695,8 @@ HTomb = (function(HTomb) {
     VK_U: function() {
       HTomb.GUI.Views.summaryView();
     },
+    VK_DELETE: Commands.centerOnPlayer,
+    VK_BACK_SPACE: Commands.centerOnPlayer,
     VK_SPACE: function() {
       let keyCursor = GUI.getKeyCursor();
       if (HTomb.GUI.Contexts.active===survey) {
@@ -718,6 +730,7 @@ HTomb = (function(HTomb) {
     "(Control+Arrows for diagonal.)",
     "K: Toggle mouse cursor.",
     "<: Up, >: Down, Space: Wait.",
+    "Backspace / Delete: Center on player.",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary",
     "+ / -: Change speed.",

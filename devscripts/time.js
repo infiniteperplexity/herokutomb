@@ -82,13 +82,13 @@ HTomb = (function(HTomb) {
     for (var creature in HTomb.World.creatures) {
       let c = HTomb.World.creatures[creature];
       if (c.ai) {
-        c.ai.actionPoints = c.actionPoints || 16;
+        c.ai.regainPoints();
       }
       creatureDeck.push(c);
     }
     /// Begin experimental code
+    HTomb.Utils.shuffle(creatureDeck);
     do {
-      HTomb.Utils.shuffle(creatureDeck);
       creatureDeck.sort(function(a,b) {
         if (!a.ai && !b.ai) {
           return HTomb.Utils.dice(1,2)*2-3;
@@ -112,6 +112,11 @@ HTomb = (function(HTomb) {
         if (cr.ai && cr.isPlaced()) {
           if (cr.ai.actionPoints>=0) {
             cr.ai.acted = false;
+            cr.ai.passes+=1;
+            if (cr.ai.passes>=3) {
+              console.log(cr.ai);
+              throw new Error("too many passes!");
+            }
             cr.ai.act();
           }
           if (cr.ai.actionPoints<=0) {

@@ -98,6 +98,7 @@ HTomb = (function(HTomb) {
   }
   // Do nothing
   Commands.wait = function() {
+    HTomb.Player.ai.acted = true;
     HTomb.Player.ai.actionPoints-=16;
     HTomb.Time.turn();
   };
@@ -107,6 +108,16 @@ HTomb = (function(HTomb) {
     HTomb.Player.place(x,y,z);
     HTomb.Time.turn();
   }
+
+  Commands.centerOnPlayer = function() {
+    let p = HTomb.Player;
+    HTomb.GUI.Panels.gameScreen.center(p.x,p.y,p.z);
+    HTomb.GUI.Panels.gameScreen.render();
+    let keyCursor = HTomb.GUI.getKeyCursor();
+    if (keyCursor) {
+      HTomb.GUI.Contexts.active.mouseTile(keyCursor[0],keyCursor[1]);
+    }
+  };
   // Describe creatures, items, and features in this square and adjoined slopes
   // This method may be obsolete now that we have "hover"
   Commands.look = function(square) {
@@ -177,10 +188,10 @@ HTomb = (function(HTomb) {
     } else if (z===z0-1) {
       HTomb.GUI.pushMessage("You scramble down the slope.");
     }
-    HTomb.Player.place(x,y,z);
+    HTomb.Player.movement.stepTo(x,y,z);
+    //HTomb.Player.place(x,y,z);
     var square = HTomb.Tiles.getSquare(x,y,z);
     Commands.glance(square);
-    HTomb.Player.ai.actionPoints-=16;
     HTomb.Time.turn();
   };
   Commands.displaceCreature = function(x,y,z) {
@@ -189,12 +200,7 @@ HTomb = (function(HTomb) {
     var y0 = HTomb.Player.y;
     var z0 = HTomb.Player.z;
     var cr = HTomb.World.creatures[coord(x,y,z)];
-    cr.remove();
-    HTomb.Player.place(x,y,z);
-    HTomb.Player.ai.actionPoints-=16;
-    cr.place(x0,y0,z0);
-    cr.ai.actionPoints-=16;
-    HTomb.GUI.pushMessage(HTomb.Player.describe({capitalized: true, article: "definite"}) + " displaces " + cr.describe({article: "indefinite"}) + ".");
+    HTomb.Player.movement.displaceCreature(cr);
     Commands.glance(HTomb.Tiles.getSquare(x,y,z));
     HTomb.Time.turn();
 

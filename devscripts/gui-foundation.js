@@ -167,7 +167,7 @@ HTomb = (function(HTomb) {
   };
   HTomb.GUI.getKeyCursor = function() {
     if (keyCursor) {
-      return [HTomb.GUI.Panels.gameScreen.xoffset+Math.floor(HTomb.Constants.SCREENW/2+1),HTomb.GUI.Panels.gameScreen.yoffset+Math.floor(HTomb.Constants.SCREENH/2+1)];
+      return [HTomb.GUI.Panels.gameScreen.xoffset+Math.floor(HTomb.Constants.SCREENW/2),HTomb.GUI.Panels.gameScreen.yoffset+Math.floor(HTomb.Constants.SCREENH/2)];
     } else {
       return false;
     }
@@ -186,6 +186,9 @@ HTomb = (function(HTomb) {
     var x = Math.floor((click.clientX+XSKEW)/CHARWIDTH-1);
     var y = Math.floor((click.clientY+YSKEW)/CHARHEIGHT-1);
     var gameScreen = GUI.Panels.gameScreen;
+    if (x+gameScreen.xoffset>=LEVELW || x+gameScreen.xoffset<0 || y+gameScreen.yoffset>=LEVELH || y+gameScreen.yoffset<0) {
+      GUI.Contexts.active.mouseOver();
+    }
     if (click.button===2) {
       GUI.Contexts.active.rightClickTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
     } else {
@@ -206,7 +209,11 @@ HTomb = (function(HTomb) {
     var gameScreen = GUI.Panels.gameScreen;
     GUI.Contexts.mouseX = x;
     GUI.Contexts.mouseY = y;
-    GUI.Contexts.active.mouseTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
+    if (x+gameScreen.xoffset>=LEVELW || x+gameScreen.xoffset<0 || y+gameScreen.yoffset>=LEVELH || y+gameScreen.yoffset<0) {
+      GUI.Contexts.active.mouseOver();
+    } else {
+      GUI.Contexts.active.mouseTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
+    }
   };
   // Bind a ROT.js keyboard constant to a function for a particular context
   var bindKey = GUI.bindKey = function(target, key, func) {
