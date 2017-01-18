@@ -709,7 +709,7 @@ HTomb = (function(HTomb) {
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
-      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z,{
+      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(x,y,z,cr.x,cr.y,cr.z, {
         searcher: cr,
         searchee: this.entity,
         searchTimeout: 10
@@ -745,7 +745,7 @@ HTomb = (function(HTomb) {
         if (task && task.task.template==="StockpileTask") {
           return false;
         }
-        if (HTomb.Tiles.isReachableFrom(that.entity.x, that.entity.y, that.entity.z, item.x, item.y, item.z, {
+        if (HTomb.Tiles.isReachableFrom(item.x, item.y, item.z, that.entity.x, that.entity.y, that.entity.z, {
           searcher: cr,
           searchee: item,
           searchTimeout: 10
@@ -1009,7 +1009,7 @@ HTomb = (function(HTomb) {
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
-      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z, {
+      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(x,y,z,cr.x,cr.y,cr.z, {
         searcher: cr,
         searchee: this.entity,
         searchTimeout: 10

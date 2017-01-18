@@ -82,7 +82,7 @@ HTomb = (function(HTomb) {
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
-      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,x,y,z,{
+      if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(x,y,z,cr.x,cr.y,cr.z,{
         searcher: cr,
         searchee: this.entity,
         searchTimeout: 10
@@ -276,7 +276,7 @@ HTomb = (function(HTomb) {
           } else if (tile===HTomb.Tiles.FloorTile) {
             menu.middle = ["%c{lime}Digging here will excavate a slope to a lower level."];
           } else if (tile===HTomb.Tiles.WallTile) {
-            menu.middle = ["%c{lime}Digging here will dig a roofed tunnel."];
+            menu.middle = ["%c{lime}Digging here from the side makes a roofed tunnel; digging from an upward slope below makes a downward slope."];
           } else {
             menu.middle["%c{orange}Cannot dig here."];
           }

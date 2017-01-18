@@ -315,6 +315,7 @@ HTomb = (function(HTomb) {
     return [sym,fg,shade];
   };
 
+
   HTomb.Tiles.getSquare = function(x,y,z) {
     var square = {};
     var crd = HTomb.Utils.coord(x,y,z);
@@ -347,6 +348,12 @@ HTomb = (function(HTomb) {
     square.z = z;
     return square;
   };
+
+
+  function defaultPassable(x,y,z) {
+    let t = HTomb.World.tiles[z][x][y];
+    return (t.solid===undefined && t.fallable===undefined);
+  }
 
   Tiles.randomEmptyNeighbor = function(x,y,z) {
     var d = [
@@ -469,7 +476,8 @@ HTomb = (function(HTomb) {
   };
 
   // any tile that can be touched by a worker from a square
-  HTomb.Tiles.touchableFrom = function(x,y,z) {
+  HTomb.Tiles.touchableFrom = function(x,y,z,options) {
+    options = options || {};
     var touchable = [];
     //sideways
     var t, x1, y1;
@@ -490,11 +498,12 @@ HTomb = (function(HTomb) {
     }
     return touchable;
   };
-  HTomb.Tiles.isTouchableFrom = function(x1,y1,z1,x0,y0,z0) {
+  HTomb.Tiles.isTouchableFrom = function(x1,y1,z1,x0,y0,z0,options) {
+    options = options || {};
     if(x1===x0 && y1===y0 && z1===z0) {
       return true;
     }
-    if (HTomb.Utils.arrayInArray([x1,y1,z1],HTomb.Tiles.touchableFrom(x0,y0,z0))>-1) {
+    if (HTomb.Utils.arrayInArray([x1,y1,z1],HTomb.Tiles.touchableFrom(x0,y0,z0,options))>-1) {
       return true;
     } else {
       return false;
@@ -513,15 +522,6 @@ HTomb = (function(HTomb) {
       return false;
     }
   };
-
-  function defaultPassable(x,y,z) {
-    //if (x<0 || x>=LEVELW || y<0 || y>=LEVELH || z<0 || z>=NLEVELS) {
-    //  return false;
-    //}
-    let t = HTomb.World.tiles[z][x][y];
-    return (t.solid===undefined && t.fallable===undefined);
-  }
-
 
   HTomb.Tiles.isEnclosed = function(x,y,z,callb) {
     callb = callb || defaultPassable;

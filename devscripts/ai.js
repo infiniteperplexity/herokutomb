@@ -61,7 +61,7 @@ HTomb = (function(HTomb) {
               if (v.item.isOnGround()!==true) {
                 return false;
               } else if (v.template===ing) {
-                if (HTomb.Tiles.isReachableFrom(cr.x,cr.y,cr.z,v.x,v.y,v.z, {
+                if (HTomb.Tiles.isReachableFrom(v.x,v.y,v.z,cr.x,cr.y,cr.z,{
                   searcher: cr,
                   searchee: v,
                   searchTimeout: 10
