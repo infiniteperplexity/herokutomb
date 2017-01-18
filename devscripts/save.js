@@ -355,12 +355,15 @@ HTomb = (function(HTomb) {
       if (thing.task) {
         HTomb.World.tasks[coord(x,y,z)]=thing;
       }
+      console.time("validate behaviors");
       for (let i=0; i<HTomb.World.things.length; i++) {
         let thing = HTomb.World.things[i];
+        console.log(i);
         if (thing.validateBehaviors) {
           thing.validateBehaviors();
         }
       }
+      console.timeEnd("validate behaviors");
     }
   }
 

@@ -50,12 +50,15 @@ HTomb = (function(HTomb) {
       return;
     }
     GUI.Contexts.active = GUI.Contexts.main;
-    // This shoudl probably be handled a bit differently?
     menu.middle = menu.defaultMiddle;
     menu.bottom = menu.defaultBottom;
-    menu.refresh(); // menu.refresh();
-    gameScreen.recenter(); // gameScreen.recenter();
-    GUI.render(); // Actions.render();
+    menu.refresh();
+    // This can be a bit annoying at times...
+    let p = HTomb.Player;
+    if (!GUI.getKeyCursor || gameScreen.xoffset>p.x || gameScreen.yoffset>p.y || gameScreen.xoffset<=p.x-SCREENW || gameScreen.yoffset<=p.y-SCREENW) {
+      gameScreen.recenter();
+    }
+    GUI.render();
   };
   // **** Set default controls
   // By default, dragging the mouse outside the game screen resets the game screen
@@ -123,7 +126,7 @@ HTomb = (function(HTomb) {
       "(Control+Arrows for diagonal.)",
       "K: Toggle mouse cursor.",
       "Click or Space: Select.",
-      "<: Up, >: Down",
+      "<: Up, >: Down, Space: Wait.",
       "Backspace / Delete: Center on player."
     ];
     if (options.message) {

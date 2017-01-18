@@ -30,7 +30,7 @@ HTomb = (function(HTomb) {
         };
         HTomb.GUI.Contexts.active = context;
         HTomb.GUI.Contexts.locked = false;
-      },500);
+      },2000);
     },
     visibility: function() {
       let p = this.entity;
