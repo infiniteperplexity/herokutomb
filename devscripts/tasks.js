@@ -163,6 +163,7 @@ HTomb = (function(HTomb) {
       let f = HTomb.Things.IncompleteFeature({makes: HTomb.Things[this.makes]()});
       f.place(this.entity.x,this.entity.y,this.entity.z);
       this.assignee.ai.acted = true;
+      this.assignee.ai.actionPoints-=16;
     },
     work: function() {
       let x = this.entity.x;
@@ -179,6 +180,7 @@ HTomb = (function(HTomb) {
       } else {
         f.work();
         this.assignee.ai.acted = true;
+        this.assignee.ai.actionPoints-=16;
       }
       if (f && f.finished) {
         this.completeWork();
@@ -579,6 +581,7 @@ HTomb = (function(HTomb) {
       if (f) {
         f.feature.dismantle(this);
         this.assignee.ai.acted = true;
+        this.assignee.ai.actionPoints-=16;
         if (f.isPlaced()===false) {
           this.completeWork();
         }
@@ -587,6 +590,7 @@ HTomb = (function(HTomb) {
         if (f!==HTomb.Covers.NoCover) {
           HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
           this.assignee.ai.acted = true;
+          this.assignee.ai.actionPoints-=16;
           this.completeWork();
         }
       }

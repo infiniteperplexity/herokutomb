@@ -98,6 +98,7 @@ HTomb = (function(HTomb) {
   }
   // Do nothing
   Commands.wait = function() {
+    HTomb.Player.ai.actionPoints-=16;
     HTomb.Time.turn();
   };
 
@@ -179,6 +180,7 @@ HTomb = (function(HTomb) {
     HTomb.Player.place(x,y,z);
     var square = HTomb.Tiles.getSquare(x,y,z);
     Commands.glance(square);
+    HTomb.Player.ai.actionPoints-=16;
     HTomb.Time.turn();
   };
   Commands.displaceCreature = function(x,y,z) {
@@ -189,7 +191,9 @@ HTomb = (function(HTomb) {
     var cr = HTomb.World.creatures[coord(x,y,z)];
     cr.remove();
     HTomb.Player.place(x,y,z);
+    HTomb.Player.ai.actionPoints-=16;
     cr.place(x0,y0,z0);
+    cr.ai.actionPoints-=16;
     HTomb.GUI.pushMessage(HTomb.Player.describe({capitalized: true, article: "definite"}) + " displaces " + cr.describe({article: "indefinite"}) + ".");
     Commands.glance(HTomb.Tiles.getSquare(x,y,z));
     HTomb.Time.turn();

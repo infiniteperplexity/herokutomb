@@ -299,6 +299,7 @@ HTomb = (function(HTomb) {
     team: "AnimalTeam",
     //allegiance: null,
     acted: false,
+    actionPoints: 16,
     priority: null,
     alert: null,
     goals: null,
@@ -371,6 +372,7 @@ HTomb = (function(HTomb) {
       }
       // Reset activity for next turn
       this.acted = false;
+      this.actionPoints-=16;
     },
     // A patrolling creature tries to stay within a certain orbit of a target square
     patrol: function(x,y,z,min,max,options) {

@@ -533,6 +533,7 @@ HTomb = (function(HTomb) {
       f.name = "farm: "+c.name;
       c.inFarm = f;
       this.assignee.ai.acted = true;
+      this.assignee.ai.actionPoints-=16;
     },
     work: function() {
       let x = this.entity.x;
@@ -551,6 +552,7 @@ HTomb = (function(HTomb) {
       } else {
         f.steps+=1;
         this.assignee.ai.acted = true;
+        this.assignee.ai.actionPoints-=16;
       }
       if (f && f.steps>=0) {
         f.growing = f.makes;
@@ -584,6 +586,7 @@ HTomb = (function(HTomb) {
         }
         f.feature.integrity-=1;
         this.assignee.ai.acted = true;
+        this.assignee.ai.actionPoints-=16;
         if (f.feature.integrity<=0) {
           if (f.growing.feature.yields!==null) {
             for (let template in f.growing.feature.yields) {
@@ -1038,6 +1041,7 @@ HTomb = (function(HTomb) {
       }
       this.steps-=1;
       this.assignee.ai.acted = true;
+      this.assignee.ai.actionPoints-=16;
       if (this.steps<=0) {
         this.completeWork();
       }

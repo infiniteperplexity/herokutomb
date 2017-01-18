@@ -80,18 +80,49 @@ HTomb = (function(HTomb) {
     // Run the AI for each creature...should I deal with action points here?
     var creatureDeck = [];
     for (var creature in HTomb.World.creatures) {
-      creatureDeck.push(HTomb.World.creatures[creature]);
-    }
-    HTomb.Utils.shuffle(creatureDeck);
-    for (var c=0; c<creatureDeck.length; c++) {
-      let cr = creatureDeck[c];
-      if (cr.x===null || cr.y===null || cr.z===null) {
-        continue;
+      let c = HTomb.World.creatures[creature];
+      if (c.ai) {
+        c.ai.actionPoints = c.actionPoints || 16;
       }
-      if (cr.ai) {
-        cr.ai.act();
-      }
+      creatureDeck.push(c);
     }
+    /// Begin experimental code
+    do {
+      HTomb.Utils.shuffle(creatureDeck);
+      creatureDeck.sort(function(a,b) {
+        if (!a.ai && !b.ai) {
+          return HTomb.Utils.dice(1,2)*2-3;
+        } else if (!a.ai) {
+          return -1;
+        } else if (!b.ai) {
+          return 1;
+        } else if (a.ai.actionPoints===b.ai.actionPoints) {
+          return HTomb.Utils.dice(1,2)*2-3;
+        } else if (a.ai.actionPoints<b.ai.actionPoints) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+      for (let c=creatureDeck.length-1; c>=0; c--) {
+        let cr = creatureDeck[c];
+        if (cr.x===null || cr.y===null || cr.z===null) {
+          continue;
+        }
+        if (cr.ai && cr.isPlaced()) {
+          if (cr.ai.actionPoints>=0) {
+            cr.ai.acted = false;
+            cr.ai.act();
+          }
+          if (cr.ai.actionPoints<=0) {
+            creatureDeck.pop();
+          }
+        } else {
+          creatureDeck.pop();
+        }
+      }
+    } while(creatureDeck.length>0)
+    ////end experimental code
     // Calculate visibility
     HTomb.FOV.resetVisible();
     if (Player.sight) {
