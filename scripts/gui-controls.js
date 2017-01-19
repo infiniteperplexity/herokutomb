@@ -91,14 +91,29 @@ HTomb = (function(HTomb) {
   Contexts.default.clickTile = function(x,y) {
     // If we clicked on a creature, go to creature view
     let c = HTomb.World.creatures[coord(x,y,gameScreen.z)];
-    if (c) {
-      GUI.Views.creatureView(c);
-      return;
+    let visible = HTomb.World.visible[coord(x,y,gameScreen.z)];
+    let keyCursor = GUI.getKeyCursor();
+    if (c && visible) {
+      // In keyboard cursor mode, don't select the player; wait instead
+      if (keyCursor && c===HTomb.Player) {
+        Commands.wait();
+        GUI.Contexts.active.mouseTile(keyCursor[0],keyCursor[1]);
+        return;
+      } else {
+        GUI.Views.creatureView(c);
+        return;
+      }
     }
     // If we clicked on a workshop, go to workshop view
     let f = HTomb.World.features[coord(x,y,gameScreen.z)];
-    if (f && f.structure && f.structure.isPlaced() && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
+    if (visible && f && f.structure && f.structure.isPlaced() && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
       GUI.Views.structureView(f.structure);
+      return;
+    }
+    // In keyboard cursor mode, if you didn't click on anything interesting, wait
+    if (keyCursor) {
+      Commands.wait();
+      GUI.Contexts.active.mouseTile(keyCursor[0],keyCursor[1]);
       return;
     }
     // Otherwise, toggle time
@@ -536,7 +551,12 @@ HTomb = (function(HTomb) {
     VK_NUMPAD3: Commands.tryMoveSouthEast,
     VK_PERIOD: Commands.tryMoveDown,
     VK_COMMA: Commands.tryMoveUp,
-    VK_K: GUI.toggleKeyCursor,
+    VK_K: function() {
+      GUI.toggleKeyCursor();
+      if (GUI.getKeyCursor()) {
+        Main.surveyMode();
+      }
+    },
     VK_G: Commands.pickup,
     VK_D: Commands.drop,
     VK_I: Commands.inventory,
@@ -705,26 +725,10 @@ HTomb = (function(HTomb) {
     VK_BACK_SPACE: Commands.centerOnPlayer,
     VK_SPACE: function() {
       let keyCursor = GUI.getKeyCursor();
-      if (HTomb.GUI.Contexts.active===survey) {
-        if (keyCursor) {
-          let x = keyCursor[0];
-          let y = keyCursor[1];
-          let z = HTomb.GUI.Panels.gameScreen.z;
-          let c = HTomb.World.creatures[coord(x,y,z)];
-          let f = HTomb.World.features[coord(x,y,z)];
-          if ((f && f.structure && f.structure.isPlaced()) || c) {
-            HTomb.GUI.Contexts.active.clickTile(x,y);
-            return;
-          }
-        }
-        Commands.wait();
-        if (keyCursor) {
-          HTomb.GUI.Contexts.active.mouseTile(keyCursor[0],keyCursor[1]);
-        }
+      if (keyCursor) {
+        HTomb.GUI.Contexts.active.clickTile(keyCursor[0],keyCursor[1]);
       } else {
-        if (keyCursor) {
-          HTomb.GUI.Contexts.active.clickTile(keyCursor[0],keyCursor[1]);
-        }
+        Commands.wait();
       }
     }
   });

@@ -38,10 +38,12 @@ HTomb = (function(HTomb) {
     visible[coord(x,y,z0)] = true;
     explored[z0][x][y] = true;
     if (tiles[z0+1][x][y].zview===-1) {
-    //if (grid[x][y].zview===+1) {
       explored[z0+1][x][y] = true;
-    } else if (grid[x][y].zview===-1) {
+      visible[coord(x,y,z0+1)] = true;
+    }
+    if (grid[x][y].zview===-1) {
       explored[z0-1][x][y] = true;
+      visible[coord(x,y,z0-1)] = true;
     }
   };
 
@@ -189,5 +191,4 @@ HTomb = (function(HTomb) {
   };
 
   return HTomb;
-})(HTomb
-);
+})(HTomb);

@@ -266,7 +266,7 @@ HTomb = (function(HTomb) {
     if (Views.Creature.selectedCreature) {
       Views.Creature.selectedCreature.unhighlight();
     }
-    HTomb.Events.unsubscribe(Views.Creature,"TurnEnd");
+    HTomb.Events.unsubscribe(Views.Creature,"PlayerActive");
     w = w || HTomb.Player.master.structures[0] || null;
     Views.Structures.selectedStructure = w;
     if (w===null) {
@@ -406,7 +406,7 @@ HTomb = (function(HTomb) {
     if (Views.Structures.selectedStructure) {
       Views.Structures.selectedStructure.structure.unhighlight();
     }
-    HTomb.Events.subscribe(Views.Creature, "TurnEnd");
+    HTomb.Events.subscribe(Views.Creature, "PlayerActive");
     c = c || HTomb.Player;
     if (Views.Creature.selectedCreature) {
       Views.Creature.selectedCreature.unhighlight();
@@ -416,7 +416,7 @@ HTomb = (function(HTomb) {
   };
   GUI.Contexts.creatures = GUI.Contexts.new({
     VK_ESCAPE: function() {
-      HTomb.Events.unsubscribe(Views.Creature,"TurnEnd");
+      HTomb.Events.unsubscribe(Views.Creature,"PlayerActive");
       if (Views.Creature.selectedCreature) {
         Views.Creature.selectedCreature.unhighlight();
       }
@@ -461,9 +461,19 @@ HTomb = (function(HTomb) {
   Views.Creature.selectedCreature = null;
   Views.Creature.displayCreatureInfo = function(c) {
     c.highlight("#557722");
-    HTomb.GUI.Views.Main.zoomIfNotVisible(c.x,c.y,c.z);
     GUI.Contexts.active = GUI.Contexts.creatures;
-    GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(c);
+    if (c===HTomb.Player || HTomb.Player.master.minions.indexOf(c)!==-1 || HTomb.World.visible[HTomb.Utils.coord(c.x, c.y, c.z)]) {
+      HTomb.GUI.Views.Main.zoomIfNotVisible(c.x,c.y,c.z);
+      GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(c);
+    } else {
+      let txt = [
+        "%c{orange}Esc: Done.",
+        "%c{yellow}Creature: "+c.name.substr(0,1).toUpperCase()+c.name.substr(1)+" at ??, ??, ??.",
+        "Tab: View player and minions.",
+        " "
+      ];
+      GUI.Contexts.creatures.menuText = txt;
+    }
     menu.bottom = menu.defaultBottom;
     menu.render();
   };
@@ -522,7 +532,8 @@ HTomb = (function(HTomb) {
     }
     return txt;
   };
-  Views.Creature.onTurnEnd = function() {
+  Views.Creature.onPlayerActive = function() {
+  //Views.Creature.onTurnEnd = function() {
     if (Views.Creature.selectedCreature) {
       Views.Creature.displayCreatureInfo(Views.Creature.selectedCreature);
     }
@@ -536,7 +547,7 @@ HTomb = (function(HTomb) {
       p = p.master.minions[0];
 
     } else if (p.master.minions.indexOf(Views.Creature.selectedCreature)===-1) {
-      p = HTomb.Player();
+      p = HTomb.Player;
     } else {
       var i = p.master.minions.indexOf(Views.Creature.selectedCreature);
       if (i===p.master.minions.length-1) {

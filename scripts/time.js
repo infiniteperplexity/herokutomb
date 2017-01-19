@@ -90,6 +90,7 @@ HTomb = (function(HTomb) {
     let actor = queue.pop();
     // Eventually we will do this in a more complex way to allow for round-robin combat mode
     if (actor===HTomb.Player) {
+      HTomb.Events.publish({type: "PlayerActive"});
       // When we hit the player, halt recursion and update visibility
       HTomb.Player.player.visibility();
       if (HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
