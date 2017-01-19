@@ -62,6 +62,7 @@ HTomb = (function(HTomb) {
     } else if (HTomb.Player.movement.canMove(newx,newy,newz)) {
       if (square.creature && square.creature.ai && square.creature.ai.isHostile(HTomb.Player)===false) {
         Commands.displaceCreature(newx,newy,newz);
+        HTomb.GUI.pushMessage("You displace " + square.creature.describe({article: "indefinite"}) + ".");
         return;
       } else {
         Commands.movePlayer(newx,newy,newz);
