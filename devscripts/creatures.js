@@ -160,7 +160,7 @@ HTomb = (function(HTomb) {
       HTomb.Events.subscribe(this, "TurnBegin");
     },
     onTurnBegin: function(args) {
-      if (HTomb.Utils.dice(1,120)===1) {
+      if (HTomb.Utils.dice(1,120)===1 && HTomb.Types.templates.Team.teams.GhoulTeam.members.length<10) {
         let graves = HTomb.Utils.where(HTomb.World.features,function(e) {
           if (e.template==="Tombstone") {
             let x = e.x;
@@ -255,7 +255,7 @@ HTomb = (function(HTomb) {
       HTomb.Events.subscribe(this, "TurnBegin");
     },
     onTurnBegin: function() {
-      if (HTomb.Utils.dice(1,180)===1) {
+      if (HTomb.Utils.dice(1,180)===1 && HTomb.Types.templates.Team.teams.HungryPredatorTeam.members.length<10) {
         let fishes = HTomb.Utils.where(HTomb.World.creatures, function(e) {
           let x = e.x;
           let y = e.y;
