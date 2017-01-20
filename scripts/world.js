@@ -23,6 +23,10 @@ HTomb = (function(HTomb) {
 
   HTomb.World.init = function() {
     HTomb.Time.dailyCycle.reset();
+    HTomb.Events.reset();
+    HTomb.Path.reset();
+    HTomb.Types.templates.Team.hostilityMatrix.reset();
+    HTomb.World.validate.reset();
     while(HTomb.World.things.length>0) {
       HTomb.World.things.pop();
     }
@@ -43,13 +47,13 @@ HTomb = (function(HTomb) {
     for (let i=0; i<oldkeys.length; i++) {
       delete HTomb.World.tasks[oldkeys[i]];
     }
+    for (let i=0; i<HTomb.World.lights.length; i++) {
+      delete HTomb.World.lights[i];
+    }
     HTomb.World.fillTiles();
     HTomb.World.generators.bestSoFar();
-    HTomb.Path.reset();
-    HTomb.Types.templates.Team.hostilityMatrix.reset();
-    console.time("validation");
     HTomb.World.validate.all();
-    console.timeEnd("validation");
+    HTomb.Time.unlockTime();
   };
   // Add void tiles to the boundaries of the level
   HTomb.World.fillTiles = function() {
@@ -227,6 +231,7 @@ HTomb = (function(HTomb) {
     if (HTomb.World.tiles[z][x][y].fallable) {
       var creature = HTomb.World.creatures[coord(x,y,z)];
       if (creature && creature.movement.flies!==true) {
+        console.log(creature.describe() + " fell");
         creature.fall();
       }
       var items = HTomb.World.items[coord(x,y,z)] || [];

@@ -4,8 +4,9 @@ HTomb = (function(HTomb) {
   var Time = HTomb.Time;
 
   var timePassing = null;
-  var speed = 5;
-  var speeds = ["1/8","1/4","1/2","3/4","1/1","5/4","3/2","2/1","3/1","5/1","10/1"];
+  var speeds = ["1/4","1/2","3/4","5/4","1/1","3/2","2/1","4/1","8/1"];
+  var speed = (Math.ceil(speeds.length/2)-1);
+
   var timeLocked = false;
   HTomb.Time.speedUp = function(spd) {
     speed = Math.min(speed+1,speeds.length-1);
@@ -48,8 +49,6 @@ HTomb = (function(HTomb) {
   };
   HTomb.Time.passTime = function() {
     HTomb.Commands.wait();
-    //HTomb.Player.
-    //HTomb.Time.resumeActors();
   };
   var particleTime;
   var particleSpeed = 50;
@@ -104,7 +103,7 @@ HTomb = (function(HTomb) {
       actor.ai.acted = false;
       return;
     } else {
-      // If the actor can't act, skip it
+      // If the actor can't act, skip it--
       if (actor.ai.actionPoints>0 && actor.isPlaced()) {
         // Act
         actor.ai.acted = false;
@@ -123,10 +122,22 @@ HTomb = (function(HTomb) {
     nextActor();
   }
   // Expose a method to resume queue recursion
+  let delays = true;
+  // let delays = false;
   HTomb.Time.resumeActors = function(actor) {
+    if (delays) {
+      HTomb.GUI.Contexts.locked = true;
+    }
     actor = actor || HTomb.Player;
     if (actor.ai.actionPoints>0 && actor.isPlaced()) {
       deck.push(actor);
+    }
+    if (delays) {
+      let split = speeds[speeds.length-1].split("/");
+      let maxSpeed = 1000*split[1]/split[0];
+      setTimeout(function() {
+        HTomb.GUI.Contexts.locked = false;
+      },maxSpeed);
     }
     nextActor();
   };

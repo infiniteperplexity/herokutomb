@@ -191,13 +191,19 @@ HTomb = (function(HTomb) {
       HTomb.Time.toggleTime();
     },
     VK_HYPHEN_MINUS: function() {
+      let oldSpeed = HTomb.Time.getSpeed();
       HTomb.Time.slowDown();
-      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      if (HTomb.Time.getSpeed()!==oldSpeed) {
+        HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      }
     },
     VK_EQUALS: function() {
+      let oldSpeed = HTomb.Time.getSpeed();
       HTomb.Time.speedUp();
       HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
-      HTomb.Time.startTime();
+      if (HTomb.Time.getSpeed()!==oldSpeed) {
+        HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      }
     },
     VK_SPACE: function() {
       HTomb.Commands.wait();
@@ -427,12 +433,18 @@ HTomb = (function(HTomb) {
       HTomb.Time.toggleTime();
     },
     VK_HYPHEN_MINUS: function() {
+      let oldSpeed = HTomb.Time.getSpeed();
       HTomb.Time.slowDown();
-      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      if (HTomb.Time.getSpeed()!==oldSpeed) {
+        HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      }
     },
     VK_EQUALS: function() {
+      let oldSpeed = HTomb.Time.getSpeed();
       HTomb.Time.speedUp();
-      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      if (HTomb.Time.getSpeed()!==oldSpeed) {
+        HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      }
       HTomb.Time.startTime();
     },
     VK_SPACE: function() {

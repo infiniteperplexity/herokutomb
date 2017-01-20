@@ -18,6 +18,11 @@ HTomb = (function(HTomb) {
     items: {},
     features: {}
   };
+  placement.reset = function() {
+    this.creatures = {};
+    this.items = {};
+    this.features = {};
+  };
   placement.stack = function(thing,x,y,z) {
     var crd = coord(x,y,z);
     var stack;
@@ -72,6 +77,7 @@ HTomb = (function(HTomb) {
       d = HTomb.Utils.decoord(crd);
       stack[0].place(d[0],d[1],d[2]);
     }
+    this.reset();
   };
 
   HTomb.World.generators = {};
