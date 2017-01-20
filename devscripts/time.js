@@ -47,7 +47,9 @@ HTomb = (function(HTomb) {
     }
   };
   HTomb.Time.passTime = function() {
-    HTomb.Time.resumeActors();
+    HTomb.Commands.wait();
+    //HTomb.Player.
+    //HTomb.Time.resumeActors();
   };
   var particleTime;
   var particleSpeed = 50;
@@ -142,6 +144,8 @@ HTomb = (function(HTomb) {
     HTomb.Utils.shuffle(HTomb.Player.master.taskList);
     HTomb.Player.master.assignTasks();
     // 4) Deal with actors
+    queue = [];
+    deck = [];
     for (let c in HTomb.World.creatures) {
       let cr = HTomb.World.creatures[c];
       if (cr.ai) {

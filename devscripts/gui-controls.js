@@ -139,7 +139,7 @@ HTomb = (function(HTomb) {
       "%c{yellow}Select first corner.",
       "Move screen: NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
-      "K: Toggle mouse cursor.",
+      "K: Keyboard-only mode.",
       "Click or Space: Select.",
       "<: Up, >: Down, Space: Wait.",
       "Backspace / Delete: Center on player."
@@ -253,7 +253,7 @@ HTomb = (function(HTomb) {
       "%c{yellow}Select an area.",
       "Move screen: NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
-      "K: Toggle mouse cursor.",
+      "K: Keyboard-only mode.",
       "Click or Space: Select.",
       "<: Up, >: Down",
       "Backspace / Delete: Center on player."
@@ -342,7 +342,7 @@ HTomb = (function(HTomb) {
       "%c{yellow}Select a square.",
       "Move screen: NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
-      "K: Toggle mouse cursor.",
+      "K: Keyboard-only mode.",
       "Click or Space: Select.",
       "<: Up, >: Down",
       "Backspace / Delete: Center on player."
@@ -575,12 +575,18 @@ HTomb = (function(HTomb) {
     //VK_TILDE: function() {Views.summaryView();},
     VK_ESCAPE: function() {Views.systemView();},
     VK_HYPHEN_MINUS: function() {
+      let oldSpeed = HTomb.Time.getSpeed();
       HTomb.Time.slowDown();
-      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      if (HTomb.Time.getSpeed()!==oldSpeed) {
+        HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      }
     },
     VK_EQUALS: function() {
+      let oldSpeed = HTomb.Time.getSpeed();
       HTomb.Time.speedUp();
-      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      if (HTomb.Time.getSpeed()!==oldSpeed) {
+        HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      }
       HTomb.Time.startTime();
     },
     VK_PAGE_UP: function() {scroll.scrollUp();},
@@ -695,12 +701,18 @@ HTomb = (function(HTomb) {
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
     VK_HYPHEN_MINUS: function() {
+      let oldSpeed = HTomb.Time.getSpeed();
       HTomb.Time.slowDown();
-      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      if (HTomb.Time.getSpeed()!==oldSpeed) {
+        HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      }
     },
     VK_EQUALS: function() {
+      let oldSpeed = HTomb.Time.getSpeed();
       HTomb.Time.speedUp();
-      HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      if (HTomb.Time.getSpeed()!==oldSpeed) {
+        HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
+      }
       HTomb.Time.startTime();
     },
     VK_SPACE: function() {
@@ -738,7 +750,7 @@ HTomb = (function(HTomb) {
     "%c{yellow}Navigation mode (Tab: Player view)",
     "Move screen: NumPad / Arrows.",
     "(Control+Arrows for diagonal.)",
-    "K: Toggle mouse cursor.",
+    "K: Keyboard-only mode.",
     "<: Up, >: Down, Space: Wait.",
     "Backspace / Delete: Center on player.",
     "Z: Cast spell, J: Assign job.",

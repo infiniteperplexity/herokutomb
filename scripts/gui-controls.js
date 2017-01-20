@@ -139,7 +139,7 @@ HTomb = (function(HTomb) {
       "%c{yellow}Select first corner.",
       "Move screen: NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
-      "K: Toggle mouse cursor.",
+      "K: Keyboard-only mode.",
       "Click or Space: Select.",
       "<: Up, >: Down, Space: Wait.",
       "Backspace / Delete: Center on player."
@@ -253,7 +253,7 @@ HTomb = (function(HTomb) {
       "%c{yellow}Select an area.",
       "Move screen: NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
-      "K: Toggle mouse cursor.",
+      "K: Keyboard-only mode.",
       "Click or Space: Select.",
       "<: Up, >: Down",
       "Backspace / Delete: Center on player."
@@ -342,7 +342,7 @@ HTomb = (function(HTomb) {
       "%c{yellow}Select a square.",
       "Move screen: NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
-      "K: Toggle mouse cursor.",
+      "K: Keyboard-only mode.",
       "Click or Space: Select.",
       "<: Up, >: Down",
       "Backspace / Delete: Center on player."
@@ -738,7 +738,7 @@ HTomb = (function(HTomb) {
     "%c{yellow}Navigation mode (Tab: Player view)",
     "Move screen: NumPad / Arrows.",
     "(Control+Arrows for diagonal.)",
-    "K: Toggle mouse cursor.",
+    "K: Keyboard-only mode.",
     "<: Up, >: Down, Space: Wait.",
     "Backspace / Delete: Center on player.",
     "Z: Cast spell, J: Assign job.",

@@ -309,7 +309,7 @@ HTomb = (function(HTomb) {
       if (this.actionPoints<0) {
         do {
           this.actionPoints+=16;
-        } while (this.actionPoints<0);
+        } while (this.actionPoints<=0);
       } else {
         this.actionPoints = 16;
       }

@@ -300,8 +300,8 @@ HTomb = (function(HTomb) {
             }
           }
         }
-        if (menuText[i]==="K: Toggle mouse cursor." && GUI.getKeyCursor()) {
-          menuDisplay.drawText(this.x0+j, this.y0+i, "%c{cyan}" + menuText[i]);
+        if (menuText[i]==="K: Keyboard-only mode." && GUI.getKeyCursor()) {
+          menuDisplay.drawText(this.x0+j, this.y0+i, "%c{cyan}K: Enable mouse control.");
         } else {
           menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
         }
@@ -356,7 +356,7 @@ HTomb = (function(HTomb) {
     "%c{yellow}Avatar mode (Tab: Move viewing window)",
     "Movement: NumPad / Arrows.",
     "(Control+Arrows for diagonal.)",
-    "K: Toggle mouse cursor.",
+    "K: Keyboard-only mode.",
     "<: Up, >: Down, Space: Wait.",
     "Backspace / Delete: Center on player.",
     "Z: Cast spell, J: Assign job.",
