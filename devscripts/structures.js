@@ -1070,6 +1070,21 @@ HTomb = (function(HTomb) {
     makes: null,
     //workshops: ["Mortuary","BoneCarvery","Carpenter"],
     structures: ["Carpenter","Farm","Warehouse","Monument"],
+    validTile: function(x,y,z) {
+      if (HTomb.World.explored[z][x][y]!==true) {
+        return false;
+      }
+      if (HTomb.World.tiles[z][x][y]!==HTomb.Tiles.FloorTile) {
+        return false;
+      }
+      let f = HTomb.World.features[coord(x,y,z)];
+      if (f===undefined || (f.template==="IncompleteFeature" && f.makes.template===this.makes)) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    },
     designate: function(assigner) {
       var arr = [];
       for (var i=0; i<this.structures.length; i++) {
@@ -1081,6 +1096,7 @@ HTomb = (function(HTomb) {
         function placeBox(squares, options) {
           let failed = false;
           let struc = null;
+          let mid = Math.floor(squares.length/2);
           for (let i=0; i<squares.length; i++) {
             let crd = squares[i];
             let f = HTomb.World.features[coord(crd[0],crd[1],crd[2])];
@@ -1089,11 +1105,11 @@ HTomb = (function(HTomb) {
             // a completed, partial version of the same workshop
           } else if (f && f.template===structure.template+"Feature") {
               struc = f.structure;
-              if (struc.isPlaced()===true || struc.x!==squares[0][0] || struc.y!==squares[0][1]) {
+              if (struc.isPlaced()===true || struc.structure.x!==squares[mid][0] || struc.structure.y!==squares[mid][1]) {
                 failed = true;
               }
             // an incomplete version of the same workshop
-          } else if (f && (f.template!=="IncompleteFeature" || f.feature.makes!==structure.template+"Feature")) {
+          } else if (f && (f.template!=="IncompleteFeature" || !f.makes || f.makes.template!==structure.template+"Feature")) {
               failed = true;
             }
           }
@@ -1108,7 +1124,6 @@ HTomb = (function(HTomb) {
             w = HTomb.Things[structure.template]();
             w.structure.owner = assigner;
             w.structure.squares = squares;
-            let mid = Math.floor(squares.length/2);
             w.structure.x = squares[mid][0];
             w.structure.y = squares[mid][1];
             w.structure.z = squares[mid][2];
@@ -1118,12 +1133,12 @@ HTomb = (function(HTomb) {
             if (HTomb.World.features[coord(crd[0],crd[1],crd[2])] && HTomb.World.features[coord(crd[0],crd[1],crd[2])].template===w.template+"Feature") {
               continue;
             }
+            this.makes = w.structure.template+"Feature";
             let task = this.designateTile(crd[0],crd[1],crd[2],assigner);
             if (task) {
               task.task.structure = w;
               task.task.makes = structure.template+"Feature";
               task.task.ingredients = HTomb.Utils.clone(w.structure.ingredients[i]);
-              //task.task.ingredients = HTomb.Utils.clone(w.structure.ingredients);
               task.task.position = i;
               task.name = task.name + " " + structure.name;
             }

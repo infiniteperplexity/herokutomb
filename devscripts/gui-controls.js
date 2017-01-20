@@ -391,11 +391,11 @@ HTomb = (function(HTomb) {
     " ",
     "2) How quickly were you able to figure out the minimal gameplay of 'summon one or more zombies, then dig or build things?'  Is the minimal gameplay at least minimally enjoyable?",
     " ",
-    "3) Do the features beyond the minimal gameplay, such as workshops, farming, and so on, distract and make it harder to figure out the basics?  If so, I might remove them from the demo, or give them prerequisites.",
+    "3) Do the features beyond the minimal gameplay, such as workshops, farming, and so on, distract and make it harder to figure out the basics?  If so, I might remove them from the demo, or give them prerequisites?",
     " ",
     "4) How quickly were you able to figure out how to switch between the 'player's-eye-view' (controlling the necromancer, as in a traditional roguelike) and the 'god's-eye-view' (moving the viewing window around and giving orders, as in Dwarf Fortress)?",
     " ",
-    "5) Is the mixture of mouse and keyboard controls reasonably comfortable?",
+    "5) Is the mixture of mouse and keyboard controls reasonably comfortable?  Did you try the keyboard-only mode?",
     " ",
     "(%c{yellow}Press Escape to return to the game.)"
   ];
