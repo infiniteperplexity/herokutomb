@@ -26,7 +26,7 @@ HTomb = (function(HTomb) {
     incompleteSymbol: "\u2692",
     base: null,
     yields: null,
-    growTurns: 256,
+    growTurns: 512,
     inFarm: false,
     onPlace: function() {
       HTomb.Events.subscribe(this,"TurnBegin");

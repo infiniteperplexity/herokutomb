@@ -274,7 +274,6 @@ HTomb = (function(HTomb) {
           fish.destroy();
           HTomb.Things.DeathCarp().place(x,y,z);
           HTomb.GUI.sensoryEvent("A peaceful-looking fish turns out to be a ravenous death carp!",x,y,z,"red");
-          console.log("Death carp placed at " + x + " " + y + " " + z);
         }
       }
 
