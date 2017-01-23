@@ -526,7 +526,7 @@ HTomb = (function(HTomb) {
       txt.push("Carrying: ");
       let s = "  ";
       for (let i=0; i<b.length; i++) {
-        s+=b[i].describe();
+        s+=b.expose(i).describe({article: "indefinite"});
         txt.push(s);
         s = "  ";
       }
