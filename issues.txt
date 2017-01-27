@@ -1,3 +1,8 @@
+1/27/17
+
+- zombies get stuck in loops sometimes right above their grave
+- make a "kill command" so you can attack fish
+
 11/23/16
 
 --ideas
@@ -7,5 +12,5 @@
 
 
 12/7/16
--- make combat work better somehow
+* make combat work better somehow
 -- add research
