@@ -229,8 +229,18 @@ HTomb = (function(HTomb) {
   var bindKey = GUI.bindKey = function(target, key, func) {
     target.boundKeys[ROT[key]] = func;
   };
+  function beforeUnload(e) {
+    alert("testing");
+    let txt = "something";
+    //if (!allowUnload) {
+      e.returnValue = txt;
+      return txt;
+    //}
+    //return null;
+  }
   // Set up event listeners
   setTimeout(function() {
+    window.addEventListener("beforeunload",beforeUnload);
     window.addEventListener("keydown",keydown);
     window.addEventListener("keyup",keyup);
     display.getContainer().addEventListener("mousedown",mousedown);
@@ -242,6 +252,11 @@ HTomb = (function(HTomb) {
     overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickOverlay();});
     console.log("adding event listeners");
   },500);
+
+  let allowUnload = true;
+  GUI.setAllowUnload = function(val) {
+    allowUnload = val;
+  };
 
   //************* Define the basic panels and how they access the DOM *********;
   GUI.Panels = {};

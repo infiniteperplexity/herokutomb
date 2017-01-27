@@ -56,6 +56,7 @@ var HTomb = (function() {
       GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
       GUI.render();
       HTomb.Time.turn();
+      GUI.setAllowUnload(false);
       GUI.delaySplash([
       "%c{yellow}Welcome to HellaTomb!",
       " ",
