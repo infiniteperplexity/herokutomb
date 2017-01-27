@@ -237,7 +237,16 @@ HTomb = (function(HTomb) {
     },
     moreCommand: function() {
       let i = this.cursor;
-      if (i===-1 || this.queue.length===0) {
+      if (i===-1 && this.task) {
+        if (this.queue[0] && this.queue[0][0]===this.task.task.makes) {
+          if (this.queue[0][1]!=="infinite") {
+            this.queue[0][2]+=1;
+          }
+        } else {
+          this.queue.splice(this.cursor+1,0,[this.task.task.makes,"finite",1]);
+        }
+        return;
+      } else if (i===-1 || this.queue.length===0) {
         return;
       }
       if (this.queue[i][1]==="finite") {
@@ -249,7 +258,10 @@ HTomb = (function(HTomb) {
     },
     lessCommand: function() {
       let i = this.cursor;
-      if (i===-1 || this.queue.length===0) {
+      if (i===-1 && this.task) {
+        this.cancelCommand();
+        return;
+      } else if (i===-1 || this.queue.length===0) {
         return;
       }
       if (this.queue[i][1]==="finite" && this.queue[i][2]>1) {
