@@ -381,10 +381,10 @@ HTomb = (function(HTomb) {
       this.actionPoints-=16;
     },
     // A patrolling creature tries to stay within a certain orbit of a target square
-    patrol: function(x,y,z,min,max,options) {
+    patrol: function(x,y,z, options) {
       options = options || {};
-      min = min || 2;
-      max = max || 5;
+      let min = options.min || 2;
+      let max = options.max || 5;
       if (!this.entity.movement) {
         return false;
       }

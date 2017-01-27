@@ -68,7 +68,17 @@ HTomb = (function(HTomb) {
   };
   HTomb.Path.aStar = function(x0,y0,z0,x1,y1,z1,options) {
     if (x0+y0+z0+x1+y1+z1===undefined || x1===null || y1===null || z1===null || x0===null || y0===null || z0===null) {
-      alert("bad path arguments!");
+      if (options.searcher) {
+        console.log("searcher:");
+        console.log(options.searcher);
+      }
+      if (options.searchee) {
+        console.log("searchee:");
+        console.log(options.searchee);
+      }
+      console.log("coordinates:");
+      console.log([x0,y0,z0,x1,y1,z1]);
+      alert("bad path arguments! examine console log for details.");
     }
     options = options || {};
     var useFirst = options.useFirst || false;
