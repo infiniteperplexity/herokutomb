@@ -2,6 +2,20 @@
 
 - zombies get stuck in loops sometimes right above their grave
 - make a "kill command" so you can attack fish
+- alter unassigned count should add task
+
+tiles[z] is undefined...ba path arguments...
+defaultPassable http://herokutomb.herokuapp.com/scripts/path.js:17:5
+	HTomb.Tiles.isEnclosed http://herokutomb.herokuapp.com/scripts/tiles.js:532:11
+	HTomb.Path.aStar http://herokutomb.herokuapp.com/scripts/path.js:107:53
+	HTomb.Tiles.isReachableFrom http://herokutomb.herokuapp.com/scripts/tiles.js:518:16
+	.canAssign http://herokutomb.herokuapp.com/scripts/structures.js:1014:36
+	.assignTasks http://herokutomb.herokuapp.com/scripts/behaviors.js:322:15
+	HTomb.Time.turn http://herokutomb.herokuapp.com/scripts/time.js:156:5
+	nextActor http://herokutomb.herokuapp.com/scripts/time.js:82:9
+	HTomb.Time.resumeActors http://herokutomb.herokuapp.com/scripts/time.js:142:5
+	Commands.wait http://herokutomb.herokuapp.com/scripts/commands.js:104:5
+	HTomb.Time.passTime http://herokutomb.herokuapp.com/scripts/time.js:51:5
 
 11/23/16
 
