@@ -21,10 +21,6 @@ HTomb = (function(HTomb) {
       var z = this.z;
       this.destroy();
       HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
-      var cr = HTomb.World.creatures[coord(x,y,z-1)];
-      if (cr) {
-        HTomb.GUI.sensoryEvent(cr.describe({capitalized: true, article: "indefinite"}) + " bursts forth from the ground!",x,y,z);
-      }
       for (var i=0; i<ROT.DIRS[8].length; i++) {
         var x1 = ROT.DIRS[8][i][0]+x;
         var y1 = ROT.DIRS[8][i][1]+y;

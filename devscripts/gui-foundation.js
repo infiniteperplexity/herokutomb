@@ -173,6 +173,12 @@ HTomb = (function(HTomb) {
     }
   };
 
+  HTomb.GUI.getMouseCursor = function() {
+    var x = lastMouseX;
+    var y = lastMouseY;
+    var gameScreen = GUI.Panels.gameScreen;
+    return [x+gameScreen.xoffset,y+gameScreen.yoffset];
+  }
   // this may change a bit if I add click functionality to other canvases
   var mousedown = function(click) {
     click.preventDefault();
@@ -195,7 +201,11 @@ HTomb = (function(HTomb) {
       GUI.Contexts.active.clickTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
     }
   };
+  var lastMouseX = null;
+  var lastMouseY = null;
   var mousemove = function(move) {
+    lastMouseX = Math.floor((move.clientX+XSKEW)/CHARWIDTH-1);
+    lastMouseY = Math.floor((move.clientY+YSKEW)/CHARHEIGHT-1);
     if (GUI.Contexts.locked===true) {
       return;
     }
@@ -277,7 +287,7 @@ HTomb = (function(HTomb) {
     if (bindings===undefined) {
       this.keydown = GUI.reset;
     } else {
-      this.boundKeys = [];
+      this.boundKeys = {};
       for (var b in bindings) {
         bindKey(this,b,bindings[b]);
       }
@@ -294,6 +304,9 @@ HTomb = (function(HTomb) {
     }
   };
   Context.prototype.clickOverlay = function() {
+    if (GUI.Contexts.locked) {
+      return;
+    }
     GUI.reset();
   }
 

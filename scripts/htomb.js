@@ -53,9 +53,23 @@ var HTomb = (function() {
       GUI.Views.parentView = GUI.Views.Main.reset;
       GUI.Panels.scroll.reset();
       GUI.reset();
-      HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
-      HTomb.GUI.render();
+      GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
+      GUI.render();
       HTomb.Time.turn();
+      GUI.delaySplash([
+      "%c{yellow}Welcome to HellaTomb!",
+      " ",
+      "You are a necromancer:",
+      "A despised sorceror who reanimates the dead to do your bidding.",
+      " ",
+      "Cast spells, raise zombies, and command them to harvest resources and build you a fortress.  But beware: The forces of good will not long stand for your vile ways...",
+      " ",
+      "...except that this is the playtest demo, so the forces of good won't actually show up.",
+      " ",
+      "Good luck!",
+      " ",
+      "%c{yellow}(Press ? during play to view playtest notes.)"
+      ]);
     }, 500);
   };
   return {

@@ -199,8 +199,11 @@ HTomb = (function(HTomb) {
   //Special zombie dig task?
   HTomb.Things.defineTask({
     template: "ZombieEmergeTask",
-    name: "dig",
+    name: "emerge",
     bg: "#884400",
+    //beginDescription: function() {
+    //  return "digging up from its grave";
+    //},
     validTile: function() {
       // this thing is going to be special...it should keep respawning if thwarted
       return true;
@@ -212,12 +215,17 @@ HTomb = (function(HTomb) {
         if (f.integrity===null || f.integrity===undefined) {
           f.integrity=10;
         }
+        if (f.integrity===10) {
+          HTomb.GUI.pushMessage(this.beginMessage());
+          //HTomb.GUI.pushMessage(this.assignee.describe({capitalized: true, article: "indefinite"}) + " begins digging toward the surface.");
+        }
         f.integrity-=1;
         this.assignee.ai.acted = true;
         this.assignee.ai.actionPoints-=16;
         if (f.integrity<=0) {
           f.explode(this.assigner);
-          HTomb.GUI.sensoryEvent("A zombie emerges from the earth!",x,y,z);
+          var cr = this.assignee;
+          HTomb.GUI.sensoryEvent(cr.describe({capitalized: true, article: "indefinite"}) + " bursts forth from the ground!",x,y,z);
           HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
           this.completeWork(x,y,z);
           HTomb.World.validate.cleanNeighbors(x,y,z);

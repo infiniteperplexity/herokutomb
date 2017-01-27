@@ -456,7 +456,7 @@ HTomb = (function(HTomb) {
       // can't go through a zone your master forbids
       if (e.minion) {
         let task = HTomb.World.tasks[c];
-        if (task && task.template==="ForbidTask" && task.assigner===e.minion.master) {
+        if (task && task.task.template==="ForbidTask" && task.task.assigner===e.minion.master) {
           return false;
         }
       }

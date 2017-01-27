@@ -354,15 +354,18 @@ HTomb = (function(HTomb) {
   menu.defaultTop = [
     "Esc: System view.",
     "%c{yellow}Avatar mode (Tab: Move viewing window)",
+    "Backspace / Delete: Center on player.",
+    "K: Keyboard-only mode.",
+    " ",
     "Movement: NumPad / Arrows.",
     "(Control+Arrows for diagonal.)",
-    "K: Keyboard-only mode.",
-    "<: Up, >: Down, Space: Wait.",
-    "Backspace / Delete: Center on player.",
+    "<: Up, >: Down.",
+    " ",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary.",
     "G: Pick Up, D: Drop, I: Inventory.",
-    "+ / -: Change speed.",
+    " ",
+    "Space: Wait, + / -: Change speed.",
     "Click: Pause or unpause.",
     "PageUp/Down to scroll messages.",
     "%c{yellow}?: Help / Playtest notes."
@@ -490,6 +493,15 @@ HTomb = (function(HTomb) {
   GUI.splash = function(arr) {
     GUI.Contexts.active = GUI.Contexts.new();
     overlay.update(arr);
+  };
+
+  GUI.delaySplash = function(arr, n) {
+    n = n || 1000;
+    GUI.Contexts.locked = true;
+    GUI.splash(arr);
+    setTimeout(function() {
+      GUI.Contexts.locked = false;
+    }, n);
   };
 
   return HTomb;

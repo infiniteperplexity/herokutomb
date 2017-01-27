@@ -488,6 +488,13 @@ HTomb = (function(HTomb) {
     expose: function(i) {
       return this.items[i];
     },
+    exposeItems: function() {
+      let arr = [];
+      for (let i=0; i<this.items.length; i++) {
+        arr.push(this.items[i]);
+      }
+      return arr;
+    },
     contains: function(item) {
       var indx = this.items.indexOf(item);
       if (indx>-1) {

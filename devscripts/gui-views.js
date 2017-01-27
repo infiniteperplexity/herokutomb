@@ -216,7 +216,7 @@ HTomb = (function(HTomb) {
   Views.Summary.summaryIndex = 0;
   Views.Summary.summaryText = function() {
     var text = [
-      "%c{orange}Esc: Done.",
+      "%c{orange}**Esc: Done.**",
       "%c{yellow}Summary:",
       "Up/Down: Scroll text."
     ];
@@ -277,7 +277,7 @@ HTomb = (function(HTomb) {
     Views.Structures.selectedStructure = w;
     if (w===null) {
       GUI.Contexts.active = GUI.Contexts.structures;
-      GUI.Contexts.structures.menuText = ["%c{orange}Esc: Done.","%c{orange}You have no current structures."];
+      GUI.Contexts.structures.menuText = ["%c{orange}**Esc: Done.**","%c{orange}You have no current structures."];
       menu.bottom = menu.defaultBottom;
       menu.render();
       return;
@@ -479,7 +479,7 @@ HTomb = (function(HTomb) {
       GUI.Contexts.creatures.menuText = Views.Creature.creatureDetails(c);
     } else {
       let txt = [
-        "%c{orange}Esc: Done.",
+        "%c{orange}**Esc: Done.**",
         "%c{yellow}Creature: "+c.name.substr(0,1).toUpperCase()+c.name.substr(1)+" at ??, ??, ??.",
         "Tab: View player and minions.",
         " "
@@ -492,7 +492,7 @@ HTomb = (function(HTomb) {
   // may move this to Creature Behavior?
   Views.Creature.creatureDetails = function(c) {
     let txt = [
-      "%c{orange}Esc: Done.",
+      "%c{orange}**Esc: Done.**",
       "%c{yellow}Creature: "+c.name.substr(0,1).toUpperCase()+c.name.substr(1)+" at "+c.x +", "+c.y+", "+c.z+".",
       "Tab: Next minion.",
       " "

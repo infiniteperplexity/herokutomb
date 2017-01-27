@@ -133,16 +133,23 @@ HTomb = (function(HTomb) {
     let hover = options.hover || function(x, y, z, sq) {};
     //var context = Object.create(survey);
     var context = HTomb.Utils.clone(survey);
+    GUI.bindKey(context, "VK_K", function() {
+      HTomb.GUI.toggleKeyCursor();;
+      GUI.selectSquareZone(z, callb, options);
+      menu.refresh();
+    });
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
-      "%c{orange}Esc: Cancel.",
-      "%c{yellow}Select first corner.",
-      "Move screen: NumPad / Arrows.",
-      "(Control+Arrows for diagonal.)",
+      "%c{orange}**Esc: Cancel.**",
+      //"%c{yellow}Select first corner.",
+      "%c{yellow}Select first corner" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse."),
+      "Backspace / Delete: Center on player.",
       "K: Keyboard-only mode.",
-      "Click or Space: Select.",
-      "<: Up, >: Down, Space: Wait.",
-      "Backspace / Delete: Center on player."
+      " ",
+      "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
+      "(Control+Arrows for diagonal.)",
+      "<: Up, >: Down.",
+      "Click or Space: Select."
     ];
     if (options.message) {
       context.menuText.unshift("");
@@ -159,8 +166,15 @@ HTomb = (function(HTomb) {
       menu.refresh();
     };
     context.clickTile = function (x,y) {
-      context.menuText[1] = "%c{yellow}Select second corner.";
+      //context.menuText[1] = "%c{yellow}Select second corner.";
+      context.menuText[1] = "%c{yellow}Select second corner" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse.");
+      context.menuText[2] = "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.";
       var context2 = HTomb.Utils.clone(survey);
+      GUI.bindKey(context2, "VK_K", function() {
+        HTomb.GUI.toggleKeyCursor();;
+        context.clickTile(x,y);
+        menu.refresh();
+      });
       Contexts.active = context2;
       context2.menuText = context.menuText;
       menu.refresh();
@@ -247,16 +261,23 @@ HTomb = (function(HTomb) {
     var gameScreen = GUI.Panels.gameScreen;
     //var context = Object.create(survey);
     var context = HTomb.Utils.clone(survey);
+    GUI.bindKey(context, "VK_K", function() {
+      HTomb.GUI.toggleKeyCursor();;
+      GUI.selectBox(width, height, z, callb, options);
+      menu.refresh();
+    });
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
-      "%c{orange}Esc: Cancel.",
-      "%c{yellow}Select an area.",
-      "Move screen: NumPad / Arrows.",
-      "(Control+Arrows for diagonal.)",
+      //"%c{orange}Esc: Cancel.",
+      "%c{orange}**Esc: Cancel**.",
+      "%c{yellow}Select an area" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse."),
+      "Backspace / Delete: Center on player.",
       "K: Keyboard-only mode.",
-      "Click or Space: Select.",
+      " ",
+      "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
+      "(Control+Arrows for diagonal.)",
       "<: Up, >: Down",
-      "Backspace / Delete: Center on player."
+      "Click or Space: Select."
     ];
     context.mouseTile = function(x0,y0) {
       var bg = options.bg || "#550000";
@@ -304,13 +325,13 @@ HTomb = (function(HTomb) {
   GUI.choosingMenu = function(header, items, action, format) {
     var alpha = "abcdefghijklmnopqrstuvwxyz";
     var contrls = {};
-    var choices = ["%c{orange}Esc: Cancel.","%c{yellow}"+header];
+    var choices = ["%c{orange}**Esc: Cancel**.","%c{yellow}"+header];
     // there is probably a huge danger of memory leaks here
     for (var i=0; i<items.length; i++) {
       var desc;
       if (format) {
         desc = format(items[i]);
-      } else if (items[i].describe){
+      } else if (items[i].describe) {
         desc = items[i].describe();
       } else {
         desc = items[i];
@@ -337,15 +358,17 @@ HTomb = (function(HTomb) {
     //var context = Object.create(survey);
     var context = HTomb.Utils.clone(survey);
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
+
     context.menuText = [
-      "%c{orange}Esc: Cancel.",
-      "%c{yellow}Select a square.",
-      "Move screen: NumPad / Arrows.",
-      "(Control+Arrows for diagonal.)",
+      "%c{orange}**Esc: Cancel.**",
+      "%c{yellow}Select a square" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse."),
+      "Backspace / Delete: Center on player.",
       "K: Keyboard-only mode.",
-      "Click or Space: Select.",
+      " ",
+      "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
+      "(Control+Arrows for diagonal.)",
       "<: Up, >: Down",
-      "Backspace / Delete: Center on player."
+      "Click or Space: Select."
     ];
     Contexts.active = context;
     if (options.message) {
@@ -715,9 +738,6 @@ HTomb = (function(HTomb) {
       }
       HTomb.Time.startTime();
     },
-    VK_SPACE: function() {
-      Commands.wait();
-    },
     VK_PAGE_UP: function() {scroll.scrollUp();},
     VK_PAGE_DOWN: function() {scroll.scrollDown();},
     VK_SLASH: function() {
@@ -739,23 +759,29 @@ HTomb = (function(HTomb) {
       let keyCursor = GUI.getKeyCursor();
       if (keyCursor) {
         HTomb.GUI.Contexts.active.clickTile(keyCursor[0],keyCursor[1]);
-      } else {
+      } else if (HTomb.GUI.Contexts.active===survey) {
         Commands.wait();
+      } else {
+        let cursor = HTomb.GUI.getMouseCursor();
+        HTomb.GUI.Contexts.active.clickTile(cursor[0],cursor[1]);
       }
     }
   });
 
   survey.menuText =
   [ "Esc: System view.",
-    "%c{yellow}Navigation mode (Tab: Player view)",
+    "%c{yellow}*Navigation mode (Tab: Player view)*",
+    "Backspace / Delete: Center on player.",
+    "K: Keyboard-only mode.",
+    " ",
     "Move screen: NumPad / Arrows.",
     "(Control+Arrows for diagonal.)",
-    "K: Keyboard-only mode.",
-    "<: Up, >: Down, Space: Wait.",
-    "Backspace / Delete: Center on player.",
+    "<: Up, >: Down.",
+    " ",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary",
-    "+ / -: Change speed.",
+    " ",
+    "Space: Wait, + / -: Change speed.",
     "Click: Pause or unpause.",
     "PageUp/Down to scroll messages.",
     "%c{yellow}?: Help / Playtest notes."

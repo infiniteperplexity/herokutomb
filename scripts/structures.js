@@ -70,7 +70,7 @@ HTomb = (function(HTomb) {
     },
     commandsText: function() {
       let txt = [
-        "%c{orange}Esc: Done.",
+        "%c{orange}**Esc: Done.**",
         this.headerText(),
         "a-z: Toggle option.",
         "Tab: Next structure.",
@@ -323,7 +323,7 @@ HTomb = (function(HTomb) {
         this.cursor = this.queue.length-1;
       }
       let txt = [
-        "%c{orange}Esc: Done.",
+        "%c{orange}**Esc: Done.**",
         "%c{yellow}Workshop: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
         "Up/Down: Traverse queue.",
         "Left/Right: Alter repeat.",
@@ -514,6 +514,7 @@ HTomb = (function(HTomb) {
       if (this.assignee.inventory.items.hasAll(this.ingredients)!==true) {
         throw new Error("Shoudl never reach this due to AI");
       }
+      HTomb.GUI.pushMessage(this.beginMessage());
       let items = this.assignee.inventory.items.takeItems(this.ingredients);
       for (let i=0; i<items.length; i++) {
         items[i].despawn();
@@ -582,6 +583,7 @@ HTomb = (function(HTomb) {
       var f = HTomb.World.features[coord(x,y,z)];
       if (f && f.growing && f.growing.parent==="Plant") {
         if (f.feature.integrity===null) {
+          HTomb.GUI.pushMessage(this.beginMessage());
           f.feature.integrity=5;
         }
         f.feature.integrity-=1;
@@ -631,8 +633,8 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineStructure({
-    template: "Warehouse",
-    name: "warehouse",
+    template: "Storeroom",
+    name: "Storeroom",
     symbols: ["\u2554","\u2550","\u2557","\u2551","=","\u2551","\u255A","\u2550","\u255D"],
     fgs: ["#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB"],
     options: [
@@ -940,7 +942,7 @@ HTomb = (function(HTomb) {
     },
     detailsText: function() {
       let txt = [
-        "%c{orange}Esc: Done.",
+        "%c{orange}**Esc: Done.**",
         "%c{yellow}Structure: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
         "Up/Down: Choose property.",
         "Left/Right: Up or down by 1.",
@@ -1034,6 +1036,7 @@ HTomb = (function(HTomb) {
     beginWork: function() {
       let test = this.assignee.inventory.items.takeItems(this.ingredients);
       this.started = true;
+      HTomb.GUI.pushMessage(this.beginMessage());
     },
     work: function(x,y,z) {
       if (this.workBegun()!==true) {
@@ -1066,10 +1069,11 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "ConstructTask",
     name: "construct",
+    longName: "create a structure",
     bg: "#553300",
     makes: null,
     //workshops: ["Mortuary","BoneCarvery","Carpenter"],
-    structures: ["Carpenter","Farm","Warehouse","Monument"],
+    structures: ["Carpenter","Farm","Storeroom","Monument"],
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
@@ -1203,6 +1207,7 @@ HTomb = (function(HTomb) {
         if (i===this.structure.structure.height*this.structure.structure.width-1) {
           let w = this.structure;
           w.place(w.structure.x, w.structure.y, w.structure.z);
+          HTomb.GUI.pushMessage(this.assignee.describe({capitalized: true, article: "indefinite"}) + " finishes building " + w.describe({article: "indefinite", atCoordinates: true}) + ".");
         }
       }
       HTomb.Things.templates.Task.completeWork.call(this);

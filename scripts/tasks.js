@@ -7,6 +7,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineBehavior({
     template: "Task",
     name: "task",
+    longName: "task",
     assigner: null,
     assignee: null,
     makes: null,
@@ -14,6 +15,13 @@ HTomb = (function(HTomb) {
     ingredients: {},
     dormant: 0,
     dormancy: 6,
+    beginDescription: function() {
+      return "work on " + this.name;
+    },
+    beginMessage: function() {
+      return (this.assignee.describe({capitalized: true, article: "indefinite"}) + " begins " + this.beginDescription()
+        + " at " + this.entity.x + ", " + this.entity.y + ", " + this.entity.z + ".");
+    },
     onCreate: function(args) {
       HTomb.Events.subscribe(this,"Destroy");
       return this;
@@ -156,6 +164,7 @@ HTomb = (function(HTomb) {
       if (this.assignee.inventory.items.hasAll(this.ingredients)!==true) {
         throw new Error("shouldn't reach this due to AI");
       }
+      HTomb.GUI.pushMessage(this.beginMessage());
       let items = this.assignee.inventory.items.takeItems(this.ingredients);
       for (let i=0; i<items.length; i++) {
         items[i].despawn();
@@ -207,6 +216,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "DigTask",
     name: "dig",
+    longName: "dig corridors/pits/slopes",
     bg: "#884400",
     makes: "Excavation",
     dormancy: 0,
@@ -325,6 +335,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "BuildTask",
     name: "build",
+    longName: "build walls/floors/slopes",
     bg: "#440088",
     makes: "Construction",
     //ingredients: {Rock: 1},
@@ -384,7 +395,7 @@ HTomb = (function(HTomb) {
           } else if (tile===HTomb.Tiles.UpSlopeTile) {
             menu.middle = ["%c{lime}Building here will convert this slope into a wall."];
           } else if (tile===HTomb.Tiles.FloorTile) {
-            menu.middle = ["%c{lime}Building here will construct a slope to a higher level."];
+            menu.middle = ["%c{lime}Building here will construct an upward slope (can be upgraded into a wall.)"];
           } else {
             menu.middle = ["%c{orange}Can't build on this tile."];
           }
@@ -426,6 +437,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "Undesignate",
     name: "undesignate",
+    longName: "undesignate tasks",
     allowedTiles: "all",
     validTile: function() {
       if (HTomb.World.explored[z][x][y]!==true) {
@@ -455,6 +467,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "PatrolTask",
     name: "patrol",
+    longName: "patrol an area",
     bg: "#880088",
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
@@ -471,7 +484,7 @@ HTomb = (function(HTomb) {
         context: this,
         callback: this.designateTile,
         hover: myHover
-      });
+      });s
     },
     ai: function() {
       var cr = this.assignee;
@@ -486,6 +499,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "ForbidTask",
     name: "forbid",
+    longName: "forbid minions from tile",
     bg: "#880000",
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
@@ -512,7 +526,8 @@ HTomb = (function(HTomb) {
 
   HTomb.Things.defineTask({
     template: "DismantleTask",
-    name: "harvest/dismantle",
+    name: "dismantle",
+    longName: "harvest resources/remove fixtures",
     bg: "#446600",
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
@@ -547,7 +562,7 @@ HTomb = (function(HTomb) {
           let feature = HTomb.World.features[coord(x,y,z)];
           let cover = HTomb.World.covers[z][x][y];
           if (feature) {
-            menu.middle = ["%c{lime}Dismantle "+feature.describe({article: "indefinite"})+"."];
+            menu.middle = ["%c{lime}Harvest or dismantle "+feature.describe({article: "indefinite"})+"."];
           } else if (cover!==HTomb.Covers.NoCover) {
             menu.middle = ["%c{lime}Remove "+cover.describe()+"."];
           } else {
@@ -562,7 +577,7 @@ HTomb = (function(HTomb) {
             }
           }
           if (anyf===true) {
-            menu.middle = ["%c{lime}Dismantle features in this area."];
+            menu.middle = ["%c{lime}Harvest or dismantle features in this area."];
           } else {
             menu.middle = ["%c{lime}Remove covers in this area."];
           }
@@ -579,6 +594,9 @@ HTomb = (function(HTomb) {
     work: function(x,y,z) {
       var f = HTomb.World.features[coord(x,y,z)];
       if (f) {
+        if (f.feature.integrity===HTomb.Things.templates[f.feature.template].integrity) {
+          HTomb.GUI.pushMessage(this.beginMessage());
+        }
         f.feature.dismantle(this);
         this.assignee.ai.acted = true;
         this.assignee.ai.actionPoints-=16;
@@ -588,6 +606,8 @@ HTomb = (function(HTomb) {
       } else {
         f = HTomb.World.covers[z][x][y];
         if (f!==HTomb.Covers.NoCover) {
+          HTomb.GUI.pushMessage(this.assignee.describe({capitalized: true, article: "indefinite"}) + " removes " + f.name
+            + " at " + x + ", " + y + ", " + z + ".");
           HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
           this.assignee.ai.acted = true;
           this.assignee.ai.actionPoints-=16;
@@ -600,6 +620,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "FurnishTask",
     name: "furnish",
+    longName: "furnish a fixture",
     bg: "#553300",
     features: ["Door","Throne","ScryingGlass","Torch"],
     designate: function(assigner) {
@@ -608,7 +629,7 @@ HTomb = (function(HTomb) {
         arr.push(HTomb.Things.templates[this.features[i]]);
       }
       var that = this;
-      HTomb.GUI.choosingMenu("Choose a feature:", arr, function(feature) {
+      HTomb.GUI.choosingMenu("Choose a fixture:", arr, function(feature) {
         return function() {
           function createZone(x,y,z) {
             var task = that.designateTile(x,y,z,assigner);
@@ -667,7 +688,7 @@ HTomb = (function(HTomb) {
         }
         return g;
       });
-      HTomb.GUI.Panels.menu.middle = ["%c{orange}Choose a feature before placing it."];
+      HTomb.GUI.Panels.menu.middle = ["%c{orange}Choose a fixture before placing it."];
     }
   });
 

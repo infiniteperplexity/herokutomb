@@ -246,7 +246,7 @@ HTomb = (function(HTomb) {
         p.inventory.drop(p.inventory.items.head());
       } else {
         // If the player has multiple items, display a menu
-        GUI.choosingMenu("Choose an item:",p.inventory.items,
+        GUI.choosingMenu("Choose an item:",p.inventory.items.exposeItems(),
           function(item) {
             return function() {
               HTomb.Player.inventory.drop(item);
@@ -308,6 +308,10 @@ HTomb = (function(HTomb) {
           HTomb.Player.master.designate(task);
           //HTomb.Time.resumeActors();
         };
+      },
+      function(task) {
+        let name = task.longName;
+        return (name.substr(0,1).toUpperCase() + name.substr(1)+".");
       }
     );
   };

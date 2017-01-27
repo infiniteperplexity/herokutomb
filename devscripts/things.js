@@ -75,13 +75,14 @@ HTomb = (function(HTomb) {
         article = "definite";
       }
       let capitalized = options.capitalized || false;
-      let plural = options.plural || false;
+      let plural = options.plural || this.plural || false;
       let possessive = options.possessive || false;
 
       let beginsWithVowel = this.beginsWithVowel || undefined;
       let properNoun = this.properNoun || false;
       let irregularPlural = this.irregularPlural || false;
 
+      let atCoordinates = options.atCoordinates || false;
       let name = options.name;
       if (plural && irregularPlural) {
         name = irregularPlural;
@@ -106,6 +107,10 @@ HTomb = (function(HTomb) {
       }
       //proper nouns not yet implemented
       if (article==="indefinite") {
+        if (plural) {
+          // either do nothing or use "some"?
+          //name = "some " + name;
+        } else
         // e.g. beginsWithVowel is explicitly false for a "unicorn"
         if (beginsWithVowel===true || (beginsWithVowel!==false &&
           (name[0]==="a" || name[0]==="e" || name[0]==="i" || name[0]==="o" || name[0]==="u"
@@ -121,6 +126,20 @@ HTomb = (function(HTomb) {
       }
       if (capitalized) {
         name = name.substr(0,1).toUpperCase() + name.substr(1);
+      }
+      if (atCoordinates) {
+        if (this.entity) {
+          let e = this.entity;
+          if (e.x===null && e.y===null && e.z===null) {
+            name += " at undefined coordinates";
+          } else {
+            name+= " at " + e.x + ", " + e.y + ", " + e.z;
+          }
+        } else if (this.x===null && this.y===null && this.z===null) {
+          name += " at undefined coordinates";
+        } else {
+          name+= " at " + this.x + ", " + this.y + ", " + this.z;
+        }
       }
       return name;
     },
