@@ -288,7 +288,7 @@ HTomb = (function(HTomb) {
           } else if (tile===HTomb.Tiles.WallTile) {
             menu.middle = ["%c{lime}Digging here from the side makes a roofed tunnel; digging from an upward slope below makes a downward slope."];
           } else {
-            menu.middle["%c{orange}Cannot dig here."];
+            menu.middle = ["%c{orange}Cannot dig here."];
           }
           return;
         }
@@ -438,7 +438,6 @@ HTomb = (function(HTomb) {
     template: "Undesignate",
     name: "undesignate",
     longName: "undesignate tasks",
-    allowedTiles: "all",
     validTile: function() {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
@@ -453,7 +452,7 @@ HTomb = (function(HTomb) {
         }
       };
       function myHover() {
-        HTomb.GUI.Panels.menu.middle["%c{lime}Remove all designations in this area."];
+        HTomb.GUI.Panels.menu.middle = ["%c{lime}Remove all designations in this area."];
       }
       HTomb.GUI.selectSquareZone(assigner.z,this.designateSquares,{
         context: this,
@@ -618,110 +617,40 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineTask({
-    template: "ConvergeTask",
-    name: "converge",
-    longName: "all minions converge or attack target",
-    bg: "#880088",
-    assignees: [],
-    target: null,
-    onCreate: function() {
-      HTomb.Events.subscribe(this, "Destroy");
-      return this;
-    },
-    onDestroy: function(event) {
-      if (event.entity===this.target) {
-        this.cancel();
-      }
-    },
-    assignTo: function(cr) {
-      if (cr.minion===undefined) {
-        HTomb.Debug.pushMessage("Problem assigning task");
-      } else {
-        this.assignees.push(cr);
-        cr.worker.onAssign(this);
-      }
-    },
-    designate: function(assigner) {
-      function convergeOn(x,y,z) {
-        let c = HTomb.World.creatures[coord(x,y,z)];
-        let t =HTomb.Things[this.template]({assigner: assigner});
-        t.task.assignees = [];
-        if (!c) {
-          t.place(x,y,z);
-        } else {
-          t.target = c;
-        }
-        for (let i=0; i<assigner.master.minions.length; i++) {
-          let minion = assigner.master.minions[i];
-          if (!minion.worker || c===minion) {
-            continue;
-          }
-          if (minion.worker.task) {
-            minion.worker.task.task.unassign();
-          }
-          t.task.assignTo(minion);
-        }
-        return t;
-      }
-      function myHover(x,y,z) {
-        let c = HTomb.World.creatures[coord(x,y,z)];
-        if (c && c.ai.isHostile(assigner.ai)) {
-          HTomb.GUI.Panels.menu.middle = ["%c{red}Send all minions to attack this creature."];
-        } else if (c) {
-          HTomb.GUI.Panels.menu.middle = ["%c{lime}All minions converge on this creature."];
-        } else {
-          HTomb.GUI.Panels.menu.middle = ["%c{lime}All minions converge on this square."];
-        }
-      }
-      HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
-        context: this,
-        assigner: assigner,
-        callback: convergeOn,
-        outline: false,
-        hover: myHover,
-        bg: this.bg
-      });
-    },
+    template: "HostileTask",
+    name: "hostile",
+    longName: "declare hostility",
+    bg: "#880000",
     validTile: function() {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
       }
       return true;
     },
-    onDespawn: function() {
-      var master = this.assigner;
-      if (master) {
-        var taskList = this.assigner.master.taskList;
-        if (taskList.indexOf(this.entity)!==-1) {
-          taskList.splice(taskList.indexOf(this.entity),1);
+    designate: function(assigner) {
+      let declareHostility = function(x,y,z, assigner) {
+        let cr = HTomb.World.creatures[coord(x,y,z)];
+        if (cr && cr.ai && cr.ai.isHostile(assigner)===false) {
+          if (cr.ai.team!=="PlayerTeam" || confirm("Really declare hostility to " + cr.describe({article: "definite"}) + "?")) {
+            HTomb.Particles.addEmitter(cr.x, cr.y, cr.z, HTomb.Particles.Anger);
+            HTomb.Types.templates[assigner.ai.team].vendettas.push(cr);
+          }
+        }
+      };
+      function myHover(x,y,z) {
+        let cr = HTomb.World.creatures[coord(x,y,z)];
+        if (cr) {
+          HTomb.GUI.Panels.menu.middle = ["%c{red}Declare hostility to " + cr.describe({article: "definite"}) + "."];
+        } else {
+          HTomb.GUI.Panels.menu.middle = ["%c{orange}Nothing to declare hostility to here."];
         }
       }
-      for (let i=0; i<this.assignees.length; i++) {
-        let m = this.assignees[i];
-        if (m.worker && m.worker.task.template===this.template) {
-          m.worker.task.unassign();
-        }
-      }
-      HTomb.Events.unsubscribeAll(this);
-    },
-    ai: function() {
-      var cr = this.assignee;
-      let t = this.target;
-      cr.ai.target = t;
-      if (this.target.creature && cr.ai.isHostile(this.target.ai)) {
-        cr.walkToward(t.x, t.y, t.z, {
-          searcher: cr,
-          searchee: this.target,
-          searchTimeout: 10
-        });
-      } else {
-        cr.ai.patrol(t.x,t.y,t.z, {
-          max: 4,
-          searcher: cr,
-          searchee: this.target,
-          searchTimeout: 10
-        });
-      }
+      HTomb.GUI.selectSquare(assigner.z,this.designateSquare,{
+        context: this,
+        assigner: assigner,
+        callback: declareHostility,
+        hover: myHover
+      });
     }
   });
 

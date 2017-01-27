@@ -298,6 +298,7 @@ HTomb = (function(HTomb) {
     // unimplemented
     team: "AnimalTeam",
     //allegiance: null,
+    angered: false,
     acted: false,
     actionPoints: 16,
     priority: null,
@@ -317,6 +318,10 @@ HTomb = (function(HTomb) {
     isHostile: function(thing) {
       if (thing.ai===undefined || thing.ai.team===null || this.team===null) {
         return false;
+      } else if (HTomb.Types.templates[this.team].vendettas.indexOf(thing)!==-1) {
+        return true;
+      } else if (HTomb.Types.templates[thing.ai.team].vendettas.indexOf(this.entity)!==-1) {
+        return true;
       } else {
         return HTomb.Types.templates[this.team].isHostile(thing.ai.team);
       }
@@ -494,6 +499,7 @@ HTomb = (function(HTomb) {
     allies: null,
     xenophobic: false,
     berserk: false,
+    vendettas: null,
     teams: {},
     hostilityMatrix: {
       matrix: {},
@@ -505,8 +511,28 @@ HTomb = (function(HTomb) {
         let teams = HTomb.Types.templates.Team.teams
         let keys = Object.keys(teams);
         for (let i=0; i<keys.length; i++) {
+          // handle team-wide vendettas against individuals
+          let one = teams[keys[i]];
+          for (let j=0; j<one.vendettas.length; j++) {
+            for (let m=0; m<one.members.length; m++) {
+              let a = one.members[m];
+              let s = a.spawnId;
+              if (j===0) {
+                matrix[s] = matrix[s] || {};
+              }
+              let b = one.vendettas[j];
+              if (a===b) {
+                continue;
+              }
+              let t = b.spawnId;
+              let q = HTomb.Path.quickDistance(a.x,a.y,a.z,b.x,b.y,b.z);
+              matrix[s][t] = q;
+              matrix[t] = matrix[t] || {};
+              matrix[t][s] = q;
+            }
+          }
+          // handle inter-team hostility
           for (let j=i; j<keys.length; j++) {
-            let one = teams[keys[i]];
             let two = teams[keys[j]];
             if (one.isHostile(two)) {
               for (let m=0; m<one.members.length; m++) {
@@ -537,12 +563,16 @@ HTomb = (function(HTomb) {
       this.members = this.members || [];
       this.enemies = this.enemies || [];
       this.allies = this.allies || [];
+      this.vendettas = this.vendettas || [];
       HTomb.Events.subscribe(this,"Destroy");
       HTomb.Types.templates.Team.teams[this.template] = this;
     },
     onDestroy: function(event) {
       if (this.members.indexOf(event.entity)>-1) {
         this.members.splice(this.members.indexOf(event.entity),1);
+      }
+      if (this.vendettas.indexOf(event.entity)>-1) {
+        this.vendettas.splice(this.vendettas.indexOf(event.entity),1);
       }
     },
     isHostile: function(team) {

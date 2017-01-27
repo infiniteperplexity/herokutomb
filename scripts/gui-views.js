@@ -226,14 +226,14 @@ HTomb = (function(HTomb) {
     text.push("Minions:");
     for (let i=0; i<HTomb.Player.master.minions.length; i++) {
       var cr = HTomb.Player.master.minions[i];
-      s = "  "+cr.describe() + " at "+cr.x+", "+cr.y+", "+cr.z;
+      s = "  "+cr.describe({atCoordinates: true})+".";
       text.push(s);
     }
     text.push(" ");
     text.push("Structures:");
     for (let k=0; k<HTomb.Player.master.structures.length; k++) {
       let w = HTomb.Player.master.structures[k];
-      s = "  "+w.describe()+" at "+w.x+", " +w.y+", "+w.z+".";
+      s = "  "+w.describe({atCoordinates: true})+".";
       text.push(s);
     }
     text.push(" ");
@@ -241,11 +241,7 @@ HTomb = (function(HTomb) {
     for (let k=0; k<HTomb.Player.master.taskList.length; k++) {
       var task = HTomb.Player.master.taskList[k];
       if (task.task.assignee===null) {
-        s = "  "+task.describe();
-        if (task.x>=0) {
-          s+=" at "+task.x+", "+task.y+", "+task.z;
-        }
-        s+=".";
+        s = "  "+task.describe({atCoordinates: true}) + ".";
         text.push(s);
       }
     }
@@ -481,7 +477,7 @@ HTomb = (function(HTomb) {
     } else {
       let txt = [
         "%c{orange}**Esc: Done.**",
-        "%c{yellow}Creature: "+c.name.substr(0,1).toUpperCase()+c.name.substr(1)+" at ??, ??, ??.",
+        "%c{yellow}Creature: "+c.describe({capitalized: true})+" at ??, ??, ??.",
         "Tab: View player and minions.",
         " "
       ];
@@ -494,7 +490,7 @@ HTomb = (function(HTomb) {
   Views.Creature.creatureDetails = function(c) {
     let txt = [
       "%c{orange}**Esc: Done.**",
-      "%c{yellow}Creature: "+c.name.substr(0,1).toUpperCase()+c.name.substr(1)+" at "+c.x +", "+c.y+", "+c.z+".",
+      "%c{yellow}Creature: "+c.describe({capitalized: true, atCoordinates: true}),
       "Tab: Next minion.",
       " "
     ];
@@ -507,17 +503,13 @@ HTomb = (function(HTomb) {
     }
     if (c.ai && c.ai.target) {
       let b = c.ai.target;
-      txt.push("Focus: " + b.describe() + " at "+b.x+", "+b.y+", "+b.z+".");
+      txt.push("Focus: " + b.describe({atCoordinates: true}) +".");
       txt.push(" ");
     }
     if (c.worker) {
       let b = c.worker;
       if (b.task) {
-        let s = "Task: " + b.task.entity.describe();
-        if (b.task.entity.x>=0) {
-          s+=" at " + b.task.entity.x + ", "+b.task.entity.y+", "+b.task.entity.z;
-        }
-        s+=".";
+        let s = "Task: " + b.task.entity.describe({atCoordinates: true}) + ".";
         txt.push(s);
       }
       txt.push(" ");

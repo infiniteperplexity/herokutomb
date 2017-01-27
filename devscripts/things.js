@@ -84,6 +84,9 @@ HTomb = (function(HTomb) {
 
       let atCoordinates = options.atCoordinates || false;
       let name = options.name;
+
+      let override = options.override || function(s) {return s;}
+
       if (plural && irregularPlural) {
         name = irregularPlural;
       } else if (plural && this.plural) {
@@ -130,17 +133,14 @@ HTomb = (function(HTomb) {
       if (atCoordinates) {
         if (this.entity) {
           let e = this.entity;
-          if (e.x===null && e.y===null && e.z===null) {
-            name += " at undefined coordinates";
-          } else {
+          if (e.x!==null && e.y!==null && e.z!==null && e.x!==undefined && e.y!==undefined && e.z!==undefined) {
             name+= " at " + e.x + ", " + e.y + ", " + e.z;
           }
-        } else if (this.x===null && this.y===null && this.z===null) {
-          name += " at undefined coordinates";
-        } else {
+        } else if (this.x!==null && this.y!==null && this.z!==null && this.x!==undefined && this.y!==undefined && this.z!==undefined) {
           name+= " at " + this.x + ", " + this.y + ", " + this.z;
         }
       }
+      name = override(name);
       return name;
     },
     // Describe for an in-game list

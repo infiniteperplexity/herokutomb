@@ -61,7 +61,7 @@ HTomb = (function(HTomb) {
       }
     },
     headerText: function() {
-      return "%c{yellow}Structure: "+this.entity.name.substr(0,1).toUpperCase()+this.entity.name.substr(1)+" at "+this.entity.x +", "+this.entity.y+", "+this.entity.z+".";
+      return "%c{yellow}Structure: "+this.entity.describe({capitalized: true, atCoordinates: true})+".";
     },
     detailsText: function() {
       let txt = this.commandsText();
@@ -336,7 +336,7 @@ HTomb = (function(HTomb) {
       }
       let txt = [
         "%c{orange}**Esc: Done.**",
-        "%c{yellow}Workshop: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
+        "%c{yellow}Workshop: "+this.describe({capitalized: true, atCoordinates: true})+".",
         "Up/Down: Traverse queue.",
         "Left/Right: Alter repeat.",
         "[/]: Alter count.",
@@ -955,7 +955,7 @@ HTomb = (function(HTomb) {
     detailsText: function() {
       let txt = [
         "%c{orange}**Esc: Done.**",
-        "%c{yellow}Structure: "+this.name.substr(0,1).toUpperCase()+this.name.substr(1)+" at "+this.x +", "+this.y+", "+this.z+".",
+        "%c{yellow}Structure: "+this.describe({capitalized: true, atCoordinates: true})+".",
         "Up/Down: Choose property.",
         "Left/Right: Up or down by 1.",
         "[/]: Up or down by 16.",

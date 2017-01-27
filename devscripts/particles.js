@@ -170,6 +170,7 @@ HTomb = (function(HTomb) {
   HTomb.Particles.SpellTarget = {fg: "black", dist: 3, v: -0.5};
   HTomb.Particles.SpellCast = {fg: "black", v: 0.5, dist: 1};
   HTomb.Particles.DryadEffect = {fg: "#88AA00", rr: 30, chars: ["\u2663","\u2660","\u2698","\u2618"]};
+  HTomb.Particles.Anger = HTomb.Utils.merge(HTomb.Particles.Spray,{chars: ["!","\u2757","\u2762","\u203C","\u2755","\u2694"], dist: 0});
 
 
   return HTomb;
