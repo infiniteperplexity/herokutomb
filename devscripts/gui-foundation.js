@@ -229,6 +229,12 @@ HTomb = (function(HTomb) {
   var bindKey = GUI.bindKey = function(target, key, func) {
     target.boundKeys[ROT[key]] = func;
   };
+
+  window.addEventListener("beforeunload", function(e) {
+    let txt = "\o/";
+    e.returnValue = txt;
+    return txt;
+  });
   // Set up event listeners
   setTimeout(function() {
     window.addEventListener("keydown",keydown);
