@@ -48,6 +48,7 @@ var HTomb = (function() {
       console.time("worldInit");
       // Initialize the world
       World.init();
+      GUI.quietUnload = false;
       console.timeEnd("worldInit");
       // Prepare the GUI and throw up an intro screen
       GUI.Views.parentView = GUI.Views.Main.reset;

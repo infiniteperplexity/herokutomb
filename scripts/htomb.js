@@ -48,6 +48,7 @@ var HTomb = (function() {
       console.time("worldInit");
       // Initialize the world
       World.init();
+      GUI.quietUnload = false;
       console.timeEnd("worldInit");
       // Prepare the GUI and throw up an intro screen
       GUI.Views.parentView = GUI.Views.Main.reset;
@@ -56,7 +57,6 @@ var HTomb = (function() {
       GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
       GUI.render();
       HTomb.Time.turn();
-      GUI.setAllowUnload(false);
       GUI.delaySplash([
       "%c{yellow}Welcome to HellaTomb!",
       " ",

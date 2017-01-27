@@ -230,15 +230,20 @@ HTomb = (function(HTomb) {
     target.boundKeys[ROT[key]] = func;
   };
 
-  window.addEventListener("beforeunload", function(e) {
-    let txt = "\o/";
-    e.returnValue = txt;
-    return txt;
-  });
+  GUI.quietUnload = true;
+  function handleUnload(e) {
+    if (!GUI.quietUnload) {
+      let txt = "Warning: You may want to save the game before leaving this page!";
+      e.returnValue = txt;
+      return txt;
+    }
+    return null;
+  }
   // Set up event listeners
   setTimeout(function() {
     window.addEventListener("keydown",keydown);
     window.addEventListener("keyup",keyup);
+    window.addEventListener("beforeunload", handleUnload);
     display.getContainer().addEventListener("mousedown",mousedown);
     display.getContainer().addEventListener("mousemove",mousemove);
     window.oncontextmenu = function(e) {if (e && e.stopPropagation) {e.stopPropagation();} return false;};

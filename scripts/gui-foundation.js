@@ -229,20 +229,21 @@ HTomb = (function(HTomb) {
   var bindKey = GUI.bindKey = function(target, key, func) {
     target.boundKeys[ROT[key]] = func;
   };
-  function beforeUnload(e) {
-    alert("testing");
-    let txt = "something";
-    //if (!allowUnload) {
+
+  GUI.quietUnload = true;
+  function handleUnload(e) {
+    if (!GUI.quietUnload) {
+      let txt = "Warning: You may want to save the game before leaving this page!";
       e.returnValue = txt;
       return txt;
-    //}
-    //return null;
+    }
+    return null;
   }
   // Set up event listeners
   setTimeout(function() {
-    window.addEventListener("beforeunload",beforeUnload);
     window.addEventListener("keydown",keydown);
     window.addEventListener("keyup",keyup);
+    window.addEventListener("beforeunload", handleUnload);
     display.getContainer().addEventListener("mousedown",mousedown);
     display.getContainer().addEventListener("mousemove",mousemove);
     window.oncontextmenu = function(e) {if (e && e.stopPropagation) {e.stopPropagation();} return false;};
@@ -252,11 +253,6 @@ HTomb = (function(HTomb) {
     overlayDisplay.getContainer().addEventListener("mousedown",function() {GUI.Contexts.active.clickOverlay();});
     console.log("adding event listeners");
   },500);
-
-  let allowUnload = true;
-  GUI.setAllowUnload = function(val) {
-    allowUnload = val;
-  };
 
   //************* Define the basic panels and how they access the DOM *********;
   GUI.Panels = {};

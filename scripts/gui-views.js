@@ -45,7 +45,7 @@ HTomb = (function(HTomb) {
 
   // ****** Start-up screen *******
   Views.startup = function() {
-    GUI.setAllowUnload(true);
+    GUI.quietUnload = true;
     GUI.Contexts.active = GUI.Contexts.startup;
     GUI.Panels.overlay.update([
       "Welcome to HellaTomb!",
