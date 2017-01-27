@@ -3,6 +3,7 @@
 - zombies get stuck in loops sometimes right above their grave
 - make a "kill command" so you can attack fish
 - alter unassigned count should add task
+- verify before leaving page
 
 tiles[z] is undefined...ba path arguments...
 defaultPassable http://herokutomb.herokuapp.com/scripts/path.js:17:5
