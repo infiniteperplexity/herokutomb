@@ -634,7 +634,7 @@ HTomb = (function(HTomb) {
 
   HTomb.Things.defineStructure({
     template: "Storeroom",
-    name: "Storeroom",
+    name: "storeroom",
     symbols: ["\u2554","\u2550","\u2557","\u2551","=","\u2551","\u255A","\u2550","\u255D"],
     fgs: ["#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB"],
     options: [
