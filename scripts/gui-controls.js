@@ -106,7 +106,7 @@ HTomb = (function(HTomb) {
     }
     // If we clicked on a workshop, go to workshop view
     let f = HTomb.World.features[coord(x,y,gameScreen.z)];
-    if (visible && f && f.structure && f.structure.isPlaced() && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
+    if (f && f.structure && f.structure.isPlaced() && HTomb.World.creatures[coord(x,y,gameScreen.z)]===undefined) {
       GUI.Views.structureView(f.structure);
       return;
     }
