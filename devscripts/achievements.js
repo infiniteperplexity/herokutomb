@@ -1,13 +1,39 @@
 HTomb = (function(HTomb) {
   "use strict";
   var coord = HTomb.Utils.coord;
-
-  HTomb.Achievements = [];
+  HTomb.Achievements = {
+    list: [],
+    reset: function() {
+      for (let i=0; i<this.list.length; i++) {
+        let a = this.list[i];
+        a.unlocked = false;
+        for (let j=0; j<a.listens.length; j++) {
+          if (HTomb.Events[a.listens[j]].indexOf(a)===-1) {
+            HTomb.Events.subscribe(a, a.listens[j]);
+          }
+        }
+      }
+    },
+    resubcribe: function() {
+      for (let i=0; i<this.list.length; i++) {
+        let a = this.list[i];
+        if (a.unlocked===false) {
+          for (let j=0; j<a.listens.length; j++) {
+            if (HTomb.Events[a.listens[j]].indexOf(a)===-1) {
+              HTomb.Events.subscribe(a, a.listens[j]);
+            }
+          }
+        } else {
+          HTomb.Events.unsubscribeAll(a);
+        }
+      }
+    }
+  };
   function Achievement(args) {
     args = args || {};
     this.unlocked = false;
     this.template = args.template || "Achievement";
-    HTomb.Achievements.push(this);
+    HTomb.Achievements.list.push(this);
     this.name = args.name || "dummy achievement";
     this.description = args.description || "did something cool.";
     this.listens = args.listens || [];

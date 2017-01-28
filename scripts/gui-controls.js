@@ -632,8 +632,8 @@ HTomb = (function(HTomb) {
 
   Main.showAchievements = function() {
     let txt = ["%c{lime}Achievements:"," "];
-    for (let i=0; i<HTomb.Achievements.length; i++) {
-      let a = HTomb.Achievements[i];
+    for (let i=0; i<HTomb.Achievements.list.length; i++) {
+      let a = HTomb.Achievements.list[i];
       let s = "";
       if (!a.unlocked) {
         s+="%c{gray}";

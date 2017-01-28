@@ -66,6 +66,10 @@ HTomb = (function(HTomb) {
     let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
     let lights = HTomb.Save.stringifyThing(HTomb.World.lights, false);
     let cycle = HTomb.Save.stringifyThing(HTomb.Time.dailyCycle, false);
+    let achievements = HTomb.Achievements.list.map(function(e,i,a) {
+      return [e.template,e.unlocked];
+    });
+    achievements = HTomb.Save.stringifyThing(achievements);
     let events = {};
     for (let i=0; i<HTomb.Events.types.length; i++) {
       events[HTomb.Events.types[i]] = HTomb.Events[HTomb.Events.types[i]];
@@ -76,14 +80,15 @@ HTomb = (function(HTomb) {
                 '"explored": ', explored, ", ",
                 '"lights": ', lights, ", ",
                 '"cycle": ', cycle, ", ",
+                '"achievements": ', achievements, ", ",
                 '"events": ', events,
                 '}'
     );
     return other;
   }
-  HTomb.Save.exposeOther = function() {
-    return stringifyOther();
-  }
+  //HTomb.Save.exposeOther = function() {
+  //  return stringifyOther();
+  //}
   // returns a function that several rows of stringified tiles
   function stringifyTiles(z1,z2) {
     return function() {
@@ -426,7 +431,11 @@ HTomb = (function(HTomb) {
     for (let i=0; i<saveListeners.length; i++) {
       HTomb.Events.subscribe(saveListeners[i][0],saveListeners[i][1]);
     }
-  }
+    for (let i=0; i<other.achievements.length; i++) {
+      HTomb.Achievements.list[i].unlocked = other.achievements[i][1];
+    }
+    HTomb.Achievements.resubscribe();
+  };
 
   // Anything not on the Thing list that contains references to things gets processed here
   function finalSwap() {
