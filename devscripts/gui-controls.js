@@ -432,8 +432,22 @@ HTomb = (function(HTomb) {
     var above = HTomb.Tiles.getSquare(x,y,z+1);
     let mainColor = "%c{LightCyan}";
     let otherColor = "%c{Gainsboro}";
-    var text = [mainColor + "Coord: " + square.x +"," + square.y + "," + square.z];
+    let text = [];
     var next;
+    if (!square.explored) {
+      text.push("%c{orange}This tile has not been explored yet.");
+      text.push(" ");
+    } else if (square.terrain.fallable) {
+      text.push("%c{yellow}Elevation here is below your view.");
+      text.push(" ");
+    } else if (square.terrain.solid) {
+      text.push("%c{yellow}Elevation here is above your view.");
+      text.push(" ");
+    } else {
+      text.push("%c{lime}Elevation is level with your view.");
+      text.push(" ");
+    }
+    text.push(mainColor + "Coord: " + square.x +"," + square.y + "," + square.z);
     if(square.explored || HTomb.Debug.explored) {
       next = mainColor + "Terrain: "+square.terrain.name;
       if (square.terrain===HTomb.Tiles.Floor && below.cover.liquid) {
@@ -698,7 +712,8 @@ HTomb = (function(HTomb) {
       if (keyCursor) {
         GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
       } else {
-        GUI.Contexts.active.mouseTile(GUI.Contexts.mouseX, GUI.Contexts.mouseY);
+        let gameScreen = HTomb.GUI.Panels.gameScreen;
+        GUI.Contexts.active.mouseTile(GUI.Contexts.mouseX+gameScreen.xoffset, GUI.Contexts.mouseY+gameScreen.yoffset);
       }
     };
     // Actually this returns a custom function for each type of movement
@@ -818,8 +833,9 @@ HTomb = (function(HTomb) {
     "Backspace / Delete: Center on player.",
     "K: Keyboard-only mode.",
     " ",
-    "Survey: NumPad/Arrows, </>: Up/Down.",
+    "Move Screen: NumPad/Arrows.",
     "(Control+Arrows for diagonal.)",
+    "< / >: Up / Down.",
     " ",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary",
