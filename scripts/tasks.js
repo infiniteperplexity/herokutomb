@@ -196,6 +196,7 @@ HTomb = (function(HTomb) {
       }
     },
     completeWork: function(x,y,z) {
+      HTomb.Events.publish({type: "Complete", task: this});
       this.entity.despawn();
     },
     ai: function() {
