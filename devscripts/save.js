@@ -431,13 +431,13 @@ HTomb = (function(HTomb) {
     for (let i=0; i<saveListeners.length; i++) {
       HTomb.Events.subscribe(saveListeners[i][0],saveListeners[i][1]);
     }
-    HTomb.Achievements.reset();
-    if (other.achievements) {
-      for (let i=0; i<other.achievements.length; i++) {
-        HTomb.Achievements.list[i].unlocked = other.achievements[i][1];
-      }
-      HTomb.Achievements.resubscribe();
-    }
+    //HTomb.Achievements.reset();
+    //if (other.achievements) {
+    //  for (let i=0; i<other.achievements.length; i++) {
+    //    HTomb.Achievements.list[i].unlocked = other.achievements[i][1];
+    //  }
+    //  HTomb.Achievements.resubscribe();
+    //}
   };
 
   // Anything not on the Thing list that contains references to things gets processed here

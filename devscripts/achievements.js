@@ -182,7 +182,7 @@ HTomb = (function(HTomb) {
       items = items.exposeItems();
       let anyOre = false;
       for (let i=0; i<items.length; i++) {
-        if (items[i].item.tags.indexOf("Minerals")!==-1 &&items[i].template!=="Rock") {
+        if (items[i].item.tags.indexOf("Minerals")!==-1 && items[i].template!=="Rock") {
           anyOre=true;
         }
       }
