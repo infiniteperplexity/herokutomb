@@ -624,8 +624,29 @@ HTomb = (function(HTomb) {
       HTomb.GUI.Views.summaryView();
     },
     VK_DELETE: Commands.centerOnPlayer,
-    VK_BACK_SPACE: Commands.centerOnPlayer
+    VK_BACK_SPACE: Commands.centerOnPlayer,
+    VK_A: function() {
+      Main.showAchievements();
+    }
   });
+
+  Main.showAchievements = function() {
+    let txt = ["%c{lime}Achievements:"," "];
+    for (let i=0; i<HTomb.Achievements.length; i++) {
+      let a = HTomb.Achievements[i];
+      let s = "";
+      if (!a.unlocked) {
+        s+="%c{gray}";
+      } else {
+        s+="%c{white}";
+      }
+      s+=a.name;
+      s+=": ";
+      s+=a.description;
+      txt.push(s);
+    }
+    HTomb.GUI.splash(txt);
+  };
   // ***** Survey mode *********
   Main.surveyMode = function() {
     Main.inSurveyMode = true;
@@ -765,7 +786,8 @@ HTomb = (function(HTomb) {
         let cursor = HTomb.GUI.getMouseCursor();
         HTomb.GUI.Contexts.active.clickTile(cursor[0],cursor[1]);
       }
-    }
+    },
+    VK_A: Main.showAchievements
   });
 
   survey.menuText =
@@ -784,6 +806,8 @@ HTomb = (function(HTomb) {
     "Space: Wait, + / -: Change speed.",
     "Click: Pause or unpause.",
     "PageUp/Down to scroll messages.",
+    " ",
+    "A: Show achievements.",
     "%c{yellow}?: Help / Playtest notes."
   ];
 

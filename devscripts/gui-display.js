@@ -368,6 +368,8 @@ HTomb = (function(HTomb) {
     "Space: Wait, + / -: Change speed.",
     "Click: Pause or unpause.",
     "PageUp/Down to scroll messages.",
+    " ",
+    "A: Show achievements.",
     "%c{yellow}?: Help / Playtest notes."
   ];
   menu.defaultMiddle = [];
