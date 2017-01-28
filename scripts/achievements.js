@@ -2,11 +2,12 @@ HTomb = (function(HTomb) {
   "use strict";
   var coord = HTomb.Utils.coord;
 
-  HTomb.Achievements = {};
+  HTomb.Achievements = [];
   function Achievement(args) {
     args = args || {};
+    this.unlocked = false;
     this.template = args.template || "Achievement";
-    HTomb.Achievements[this.template] = false;
+    HTomb.Achievements.push(this);
     this.name = args.name || "dummy achievement";
     this.description = args.description || "did something cool.";
     this.listens = args.listens || [];
@@ -19,7 +20,7 @@ HTomb = (function(HTomb) {
       HTomb.Events.subscribe(this, args.listens[i]);
     }
     this.achieve = function() {
-      HTomb.Achievements[this.template] = true;
+      this.unlocked = true;
       HTomb.GUI.pushMessage("%c{lime}%b{purple}"+this.description);
       HTomb.GUI.pushMessage("%c{lime}%b{purple}Achievement: " + this.name);
       HTomb.Events.unsubscribeAll(this);
@@ -50,7 +51,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "ArmyOfTheDead",
-    name: "Army Of The Dead.",
+    name: "Army Of The Dead",
     description: "(raised maximum initial number of zombies.)",
     listens: ["Complete","Cast"],
     onComplete: function(event) {
@@ -76,7 +77,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "TodayWasAGoodDay",
-    name: "Today Was A Good Day.",
+    name: "Today Was A Good Day",
     description: "(survive until nightfall.)",
     listens: ["TurnBegin"],
     onTurnBegin: function() {
@@ -87,7 +88,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "TheDarkestHour",
-    name: "The Darkest Hour.",
+    name: "The Darkest Hour",
     description: "(survive until dawn.)",
     listens: ["TurnBegin"],
     onTurnBegin: function() {
@@ -98,7 +99,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "FirstBlood",
-    name: "First Blood.",
+    name: "First Blood",
     description: "(witness the death of a hostile creature.)",
     listens: ["Destroy"],
     onDestroy: function(event) {
@@ -110,7 +111,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "BreakingNewGround",
-    name: "Breaking New Ground.",
+    name: "Breaking New Ground",
     description: "(dig a corridor.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -125,7 +126,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "AnotherBrickInTheWall",
-    name: "Another Brick In The Wall.",
+    name: "Another Brick In The Wall",
     description: "(upgrade a slope into a wall.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -140,7 +141,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "ExclusiveOre",
-    name: "Exclusive Ore.",
+    name: "Exclusive Ore",
     description: "(mine some ore.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -155,7 +156,7 @@ HTomb = (function(HTomb) {
       items = items.exposeItems();
       let anyOre = false;
       for (let i=0; i<items.length; i++) {
-        if (items[i].item.tags.indexOf("Minerals")!==-1) {
+        if (items[i].item.tags.indexOf("Minerals")!==-1 &&items[i].template!=="Rock") {
           anyOre=true;
         }
       }
@@ -166,7 +167,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "IntoTheWoods",
-    name: "Into The Woods.",
+    name: "Into The Woods",
     description: "(harvest wood from a tree.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -192,7 +193,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "GoToSeed",
-    name: "Go To Seed.",
+    name: "Go To Seed",
     description: "(plant a seed or spore in a farm.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -203,7 +204,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "AllTheFixings",
-    name: "All The Fixings.",
+    name: "All The Fixings",
     description: "(furnish a fixture.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -214,7 +215,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "ReapWhatYouSow",
-    name: "Reap What You Sow.",
+    name: "Reap What You Sow",
     description: "(harvest a crop from a farm.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -225,7 +226,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "RibbonCutting",
-    name: "Ribbon Cutting.",
+    name: "Ribbon Cutting",
     description: "(complete a structure.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -236,7 +237,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "SaveOneForLater",
-    name: "Save One For Later.",
+    name: "Save One For Later",
     description: "(have a minion place an item in a storeroom.)",
     listens: ["Complete"],
     onComplete: function(event) {
