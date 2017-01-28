@@ -1021,6 +1021,9 @@ HTomb = (function(HTomb) {
     started: false,
     dormancy: 4,
     canAssign: function(cr) {
+      if (this.entity.isPlaced()===false) {
+        return false;
+      }
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
@@ -1031,6 +1034,7 @@ HTomb = (function(HTomb) {
       })) {
         // cancel this task if you can't find the ingredients
         if (cr.inventory.canFindAll(this.ingredients)!==true) {
+          // Wait...can this cancel the task in the middle of assignment???
           this.cancel();
           return false;
         } else {

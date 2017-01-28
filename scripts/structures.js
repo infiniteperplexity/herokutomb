@@ -1021,13 +1021,17 @@ HTomb = (function(HTomb) {
     started: false,
     dormancy: 4,
     canAssign: function(cr) {
+      if (this.entity.isPlaced()===false) {
+        return false;
+      }
       let x = this.entity.x;
       let y = this.entity.y;
       let z = this.entity.z;
       if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(x,y,z,cr.x,cr.y,cr.z, {
         searcher: cr,
         searchee: this.entity,
-        searchTimeout: 10
+        searchTimeout:
+         10
       })) {
         // cancel this task if you can't find the ingredients
         if (cr.inventory.canFindAll(this.ingredients)!==true) {
