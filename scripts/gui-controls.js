@@ -88,12 +88,18 @@ HTomb = (function(HTomb) {
   Contexts.default.clickAt = function(x,y) {
     HTomb.Time.toggleTime();
   };
+  // This is a really ad hoc thing to keep wandering creatures from grabbing focus
+  let lastWaitXYZ = [null,null,null];
   Contexts.default.clickTile = function(x,y) {
     // If we clicked on a creature, go to creature view
     let c = HTomb.World.creatures[coord(x,y,gameScreen.z)];
     let visible = HTomb.World.visible[coord(x,y,gameScreen.z)];
     let keyCursor = GUI.getKeyCursor();
-    if (c && visible) {
+    let sameAsLastWait = false;
+    if (lastWaitXYZ[0]===gameScreen.xoffset && lastWaitXYZ[1]===gameScreen.yoffset && lastWaitXYZ[2]===gameScreen.z) {
+      sameAsLastWait = true;
+    }
+    if (c && visible && !sameAsLastWait) {
       // In keyboard cursor mode, don't select the player; wait instead
       if (keyCursor && c===HTomb.Player) {
         Commands.wait();
@@ -114,6 +120,7 @@ HTomb = (function(HTomb) {
     if (keyCursor) {
       Commands.wait();
       GUI.Contexts.active.mouseTile(keyCursor[0],keyCursor[1]);
+      lastWaitXYZ = [gameScreen.xoffset, gameScreen.yoffset, gameScreen.z];
       return;
     }
     // Otherwise, toggle time
