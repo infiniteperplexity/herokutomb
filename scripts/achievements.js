@@ -56,7 +56,7 @@ HTomb = (function(HTomb) {
   new Achievement({
     template: "BringOutYourDead",
     name: "Bring Out Your Dead!",
-    description: "(raised one zombie.)",
+    description: "(raise one zombie.)",
     listens: ["Complete","Cast"],
     onComplete: function(event) {
       if (event.task.template==="ZombieEmergeTask") {
@@ -78,7 +78,7 @@ HTomb = (function(HTomb) {
   new Achievement({
     template: "ArmyOfTheDead",
     name: "Army Of The Dead",
-    description: "(raised maximum initial number of zombies.)",
+    description: "(raise maximum initial number of zombies.)",
     listens: ["Complete","Cast"],
     onComplete: function(event) {
       if (event.task.template==="ZombieEmergeTask") {
@@ -136,8 +136,8 @@ HTomb = (function(HTomb) {
     }
   });
   new Achievement({
-    template: "BreakingNewGround",
-    name: "Breaking New Ground",
+    template: "ScratchingTheSurface",
+    name: "Scratching The Surface",
     description: "(dig a corridor.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -182,7 +182,7 @@ HTomb = (function(HTomb) {
       items = items.exposeItems();
       let anyOre = false;
       for (let i=0; i<items.length; i++) {
-        if (items[i].item.tags.indexOf("Minerals")!==-1 &&items[i].template!=="Rock") {
+        if (items[i].item.tags.indexOf("Minerals")!==-1 && items[i].template!=="Rock") {
           anyOre=true;
         }
       }
@@ -218,12 +218,23 @@ HTomb = (function(HTomb) {
     }
   });
   new Achievement({
-    template: "GoToSeed",
-    name: "Go To Seed",
-    description: "(plant a seed or spore in a farm.)",
+    template: "RibbonCutting",
+    name: "Ribbon Cutting",
+    description: "(complete a structure.)",
     listens: ["Complete"],
     onComplete: function(event) {
-      if (event.task.template==="FarmTask") {
+      if (event.task.template==="ConstructTask" && event.task.structure.isPlaced()) {
+        this.achieve();
+      }
+    }
+  });
+  new Achievement({
+    template: "ToolsOfTheTrade",
+    name: "Tools Of The Trade",
+    description: "(produce a good in a workshop.)",
+    listens: ["Complete"],
+    onComplete: function(event) {
+      if (event.task.template==="ProduceTask") {
         this.achieve();
       }
     }
@@ -240,23 +251,23 @@ HTomb = (function(HTomb) {
     }
   });
   new Achievement({
+    template: "GoToSeed",
+    name: "Go To Seed",
+    description: "(plant a seed or spore in a farm.)",
+    listens: ["Complete"],
+    onComplete: function(event) {
+      if (event.task.template==="FarmTask") {
+        this.achieve();
+      }
+    }
+  });
+  new Achievement({
     template: "ReapWhatYouSow",
     name: "Reap What You Sow",
     description: "(harvest a crop from a farm.)",
     listens: ["Complete"],
     onComplete: function(event) {
       if (event.task.template==="FarmHarvestTask") {
-        this.achieve();
-      }
-    }
-  });
-  new Achievement({
-    template: "RibbonCutting",
-    name: "Ribbon Cutting",
-    description: "(complete a structure.)",
-    listens: ["Complete"],
-    onComplete: function(event) {
-      if (event.task.template==="ConstructTask" && event.task.structure.isPlaced()) {
         this.achieve();
       }
     }
@@ -272,9 +283,6 @@ HTomb = (function(HTomb) {
       }
     }
   });
-
-  // harvest a crop
-
 
   return HTomb;
 })(HTomb);
