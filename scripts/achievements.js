@@ -78,7 +78,7 @@ HTomb = (function(HTomb) {
   new Achievement({
     template: "ArmyOfTheDead",
     name: "Army Of The Dead",
-    description: "(raise maximum initial number of zombies.)",
+    description: "(raise three zombies - the initial maximum.)",
     listens: ["Complete","Cast"],
     onComplete: function(event) {
       if (event.task.template==="ZombieEmergeTask") {
@@ -98,40 +98,6 @@ HTomb = (function(HTomb) {
             this.achieve();
           }
         }
-      }
-    }
-  });
-  new Achievement({
-    template: "TodayWasAGoodDay",
-    name: "Today Was A Good Day",
-    description: "(survive until nightfall.)",
-    listens: ["TurnBegin"],
-    onTurnBegin: function() {
-      if (HTomb.Time.dailyCycle.hour===HTomb.Time.dailyCycle.times.dusk) {
-          this.achieve();
-      }
-    }
-  });
-  new Achievement({
-    template: "TheDarkestHour",
-    name: "The Darkest Hour",
-    description: "(survive until dawn.)",
-    listens: ["TurnBegin"],
-    onTurnBegin: function() {
-      if (HTomb.Time.dailyCycle.hour===HTomb.Time.dailyCycle.times.dawn) {
-          this.achieve();
-      }
-    }
-  });
-  new Achievement({
-    template: "FirstBlood",
-    name: "First Blood",
-    description: "(witness the death of a hostile creature.)",
-    listens: ["Destroy"],
-    onDestroy: function(event) {
-      let e = event.entity;
-      if (e.creature && HTomb.World.visible[coord(e.x, e.y, e.z)] && e.ai && e.ai.isHostile(HTomb.Player)) {
-        this.achieve();
       }
     }
   });
@@ -283,6 +249,41 @@ HTomb = (function(HTomb) {
       }
     }
   });
+  new Achievement({
+    template: "FirstBlood",
+    name: "First Blood",
+    description: "(witness the death of a hostile creature.)",
+    listens: ["Destroy"],
+    onDestroy: function(event) {
+      let e = event.entity;
+      if (e.creature && HTomb.World.visible[coord(e.x, e.y, e.z)] && e.ai && e.ai.isHostile(HTomb.Player)) {
+        this.achieve();
+      }
+    }
+  });
+  new Achievement({
+    template: "TodayWasAGoodDay",
+    name: "Today Was A Good Day",
+    description: "(survive until nightfall.)",
+    listens: ["TurnBegin"],
+    onTurnBegin: function() {
+      if (HTomb.Time.dailyCycle.hour===HTomb.Time.dailyCycle.times.dusk) {
+          this.achieve();
+      }
+    }
+  });
+  new Achievement({
+    template: "TheDarkestHour",
+    name: "The Darkest Hour",
+    description: "(survive until dawn.)",
+    listens: ["TurnBegin"],
+    onTurnBegin: function() {
+      if (HTomb.Time.dailyCycle.hour===HTomb.Time.dailyCycle.times.dawn) {
+          this.achieve();
+      }
+    }
+  });
+
 
   return HTomb;
 })(HTomb);
