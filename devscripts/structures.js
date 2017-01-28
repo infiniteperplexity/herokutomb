@@ -801,6 +801,7 @@ HTomb = (function(HTomb) {
                 cr.inventory.drop(item);
                 cr.ai.target = null;
                 this.unassign();
+                HTomb.Events.publish({type: "Complete", task: this});
               } else {
                 cr.ai.walkToward(x,y,z, {
                   searcher: cr,
