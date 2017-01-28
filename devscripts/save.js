@@ -539,7 +539,7 @@ HTomb = (function(HTomb) {
             return;
           }
         }
-        GUI.quietUnload = false;
+        HTomb.GUI.quietUnload = false;
         finalSwap();
         HTomb.Save.currentGame = name;
         HTomb.Path.reset();
