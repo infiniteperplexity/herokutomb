@@ -630,6 +630,15 @@ HTomb = (function(HTomb) {
     VK_BACK_SPACE: Commands.centerOnPlayer,
     VK_A: function() {
       Main.showAchievements();
+    },
+    VK_P: function() {
+      HTomb.GUI.autopause = !HTomb.GUI.autopause;
+      if (HTomb.GUI.autopause) {
+        HTomb.Time.stopTime();
+      } else {
+        HTomb.Time.startTime();
+      }
+      HTomb.GUI.Panels.menu.refresh();
     }
   });
 
@@ -791,7 +800,16 @@ HTomb = (function(HTomb) {
         HTomb.GUI.Contexts.active.clickTile(cursor[0],cursor[1]);
       }
     },
-    VK_A: Main.showAchievements
+    VK_A: Main.showAchievements,
+    VK_P: function() {
+      HTomb.GUI.autopause = !HTomb.GUI.autopause;
+      if (HTomb.GUI.autopause) {
+        HTomb.Time.stopTime();
+      } else {
+        HTomb.Time.startTime();
+      }
+      HTomb.GUI.Panels.menu.refresh();
+    }
   });
 
   survey.menuText =
@@ -800,19 +818,18 @@ HTomb = (function(HTomb) {
     "Backspace / Delete: Center on player.",
     "K: Keyboard-only mode.",
     " ",
-    "Move screen: NumPad / Arrows.",
+    "Survey: NumPad/Arrows, </>: Up/Down.",
     "(Control+Arrows for diagonal.)",
-    "<: Up, >: Down.",
     " ",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary",
     " ",
-    "Space: Wait, + / -: Change speed.",
-    "Click: Pause or unpause.",
-    "PageUp/Down to scroll messages.",
+    "Space: Wait, +/-: Change speed.",
+    "Click/Enter: Pause/Unpause.",
+    "P: Disable auto-pause.",
     " ",
-    "A: Show achievements.",
-    "%c{yellow}?: Help / Playtest notes."
+    "PageUp/Down to scroll messages.",
+    "A: Achievements, ?: Playtest notes."
   ];
 
   return HTomb;

@@ -1030,11 +1030,11 @@ HTomb = (function(HTomb) {
       if (this.validTile(x,y,z) && HTomb.Tiles.isReachableFrom(x,y,z,cr.x,cr.y,cr.z, {
         searcher: cr,
         searchee: this.entity,
-        searchTimeout:
-         10
+        searchTimeout: 10
       })) {
         // cancel this task if you can't find the ingredients
         if (cr.inventory.canFindAll(this.ingredients)!==true) {
+          // Wait...can this cancel the task in the middle of assignment???
           this.cancel();
           return false;
         } else {

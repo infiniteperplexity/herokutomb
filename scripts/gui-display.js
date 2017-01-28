@@ -302,6 +302,8 @@ HTomb = (function(HTomb) {
         }
         if (menuText[i]==="K: Keyboard-only mode." && GUI.getKeyCursor()) {
           menuDisplay.drawText(this.x0+j, this.y0+i, "%c{cyan}K: Enable mouse control.");
+        } else if (menuText[i]==="P: Disable auto-pause." && !GUI.autopause) {
+          menuDisplay.drawText(this.x0+j, this.y0+i, "%c{cyan}P: Enable auto-pause.");
         } else {
           menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
         }
@@ -357,20 +359,19 @@ HTomb = (function(HTomb) {
     "Backspace / Delete: Center on player.",
     "K: Keyboard-only mode.",
     " ",
-    "Movement: NumPad / Arrows.",
+    "Move: NumPad/Arrows, </>: Up/Down.",
     "(Control+Arrows for diagonal.)",
-    "<: Up, >: Down.",
     " ",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary.",
     "G: Pick Up, D: Drop, I: Inventory.",
     " ",
-    "Space: Wait, + / -: Change speed.",
-    "Click: Pause or unpause.",
-    "PageUp/Down to scroll messages.",
+    "Space: Wait, +/-: Change speed.",
+    "Click/Enter: Pause/Unpause.",
+    "P: Disable auto-pause.",
     " ",
-    "A: Show achievements.",
-    "%c{yellow}?: Help / Playtest notes."
+    "PageUp/Down to scroll messages.",
+    "A: Achievements, ?: Playtest notes."
   ];
   menu.defaultMiddle = [];
   menu.defaultBottom = [];
