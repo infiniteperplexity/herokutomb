@@ -21,7 +21,7 @@ HTomb = (function(HTomb) {
   HTomb.World.tasks = {};
   HTomb.World.covers = HTomb.Utils.grid3d();
 
-  HTomb.World.init = function() {
+  HTomb.World.reset = function() {
     HTomb.Time.dailyCycle.reset();
     HTomb.Events.reset();
     HTomb.Achievements.reset();
@@ -52,6 +52,9 @@ HTomb = (function(HTomb) {
       delete HTomb.World.lights[i];
     }
     HTomb.World.fillTiles();
+  };
+  HTomb.World.init = function() {
+    this.reset();
     HTomb.World.generators.bestSoFar();
     HTomb.World.validate.all();
     HTomb.Time.unlockTime();

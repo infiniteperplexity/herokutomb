@@ -44,20 +44,41 @@ HTomb = (function(HTomb) {
   };
 
   // ****** Start-up screen *******
+  let introAnimation = null;
   Views.startup = function() {
     GUI.quietUnload = true;
     GUI.Contexts.active = GUI.Contexts.startup;
-    GUI.Panels.overlay.update([
+    HTomb.Intro.setup();
+    introAnimation = setInterval(introTick,100);
+  };
+  function introTick() {
+    let txt = [
       "Welcome to HellaTomb!",
       "N) New game.",
       "R) Restore game.",
       "Q) Quit.",
       "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
-    ]);
-  };
+    ];
+    GUI.Panels.overlay.update(txt);
+    let yoffset = txt.length+4;
+    let xoffset = 5;
+    let tiles = HTomb.Intro.getTiles();
+    let display= GUI.Panels.overlay.display;
+    for (let y=0; y<tiles.length; y++) {
+      for (let x=0; x<tiles[y].length; x++) {
+        let t = tiles[y][x];
+        display.draw(x+xoffset,y+yoffset,t[0],t[1],t[2]);
+      }
+    }
+    HTomb.Intro.tick();
+  }
   GUI.Contexts.startup = GUI.Contexts.new({
-    VK_N: HTomb.World.newGame,
+    VK_N: function() {
+      clearInterval(introAnimation);
+      HTomb.World.newGame();
+    },
     VK_R: function() {
+      clearInterval(introAnimation);
       Views.parentView = Views.startup;
       Views.System.restore();
     },
