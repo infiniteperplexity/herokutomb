@@ -17,11 +17,12 @@ HTomb = (function(HTomb) {
         HTomb.World.tiles[z][x][y] = HTomb.Tiles.WallTile;
       }
     }
+    necro = HTomb.Things.Necromancer();
     // only works well if height and width are odd...let's leave that for now
     let maze = new ROT.Map.EllerMaze(width,height);
     maze.create(function(x,y,val) {
       if (val===0) {
-        HTomb.Things.DigTask().place(z,x+1,y+1);
+        HTomb.Things.DigTask({assigner: necro}).place(z,x+1,y+1);
         //HTomb.World.tiles[z][x+1][y+1] = HTomb.Tiles.FloorTile;
       }
     });
@@ -32,10 +33,11 @@ HTomb = (function(HTomb) {
         HTomb.World.tiles[z][Math.ceil(x+width/2-roomWidth/2)][Math.ceil(y+height/2-roomHeight/2)] = HTomb.Tiles.FloorTile;
       }
     }
-    necro = HTomb.Things.Necromancer();
     necro.place(Math.floor(width/2),Math.floor(height/2),z);
     for (let i=0; i<4; i++) {
       let zombie = HTomb.Things.Zombie();
+      HTomb.Things.Minion().addToEntity(zombie);
+      necro.master.addMinion(zombie);
       zombies.push(zombie);
       let xyz = HTomb.Tiles.randomEmptyNeighbor(necro.x,necro.y,necro.z);
       zombie.place(xyz[0],xyz[1],xyz[2]);
@@ -59,6 +61,11 @@ HTomb = (function(HTomb) {
     return grid;
   };
   HTomb.Intro.tick = function() {
+    necro.ai.wander();
+    for (let i=0; i<zombies.length; i++) {
+      zombies[i].ai.act();
+    }
+    //okay...shouldn't AIs try to acquire tasks rather than vice versa?  I think so.
   };
   HTomb.Intro.reset = function() {
   };
