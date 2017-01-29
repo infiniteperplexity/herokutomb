@@ -26,11 +26,14 @@ HTomb = (function(HTomb) {
     }
     necro = HTomb.Things.Necromancer();
     // only works well if height and width are odd...let's leave that for now
-    let maze = new ROT.Map.EllerMaze(width,height);
+    let maze = new ROT.Map.EllerMaze(width-1,height-1);
     maze.create(function(x,y,val) {
       if (val===0 && HTomb.World.tiles[z][x+1][y+1]===HTomb.Tiles.WallTile) {
         HTomb.Things.DigTask({assigner: necro}).place(x+1,y+1,z);
       }
+      //if (val===0) {
+      //  HTomb.World.tiles[z][x+1][y+1] = HTomb.Tiles.FloorTile;
+      //}
     });
     necro.place(Math.floor(width/2),Math.floor(height/2),z);
     throne = HTomb.Things.Throne();
