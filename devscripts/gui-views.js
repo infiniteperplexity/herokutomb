@@ -47,13 +47,25 @@ HTomb = (function(HTomb) {
   Views.startup = function() {
     GUI.quietUnload = true;
     GUI.Contexts.active = GUI.Contexts.startup;
-    GUI.Panels.overlay.update([
+    HTomb.Intro.setup();
+    let txt = [
       "Welcome to HellaTomb!",
       "N) New game.",
       "R) Restore game.",
       "Q) Quit.",
       "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
-    ]);
+    ];
+    GUI.Panels.overlay.update(txt);
+    let yoffset = txt.length+4;
+    let xoffset = 5;
+    let tiles = HTomb.Intro.getTiles();
+    let display= GUI.Panels.overlay.display;
+    for (let y=0; y<tiles.length; y++) {
+      for (let x=0; x<tiles[y].length; x++) {
+        let t = tiles[y][x];
+        display.draw(x+xoffset,y+yoffset,t[0],t[1],t[2]);
+      }
+    }
   };
   GUI.Contexts.startup = GUI.Contexts.new({
     VK_N: HTomb.World.newGame,
