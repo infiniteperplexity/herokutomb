@@ -190,8 +190,9 @@ app.post('/feedback', function(req, res) {
   console.log("receiving feedback");
   res.set("Connection", "close");
   console.log(req.body);
-  console.log(Object.keys(req));
   console.log(req.params);
+  console.log(Object.keys(req));
+  console.log(req.query);
 });
 
 
