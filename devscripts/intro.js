@@ -2,7 +2,7 @@ HTomb = (function(HTomb) {
   "use strict";
   // alright
   let width = 64;
-  let height = 32;
+  let height = 30;
   let z = 1;
   let nzombies = 6;
   let zombies = null;
