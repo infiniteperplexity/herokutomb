@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <title>HellaTomb</title>
+
 </head>
 <style>
 </style>
@@ -26,39 +27,40 @@ Did you observe a bug?
 Feel free the paste the console error message, if you know how to do that.
 </textarea>
 <br>
-<button onclick = "submit();">Submit</button>
 </form>
-</body>
+<button onclick="submit();">Submit</button>
 <script>
 function submit() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == XMLHttpRequest.DONE) {
       if (xhttp.status == 200) {
-          console.log("succeeded");
-        }else if (xhttp.status == 400) {
-          console.log("There was an error 400");
-        } else {
-          console.log("Something other than 200 was returned.");
-        }
-        HTomb.Time.unlockTime();
+        console.log("succeeded");
+        document.getElementById("text").value = "Thank you for your feedback!";
+      } else if (xhttp.status == 400) {
+        console.log("There was an error 400");
+      } else {
+        console.log("Something other than 200 was returned.");
       }
-    };
-    xhttp.open("POST", "/feedback", true);
-    let json = {};
-    json.name = document.getElementById("name").value;
-    if (json.name==="(Optional)") {
-      json.name = " ";
     }
-    json.address = document.getElementById("address").value;
-    if (json.address==="optional@optional.com") {
-      json.name = " ";
-    }
-    json.text = document.getElementById("text").value;
-    json = JSON.stringify(json);
-    console.log(json);
-    //xhttp.send(json);
   }
+  xhttp.open("POST", "/feedback", true);
+  let json = {};
+  json.name = document.getElementById("name").value;
+  if (json.name==="(Optional)") {
+    json.name = "null";
+  }
+  json.address = document.getElementById("address").value;
+  if (json.address==="optional@optional.com") {
+    json.address = "null";
+  }
+  json.text = document.getElementById("text").value;
+  if (json.text="What do you like or dislike about the game?\n\nDid you observe a bug?\n\nFeel free the paste the console error message, if you know how to do that.") {
+    json.text = "null"
+  }
+  json = JSON.stringify(json);
+  xhttp.send(json);
 }
 </script>
+</body>
 </html>
