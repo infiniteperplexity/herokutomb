@@ -189,7 +189,7 @@ app.post('/saves/*', function (req, res) {
 app.post('/feedback', function(req, res) {
   console.log("receiving feedback");
   res.set("Connection", "close");
-  console.log(req);
+  console.log(req.body);
 });
 
 
