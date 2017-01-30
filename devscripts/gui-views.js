@@ -67,6 +67,14 @@ HTomb = (function(HTomb) {
     for (let y=0; y<tiles.length; y++) {
       for (let x=0; x<tiles[y].length; x++) {
         let t = tiles[y][x];
+        if (HTomb.Fonts.textLookup[t[0]]===undefined) {
+          if (HTomb.Fonts.charFound(t[0])) {
+            HTomb.Fonts.textLookup[t[0]] = t[0];
+          } else {
+            HTomb.Fonts.textLookup[t[0]] = HTomb.Fonts.getBackup(t[0]);
+          }
+        }
+        t[0] = HTomb.Fonts.textLookup[t[0]];
         display.draw(x+xoffset,y+yoffset,t[0],t[1],t[2]);
       }
     }
