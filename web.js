@@ -187,7 +187,7 @@ app.post('/saves/*', function (req, res) {
 
 
 app.post('/feedback', function(req, res) {
-  var owner = req.cookies.herokutomb_owner;
+  console.log("receiving feedback");
   res.set("Connection", "close");
   console.log(req);
 });
