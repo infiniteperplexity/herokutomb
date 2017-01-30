@@ -8,7 +8,6 @@
 <style>
 </style>
 <body>
-<form id="feedbackForm" action="/feedback" method="post">
 Name (optional):
 <br>
 <input type="text" name="name" id="name" value="(Optional)">
@@ -19,7 +18,7 @@ E-mail Address (optional):
 <br>
 Feedback / Bug Report:
 <br>
-<textarea form="feedbackForm" name="text" id="text" rows="20" cols="100">
+<textarea name="text" id="text" rows="20" cols="100">
 What do you like or dislike about the game?
 
 Did you observe a bug?
@@ -27,7 +26,6 @@ Did you observe a bug?
 Feel free the paste the console error message, if you know how to do that.
 </textarea>
 <br>
-</form>
 <button onclick="submit();">Submit</button>
 <script>
 function submit() {
@@ -45,6 +43,7 @@ function submit() {
     }
   }
   xhttp.open("POST", "/feedback", true);
+  xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   let json = {};
   json.name = document.getElementById("name").value;
   if (json.name==="(Optional)") {

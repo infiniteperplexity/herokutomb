@@ -192,7 +192,7 @@ app.post('/feedback', function(req, res) {
   console.log(req.body);
   console.log(req.params);
   console.log(Object.keys(req));
-  console.log(req.query);
+  res.send();
 });
 
 
