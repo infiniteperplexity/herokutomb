@@ -32,5 +32,37 @@ HTomb = (function(HTomb) {
   var STATUSH = Constants.STATUSH = 2;
   var SCROLLH = Constants.SCROLLH = 6;
   var SCROLLW = Constants.SCROLLW = GAMEW/TEXTWIDTH;
+
+  let missingChars = ["\uFFFF","\uFFFD"];
+  function characterInFont(chr, font) {
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext('2d');
+    let h = 20;
+    let w = 20;
+    canvas.width = w;
+    canvas.height = h;
+    ctx.font = "10px " + font;
+    ctx.fillText(chr,0,h/2);
+    let arr = ctx.getImageData(0,0,w,h).data;
+    let arrs = [];
+    for (let i=0; i<missingChars.length; i++) {
+      ctx.clearRect(0,0,w,h);
+      ctx.fillText(missingChars[i],0,h/2);
+      arrs.push(ctx.getImageData(0,0,w,h).data);
+    }
+    for (let i=0; i<arr.length; i++) {
+      let bit = arr[i];
+      let allDiffer = true;
+      for (let j=0; j<arrs.length; j++) {
+        if (bit===arrs[j][i]) {
+          allDiffer = false;
+        }
+      }
+      if (allDiffer) {
+        return true;
+      }
+    }
+    return false;
+  }
   return HTomb;
 })(HTomb);
