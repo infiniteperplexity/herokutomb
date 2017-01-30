@@ -114,6 +114,13 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineFeature({
+    template: "FakeTorch",
+    name: "torch",
+    symbol: "\u2AEF",
+    fg: "yellow"
+  });
+
+  HTomb.Things.defineFeature({
     template: "Door",
     name: "door",
     locked: false,

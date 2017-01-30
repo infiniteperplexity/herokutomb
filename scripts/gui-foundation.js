@@ -57,7 +57,7 @@ HTomb = (function(HTomb) {
   //HTomb.GUI.Panels.gameScreen.display._context.canvas.width
   var overlayDisplay = new ROT.Display({
     width: SCREENW*CHARWIDTH/(TEXTWIDTH-TEXTSPACING)+MENUW,
-    height: MENUH,
+    height: MENUH+1,
     fontSize: TEXTSIZE,
     fontFamily: TEXTFONT,
     spacing: TEXTSPACING

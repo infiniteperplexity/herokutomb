@@ -38,8 +38,8 @@ HTomb = (function(HTomb) {
     necro.place(Math.floor(width/2),Math.floor(height/2),z);
     throne = HTomb.Things.Throne();
     throne.place(Math.floor(width/2),Math.floor(height/2),z);
-    HTomb.Things.Torch().place(throne.x+3, throne.y-1, z);
-    HTomb.Things.Torch().place(throne.x-3, throne.y-1, z);
+    HTomb.Things.FakeTorch().place(throne.x+3, throne.y-1, z);
+    HTomb.Things.FakeTorch().place(throne.x-3, throne.y-1, z);
     HTomb.Things.Pentagram().place(throne.x, throne.y+2, z);
     for (let i=0; i<nzombies; i++) {
       let zombie = HTomb.Things.Zombie();
