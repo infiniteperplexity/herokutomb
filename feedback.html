@@ -33,12 +33,11 @@ function submit() {
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == XMLHttpRequest.DONE) {
       if (xhttp.status == 200) {
-        console.log("succeeded");
         document.getElementById("text").value = "Thank you for your feedback!";
       } else if (xhttp.status == 400) {
-        console.log("There was an error 400");
+        document.getElementById("text").value = "Sorry...an error of type 404 was returned :(";
       } else {
-        console.log("Something other than 200 was returned.");
+        document.getElementById("text").value = "Strange...something other than 200 was returned :/";
       }
     }
   }

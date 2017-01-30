@@ -190,9 +190,20 @@ app.post('/feedback', function(req, res) {
   console.log("receiving feedback");
   res.set("Connection", "close");
   console.log(req.body);
-  console.log(req.params);
-  console.log(Object.keys(req));
-  res.send();
+  connection.query("INSERT INTO feedback (tstamp, name, address, text) VALUES (?, ?, ?, ?)",
+    [ String(new Date()),
+      req.body.name,
+      req.body.address,
+      req.body.text
+    ], function(err) {
+    if (err) {
+      console.log("error during row insertion for " + req.url);
+      console.log(err);
+      res.status(404).send();
+      return;
+    }
+    res.send();
+  });
 });
 
 

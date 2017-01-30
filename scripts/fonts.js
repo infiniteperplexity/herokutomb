@@ -33,8 +33,11 @@ HTomb = (function(HTomb) {
   var SCROLLH = Constants.SCROLLH = 6;
   var SCROLLW = Constants.SCROLLW = GAMEW/TEXTWIDTH;
 
+  HTomb.Fonts = {};
+  HTomb.Fonts.lookupSymbol = {};
+  HTomb.Fonts.textLookup = {};
   let missingChars = ["\uFFFF","\uFFFD"];
-  function characterInFont(chr, font) {
+  HTomb.Fonts.charFound = function(chr, font) {
     let canvas = document.createElement("canvas");
     let ctx = canvas.getContext('2d');
     let h = 20;
@@ -63,6 +66,16 @@ HTomb = (function(HTomb) {
       }
     }
     return false;
+  };
+  HTomb.Fonts.getBackup = function(symbol, font) {
+    let backups = {
+      "\u26E7": "\u2606"
+    }
+    let sym = backups[symbol] || "X";
+    if (HTomb.Fonts.charFound(sym, font)===false) {
+      sym = HTomb.Fonts.getBackup(sym, font);
+    }
+    return sym;
   }
   return HTomb;
 })(HTomb);

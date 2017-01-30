@@ -312,6 +312,14 @@ HTomb = (function(HTomb) {
       }
     }
     shade = shade || HTomb.FOV.shade(fg,x,y,z);
+    if (HTomb.Fonts.lookupSymbol[sym]===undefined) {
+      if (HTomb.Fonts.charFound(sym,HTomb.Constants.FONTFAMILY)) {
+        HTomb.Fonts.lookupSymbol[sym] = sym;
+      } else {
+        HTomb.Fonts.lookupSymbol[sym] = HTomb.Fonts.getBackup(sym);
+      }
+    }
+    sym = HTomb.Fonts.lookupSymbol[sym];
     return [sym,fg,shade];
   };
 

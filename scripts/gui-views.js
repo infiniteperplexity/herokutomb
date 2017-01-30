@@ -54,6 +54,7 @@ HTomb = (function(HTomb) {
     GUI.Contexts.active = GUI.Contexts.frozen;
     GUI.Panels.overlay.update(arr);
   };
+
   // ****** Start-up screen *******
   let introAnimation = null;
   Views.startup = function() {
@@ -67,6 +68,7 @@ HTomb = (function(HTomb) {
       "Welcome to HellaTomb!",
       "N) New game.",
       "R) Restore game.",
+      "F) Submit feedback or bug report.",
       "Q) Quit.",
       "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ];
@@ -78,6 +80,14 @@ HTomb = (function(HTomb) {
     for (let y=0; y<tiles.length; y++) {
       for (let x=0; x<tiles[y].length; x++) {
         let t = tiles[y][x];
+        if (HTomb.Fonts.textLookup[t[0]]===undefined) {
+          if (HTomb.Fonts.charFound(t[0])) {
+            HTomb.Fonts.textLookup[t[0]] = t[0];
+          } else {
+            HTomb.Fonts.textLookup[t[0]] = HTomb.Fonts.getBackup(t[0]);
+          }
+        }
+        t[0] = HTomb.Fonts.textLookup[t[0]];
         display.draw(x+xoffset,y+yoffset,t[0],t[1],t[2]);
       }
     }
@@ -94,6 +104,7 @@ HTomb = (function(HTomb) {
       Views.System.restore();
     },
     VK_Q: function() {Views.System.quit();},
+    VK_F: function() {Views.feedback();}
   });
   GUI.Contexts.startup.clickOverlay = function() {};
 
