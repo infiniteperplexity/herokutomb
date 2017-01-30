@@ -653,6 +653,9 @@ HTomb = (function(HTomb) {
         HTomb.Time.startTime();
       }
       HTomb.GUI.Panels.menu.refresh();
+    },
+    VK_F: function() {
+      HTomb.GUI.Views.feedback();
     }
   });
 
@@ -824,6 +827,9 @@ HTomb = (function(HTomb) {
         HTomb.Time.startTime();
       }
       HTomb.GUI.Panels.menu.refresh();
+    },
+    VK_F: function() {
+      HTomb.GUI.Views.feedback();
     }
   });
 
@@ -845,7 +851,7 @@ HTomb = (function(HTomb) {
     "P: Disable auto-pause.",
     " ",
     "PageUp/Down to scroll messages.",
-    "A: Achievements, ?: Playtest notes."
+    "A: Achievements, F: Submit Feedback."
   ];
 
   return HTomb;

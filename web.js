@@ -185,10 +185,17 @@ app.post('/saves/*', function (req, res) {
   });
 });
 
+
+app.post('/feedback', function(req, res) {
+  var owner = req.cookies.herokutomb_owner;
+  res.set("Connection", "close");
+  console.log(req);
+});
+
+
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
   ram("application start");
-  //dbcleanup();
 });
 setInterval(function() {
   connection.ping();
@@ -227,11 +234,4 @@ function sweepdb() {
   });
 }
 
-function dbcleanup() {
-  connection.query("DELETE FROM saves WHERE filename IN ('mySaveGame','testing')", function (err) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log("cleanup succeeded");
-  });
 }

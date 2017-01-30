@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>HellaTomb</title>
+</head>
+<style>
+</style>
+<body>
+<form id="feedbackForm" action="/feedback" method="post">
+Name (optional):
+<br>
+<input type="text" name="name" value="(Optional)">
+<br>
+E-mail Address (optional):
+<br>
+<input type="text" name="address" value="optional@optional.com">
+<br>
+Feedback / Bug Report:
+<br>
+<textarea form="feedbackForm" rows="20" cols="100">
+What do you like or dislike about the game?
+
+Did you observe a bug?
+
+Feel free the paste the console error message, if you know how to do that.
+</textarea>
+<br>
+<button onclick="document.getElementById('feedbackForm').submit();">Submit</button>
+</form>
+</body>
+</html>

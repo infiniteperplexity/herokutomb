@@ -31,6 +31,18 @@ HTomb = (function(HTomb) {
   var Views = GUI.Views;
   let menu = GUI.Panels.menu;
 
+  Views.feedback = function() {
+    let url = window.location.href;
+    let pat = /[^/]+$/;
+    let match = pat.exec(url);
+    let feedback = "feedback.html"
+    if (match===null) {
+      window.open(url+feedback);
+    } else {
+      window.open(url.replace(match,feedback));
+    }
+  };
+
   // ***** Code for various "frozen" views
   GUI.Contexts.frozen = GUI.Contexts.new({});
   GUI.Contexts.frozen.clickAt = function() {};
@@ -56,6 +68,7 @@ HTomb = (function(HTomb) {
       "Welcome to HellaTomb!",
       "N) New game.",
       "R) Restore game.",
+      "F) Submit feedback or bug report.",
       "Q) Quit.",
       "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ];
@@ -91,6 +104,7 @@ HTomb = (function(HTomb) {
       Views.System.restore();
     },
     VK_Q: function() {Views.System.quit();},
+    VK_F: function() {Views.feedback();}
   });
   GUI.Contexts.startup.clickOverlay = function() {};
 

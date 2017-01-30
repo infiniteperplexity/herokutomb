@@ -371,7 +371,7 @@ HTomb = (function(HTomb) {
     "P: Disable auto-pause.",
     " ",
     "PageUp/Down to scroll messages.",
-    "A: Achievements, ?: Playtest notes."
+    "A: Achievements, F: Submit Feedback."
   ];
   menu.defaultMiddle = [];
   menu.defaultBottom = [];

@@ -31,6 +31,18 @@ HTomb = (function(HTomb) {
   var Views = GUI.Views;
   let menu = GUI.Panels.menu;
 
+  Views.feedback = function() {
+    let url = window.location.href;
+    let pat = /[^/]+$/;
+    let match = pat.exec(url);
+    let feedback = "feedback.html"
+    if (match===null) {
+      window.open(url+feedback);
+    } else {
+      window.open(url.replace(match,feedback));
+    }
+  };
+
   // ***** Code for various "frozen" views
   GUI.Contexts.frozen = GUI.Contexts.new({});
   GUI.Contexts.frozen.clickAt = function() {};
@@ -42,7 +54,6 @@ HTomb = (function(HTomb) {
     GUI.Contexts.active = GUI.Contexts.frozen;
     GUI.Panels.overlay.update(arr);
   };
-
   // ****** Start-up screen *******
   let introAnimation = null;
   Views.startup = function() {
