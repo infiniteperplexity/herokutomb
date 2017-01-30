@@ -95,6 +95,15 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineFeature({
+    template: "Pentagram",
+    craftable: true,
+    name: "pentagram",
+    symbol: "\u26E7",
+    fg: "red",
+    ingredients: {Bloodstone: 1}
+  });
+
+  HTomb.Things.defineFeature({
     template: "Torch",
     name: "torch",
     craftable: true,

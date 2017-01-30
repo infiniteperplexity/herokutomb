@@ -38,6 +38,9 @@ HTomb = (function(HTomb) {
     necro.place(Math.floor(width/2),Math.floor(height/2),z);
     throne = HTomb.Things.Throne();
     throne.place(Math.floor(width/2),Math.floor(height/2),z);
+    HTomb.Things.Torch().place(throne.x+3, throne.y-1, z);
+    HTomb.Things.Torch().place(throne.x-3, throne.y-1, z);
+    HTomb.Things.Pentagram().place(throne.x, throne.y+2, z);
     for (let i=0; i<nzombies; i++) {
       let zombie = HTomb.Things.Zombie();
       HTomb.Things.Minion().addToEntity(zombie);
@@ -62,24 +65,22 @@ HTomb = (function(HTomb) {
       let line = [];
       for (let x=1; x<width; x++) {
         let t = HTomb.World.tiles[z][x][y];
-        let c = HTomb.World.creatures[HTomb.Utils.coord(x,y,z)];
-        let f = HTomb.World.features[HTomb.Utils.coord(x,y,z)];
+        let crd = HTomb.Utils.coord(x,y,z);
+        let c = HTomb.World.creatures[crd];
+        let f = HTomb.World.features[crd];
+        let items = HTomb.World.items[crd]
         if (c) {
           line.push([c.symbol, c.fg, "black"]);
         } else if (f) {
-          line.push([f.symbol,f.fg || "yellow","black"]);
+          line.push([f.symbol, f.fg || "yellow","black"]);
+        } else if (items && HTomb.World.tiles[z][x][y]===HTomb.Tiles.FloorTile) {
+          let item = items.head();
+          line.push([item.symbol, item.fg || "gray", "black"]);
         } else {
           line.push([t.symbol, t.fg, "black"]);
         }
       }
       grid.push(line);
-    }
-    for (let key in HTomb.World.items) {
-      let item = HTomb.World.items[key].expose(0);
-      let xyz = HTomb.Utils.decoord(key);
-      if (HTomb.World.tiles[z][xyz[0]][xyz[1]]===HTomb.Tiles.FloorTile) {
-        grid[xyz[1]][xyz[0]] = [item.symbol, item.fg, "black"];
-      }
     }
     return grid;
   };
@@ -87,7 +88,9 @@ HTomb = (function(HTomb) {
     if (necro.master.taskList.length===0) {
       HTomb.Intro.setup();
     }
-    necro.ai.patrol(throne.x, throne.y, throne.z, {min: 1, max: 3});
+    if (HTomb.Utils.dice(1,4)===1) {
+      necro.ai.patrol(throne.x, throne.y, throne.z, {min: 1, max: 3});
+    }
     let tasks = HTomb.Utils.shuffle(necro.master.taskList);
     for (let i=0; i<zombies.length; i++) {
       let zombie = zombies[i];

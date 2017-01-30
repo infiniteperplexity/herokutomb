@@ -49,7 +49,7 @@ HTomb = (function(HTomb) {
     GUI.quietUnload = true;
     GUI.Contexts.active = GUI.Contexts.startup;
     HTomb.Intro.setup();
-    introAnimation = setInterval(introTick,100);
+    introAnimation = setInterval(introTick,250);
   };
   function introTick() {
     let txt = [
