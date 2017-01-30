@@ -43,7 +43,7 @@ function submit() {
     }
   }
   xhttp.open("POST", "/feedback", true);
-  xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   let json = {};
   json.name = document.getElementById("name").value;
   if (json.name==="(Optional)") {
