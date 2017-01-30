@@ -191,6 +191,7 @@ app.post('/feedback', function(req, res) {
   res.set("Connection", "close");
   console.log(req.body);
   console.log(Object.keys(req));
+  console.log(req.params);
 });
 
 
