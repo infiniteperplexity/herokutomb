@@ -92,6 +92,7 @@ HTomb = (function(HTomb) {
       necro.ai.patrol(throne.x, throne.y, throne.z, {min: 1, max: 3});
     }
     let tasks = HTomb.Utils.shuffle(necro.master.taskList);
+    HTomb.Utils.shuffle(zombies);
     for (let i=0; i<zombies.length; i++) {
       let zombie = zombies[i];
       if (zombie.worker.task===null) {
