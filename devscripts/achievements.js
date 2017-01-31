@@ -217,8 +217,8 @@ HTomb = (function(HTomb) {
     }
   });
   new Achievement({
-    template: "GoToSeed",
-    name: "Go To Seed",
+    template: "GoingToSeed",
+    name: "Going To Seed",
     description: "(plant a seed or spore in a farm.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -239,8 +239,8 @@ HTomb = (function(HTomb) {
     }
   });
   new Achievement({
-    template: "StockingTheLarder",
-    name: "Stocking The Larder",
+    template: "TakingStock",
+    name: "Taking Stock",
     description: "(have a minion place an item in a storeroom.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -284,9 +284,25 @@ HTomb = (function(HTomb) {
     }
   });
   new Achievement({
-    template: "AMonumentalAchievement",
-    name: "A Monumental Achievement",
-    description: "(build one of each structure available in the demo.)",
+    template: "FullyFurnished",
+    name: "Fully Furnished",
+    description: "(furnish three different fixtures.)",
+    listens: ["Complete"],
+    onComplete: function(event) {
+      if (event.task.template==="FurnishTask") {
+        let throne = HTomb.Utils.where(HTomb.World.features, function(e) {return (e.template==="Throne");});
+        let torch = HTomb.Utils.where(HTomb.World.features, function(e) {return (e.template==="Torch");});
+        let door = HTomb.Utils.where(HTomb.World.features, function(e) {return (e.template==="Door");});
+        if (throne.length>0 && torch.length>0 && door.length>0) {
+          this.achieve();
+        }
+      }
+    }
+  });
+  new Achievement({
+    template: "AMonumentalTask",
+    name: "A Monumental Task",
+    description: "(build four different structures.)",
     listens: ["Complete"],
     onComplete: function(event) {
       if (event.task.template==="ConstructTask") {

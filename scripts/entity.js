@@ -353,6 +353,15 @@ HTomb = (function(HTomb) {
         return false;
       }
     },
+    onDespawn: function() {
+      if (HTomb.Player.master) {
+        let owned = HTomb.Player.master.ownedItems;
+        let i = owned.indexOf(this.entity);
+        if (i!==-1) {
+          owned.splice(i,1);
+        }
+      }
+    },
     carriedByCreature: function() {
       if (!this.container) {
         console.log(this.entity);

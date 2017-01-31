@@ -213,12 +213,16 @@ HTomb = (function(HTomb) {
           if (!e.isPlaced()) {
             return false;
           }
-          return HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,cr.x,cr.y,cr.z,
+          return (HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,cr.x,cr.y,cr.z,
           { canPass: canMove,
             searcher: cr,
             searchee: e,
             searchTimeout: 10
-          });
+          }) && HTomb.Path.aStar(cr.x,cr.y,cr.z,e.x,e.y,e.z, {
+            canPass: canMove,
+            searcher: cr,
+            searchee: e
+          }).length<=20);
         });
         if (hostiles.length>0) {
           hostiles = HTomb.Path.closest(ai.entity.x,ai.entity.y,ai.entity.z,hostiles);

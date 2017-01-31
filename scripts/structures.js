@@ -8,8 +8,8 @@ HTomb = (function(HTomb) {
     template: "Structure",
     name: "structure",
     owner: null,
-    height: 3,
-    width: 3,
+    height: null,
+    width: null,
     x: null,
     y: null,
     z: null,
@@ -21,10 +21,11 @@ HTomb = (function(HTomb) {
     ingredients: [],
     cursor: -1,
     onDefine: function(args) {
-      if (args.ingredients===undefined || args.ingredients.length===0) {
+      console.log(args.fg);
+      if ((args.ingredients===undefined || args.ingredients.length===0) && args.height!==null && args.width!==null) {
         let ings = [];
-        let h = args.height || 3;
-        let w = args.width || 3;
+        let h = args.height;
+        let w = args.width;
         for (let i=0; i<w*h; i++) {
           ings.push({});
         }
@@ -147,6 +148,9 @@ HTomb = (function(HTomb) {
       return ings;
     },
     neededIngredients: function() {
+      if (this.ingredients.length===0) {
+        return {};
+      }
       let ings = {};
       for (let i=0; i<this.ingredients.length; i++) {
         if (this.features[i]) {
@@ -175,6 +179,8 @@ HTomb = (function(HTomb) {
     makes: [],
     queue: null,
     task: null,
+    height: 3,
+    width: 3,
     onPlace: function(x,y,z) {
       HTomb.Things.templates.Structure.onPlace.call(this,x,y,z);
       this.queue = [];
@@ -402,8 +408,8 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineStructure({
     template: "Farm",
     name: "farm",
-    symbols: ["=","=","=","=","=","=","=","=","="],
-    fgs: ["#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922","#779922"],
+    symbol: "\u22EF",
+    fg: "#556622",
     onDefine: function(args) {
       HTomb.Things.templates.Structure.onDefine.call(this,args);
       HTomb.Things.templates.FarmFeature.bg = "#443322";
@@ -645,10 +651,10 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineStructure({
-    template: "Storeroom",
-    name: "storeroom",
-    symbols: ["\u2554","\u2550","\u2557","\u2551","=","\u2551","\u255A","\u2550","\u255D"],
-    fgs: ["#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB","#BBBBBB"],
+    template: "Stockpile",
+    name: "stockpile",
+    symbol: "\u2261",
+    fg: "#666666",
     options: [
       {text: "Minerals", selected: false, active: false},
       {text: "Wood", selected: false, active: false},
@@ -1091,7 +1097,7 @@ HTomb = (function(HTomb) {
     bg: "#553300",
     makes: null,
     //workshops: ["Mortuary","BoneCarvery","Carpenter"],
-    structures: ["Carpenter","Farm","Storeroom","Monument"],
+    structures: ["Carpenter","Farm","Stockpile","Monument"],
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
@@ -1160,19 +1166,38 @@ HTomb = (function(HTomb) {
             if (task) {
               task.task.structure = w;
               task.task.makes = structure.template+"Feature";
-              task.task.ingredients = HTomb.Utils.clone(w.structure.ingredients[i]);
+              if (structure.height!==null && structure.width!==null) {
+                task.task.ingredients = HTomb.Utils.clone(w.structure.ingredients[i]);
+              }
               task.task.position = i;
               task.name = task.name + " " + structure.name;
             }
           }
         }
-        return function() {
-          HTomb.GUI.selectBox(structure.width, structure.height, assigner.z,that.designateBox,{
-            assigner: assigner,
-            context: that,
-            callback: placeBox
-          });
-        };
+        function myHover() {
+          console.log("should probably do something here...");
+        }
+        if (structure.height!==null && structure.width!==null) {
+          return function() {
+            HTomb.GUI.selectBox(structure.width, structure.height, assigner.z,that.designateBox,{
+              assigner: assigner,
+              context: that,
+              bg: that.bg,
+              callback: placeBox,
+              hover: myHover
+            });
+          };
+        } else {
+          return function() {
+            HTomb.GUI.selectSquareZone(assigner.z,that.designateBox,{
+              assigner: assigner,
+              context: that,
+              bg: that.bg,
+              callback: placeBox,
+              hover: myHover
+            });
+          };
+        }
       },
       function(structure) {
         let g = structure.describe();
@@ -1207,9 +1232,9 @@ HTomb = (function(HTomb) {
       HTomb.Things.templates.Task.beginWork.call(this);
       let i = this.position;
       let f = HTomb.World.features[coord(this.entity.x, this.entity.y, this.entity.z)];
-      f.fg = this.structure.structure.fgs[i];
-      f.makes.fg = this.structure.structure.fgs[i];
-      f.makes.symbol = this.structure.structure.symbols[i];
+      f.fg = this.structure.structure.fgs[i] || this.structure.fg;
+      f.makes.fg = this.structure.structure.fgs[i] || this.structure.fg;
+      f.makes.symbol = this.structure.structure.symbols[i] || this.structure.symbol;
     },
     completeWork: function() {
       let x = this.entity.x;
@@ -1218,11 +1243,11 @@ HTomb = (function(HTomb) {
       let f = HTomb.World.features[coord(x,y,z)];
       f.structure = this.structure;
       this.structure.structure.features[this.position] = f;
-      for (let i=0; i<this.structure.structure.height*this.structure.structure.width; i++) {
+      for (let i=0; i<this.structure.structure.squares.length; i++) {
         if (!this.structure.structure.features[i]) {
           break;
         }
-        if (i===this.structure.structure.height*this.structure.structure.width-1) {
+        if (i===this.structure.structure.squares.length-1) {
           let w = this.structure;
           w.place(w.structure.x, w.structure.y, w.structure.z);
           HTomb.GUI.pushMessage(this.assignee.describe({capitalized: true, article: "indefinite"}) + " finishes building " + w.describe({article: "indefinite", atCoordinates: true}) + ".");

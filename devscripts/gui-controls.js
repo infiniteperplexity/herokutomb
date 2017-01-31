@@ -450,8 +450,12 @@ HTomb = (function(HTomb) {
     text.push(mainColor + "Coord: " + square.x +"," + square.y + "," + square.z);
     if(square.explored || HTomb.Debug.explored) {
       next = mainColor + "Terrain: "+square.terrain.name;
-      if (square.terrain===HTomb.Tiles.Floor && below.cover.liquid) {
-        next = next + " (sodden)";
+      if (square.terrain===HTomb.Tiles.FloorTile && below.cover.liquid) {
+        if (below.cover===HTomb.Covers.Water) {
+          next = next + " (muddy)";
+        } else if (below.cover===HTomb.Covers.Lava) {
+          next = next + " (warm)";
+        }
       }
       text.push(next);
       next = mainColor + "Creature: ";
