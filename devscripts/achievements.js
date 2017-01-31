@@ -240,7 +240,7 @@ HTomb = (function(HTomb) {
   });
   new Achievement({
     template: "StockingTheLarder",
-    name: "StockingTheLarder",
+    name: "Stocking The Larder",
     description: "(have a minion place an item in a storeroom.)",
     listens: ["Complete"],
     onComplete: function(event) {
