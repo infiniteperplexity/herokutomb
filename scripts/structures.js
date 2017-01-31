@@ -1072,6 +1072,7 @@ HTomb = (function(HTomb) {
       let z = this.entity.z;
       let item = HTomb.Things[this.makes]().place(x,y,z);
       item.item.setOwner(HTomb.Player);
+      HTomb.Events.publish({type: "Complete", task: this});
       this.workshop.occupied = null;
       HTomb.GUI.pushMessage(this.assignee.describe({capitalized: true, article: "indefinite"}) + " finishes making " + HTomb.Things.templates[this.makes].describe({article: "indefinite"}));
       this.entity.despawn();

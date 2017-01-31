@@ -8,7 +8,7 @@ HTomb = (function(HTomb) {
         let a = this.list[i];
         a.unlocked = false;
         for (let j=0; j<a.listens.length; j++) {
-          if (HTomb.Events[a.listens[j]].indexOf(a)===-1) {
+          if (!HTomb.Events[a.listens[j]] || HTomb.Events[a.listens[j]].indexOf(a)===-1) {
             HTomb.Events.subscribe(a, a.listens[j]);
           }
         }
@@ -283,7 +283,6 @@ HTomb = (function(HTomb) {
       }
     }
   });
-
   new Achievement({
     template: "AMonumentalAchievement",
     name: "A Monumental Achievement",
@@ -302,6 +301,7 @@ HTomb = (function(HTomb) {
       }
     }
   });
-  
+
+
   return HTomb;
 })(HTomb);
