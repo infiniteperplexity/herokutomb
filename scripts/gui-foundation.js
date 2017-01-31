@@ -87,7 +87,7 @@ HTomb = (function(HTomb) {
 
   // Attach input events
   var controlArrow = null;
-  var shiftDown = null;
+  var shiftDown = false;
   GUI.autopause = true;
   var keydown = function(key) {
     key.preventDefault();

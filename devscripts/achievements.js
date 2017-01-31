@@ -233,14 +233,14 @@ HTomb = (function(HTomb) {
     description: "(harvest a crop from a farm.)",
     listens: ["Complete"],
     onComplete: function(event) {
-      if (event.task.template==="FarmHarvestTask") {
+      if (event.task.template==="HarvestFarmTask") {
         this.achieve();
       }
     }
   });
   new Achievement({
-    template: "SaveOneForLater",
-    name: "Save One For Later",
+    template: "StockingTheLarder",
+    name: "StockingTheLarder",
     description: "(have a minion place an item in a storeroom.)",
     listens: ["Complete"],
     onComplete: function(event) {
@@ -290,9 +290,9 @@ HTomb = (function(HTomb) {
     listens: ["Complete"],
     onComplete: function(event) {
       if (event.task.template==="ConstructTask") {
-        let structures = {}
-        for (let i=0; i<HTomb.Player.master.structures; i++) {
-          let s = HTomb.PLayer.master.structures[i];
+        let structures = {};
+        for (let i=0; i<HTomb.Player.master.structures.length; i++) {
+          let s = HTomb.Player.master.structures[i];
           structures[s.template] = true;
         }
         if (Object.keys(structures).length===4) {

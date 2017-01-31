@@ -298,7 +298,6 @@ HTomb = (function(HTomb) {
   };
   Views.Summary.scrollDown = function() {
     Views.Summary.summaryIndex = Math.min(Views.Summary.summaryIndex+1, Math.max(0,GUI.Views.Summary.summaryText().length-MENUH));
-    console.log(Views.Summary.summaryIndex);
     GUI.Contexts.summary.menuText = GUI.Views.Summary.summaryText().splice(Views.Summary.summaryIndex,MENUH);
     menu.render();
   };
