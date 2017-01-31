@@ -21,7 +21,6 @@ HTomb = (function(HTomb) {
     ingredients: [],
     cursor: -1,
     onDefine: function(args) {
-      console.log(args.fg);
       if ((args.ingredients===undefined || args.ingredients.length===0) && args.height!==null && args.width!==null) {
         let ings = [];
         let h = args.height;
@@ -1174,8 +1173,38 @@ HTomb = (function(HTomb) {
             }
           }
         }
-        function myHover() {
-          console.log("should probably do something here...");
+        function myHover(x, y, z, squares) {
+          //hacky as all get-out
+          let menu = HTomb.GUI.Panels.menu;
+          if (Array.isArray(x)===false && squares===undefined) {
+            if (HTomb.World.explored[z][x][y]!==true) {
+              menu.middle = ["%c{orange}Unexplored tile."];
+              return;
+            }
+            if (that.validTile(x,y,z)!==true) {
+              menu.middle = ["%c{orange}Cannot build structure here."];
+              return;
+            }
+            menu.middle = ["%c{lime}Build structure starting here."];
+            return;
+          } else {
+            if (Array.isArray(x)) {
+              squares = x;
+            }
+            let valid = true;
+            for (var j=0; j<squares.length; j++) {
+              let s = squares[j];
+              if (HTomb.World.explored[s[2]][s[0]][s[1]]!==true || that.validTile(s[0],s[1],s[2])!==true) {
+                valid = false;
+              }
+            }
+            if (valid===false) {
+              menu.middle = ["%c{orange}Cannot build structure here."];
+              return;
+            } else {
+              menu.middle = ["%c{lime}Build structure here."];
+            }
+          }
         }
         if (structure.height!==null && structure.width!==null) {
           return function() {
