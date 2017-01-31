@@ -407,8 +407,8 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineStructure({
     template: "Farm",
     name: "farm",
-    symbol: "\u22EF",
-    fg: "#556622",
+    symbol: '"',
+    fg: "#666622",
     onDefine: function(args) {
       HTomb.Things.templates.Structure.onDefine.call(this,args);
       HTomb.Things.templates.FarmFeature.bg = "#443322";
@@ -497,7 +497,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "FarmTask",
     name: "farm",
-    bg: "#225511",
+    bg: "#444411",
     makes: null,
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
@@ -584,7 +584,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "HarvestFarmTask",
     name: "harvest",
-    bg: "#446600",
+    bg: "#445511",
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
         return false;
@@ -653,7 +653,7 @@ HTomb = (function(HTomb) {
     template: "Stockpile",
     name: "stockpile",
     symbol: "\u2261",
-    fg: "#666666",
+    fg: HTomb.Constants.FLOORFG,
     options: [
       {text: "Minerals", selected: false, active: false},
       {text: "Wood", selected: false, active: false},
@@ -712,7 +712,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineTask({
     template: "StockpileTask",
     name: "stockpile",
-    bg: "#666600",
+    bg: "#555544",
     allows: [],
     validTile: function(x,y,z) {
       if (HTomb.World.explored[z][x][y]!==true) {
@@ -1264,6 +1264,7 @@ HTomb = (function(HTomb) {
       f.fg = this.structure.structure.fgs[i] || this.structure.fg;
       f.makes.fg = this.structure.structure.fgs[i] || this.structure.fg;
       f.makes.symbol = this.structure.structure.symbols[i] || this.structure.symbol;
+      HTomb.World.covers[this.entity.z][this.entity.x][this.entity.y] = HTomb.Covers.NoCover;
     },
     completeWork: function() {
       let x = this.entity.x;

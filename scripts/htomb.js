@@ -69,7 +69,7 @@ var HTomb = (function() {
       " ",
       "Good luck!",
       " ",
-      "%c{yellow}(Press ? during play to view playtest notes.)"
+      "%c{yellow}(Press F during play to send feedback.)"
       ]);
     }, 500);
   };

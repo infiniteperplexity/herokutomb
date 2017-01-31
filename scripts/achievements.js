@@ -241,7 +241,7 @@ HTomb = (function(HTomb) {
   new Achievement({
     template: "TakingStock",
     name: "Taking Stock",
-    description: "(have a minion place an item in a storeroom.)",
+    description: "(have a minion place an item in a stockpile.)",
     listens: ["Complete"],
     onComplete: function(event) {
       if (event.task.template==="StockpileTask") {

@@ -376,6 +376,33 @@ HTomb = (function(HTomb) {
       bg = ROT.Color.toHex(bg);
       return bg;
     },
+    onDefine: function() {
+      HTomb.Events.subscribe(this,"TurnBegin");
+    },
+    onTurnBegin: function() {
+      if (HTomb.Time.dailyCycle.turn%50!==0) {
+        return;
+      }
+      for (let x=1; x<LEVELW-1; x++) {
+        for (let y=1; y<LEVELH-1; y++) {
+          if (Math.random()>=0.1) {
+            continue;
+          }
+          let z = HTomb.Tiles.groundLevel(x,y);
+          // don't grow over slopes or features I guess
+          if (HTomb.World.tiles[z][x][y]!==HTomb.Tiles.FloorTile || HTomb.World.covers[z][x][y]!==HTomb.Covers.NoCover || HTomb.World.features[coord(x,y,z)]) {
+            continue;
+          }
+          // count adjacent grass
+          var n = HTomb.Tiles.countNeighborsWhere(x,y,z,function(x,y,z) {
+            return (HTomb.World.covers[z][x][y]===HTomb.Covers.Grass);
+          });
+          if (n>0) {
+            HTomb.World.covers[z][x][y] = HTomb.Covers.Grass;
+          }
+        }
+      }
+    }
   });
 
   HTomb.Types.defineCover({

@@ -691,48 +691,7 @@ timeIt("elevation", function() {
 
 
   // faster to track this as globally rather than in grass
-  var grassGrower = {};
-  grassGrower.growGrass = function() {
-    // check only once every ten turns
-    // could add to some kind of scheduler, to preserve frame rate
-    if (HTomb.Time.dailyCycle.turn%50!==0) {
-      return;
-    }
-    var x,y,z;
-    //// need a way to speed this up
-    // can't search Covers this way any more
-    // var grasses = HTomb.Utils.where(HTomb.World.covers,function(v,k,o) {return (v.template==="Grass");});
-    // for (var g=0; g<grasses.length; g++) {
-    //   x = grasses[g].x;
-    //   y = grasses[g].y;
-    //   z = grasses[g].z;
-    //   if (z<HTomb.Tiles.groundLevel(x,y)) {
-    //     if (Math.random()<0.1) {
-    //       grasses[g].destroy();
-    //     }
-    //   }
-    // }
-    for (x=1; x<LEVELW-1; x++) {
-      for (y=1; y<LEVELH-1; y++) {
-        if (Math.random()>=0.1) {
-          continue;
-        }
-        z = HTomb.Tiles.groundLevel(x,y);
-        if (HTomb.World.tiles[z][x][y]!==HTomb.Tiles.FloorTile || HTomb.World.covers[z][x][y]!==HTomb.Covers.NoCover) {
-          continue;
-        }
-        // count adjacent grass
-        var n = HTomb.Tiles.countNeighborsWhere(x,y,z,function(x,y,z) {
-          return (HTomb.World.covers[z][x][y].template==="Grass");
-        });
-        if (n>0) {
-          HTomb.World.covers[z][x][y] = HTomb.Covers.Grass;
-        }
-      }
-    }
-  };
-  HTomb.Events.subscribe(grassGrower,"TurnBegin");
-  grassGrower.onTurnBegin = grassGrower.growGrass;
+  
 
 
   return HTomb;
