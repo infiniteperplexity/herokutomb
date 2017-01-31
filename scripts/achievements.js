@@ -284,6 +284,24 @@ HTomb = (function(HTomb) {
     }
   });
 
-
+  new Achievement({
+    template: "AMonumentalAchievement",
+    name: "A Monumental Achievement",
+    description: "(build one of each structure available in the demo.)",
+    listens: ["Complete"],
+    onComplete: function(event) {
+      if (event.task.template==="ConstructTask") {
+        let structures = {}
+        for (let i=0; i<HTomb.Player.master.structures; i++) {
+          let s = HTomb.PLayer.master.structures[i];
+          structures[s.template] = true;
+        }
+        if (Object.keys(structures).length===4) {
+          this.achieve();
+        }
+      }
+    }
+  });
+  
   return HTomb;
 })(HTomb);
