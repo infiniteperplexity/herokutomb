@@ -14,7 +14,7 @@ HTomb = (function(HTomb) {
         }
       }
     },
-    resubcribe: function() {
+    resubscribe: function() {
       for (let i=0; i<this.list.length; i++) {
         let a = this.list[i];
         if (a.unlocked===false) {
@@ -325,7 +325,7 @@ HTomb = (function(HTomb) {
     onComplete: function(event) {
       let t = event.task;
       let z = t.entity.z;
-      if (t.template==="DigTask" && z<HTomb.World.validate.waterTable) {
+      if (t.template==="DigTask" && z<44) {
         this.achieve();
       }
     }

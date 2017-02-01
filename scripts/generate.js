@@ -216,7 +216,6 @@ timeIt("elevation", function() {
     for (var i=0; i<10; i++) {
       rock.create();
     }
-    let lowestWater = NLEVELS;
     function nonsolids(x,y,z) {return HTomb.World.tiles[z][x][y].solid!==true;}
     for (var x=1; x<LEVELW-1; x++) {
       for (var y=1; y<LEVELH-1; y++) {
@@ -231,7 +230,6 @@ timeIt("elevation", function() {
         }
       }
     }
-    HTomb.World.validate.waterTable = lowestWater;
   }
   function placeLava(elev) {
     elev = elev || 10;
