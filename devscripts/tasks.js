@@ -484,7 +484,7 @@ HTomb = (function(HTomb) {
         context: this,
         callback: this.designateTile,
         hover: myHover
-      });s
+      });
     },
     ai: function() {
       var cr = this.assignee;

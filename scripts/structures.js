@@ -928,6 +928,7 @@ HTomb = (function(HTomb) {
       } else if (this.cursor>=1 && this.cursor<=3){
         let c = ROT.Color.fromString(this.features[0].fg);
         let color = c[this.cursor-1];
+        color+=n;
         if (color>=256) {
           color-=256;
         } else if (color<0) {
@@ -953,10 +954,18 @@ HTomb = (function(HTomb) {
       }
     },
     rightCommand: function() {
-      this.scrollChoices(+1);
+      if (HTomb.GUI.shiftDown()) {
+        this.scrollChoices(+16);
+      } else {
+        this.scrollChoices(+1);
+      }
     },
     leftCommand: function() {
-      this.scrollChoices(-1);
+      if (HTomb.GUI.shiftDown()) {
+        this.scrollChoices(-16);
+      } else {
+        this.scrollChoices(-1);
+      }
     },
     detailsText: function() {
       let txt = [

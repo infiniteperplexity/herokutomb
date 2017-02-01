@@ -317,6 +317,19 @@ HTomb = (function(HTomb) {
       }
     }
   });
+  new Achievement({
+    template: "Digging Deeper",
+    name: "Digging Deeper",
+    description: "(dig below the water table.)",
+    listens: ["Complete"],
+    onComplete: function(event) {
+      let t = event.task;
+      let z = t.entity.z;
+      if (t.template==="DigTask" && z<HTomb.World.validate.waterTable) {
+        this.achieve();
+      }
+    }
+  });
 
 
   return HTomb;

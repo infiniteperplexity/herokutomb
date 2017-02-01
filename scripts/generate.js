@@ -216,6 +216,7 @@ timeIt("elevation", function() {
     for (var i=0; i<10; i++) {
       rock.create();
     }
+    let lowestWater = NLEVELS;
     function nonsolids(x,y,z) {return HTomb.World.tiles[z][x][y].solid!==true;}
     for (var x=1; x<LEVELW-1; x++) {
       for (var y=1; y<LEVELH-1; y++) {
@@ -225,10 +226,12 @@ timeIt("elevation", function() {
           } else if (rock._map[x][y]===0 || HTomb.World.tiles[z][x][y]!==HTomb.Tiles.WallTile
               || HTomb.Tiles.countNeighborsWhere(x,y,z,nonsolids)>0) {
             HTomb.World.covers[z][x][y] = HTomb.Covers.Water;
+            lowestWater = Math.min(z, lowestWater);
           }
         }
       }
     }
+    HTomb.World.validate.waterTable = lowestWater;
   }
   function placeLava(elev) {
     elev = elev || 10;
@@ -691,7 +694,7 @@ timeIt("elevation", function() {
 
 
   // faster to track this as globally rather than in grass
-  
+
 
 
   return HTomb;
