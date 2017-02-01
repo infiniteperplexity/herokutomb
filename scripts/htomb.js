@@ -74,7 +74,7 @@ var HTomb = (function() {
         " ",
         "%c{yellow}(Press F during play to send feedback.)"
       ]);
-    });
+    },500);
   };
   return {
     Constants: Constants,
