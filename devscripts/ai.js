@@ -220,7 +220,7 @@ HTomb = (function(HTomb) {
             cacheAfter: 40,
             cacheTimeout: 10
           });
-          console.log(path.length);
+          // want a nice gap between cacheAfter and maximum length
           if (path && path.length<=20) {
             return true;
           } else {

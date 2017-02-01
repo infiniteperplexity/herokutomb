@@ -1,3 +1,8 @@
+2/1/17
+Things to put in feedback
+
+- name of save file
+- console.log
 1/27/17
 
 - zombies get stuck in loops sometimes right above their grave
