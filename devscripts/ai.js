@@ -218,10 +218,12 @@ HTomb = (function(HTomb) {
             searcher: cr,
             searchee: e,
             searchTimeout: 10
+            // in rare cases this can slow things down a whole lot
           }) && HTomb.Path.aStar(cr.x,cr.y,cr.z,e.x,e.y,e.z, {
             canPass: canMove,
             searcher: cr,
-            searchee: e
+            searchee: e,
+            maxLength: 25,
           }).length<=20);
         });
         if (hostiles.length>0) {

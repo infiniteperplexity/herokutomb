@@ -90,6 +90,8 @@ HTomb = (function(HTomb) {
     var cacheAfter = options.cacheAfter;
     var cacheTimeout = options.cacheTimeout;
     var maxTries = options.maxTries || LEVELW*LEVELH;
+    //wait...do we actually track this in any decent way?  current score?
+    var maxLength = options.maxLength || LEVELW*LEVELH;
     if (searcher && searchee && searchTimeout) {
       if (HTomb.Path.failures[searcher.spawnId + "," + searchee.spawnId]) {
         return false;
@@ -200,7 +202,8 @@ HTomb = (function(HTomb) {
           // this assumes a uniform edge cost of 1
         this_score = scores[coord(current[0],current[1],current[2])]+1;
         // if there is already a better score for this square then skip it
-        if (scores[crd]!==undefined && scores[crd]<=this_score) {
+        //if (scores[crd]!==undefined && scores[crd]<=this_score) {
+        if (scores[crd]!==undefined && (scores[crd]<=this_score || this_score>=maxLength) {
           //HTomb.GUI.drawAt(next[0],next[1],"X","yellow","black");
           continue;
         }
