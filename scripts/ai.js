@@ -217,9 +217,10 @@ HTomb = (function(HTomb) {
             canPass: canMove,
             searcher: cr,
             searchee: e,
-            cacheAfter: 25,
+            cacheAfter: 40,
             cacheTimeout: 10
           });
+          console.log(path.length);
           if (path && path.length<=20) {
             return true;
           } else {
