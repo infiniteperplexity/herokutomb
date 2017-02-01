@@ -225,7 +225,6 @@ timeIt("elevation", function() {
           } else if (rock._map[x][y]===0 || HTomb.World.tiles[z][x][y]!==HTomb.Tiles.WallTile
               || HTomb.Tiles.countNeighborsWhere(x,y,z,nonsolids)>0) {
             HTomb.World.covers[z][x][y] = HTomb.Covers.Water;
-            lowestWater = Math.min(z, lowestWater);
           }
         }
       }
