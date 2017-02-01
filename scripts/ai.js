@@ -218,7 +218,8 @@ HTomb = (function(HTomb) {
             searcher: cr,
             searchee: e,
             cacheAfter: 40,
-            cacheTimeout: 10
+            cacheTimeout: 10,
+            searchTimeout: 10
           });
           // we want a nice gap between cacheAfter and maximum length
           if (path && path.length<=20) {
