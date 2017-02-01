@@ -97,11 +97,11 @@ timeIt("elevation", function() {
 }); timeIt("slopes", function() {
     addSlopes();
 }); timeIt("minerals", function() {
-    placeMinerals({template: "IronOre", p: 0.001});
+    placeMinerals({template: "IronOre", p: 0.0025});
     placeMinerals({template: "Bloodstone", p: 0.001});
-    placeMinerals({template: "GoldOre", p: 0.001});
+    placeMinerals({template: "GoldOre", p: 0.0025});
     placeMinerals({template: "Moonstone", p: 0.001});
-    placeMinerals({template: "Jade", p: 0.001});
+    placeMinerals({template: "Jade", p: 0.0025});
 }); timeIt("caverns", function() {
     cavernLevels(3);
 }); timeIt("labyrinths", function() {

@@ -452,7 +452,9 @@ HTomb = (function(HTomb) {
       let match = pat.exec(arr[c]);
 
       let txt = arr[c];
+      let index = 0;
       if (match!==null) {
+        index = match.index;
         txt = arr[c].replace(match[0],"");
       }
       if (txt.length<TOTALW/TEXTWIDTH-20) {
@@ -467,7 +469,11 @@ HTomb = (function(HTomb) {
           var one = txt.substring(0,br);
           var two = txt.substring(br+1);
           if (match!==null) {
-            one = match[0]+one;
+            if (index===0) {
+              one = match[0]+one;
+            } else {
+              one = one.substr(0,index-1) + match + one.substr(index);
+            }
             two = match[0]+two;
           }
           arr[c] = one;

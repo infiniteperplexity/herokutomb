@@ -58,20 +58,23 @@ var HTomb = (function() {
       GUI.render();
       HTomb.Time.turn();
       GUI.delaySplash([
-      "%c{yellow}Welcome to HellaTomb!",
-      " ",
-      "You are a necromancer:",
-      "A despised sorceror who reanimates the dead to do your bidding.",
-      " ",
-      "Cast spells, raise zombies, and command them to harvest resources and build you a fortress.  But beware: The forces of good will not long stand for your vile ways...",
-      " ",
-      "...except that this is the playtest demo, so the forces of good won't actually show up.",
-      " ",
-      "Good luck!",
-      " ",
-      "%c{yellow}(Press F during play to send feedback.)"
+        "%c{yellow}Welcome to HellaTomb!",
+        " ",
+        "You are a necromancer: A despised sorceror who reanimates the dead to do your bidding.  Cast out from society, you flee to the hills to plot your revenge and pursue the forbidden secrets of immortality.",
+        " ",
+        "Cast spells, raise zombies from their graves, and command them to harvest resources and build you a fortress.  Control the necromancer directly in avatar mode, or switch to navigation mode to survey your domain. But beware: The forces of good will not long stand for your vile ways...",
+        " ",
+        "...except that this is the playtest demo, so the forces of good won't actually show up.",
+        " ",
+        "Good luck!",
+        " ",
+        "Note: This is a so-called 'rogue-like' game inspired by Dwarf Fortress.  It uses Unicode characters instead of graphical art.  Hover with the mouse to find out what a particular symbol means.",
+        " ",
+        "This symbol is you: %c{magenta}@",
+        " ",
+        "%c{yellow}(Press F during play to send feedback.)"
       ]);
-    }, 500);
+    });
   };
   return {
     Constants: Constants,

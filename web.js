@@ -190,10 +190,11 @@ app.post('/feedback', function(req, res) {
   console.log("receiving feedback");
   res.set("Connection", "close");
   console.log(req.body);
-  connection.query("INSERT INTO feedback (tstamp, name, address, text) VALUES (?, ?, ?, ?)",
+  connection.query("INSERT INTO feedback (tstamp, name, address, savegame, text) VALUES (?, ?, ?, ?, ?)",
     [ String(new Date()),
       req.body.name,
       req.body.address,
+      req.body.savegame,
       req.body.text
     ], function(err) {
     if (err) {

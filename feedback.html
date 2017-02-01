@@ -8,26 +8,39 @@
 <style>
 </style>
 <body>
-Name (optional):
+Your name (optional):
 <br>
-<input type="text" name="name" id="name" value="(Optional)">
+<input type="text" name="name" id="name" value=" ">
 <br>
-E-mail Address (optional):
+Your e-mail address (optional):
 <br>
-<input type="text" name="address" id="address" value="optional@optional.com">
+<input type="text" name="address" id="address" value=" ">
 <br>
-Feedback / Bug Report:
+Name of saved game (optional):
+<br>
+<input type="text" name="savegame" id="savegame" value=" ">
+<br>
+Feedback / bug report:
 <br>
 <textarea name="text" id="text" rows="20" cols="100">
-What do you like or dislike about the game?
-
-Did you observe a bug?
-
-Feel free the paste the console error message, if you know how to do that.
 </textarea>
 <br>
 <button onclick="submit();">Submit</button>
 <script>
+let defaultName = "(Optional)";
+let defaultAddress = "optional@optional.com";
+let defaultSave = "(So I can take a look)";
+let defaultText = "What do you like or dislike about the game?\n\nDid you observe a bug?\n\nFeel free the paste the console error message, if you know how to do that.";
+
+function reset() {
+  document.getElementById("name").value = defaultName;
+  document.getElementById("address").value = defaultAddress;
+  document.getElementById("savegame").value = defaultSave;
+  document.getElementById("text").value = defaultText;
+}
+
+reset();
+
 function submit() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -45,19 +58,24 @@ function submit() {
   xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   let json = {};
   json.name = document.getElementById("name").value;
-  if (json.name==="(Optional)") {
+  if (json.name===defaultName) {
     json.name = "null";
   }
   json.address = document.getElementById("address").value;
-  if (json.address==="optional@optional.com") {
+  if (json.address===defaultAddress) {
     json.address = "null";
   }
+  json.savegame = document.getElementById("savegame").value;
+  if (json.savegame===defaultSave) {
+    json.savegame = "null";
+  }
   json.text = document.getElementById("text").value;
-  if (json.text==="What do you like or dislike about the game?\n\nDid you observe a bug?\n\nFeel free the paste the console error message, if you know how to do that.") {
+  if (json.text===defaultText) {
     json.text = "null"
   }
   json = JSON.stringify(json);
   xhttp.send(json);
+  reset();
 }
 </script>
 </body>
