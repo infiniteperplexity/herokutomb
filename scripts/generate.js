@@ -415,7 +415,7 @@ timeIt("elevation", function() {
   function placeMinerals(options) {
     options = options || {};
     var template = options.template || "IronOre";
-    let nodeChance = 0.0005;
+    let nodeChance = p || 0.001;
     let bottom = 15;
     let oreChance = 0.5;
     function nonsolids(x,y,z) {return HTomb.World.tiles[z][x][y].solid!==true;}

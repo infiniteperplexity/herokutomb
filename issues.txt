@@ -3,6 +3,9 @@ Things to put in feedback
 
 - name of save file
 - console.log
+
+- have intro blurb tell more about art, elevations, etc.
+
 1/27/17
 
 - zombies get stuck in loops sometimes right above their grave
