@@ -223,7 +223,8 @@ HTomb = (function(HTomb) {
             canPass: canMove,
             searcher: cr,
             searchee: e,
-            cacheAfter: 25
+            cacheAfter: 25,
+            cacheTimeout: 20
             //maxLength: 25,
           }).length<=20);
         });
