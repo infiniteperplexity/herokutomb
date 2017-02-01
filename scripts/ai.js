@@ -213,18 +213,18 @@ HTomb = (function(HTomb) {
           if (!e.isPlaced()) {
             return false;
           }
-          return (HTomb.Tiles.isReachableFrom(e.x,e.y,e.z,cr.x,cr.y,cr.z,
-          { canPass: canMove,
-            searcher: cr,
-            searchee: e,
-            searchTimeout: 10
-            // in rare cases this can slow things down a whole lot
-          }) && HTomb.Path.aStar(cr.x,cr.y,cr.z,e.x,e.y,e.z, {
+          let path = HTomb.Path.aStar(cr.x,cr.y,cr.z,e.x,e.y,e.z, {
             canPass: canMove,
             searcher: cr,
             searchee: e,
-            maxLength: 25,
-          }).length<=20);
+            cacheAfter: 25,
+            cacheTimeout: 10
+          });
+          if (path && path.length<=25) {
+            return true;
+          } else {
+            return false;
+          }
         });
         if (hostiles.length>0) {
           hostiles = HTomb.Path.closest(ai.entity.x,ai.entity.y,ai.entity.z,hostiles);

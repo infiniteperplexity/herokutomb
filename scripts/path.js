@@ -202,11 +202,9 @@ HTomb = (function(HTomb) {
           // this assumes a uniform edge cost of 1
         this_score = scores[coord(current[0],current[1],current[2])]+1;
         // if there is already a better score for this square then skip it
-        if (scores[crd]!==undefined && scores[crd]<=this_score)
+        //if (scores[crd]!==undefined && scores[crd]<=this_score) {
+        if (scores[crd]!==undefined && (scores[crd]<=this_score || this_score>=maxLength)) {
           //HTomb.GUI.drawAt(next[0],next[1],"X","yellow","black");
-          continue;
-        } else if (scores[crd]!==undefined && this_score>=maxLength) {
-          console.log("bailing!");
           continue;
         }
         // if the move is not valid then skip it

@@ -218,9 +218,9 @@ HTomb = (function(HTomb) {
             searcher: cr,
             searchee: e,
             cacheAfter: 25,
-            cacheTimeout: 20
+            cacheTimeout: 10
           });
-          if (path && path.length<=20) {
+          if (path && path.length<=25) {
             return true;
           } else {
             return false;
