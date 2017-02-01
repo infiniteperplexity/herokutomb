@@ -227,6 +227,16 @@ HTomb = (function(HTomb) {
       GUI.Contexts.active.mouseTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
     }
   };
+  GUI.fakeMouseMove = function() {
+    let x = GUI.Contexts.mouseX;
+    let y = GUI.Contexts.mouseY;
+    let gameScreen = GUI.Panels.gameScreen;
+    if (x+gameScreen.xoffset>=LEVELW || x+gameScreen.xoffset<0 || y+gameScreen.yoffset>=LEVELH || y+gameScreen.yoffset<0) {
+      GUI.Contexts.active.mouseOver();
+    } else {
+      GUI.Contexts.active.mouseTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
+    }
+  };
   // Bind a ROT.js keyboard constant to a function for a particular context
   var bindKey = GUI.bindKey = function(target, key, func) {
     target.boundKeys[ROT[key]] = func;

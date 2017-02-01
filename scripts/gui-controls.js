@@ -75,7 +75,7 @@ HTomb = (function(HTomb) {
     if (oldCursor!==null) {
       gameScreen.refreshTile(oldCursor[0],oldCursor[1]);
     }
-    gameScreen.highlightTile(x,y,"#0000FF");
+    gameScreen.highlightTile(x,y,"#00FFFF");
     oldCursor = [x,y];
   }
 
@@ -720,7 +720,7 @@ HTomb = (function(HTomb) {
         GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
       } else {
         let gameScreen = HTomb.GUI.Panels.gameScreen;
-        GUI.Contexts.active.mouseTile(GUI.Contexts.mouseX+gameScreen.xoffset, GUI.Contexts.mouseY+gameScreen.yoffset);
+        GUI.fakeMouseMove();
       }
     };
     // Actually this returns a custom function for each type of movement

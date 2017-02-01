@@ -220,7 +220,7 @@ HTomb = (function(HTomb) {
             cacheAfter: 25,
             cacheTimeout: 10
           });
-          if (path && path.length<=25) {
+          if (path && path.length<=20) {
             return true;
           } else {
             return false;
