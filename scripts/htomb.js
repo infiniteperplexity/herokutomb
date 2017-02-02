@@ -72,9 +72,9 @@ var HTomb = (function() {
         " ",
         "This symbol is you: %c{magenta}@",
         " ",
-        "%c{yellow}(Press F during play to send feedback.)"
+        "%c{yellow}(Click or press any key to continue.)"
       ]);
-    },500);
+    }, 500);
   };
   return {
     Constants: Constants,

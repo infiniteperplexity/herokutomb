@@ -464,7 +464,7 @@ HTomb = (function(HTomb) {
         text.push(next);
       }
       next = mainColor + "Items: ";
-      if (square.items && (square.visible || HTomb.Debug.visible)) {
+      if (square.items) {
         for (let i=0; i<square.items.length; i++) {
           next+=square.items.expose(i).describe({article: "indefinite"});
           text.push(next);
@@ -506,7 +506,7 @@ HTomb = (function(HTomb) {
         text.push(next);
       }
       next = otherColor + "Items: ";
-      if (above.items && (square.visibleAbove || HTomb.Debug.visible)) {
+      if (above.items) {
         for (let i=0; i<above.items.length; i++) {
           next+=above.items.expose(i).describe({article: "indefinite"});
           text.push(next);
@@ -544,7 +544,7 @@ HTomb = (function(HTomb) {
         text.push(next);
       }
       next = otherColor + "Items: ";
-      if (below.items && (square.visibleBelow || HTomb.Debug.visible)) {
+      if (below.items) {
         for (let i=0; i<below.items.length; i++) {
           next+=below.items.expose(i).describe({article: "indefinite"});
           text.push(next);
