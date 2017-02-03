@@ -1,6 +1,13 @@
 y2/1/17
 - zombies too similar in color to background?  I've never had a problem though...
-- suggest more division between static and dynamic parts of menu...
+What have the pain points been so far?
+-	Elevation
+-	People going off wandering and picking stuff up.
+-	Not understanding delayed effects of actions.
+-	Not using the mouse.
+- Not trying enough different tasks.
+- I don't think anyone has even remotely attempted to use navigation mode.
+
 
 1/27/17
 
