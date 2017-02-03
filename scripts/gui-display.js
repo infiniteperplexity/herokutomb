@@ -248,6 +248,7 @@ HTomb = (function(HTomb) {
       menuBottom = menu.defaultBottom;
     }
     let menuText = menuTop;
+    menuText = menuText.concat([" ","-".repeat(HTomb.Constants.MENUW-2)]);
     if (menuMiddle.length>0) {
       menuText = menuText.concat([" "], menuMiddle);
     }

@@ -1,10 +1,6 @@
 y2/1/17
-Things to put in feedback
-
-- name of save file
-- console.log
-
-- have intro blurb tell more about art, elevations, etc.
+- zombies too similar in color to background?  I've never had a problem though...
+- suggest more division between static and dynamic parts of menu...
 
 1/27/17
 

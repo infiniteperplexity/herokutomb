@@ -434,19 +434,6 @@ HTomb = (function(HTomb) {
     let otherColor = "%c{Gainsboro}";
     let text = [];
     var next;
-    if (!square.explored) {
-      text.push("%c{orange}This tile has not been explored yet.");
-      text.push(" ");
-    } else if (square.terrain.fallable) {
-      text.push("%c{yellow}Elevation here is below your view.");
-      text.push(" ");
-    } else if (square.terrain.solid) {
-      text.push("%c{yellow}Elevation here is above your view.");
-      text.push(" ");
-    } else {
-      text.push("%c{lime}Elevation is level with your view.");
-      text.push(" ");
-    }
     text.push(mainColor + "Coord: " + square.x +"," + square.y + "," + square.z);
     if(square.explored || HTomb.Debug.explored) {
       next = mainColor + "Terrain: "+square.terrain.name;

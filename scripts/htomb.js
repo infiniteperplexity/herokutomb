@@ -43,7 +43,7 @@ var HTomb = (function() {
   var Time = {};
   // Allow public access to the submodules
   World.newGame = function() {
-    GUI.Views.progressView(["Building world (may take a few minutes)"]);
+    GUI.Views.progressView(["Building world..."]);
     setTimeout(function() {
       console.time("worldInit");
       // Initialize the world
