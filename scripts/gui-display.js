@@ -193,7 +193,7 @@ HTomb = (function(HTomb) {
       + HTomb.Time.dailyCycle.hour + ":"
       + HTomb.Time.dailyCycle.minute);
     cursor+=11;
-    if (HTomb.Time.isPaused()===true) {
+    if (HTomb.Time.isPaused()===true || HTomb.GUI.autopause===true) {
       scrollDisplay.drawText(this.x0+cursor,this.y0+1,"%c{yellow}Paused");
     }
   };

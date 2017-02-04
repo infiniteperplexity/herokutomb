@@ -552,6 +552,8 @@ HTomb = (function(HTomb) {
         }
         HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
         HTomb.Time.unlockTime();
+        HTomb.Time.stopTime();
+        HTomb.Time.initialPaused = true;
         HTomb.GUI.Contexts.locked=false;
         HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.reset;
         HTomb.GUI.Panels.scroll.reset();

@@ -42,7 +42,7 @@ HTomb = (function(HTomb) {
 
   Main.inSurveyMode = false;
   Main.reset = function() {
-    if (HTomb.GUI.autopause===false) {
+    if (HTomb.GUI.autopause===false && HTomb.Time.initialPaused!==true) {
       HTomb.Time.startTime();
     }
     if (overlay.active) {
@@ -88,9 +88,7 @@ HTomb = (function(HTomb) {
     menu.refresh();
   };
 
-  Contexts.default.clickAt = function(x,y) {
-    HTomb.Time.toggleTime();
-  };
+  Contexts.default.clickAt = HTomb.Time.toggleTime;
   // This is a really ad hoc thing to keep wandering creatures from grabbing focus
   let movedSinceLastWait = true;
   Contexts.default.clickTile = function(x,y) {
@@ -123,11 +121,7 @@ HTomb = (function(HTomb) {
       return;
     }
     // Otherwise, toggle time
-    if (HTomb.Time.isPaused()) {
-      HTomb.Time.startTime();
-    } else {
-      HTomb.Time.toggleTime();
-    }
+    Contexts.default.clickAt();
   }
   Contexts.default.rightClickTile = function(x,y) {
     this.clickTile(x,y);
@@ -604,12 +598,7 @@ HTomb = (function(HTomb) {
     },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: Commands.wait,
-    VK_RETURN: function() {
-      HTomb.Time.toggleTime();
-    },
-    //VK_ESCAPE: HTomb.Time.stopTime,
-    //VK_BACK_QUOTE: function() {Views.summaryView();},
-    //VK_TILDE: function() {Views.summaryView();},
+    VK_RETURN: HTomb.Time.toggleTime,
     VK_ESCAPE: function() {Views.systemView();},
     VK_HYPHEN_MINUS: function() {
       let oldSpeed = HTomb.Time.getSpeed();
@@ -641,15 +630,6 @@ HTomb = (function(HTomb) {
     VK_BACK_SPACE: Commands.centerOnPlayer,
     VK_A: function() {
       Main.showAchievements();
-    },
-    VK_P: function() {
-      HTomb.GUI.autopause = !HTomb.GUI.autopause;
-      if (HTomb.GUI.autopause) {
-        HTomb.Time.stopTime();
-      } else {
-        HTomb.Time.startTime();
-      }
-      HTomb.GUI.Panels.menu.refresh();
     },
     VK_F: function() {
       HTomb.GUI.Views.feedback();
@@ -760,9 +740,7 @@ HTomb = (function(HTomb) {
     VK_NUMPAD2: Main.surveyMove(0,+1,0),
     VK_NUMPAD3: Main.surveyMove(+1,+1,0),
     VK_K: GUI.toggleKeyCursor,
-    VK_RETURN: function() {
-      HTomb.Time.toggleTime();
-    },
+    VK_RETURN: HTomb.Time.toggleTime,
     // Exit survey mode and return to the original position
     VK_ESCAPE: function() {Views.systemView();},
     VK_TAB: function() {
@@ -817,15 +795,6 @@ HTomb = (function(HTomb) {
       }
     },
     VK_A: Main.showAchievements,
-    VK_P: function() {
-      HTomb.GUI.autopause = !HTomb.GUI.autopause;
-      if (HTomb.GUI.autopause) {
-        HTomb.Time.stopTime();
-      } else {
-        HTomb.Time.startTime();
-      }
-      HTomb.GUI.Panels.menu.refresh();
-    },
     VK_F: function() {
       HTomb.GUI.Views.feedback();
     }
@@ -845,8 +814,7 @@ HTomb = (function(HTomb) {
     "M: Minions, S: Structures, U: Summary",
     " ",
     "Space: Wait, +/-: Change speed.",
-    "Click/Enter: Pause/Unpause.",
-    "P: Disable auto-pause.",
+    "Click/Enter: Enable auto-pause.",
     " ",
     "PageUp/Down to scroll messages.",
     "A: Achievements, F: Submit Feedback."

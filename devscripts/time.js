@@ -2,7 +2,7 @@ HTomb = (function(HTomb) {
   "use strict";
 
   var Time = HTomb.Time;
-
+  HTomb.Time.initialPaused = true;
   var timePassing = null;
   var speeds = ["1/4","1/2","3/4","5/4","1/1","3/2","2/1","4/1","8/1","16/1"];
   var speed = speeds.indexOf("1/1");
@@ -47,6 +47,7 @@ HTomb = (function(HTomb) {
     timeLocked = false;
   };
   HTomb.Time.startTime = function() {
+    HTomb.Time.initialPaused = false;
     if (timeLocked===true) {
       return;
     }
@@ -60,19 +61,23 @@ HTomb = (function(HTomb) {
     timePassing = null;
     HTomb.GUI.Panels.scroll.render();
   };
+
+  // this needs to work correctly in all conditions
   HTomb.Time.toggleTime = function() {
-    if (timePassing===null) {
+    if (timePassing===null || HTomb.GUI.autopause===true) {
+      HTomb.GUI.autopause = false;
       HTomb.Time.startTime();
     } else {
+      HTomb.GUI.autopause = true;
       HTomb.Time.stopTime();
     }
+    HTomb.GUI.Panels.menu.refresh();
   };
+
   HTomb.Time.passTime = function() {
     if (HTomb.GUI.Contexts.locked===false) {
       HTomb.Commands.wait();
-    } //else {
-      //console.log("testing time");
-    //}
+    }
   };
   var particleTime;
   var particleSpeed = 50;
@@ -148,6 +153,7 @@ HTomb = (function(HTomb) {
   }
   // Expose a method to resume queue recursion
   HTomb.Time.resumeActors = function(actor) {
+    HTomb.Time.initialPaused = false;
     HTomb.GUI.Contexts.locked = true;
     actor = actor || HTomb.Player;
     if (actor.ai.actionPoints>0 && actor.isPlaced()) {

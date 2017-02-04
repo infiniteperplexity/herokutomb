@@ -92,7 +92,7 @@ HTomb = (function(HTomb) {
   var keydown = function(key) {
     key.preventDefault();
     // VK_RETURN is often used to toggle time, and stopping time first breaks that
-    if (GUI.autopause && key.keyCode!==ROT.VK_RETURN) {
+    if (GUI.Contexts.active!==GUI.Contexts.main && GUI.autopause && key.keyCode!==ROT.VK_RETURN) {
       //experiment with no auto-pause
       HTomb.Time.stopTime();
     }
