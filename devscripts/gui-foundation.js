@@ -90,7 +90,32 @@ HTomb = (function(HTomb) {
   var shiftDown = false;
   GUI.autopause = false;
   var keydown = function(key) {
-    key.preventDefault();
+    let shortcuts = [
+      ROT.VK_F1,
+      ROT.VK_F2,
+      ROT.VK_F3,
+      ROT.VK_F4,
+      ROT.VK_F5,
+      ROT.VK_F6,
+      ROT.VK_F7,
+      ROT.VK_F8,
+      ROT.VK_F9,
+      ROT.VK_F10,
+      ROT.VK_F11,
+      ROT.VK_F12
+    ];
+    let arrows = [
+      ROT.VK_UP,
+      ROT.VK_DOWN,
+      ROT.VK_LEFT,
+      ROT.VK_RIGHT
+    ];
+    if (key.altKey || shortcuts.indexOf(key.keyCode)!==-1
+        || (key.ctrlKey && arrows.indexOf(key.keyCode)===-1)) {
+      return;
+    } else {
+      key.preventDefault();
+    }
     // VK_RETURN is often used to toggle time, and stopping time first breaks that
     if (GUI.Contexts.active!==GUI.Contexts.main && GUI.autopause && key.keyCode!==ROT.VK_RETURN) {
       //experiment with no auto-pause
@@ -104,7 +129,7 @@ HTomb = (function(HTomb) {
     }
     // Pass the keystroke to the current control context
     var diagonal = null;
-    if (key.ctrlKey && [ROT.VK_UP,ROT.VK_DOWN,ROT.VK_LEFT,ROT.VK_RIGHT].indexOf(key.keyCode)>-1) {
+    if (key.ctrlKey && arrows.indexOf(key.keyCode)>-1) {
       if (controlArrow===null) {
         controlArrow = key.keyCode;
       } else if (controlArrow===ROT.VK_UP) {
