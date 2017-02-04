@@ -584,9 +584,9 @@ HTomb = (function(HTomb) {
     VK_COMMA: Commands.tryMoveUp,
     VK_K: function() {
       GUI.toggleKeyCursor();
-      if (GUI.getKeyCursor()) {
-        Main.surveyMode();
-      }
+      //if (GUI.getKeyCursor()) {
+      //  Main.surveyMode();
+      //}
     },
     VK_G: Commands.pickup,
     VK_D: Commands.drop,
@@ -613,7 +613,6 @@ HTomb = (function(HTomb) {
       if (HTomb.Time.getSpeed()!==oldSpeed) {
         HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
       }
-      HTomb.Time.startTime();
     },
     VK_PAGE_UP: function() {scroll.scrollUp();},
     VK_PAGE_DOWN: function() {scroll.scrollDown();},
@@ -764,7 +763,6 @@ HTomb = (function(HTomb) {
       if (HTomb.Time.getSpeed()!==oldSpeed) {
         HTomb.GUI.pushMessage("Speed set to " + HTomb.Time.getSpeed() + ".");
       }
-      HTomb.Time.startTime();
     },
     VK_PAGE_UP: function() {scroll.scrollUp();},
     VK_PAGE_DOWN: function() {scroll.scrollDown();},

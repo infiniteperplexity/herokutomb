@@ -157,7 +157,7 @@ HTomb = (function(HTomb) {
   HTomb.GUI.shiftDown = function() {
     return shiftDown;
   };
-  var keyCursor = false;
+  var keyCursor = true;
   HTomb.GUI.toggleKeyCursor = function() {
     keyCursor = !keyCursor;
     //HTomb.GUI.reset();
