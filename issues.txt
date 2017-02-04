@@ -7,6 +7,26 @@ What have the pain points been so far?
 -	Not using the mouse.
 - Not trying enough different tasks.
 - I don't think anyone has even remotely attempted to use navigation mode.
+- some way to cancel save game?
+
+
+- Zombies are a similar green to the environment.
+- Zombies occasionally stop planting crops partway through.
+* examineSquare doesn't show non-visible items even though you can see them on the screen.
+* "Press any key to begin" after intro splash.
+* Default movement may be better than default turn-based.
+* More separation between static and dynamic portions of menu.
+- Focus feedback on pain points.
+- Tutorial mode.
+* Commitment to mouse control is partial.
+* "no longer takes 'a few minutes' "
+- %+ doesn't increase screen size.
+* Shift Key down confuses game
+* Zombie digging its way out confuses people.
+- People keep wanting to pick up stuff and explore.
+- Why can't build in certain locations...slope, feature, etc.
+* Escape while drawing box shoudl escape box, not go into system mode.
+- Could make level, %chance of killing, etc. on enemies.
 
 
 1/27/17
