@@ -42,6 +42,9 @@ HTomb = (function(HTomb) {
 
   Main.inSurveyMode = false;
   Main.reset = function() {
+    if (HTomb.GUI.autopause===false) {
+      HTomb.Time.startTime();
+    }
     if (overlay.active) {
       overlay.hide();
     }
@@ -152,7 +155,8 @@ HTomb = (function(HTomb) {
       "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
       "<: Up, >: Down.",
-      "Click or Space: Select."
+      "Click or Space: Select.",
+      "Enter: Pause/Unpause."
     ];
     if (options.message) {
       context.menuText.unshift("");
@@ -169,7 +173,6 @@ HTomb = (function(HTomb) {
       menu.refresh();
     };
     context.clickTile = function (x,y) {
-      //context.menuText[1] = "%c{yellow}Select second corner.";
       context.menuText[1] = "%c{yellow}Select second corner" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse.");
       context.menuText[2] = "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.";
       var context2 = HTomb.Utils.clone(survey);
@@ -271,7 +274,6 @@ HTomb = (function(HTomb) {
     });
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
-      //"%c{orange}Esc: Cancel.",
       "%c{orange}**Esc: Cancel**.",
       "%c{yellow}Select an area" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse."),
       "Backspace / Delete: Center on player.",
@@ -280,7 +282,8 @@ HTomb = (function(HTomb) {
       "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
       "<: Up, >: Down",
-      "Click or Space: Select."
+      "Click or Space: Select.",
+      "Enter: Pause/Unpause."
     ];
     context.mouseTile = function(x0,y0) {
       var bg = options.bg || "#550000";
@@ -326,9 +329,10 @@ HTomb = (function(HTomb) {
   };
 
   GUI.choosingMenu = function(header, items, action, format) {
+    HTomb.Time.stopTime();
     var alpha = "abcdefghijklmnopqrstuvwxyz";
     var contrls = {};
-    var choices = ["%c{orange}**Esc: Cancel**.","%c{yellow}"+header];
+    var choices = ["%c{orange}**Esc: Cancel**.","Click/Enter: Pause/Unpause.","%c{yellow}"+header];
     // there is probably a huge danger of memory leaks here
     for (var i=0; i<items.length; i++) {
       var desc;
@@ -349,6 +353,7 @@ HTomb = (function(HTomb) {
       choices.push(alpha[i]+") " + desc);
     }
     contrls.VK_ESCAPE = GUI.reset;
+    contrls.VK_RETURN = HTomb.Time.toggleTime;
     Contexts.active = Contexts.new(contrls);
     Contexts.active.menuText = choices;
     menu.refresh();
@@ -371,7 +376,8 @@ HTomb = (function(HTomb) {
       "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
       "<: Up, >: Down",
-      "Click or Space: Select."
+      "Click or Space: Select.",
+      "Enter: Pause/Unpause."
     ];
     Contexts.active = context;
     if (options.message) {
@@ -651,6 +657,7 @@ HTomb = (function(HTomb) {
   });
 
   Main.showAchievements = function() {
+    HTomb.Time.stopTime();
     let txt = ["%c{lime}Achievements:"," "];
     for (let i=0; i<HTomb.Achievements.list.length; i++) {
       let a = HTomb.Achievements.list[i];

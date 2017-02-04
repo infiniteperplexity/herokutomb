@@ -4,8 +4,8 @@ HTomb = (function(HTomb) {
   var Time = HTomb.Time;
 
   var timePassing = null;
-  var speeds = ["1/4","1/2","3/4","5/4","1/1","3/2","2/1","4/1","8/1"];
-  var speed = (Math.ceil(speeds.length/2)-1);
+  var speeds = ["1/4","1/2","3/4","5/4","1/1","3/2","2/1","4/1","8/1","16/1"];
+  var speed = speeds.indexOf("1/1");
 
   var timeLocked = false;
   HTomb.Time.speedUp = function(spd) {
@@ -17,6 +17,25 @@ HTomb = (function(HTomb) {
   HTomb.Time.getSpeed = function() {
     return speeds[speed];
   };
+
+  let paused = false;
+  let hold = false;
+  // remove pause and hold conditions
+  HTomb.Time.start = function() {
+    paused = false;
+    hold = false;
+    let split = speeds[speed].split("/");
+    timePassing = setTimeout(HTomb.Time.passTime,1000*split[1]/split[0]);
+  };
+  // ignore pause but add hold condition
+  HTomb.Time.hold = function() {
+    hold = true;
+  };
+  // add pause condition
+  HTomb.Time.pause = function() {
+    pause = true;
+  };
+
   HTomb.Time.lockTime = function() {
     HTomb.Time.stopTime();
     timeLocked = true;
@@ -32,6 +51,7 @@ HTomb = (function(HTomb) {
       return;
     }
     let split = speeds[speed].split("/");
+    clearInterval(timePassing);
     timePassing = setInterval(HTomb.Time.passTime,1000*split[1]/split[0]);
     HTomb.GUI.Panels.scroll.render();
   };
@@ -48,7 +68,11 @@ HTomb = (function(HTomb) {
     }
   };
   HTomb.Time.passTime = function() {
-    HTomb.Commands.wait();
+    if (HTomb.GUI.Contexts.locked===false) {
+      HTomb.Commands.wait();
+    } //else {
+      //console.log("testing time");
+    //}
   };
   var particleTime;
   var particleSpeed = 50;
@@ -79,6 +103,7 @@ HTomb = (function(HTomb) {
       if (deck.length===0) {
         // If the queue and deck are both exhausted, halt recursion
         HTomb.Events.publish({type: "TurnEnd"});
+        HTomb.Time.dailyCycle.onTurnEnd();
         HTomb.Time.turn();
         return;
       } else {
@@ -122,22 +147,21 @@ HTomb = (function(HTomb) {
     nextActor();
   }
   // Expose a method to resume queue recursion
-  let delays = true;
-  // let delays = false;
   HTomb.Time.resumeActors = function(actor) {
-    if (delays) {
-      HTomb.GUI.Contexts.locked = true;
-    }
+    HTomb.GUI.Contexts.locked = true;
     actor = actor || HTomb.Player;
     if (actor.ai.actionPoints>0 && actor.isPlaced()) {
       deck.push(actor);
     }
-    if (delays) {
-      let split = speeds[speeds.length-1].split("/");
-      let maxSpeed = 1000*split[1]/split[0];
-      setTimeout(function() {
-        HTomb.GUI.Contexts.locked = false;
-      },maxSpeed);
+    let split = speeds[speeds.length-1].split("/");
+    let maxSpeed = 1000*split[1]/split[0];
+    setTimeout(function() {
+      HTomb.GUI.Contexts.locked = false;
+    },maxSpeed);
+    split = speeds[speed].split("/");
+    clearInterval(timePassing);
+    if (HTomb.GUI.autopause===false) {
+      timePassing = setInterval(HTomb.Time.passTime,1000*split[1]/split[0]);
     }
     nextActor();
   };
@@ -205,22 +229,26 @@ HTomb = (function(HTomb) {
       this.day = 0;
       this.turn = 0;
     },
-    onTurnBegin: function() {
+    onTurnEnd: function() {
       this.turn+=1;
       this.minute+=1;
       if (this.minute>=60) {
         this.minute = 0;
         this.hour+=1;
+        if (this.hour>=24) {
+          this.hour = 0;
+          this.day+=1;
+        }
+      }
+    },
+    onTurnBegin: function() {
+      if (this.minute===0) {
         if (this.hour===this.times.dawn) {
           HTomb.GUI.pushMessage("The sun is coming up.");
           HTomb.World.validate.lighting();
         } else if (this.hour===this.times.dusk) {
           HTomb.GUI.pushMessage("Night is falling.");
           HTomb.World.validate.lighting();
-        }
-        if (this.hour>=24) {
-          this.hour = 0;
-          this.day+=1;
         }
       }
       if ((this.hour>=this.times.dawn && this.hour<this.times.dawn+2)

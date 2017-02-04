@@ -32,6 +32,7 @@ HTomb = (function(HTomb) {
   let menu = GUI.Panels.menu;
 
   Views.feedback = function() {
+    HTomb.Time.stopTime();
     let url = window.location.href;
     let pat = /[^/]+$/;
     let match = pat.exec(url);
@@ -51,6 +52,7 @@ HTomb = (function(HTomb) {
   GUI.Contexts.frozen.mouseTile = function() {};
   GUI.Contexts.frozen.clickOverlay = function() {};
   Views.progressView = function(arr) {
+    HTomb.Time.stopTime();
     GUI.Contexts.active = GUI.Contexts.frozen;
     GUI.Panels.overlay.update(arr);
   };
@@ -58,6 +60,7 @@ HTomb = (function(HTomb) {
   // ****** Start-up screen *******
   let introAnimation = null;
   Views.startup = function() {
+    HTomb.Time.stopTime();
     GUI.quietUnload = true;
     GUI.Contexts.active = GUI.Contexts.startup;
     HTomb.Intro.setup();
@@ -110,6 +113,7 @@ HTomb = (function(HTomb) {
 
   // ******* System View *********
   Views.systemView = function() {
+    HTomb.Time.stopTime();
     GUI.Views.parentView = GUI.Views.Main.reset;
     GUI.Contexts.active = GUI.Contexts.system;
     GUI.Panels.overlay.update([
@@ -145,6 +149,7 @@ HTomb = (function(HTomb) {
     }
   };
   Views.System.saveAs = function() {
+    HTomb.Time.stopTime();
     HTomb.GUI.Views.parentView = HTomb.GUI.Views.systemView;
     HTomb.Save.getDir(function(arg) {
       let saves = [];
@@ -181,6 +186,7 @@ HTomb = (function(HTomb) {
     });
   };
   Views.System.restore = function() {
+    HTomb.Time.stopTime();
     HTomb.Save.getDir(function(arg) {
       let saves = [];
       if (arg===" ") {
@@ -209,7 +215,7 @@ HTomb = (function(HTomb) {
     });
   };
   Views.System.quit = function() {
-    console.log("testing");
+    HTomb.Time.stopTime();
     if (confirm("Really quit?")) {
       Views.startup();
     }
@@ -217,6 +223,7 @@ HTomb = (function(HTomb) {
 
   // ******* Summary View ***************
   Views.summaryView = function() {
+    HTomb.Time.stopTime();
     Views.Summary.summaryIndex = 0;
     GUI.Contexts.active = GUI.Contexts.summary;
     GUI.Contexts.summary.menuText = GUI.Views.Summary.summaryText();
@@ -261,6 +268,7 @@ HTomb = (function(HTomb) {
   Views.Summary.summaryText = function() {
     var text = [
       "%c{orange}**Esc: Done.**",
+      "Click/Enter: Pause/Unpause.",
       "%c{yellow}Summary:",
       "Up/Down: Scroll text."
     ];
@@ -293,7 +301,6 @@ HTomb = (function(HTomb) {
   Views.Summary.scrollUp = function() {
     Views.Summary.summaryIndex = Math.max(0, Views.Summary.summaryIndex-1);
     GUI.Contexts.summary.menuText = GUI.Views.Summary.summaryText().splice(Views.Summary.summaryIndex,MENUH);
-    console.log(Views.Summary.summaryIndex);
     menu.render();
   };
   Views.Summary.scrollDown = function() {
@@ -304,6 +311,7 @@ HTomb = (function(HTomb) {
 
   // ***************** Structure (or Structure?) view **********
   Views.structureView = function(w) {
+    HTomb.Time.stopTime();
     Views.Structures.structureCursor = -1;
     if (Views.Structures.selectedStructure) {
       Views.Structures.selectedStructure.structure.unhighlight();
@@ -316,7 +324,9 @@ HTomb = (function(HTomb) {
     Views.Structures.selectedStructure = w;
     if (w===null) {
       GUI.Contexts.active = GUI.Contexts.structures;
-      GUI.Contexts.structures.menuText = ["%c{orange}**Esc: Done.**","%c{orange}You have no current structures."];
+      GUI.Contexts.structures.menuText = ["%c{orange}**Esc: Done.**",
+      "Click/Enter: Pause/Unpause.",
+      "%c{orange}You have no current structures."];
       menu.bottom = menu.defaultBottom;
       menu.render();
       return;
@@ -448,6 +458,7 @@ HTomb = (function(HTomb) {
 
   // *********** Creature view ****************
   Views.creatureView = function(c) {
+    HTomb.Time.stopTime();
     if (Views.Structures.selectedStructure) {
       Views.Structures.selectedStructure.structure.unhighlight();
     }
@@ -496,15 +507,6 @@ HTomb = (function(HTomb) {
   GUI.Contexts.creatures.clickAt = function() {
     HTomb.Time.toggletime();
   };
-  //GUI.Contexts.creatures.clickTile = function(x,y) {
-  //  let crd = HTomb.Utils.coord(x,y, GUI.Panels.gameScreen.z);
-  //  if (HTomb.World.creatures[crd]) {
-  //    Views.creatureView(HTomb.World.creatures[crd]);
-  //  }
-  //  else {
-  //    HTomb.Time.toggleTime();
-  //  }
-//};
   GUI.Contexts.creatures.rightClickTile = function(x, y) {
     this.clickTile(x,y);
   }
@@ -519,6 +521,7 @@ HTomb = (function(HTomb) {
     } else {
       let txt = [
         "%c{orange}**Esc: Done.**",
+        "Click/Enter: Pause/Unpause.",
         "%c{yellow}Creature: "+c.describe({capitalized: true})+" at ??, ??, ??.",
         "Tab: View player and minions.",
         " "
@@ -532,6 +535,7 @@ HTomb = (function(HTomb) {
   Views.Creature.creatureDetails = function(c) {
     let txt = [
       "%c{orange}**Esc: Done.**",
+      "Click/Enter: Pause/Unpause.",
       "%c{yellow}Creature: "+c.describe({capitalized: true, atCoordinates: true}),
       "Tab: Next minion.",
       " "

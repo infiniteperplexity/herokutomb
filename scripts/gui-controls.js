@@ -352,6 +352,7 @@ HTomb = (function(HTomb) {
     Contexts.active = Contexts.new(contrls);
     Contexts.active.menuText = choices;
     menu.refresh();
+    HTomb.Time.stopTime();
   };
 
   // Select a single square with the mouse
@@ -838,8 +839,7 @@ HTomb = (function(HTomb) {
     "M: Minions, S: Structures, U: Summary",
     " ",
     "Space: Wait, +/-: Change speed.",
-    "Click/Enter: Pause/Unpause.",
-    "P: Disable auto-pause.",
+    "Click/Enter: Enable auto-pause.",
     " ",
     "PageUp/Down to scroll messages.",
     "A: Achievements, F: Submit Feedback."
