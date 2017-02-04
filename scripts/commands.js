@@ -103,7 +103,7 @@ HTomb = (function(HTomb) {
     HTomb.Player.ai.actionPoints-=16;
     HTomb.Time.resumeActors();
     let keyCursor = GUI.getKeyCursor();
-    if (keyCursor) {
+    if (keyCursor && HTomb.GUI.Contexts.active!==HTomb.GUI.Contexts.main) {
       GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
     } else {
       let gameScreen = HTomb.GUI.Panels.gameScreen;

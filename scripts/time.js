@@ -4,38 +4,29 @@ HTomb = (function(HTomb) {
   var Time = HTomb.Time;
   HTomb.Time.initialPaused = true;
   var timePassing = null;
-  var speeds = ["1/4","1/2","3/4","5/4","1/1","3/2","2/1","4/1","8/1","16/1"];
+  var speeds = ["1/4","1/2","3/4","1/1","3/2","2/1","4/1","8/1"];
   var speed = speeds.indexOf("1/1");
 
   var timeLocked = false;
   HTomb.Time.speedUp = function(spd) {
     speed = Math.min(speed+1,speeds.length-1);
+    if (timePassing) {
+      HTomb.Time.stopTime();
+      HTomb.Time.startTime();
+    }
   };
   HTomb.Time.slowDown = function(spd) {
     speed = Math.max(0,speed-1);
+    if (timePassing) {
+      HTomb.Time.stopTime();
+      HTomb.Time.startTime();
+    }
   };
   HTomb.Time.getSpeed = function() {
     return speeds[speed];
   };
 
-  let paused = false;
-  let hold = false;
   // remove pause and hold conditions
-  HTomb.Time.start = function() {
-    paused = false;
-    hold = false;
-    let split = speeds[speed].split("/");
-    timePassing = setTimeout(HTomb.Time.passTime,1000*split[1]/split[0]);
-  };
-  // ignore pause but add hold condition
-  HTomb.Time.hold = function() {
-    hold = true;
-  };
-  // add pause condition
-  HTomb.Time.pause = function() {
-    pause = true;
-  };
-
   HTomb.Time.lockTime = function() {
     HTomb.Time.stopTime();
     timeLocked = true;
@@ -76,9 +67,24 @@ HTomb = (function(HTomb) {
 
   HTomb.Time.passTime = function() {
     if (HTomb.GUI.Contexts.locked===false) {
-      HTomb.Commands.wait();
+      HTomb.Time.autoWait();
     }
   };
+
+  HTomb.Time.autoWait = function() {
+    HTomb.Player.ai.acted = true;
+    HTomb.Player.ai.actionPoints-=16;
+    HTomb.Time.resumeActors(null, true);
+    let keyCursor = HTomb.GUI.getKeyCursor();
+    if (keyCursor && HTomb.GUI.Contexts.active!==HTomb.GUI.Contexts.main) {
+      HTomb.GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
+    } else {
+      let gameScreen = HTomb.GUI.Panels.gameScreen;
+      HTomb.GUI.Contexts.active.mouseTile(HTomb.GUI.Contexts.mouseX+gameScreen.xoffset, HTomb.GUI.Contexts.mouseY+gameScreen.yoffset);
+    }
+  };
+
+
   var particleTime;
   var particleSpeed = 50;
   HTomb.Time.startParticles = function() {
@@ -152,18 +158,22 @@ HTomb = (function(HTomb) {
     nextActor();
   }
   // Expose a method to resume queue recursion
-  HTomb.Time.resumeActors = function(actor) {
+  HTomb.Time.resumeActors = function(actor, nodelay) {
     HTomb.Time.initialPaused = false;
-    HTomb.GUI.Contexts.locked = true;
+    if (nodelay!==true) {
+      HTomb.GUI.Contexts.locked = true;
+    }
     actor = actor || HTomb.Player;
     if (actor.ai.actionPoints>0 && actor.isPlaced()) {
       deck.push(actor);
     }
     let split = speeds[speeds.length-1].split("/");
-    let maxSpeed = 1000*split[1]/split[0];
-    setTimeout(function() {
-      HTomb.GUI.Contexts.locked = false;
-    },maxSpeed);
+    let maxSpeed = 1000*2*split[1]/split[0];
+    if (nodelay!==true) {
+      setTimeout(function() {
+        HTomb.GUI.Contexts.locked = false;
+      },maxSpeed);
+    }
     split = speeds[speed].split("/");
     clearInterval(timePassing);
     if (HTomb.GUI.autopause===false) {
