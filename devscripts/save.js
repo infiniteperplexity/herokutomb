@@ -276,6 +276,7 @@ HTomb = (function(HTomb) {
   }
 
   function restoreThings(json) {
+    console.log("length of things is " +json.length);
     console.log(json.substr(0,500));
     let tids = [];
     let player = null;
