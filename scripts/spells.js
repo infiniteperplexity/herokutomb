@@ -230,6 +230,10 @@ HTomb = (function(HTomb) {
           var cr = this.assignee;
           HTomb.GUI.sensoryEvent(cr.describe({capitalized: true, article: "indefinite"}) + " bursts forth from the ground!",x,y,z);
           HTomb.World.tiles[z][x][y] = HTomb.Tiles.DownSlopeTile;
+          let c = HTomb.World.covers[z][x][y];
+          if (c.mine) {
+            c.mine(x,y,z,this.assigner);
+          }
           this.completeWork(x,y,z);
           HTomb.World.validate.cleanNeighbors(x,y,z);
         }

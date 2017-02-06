@@ -168,7 +168,7 @@ HTomb = (function(HTomb) {
       deck.push(actor);
     }
     let split = speeds[speeds.length-1].split("/");
-    let maxSpeed = 1000*2*split[1]/split[0];
+    let maxSpeed = 1000*0.5*split[1]/split[0];
     if (nodelay!==true) {
       setTimeout(function() {
         HTomb.GUI.Contexts.locked = false;

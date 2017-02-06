@@ -258,17 +258,18 @@ HTomb = (function(HTomb) {
       if (covers[z][x][y]!==HTomb.Covers.NoCover) {
         if (covers[z][x][y].liquid || tile===Tiles.FloorTile) {
           fg = fg || covers[z][x][y].fg;
+        } else if (covers[z][x][y].mineral) {
+          fg = fg || covers[z][x][y].fg;
         } else {
-          fg = tile.fg;
+          fg = fg || tile.fg;
         }
       // maybe do show the waterlogged ground?
     } else if (covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid && (tile.solid!==true && tile.zview!==+1)) {
         fg = fg || covers[z-1][x][y].fg;
       } else {
-        fg = tile.fg;
+        fg = fg || tile.fg;
       }
       // *** symbol ****
-      // !!!Experimental - switch order of roof above/tunnel below checks
       if (tile===Tiles.FloorTile && explored[z-1][x][y] && tiles[z-1][x][y].solid!==true) {
         // explored tunnel below
         sym = "\u25E6";
@@ -293,6 +294,8 @@ HTomb = (function(HTomb) {
             sym = tile.symbol;
           }
         }
+      } else if (covers[z][x][y].mineral && tile===Tiles.WallTile) {
+        sym = covers[z][x][y].symbol;
       } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].liquid) {
         // liquid surface
         sym = covers[z-1][x][y].symbol;

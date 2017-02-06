@@ -97,11 +97,11 @@ timeIt("elevation", function() {
 }); timeIt("slopes", function() {
     addSlopes();
 }); timeIt("minerals", function() {
-    placeMinerals({template: "IronOre", p: 0.0025});
-    placeMinerals({template: "Bloodstone", p: 0.001});
-    placeMinerals({template: "GoldOre", p: 0.0025});
-    placeMinerals({template: "Moonstone", p: 0.001});
-    placeMinerals({template: "Jade", p: 0.0025});
+    placeMinerals({template: "IronVein", p: 0.0025});
+    placeMinerals({template: "BloodstoneCluster", p: 0.001});
+    placeMinerals({template: "GoldVein", p: 0.0025});
+    placeMinerals({template: "MoonstoneCluster", p: 0.001});
+    placeMinerals({template: "JadeCluster", p: 0.0025});
 }); timeIt("caverns", function() {
     cavernLevels(3);
 }); timeIt("labyrinths", function() {
@@ -374,47 +374,10 @@ timeIt("elevation", function() {
     }
     HTomb.World.validate.clean();
   }
-  function placeMineralsSlow(options) {
-    options = options || {};
-    var template = options.template || "IronOre";
-    var p = options.p || 0.01;
-    var n = options.n || 3;
-    var depth = options.depth || 2;
-    var born = options.born || [0,0.1,0.2,0.3,0.5,0.5,0.8,0.8];
-    var survive = options.survive || [0.5,0.5,0.5,0.7,0.7,0.5,0.5,0.5];
-    var cells;
-    function nonsolids(x,y,z) {return HTomb.World.tiles[z][x][y].solid!==true;}
-    // save some time for now by skipping lower levels
-    var bottom = (HTomb.Debug.faster) ? 40 : 15;
-    for (var z=bottom; z<=highest; z++) {
-      cells = new HTomb.Cells({
-        born: born,
-        survive: survive
-      });
-      // If we're above some ground level, mask non-wall squares
-      if (z>=lowest) {
-        cells.setMask(function(x,y) {
-          if (HTomb.World.tiles[z][x][y]===HTomb.Tiles.WallTile) {
-            return null;
-          } else {
-            return 0;
-          }
-        });
-      }
-      cells.randomize(p);
-      cells.iterate(n);
-      cells.apply(function(x,y,val) {
-        if (val && HTomb.Tiles.countNeighborsWhere(x,y,z,nonsolids)===0) {
-          var mineral = HTomb.Things[template]();
-          mineral.item.makeStack();
-          placement.stack(mineral,x,y,z);
-        }
-      });
-    }
-  }
+
   function placeMinerals(options) {
     options = options || {};
-    var template = options.template || "IronOre";
+    var template = options.template || "IronVein";
     let nodeChance = options.p || 0.001;
     let bottom = 15;
     let oreChance = 0.5;
@@ -428,8 +391,7 @@ timeIt("elevation", function() {
             if (HTomb.Tiles.countNeighborsWhere(x,y,z,nonsolids)>0) {
               continue;
             } else if (Math.random()<oreChance) {
-              let mineral = HTomb.Things[template]();
-              placement.stack(mineral,x,y,z);
+              HTomb.World.covers[z][x][y] = HTomb.Covers[template];
             }
           }
         }

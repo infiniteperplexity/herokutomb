@@ -161,55 +161,46 @@ HTomb = (function(HTomb) {
       var UpSlopeTile = HTomb.Tiles.UpSlopeTile;
       var DownSlopeTile = HTomb.Tiles.DownSlopeTile;
       var t = tiles[z][x][y];
-      let items = HTomb.World.items[coord(x,y,z)] || [];
+      let c = HTomb.World.covers[z][x][y];
       // If there is a slope below, dig out the floor
       if (tiles[z-1][x][y]===UpSlopeTile && HTomb.World.explored[z-1][x][y] && (t===WallTile || t===FloorTile)) {
         tiles[z][x][y] = DownSlopeTile;
-        for (let i=0; i<items.length; i++) {
-          items.expose(i).item.setOwner(HTomb.Player);
+        if (c.mine) {
+          c.mine(x,y,z);
         }
       // If it's a wall, dig a tunnel
       } else if (t===WallTile) {
         tiles[z][x][y] = FloorTile;
-        for (let i=0; i<items.length; i++) {
-          items.expose(i).item.setOwner(HTomb.Player);
+        if (c.mine) {
+          c.mine(x,y,z);
         }
       } else if (t===FloorTile) {
         // If it's a floor with a wall underneath dig a trench
         if (tiles[z-1][x][y]===WallTile) {
           tiles[z][x][y] = DownSlopeTile;
           tiles[z-1][x][y] = UpSlopeTile;
+          c = HTomb.World.covers[z-1][x][y];
+          if (c.mine) {
+            c.mine(x,y,z);
+          }
         // Otherwise just remove the floor
         } else {
           tiles[z][x][y] = EmptyTile;
-          for (let i=0; i<items.length; i++) {
-            items.expose(i).item.setOwner(HTomb.Player);
-          }
         }
       // If it's a down slope tile, remove the slopes
       } else if (t===DownSlopeTile) {
         tiles[z][x][y] = EmptyTile;
         tiles[z-1][x][y] = FloorTile;
-        items = HTomb.World.items[coord(x,y,z-1)] || [];
-        for (let i=0; i<items.length; i++) {
-          items.expose(i).item.setOwner(HTomb.Player);
-        }
       // if it's an upward slope, remove the slope
       } else if (t===UpSlopeTile) {
         tiles[z][x][y] = FloorTile;
         if (tiles[z+1][x][y]===DownSlopeTile) {
           tiles[z+1][x][y] = EmptyTile;
-          for (let i=0; i<items.length; i++) {
-            items.expose(i).item.setOwner(HTomb.Player);
-          }
         }
       } else if (t===EmptyTile) {
-        tiles[z-1][x][y] = FloorTile;
-        items = HTomb.World.items[coord(x,y,z-1)];
-        for (let i=0; i<items.length; i++) {
-          items.expose(i).item.setOwner(HTomb.Player);
-        }
+        // this shouldn't happen
       }
+      // Eventually this might get folded into mining...
       HTomb.World.covers[z][x][y] = HTomb.Covers.NoCover;
       if (Math.random()<0.25) {
         var rock = HTomb.Things.Rock();

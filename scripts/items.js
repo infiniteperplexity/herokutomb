@@ -53,64 +53,6 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineItem({
-    template: "Bloodstone",
-    name: "bloodstone",
-    symbol: "\u2234",
-    fg: "red",
-    stackable: true,
-    maxn: 10,
-    randomColor: 10,
-    tags: ["Minerals"]
-  });
-
-  HTomb.Things.defineItem({
-    template: "IronOre",
-    name: "iron ore",
-    symbol: "\u2234",
-    fg: "gray",
-    stackable: true,
-    maxn: 10,
-    plural: true,
-    randomColor: 10,
-    tags: ["Minerals"]
-  });
-
-  HTomb.Things.defineItem({
-    template: "GoldOre",
-    name: "gold ore",
-    symbol: "\u2234",
-    fg: "yellow",
-    stackable: true,
-    maxn: 10,
-    plural: true,
-    randomColor: 10,
-    tags: ["Minerals"]
-  });
-
-  HTomb.Things.defineItem({
-    template: "Moonstone",
-    name: "moonstone",
-    symbol: "\u2234",
-    fg: "cyan",
-    stackable: true,
-    maxn: 10,
-    randomColor: 10,
-    tags: ["Minerals"]
-  });
-
-  HTomb.Things.defineItem({
-    template: "Jade",
-    name: "jade",
-    symbol: "\u2234",
-    fg: "green",
-    stackable: true,
-    maxn: 10,
-    plural: true,
-    randomColor: 10,
-    tags: ["Minerals"]
-  });
-
-  HTomb.Things.defineItem({
     template: "WoodPlank",
     name: "wooden plank",
     symbol: "=",
