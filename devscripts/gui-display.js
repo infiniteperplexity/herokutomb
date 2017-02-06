@@ -314,6 +314,9 @@ HTomb = (function(HTomb) {
 
   GUI.reset = function() {
     GUI.Views.parentView();
+    if (HTomb.Time.dailyCycle.turn===0) {
+      HTomb.Events.publish({type: "Tutorial", beginGame: true});
+    }
   };
   // This should probably be an Event, not a GUI method
   GUI.sensoryEvent = function(strng,x,y,z,color) {

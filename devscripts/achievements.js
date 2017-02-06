@@ -57,21 +57,10 @@ HTomb = (function(HTomb) {
     template: "BringOutYourDead",
     name: "Bring Out Your Dead!",
     description: "(raise one zombie.)",
-    listens: ["Complete","Cast"],
-    onComplete: function(event) {
-      if (event.task.template==="ZombieEmergeTask") {
-        this.achieve();
-      }
-    },
+    listens: ["Cast"],
     onCast: function(event) {
       if (event.spell.template==="RaiseZombie") {
-        let x = event.x;
-        let y = event.y;
-        let z = event.z;
-        let f = HTomb.World.features[coord(x,y,z+1)];
-        if (!f || f.template!=="Tombstone") {
-          this.achieve();
-        }
+        this.achieve();
       }
     }
   });
@@ -79,24 +68,11 @@ HTomb = (function(HTomb) {
     template: "ArmyOfTheDead",
     name: "Army Of The Dead",
     description: "(raise three zombies - the initial maximum.)",
-    listens: ["Complete","Cast"],
-    onComplete: function(event) {
-      if (event.task.template==="ZombieEmergeTask") {
-        if (HTomb.Player.master.minions.length>=3) {
-          this.achieve();
-        }
-      }
-    },
+    listens: ["Cast"],
     onCast: function(event) {
       if (event.spell.template==="RaiseZombie") {
-        let x = event.x;
-        let y = event.y;
-        let z = event.z;
-        let f = HTomb.World.features[coord(x,y,z+1)];
-        if (!f || f.template!=="Tombstone") {
-          if (HTomb.Player.master.minions.length>=2) {
-            this.achieve();
-          }
+        if (HTomb.Player.master.minions.length>=2) {
+          this.achieve();
         }
       }
     }
@@ -330,6 +306,172 @@ HTomb = (function(HTomb) {
       }
     }
   });
+
+
+
+
+  HTomb.Tutorial = {
+    list: [],
+    reset: function() {
+      this.menuBlock = [];
+      for (let i=0; i<this.list.length; i++) {
+        let a = this.list[i];
+        a.unlocked = false;
+        for (let j=0; j<a.listens.length; j++) {
+          if (!HTomb.Events[a.listens[j]] || HTomb.Events[a.listens[j]].indexOf(a)===-1) {
+            HTomb.Events.subscribe(a, a.listens[j]);
+          }
+        }
+      }
+    },
+    resubscribe: function() {
+      for (let i=0; i<this.list.length; i++) {
+        let a = this.list[i];
+        if (a.unlocked===false) {
+          for (let j=0; j<a.listens.length; j++) {
+            if (HTomb.Events[a.listens[j]].indexOf(a)===-1) {
+              HTomb.Events.subscribe(a, a.listens[j]);
+            }
+          }
+        } else {
+          HTomb.Events.unsubscribeAll(a);
+        }
+      }
+    },
+    pushMessage: function(msg) {
+      if (this.enabled===false) {
+        return;
+      }
+      HTomb.Time.stopTime();
+      if (!confirm(msg)) {
+        HTomb.Tutorial.disable();
+      }
+      if (!HTomb.Time.initialPaused) {
+        HTomb.Time.startTime();
+      }
+      //HTomb.GUI.pushMessage("%b{yellow}%c{black}"+msg);
+    },
+    disable: function() {
+      this.enabled = false;
+    },
+    enable: function() {
+      this.enabled = true;
+    },
+    enabled: false,
+    onPlayerActive: function() {
+      if (this.enabled) {
+        this.refresh();
+      } else {
+        HTomb.Events.unsubscribeAll(this);
+        let menu = HTomb.GUI.Panels.menu;
+        menu.top = undefined;
+        menu.middle = undefined;
+        menu.bottom = undefined;
+        menu.refresh();
+      }
+    },
+    refresh: function() {
+      let menu = HTomb.GUI.Panels.menu;
+      for (let i=0; i<this.text.length; i++) {
+        if (this.text[i].length>1 && this.text[i].substr(0,1)!=="%") {
+          this.text[i] = "%c{lime}" + this.text[i];
+        }
+      }
+      if (this.top.length>0) {
+        menu.top = this.top.concat([" "],this.text);
+      }
+      if (this.middle.length>0) {
+        menu.middle = this.middle;
+      }
+      if (this.bottom.length>0) {
+        menu.middle = this.bottom;
+      }
+      menu.refresh();
+    },
+    top: [
+      "Esc: System view.",
+      "K: Toggle mouse or keyboard-only mode.",
+      " ",
+      "%c{yellow}Move: NumPad/Arrows, </>: Up/Down.",
+      "(Control+Arrows for diagonal.)",
+    ],
+    text: [
+    ],
+    middle: [
+    ],
+    bottom: [
+    ]
+
+  };
+
+  let fullThing = [
+
+    "%c{yellow}Avatar mode (Tab: Move viewing window)",
+    "Backspace / Delete: Center on player.",
+
+    " ",
+    "Move: NumPad/Arrows, </>: Up/Down.",
+    "(Control+Arrows for diagonal.)",
+    " ",
+    "Z: Cast spell, J: Assign job.",
+    "M: Minions, S: Structures, U: Summary.",
+    "G: Pick Up, D: Drop, I: Inventory.",
+    " ",
+    "Space: Wait, +/-: Change speed.",
+    "Click/Enter: Enable auto-pause.",
+    " ",
+    "PageUp/Down to scroll messages.",
+    "A: Achievements, F: Submit Feedback."
+  ];
+
+
+  HTomb.Events.subscribe(HTomb.Tutorial,"PlayerActive");
+  function Tutorial(args) {
+    args = args || {};
+    this.unlocked = false;
+    this.template = args.template || "Tutorial";
+    HTomb.Achievements.list.push(this);
+    this.name = args.name || "dummy tutorial";
+    this.description = args.description || "did something cool.";
+    this.listens = args.listens || [];
+    for (let arg in args) {
+      if (arg.substr(0,2)==="on") {
+        this[arg] = args[arg];
+      }
+    }
+    for (let i=0; i<args.listens.length; i++) {
+      HTomb.Events.subscribe(this, args.listens[i]);
+    }
+    this.achieve = function() {
+      this.finished = true;
+    }
+  }
+
+  new Tutorial({
+    template: "Welcome",
+    name: "welcome",
+    listens: ["TurnBegin","Tutorial"],
+    onTutorial: function(event) {
+    },
+    onTurnBegin: function() {
+      if (HTomb.Time.dailyCycle.turn===0) {
+        HTomb.Tutorial.text = ["",
+          "Welcome to HellaTomb!",
+          " ",
+          "First, let's take a look at the different parts of the screen.",
+          "The biggest panel is the play area, filled with colorful Unicode symbols.  These represent creatures, items, buildings, terrain, and so on.",
+          " ",
+          "Below the the play area is the status bar.  It shows how much magical energy you have left, your coordinates on the world grid, the time of day, and whether the game is paused.",
+          " ",
+          "Below the status bar is the scroll.  It shows messages informing you about things happening in your surroundings.",
+          " ",
+          "On the right-hand side is the menu bar.  It normally lists which controls are available.  Right now, it also lists tutorial instructions."
+        ];
+        HTomb.GUI.pushMessage("Welcome to HellaTomb!");
+      }
+    }
+  });
+
 
 
   return HTomb;
