@@ -233,6 +233,15 @@ HTomb = (function(HTomb) {
   menu.render = function() {
     // compose menu text with proper spacing
     let menuTop = menu.top;
+    if (HTomb.Tutorial.enabled) {
+      for (let i=0; i<HTomb.Tutorial.text.length; i++) {
+        let text = HTomb.Tutorial.text[i];
+        if (text.length>1 && text.substr(0,1)!=="%") {
+          HTomb.Tutorial.text[i] = "%c{lime}"+text;
+        }
+      }
+      menuTop = HTomb.Tutorial.top.concat([" "],HTomb.Tutorial.text);
+    }
     if (!menuTop || menuTop.length===0) {
       menuTop = GUI.Contexts.active.menuText;
     }
@@ -240,12 +249,18 @@ HTomb = (function(HTomb) {
       menuTop = menu.defaultTop;
     }
     let menuMiddle = menu.middle;
+    if (HTomb.Tutorial.enabled) {
+      menuMiddle = HTomb.Tutorial.middle;
+    }
     if (!menuMiddle|| menuMiddle.length===0) {
       menuMiddle = menu.defaultMiddle;
     }
     let menuBottom = menu.bottom;
     if (!menuBottom || menuBottom.length===0) {
       menuBottom = menu.defaultBottom;
+    }
+    if (HTomb.Tutorial.enabled) {
+      menuBottom = HTomb.Tutorial.bottom;
     }
     let menuText = menuTop;
     menuText = menuText.concat([" ","-".repeat(HTomb.Constants.MENUW-2)]);

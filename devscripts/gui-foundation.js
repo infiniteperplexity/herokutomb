@@ -182,22 +182,8 @@ HTomb = (function(HTomb) {
   HTomb.GUI.shiftDown = function() {
     return shiftDown;
   };
-  var keyCursor = true;
-  HTomb.GUI.toggleKeyCursor = function() {
-    keyCursor = !keyCursor;
-    //HTomb.GUI.reset();
-    if (keyCursor) {
-      let k = HTomb.GUI.getKeyCursor();
-      HTomb.GUI.Contexts.active.mouseTile(k[0],k[1]);
-    }
-    HTomb.GUI.Panels.menu.refresh();
-  };
   HTomb.GUI.getKeyCursor = function() {
-    if (keyCursor) {
-      return [HTomb.GUI.Panels.gameScreen.xoffset+Math.floor(HTomb.Constants.SCREENW/2),HTomb.GUI.Panels.gameScreen.yoffset+Math.floor(HTomb.Constants.SCREENH/2)];
-    } else {
-      return false;
-    }
+    return [HTomb.GUI.Panels.gameScreen.xoffset+Math.floor(HTomb.Constants.SCREENW/2),HTomb.GUI.Panels.gameScreen.yoffset+Math.floor(HTomb.Constants.SCREENH/2)];
   };
 
   HTomb.GUI.getMouseCursor = function() {
@@ -210,9 +196,6 @@ HTomb = (function(HTomb) {
   var mousedown = function(click) {
     click.preventDefault();
     if (GUI.Contexts.locked===true) {
-      return;
-    }
-    if (GUI.getKeyCursor()) {
       return;
     }
     // Convert X and Y from pixels to characters
@@ -234,9 +217,6 @@ HTomb = (function(HTomb) {
     lastMouseX = Math.floor((move.clientX+XSKEW)/CHARWIDTH-1);
     lastMouseY = Math.floor((move.clientY+YSKEW)/CHARHEIGHT-1);
     if (GUI.Contexts.locked===true) {
-      return;
-    }
-    if (GUI.getKeyCursor()) {
       return;
     }
     // Convert X and Y from pixels to characters

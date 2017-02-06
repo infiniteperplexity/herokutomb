@@ -338,56 +338,13 @@ HTomb = (function(HTomb) {
         }
       }
     },
-    pushMessage: function(msg) {
-      if (this.enabled===false) {
-        return;
-      }
-      HTomb.Time.stopTime();
-      if (!confirm(msg)) {
-        HTomb.Tutorial.disable();
-      }
-      if (!HTomb.Time.initialPaused) {
-        HTomb.Time.startTime();
-      }
-      //HTomb.GUI.pushMessage("%b{yellow}%c{black}"+msg);
-    },
     disable: function() {
       this.enabled = false;
     },
     enable: function() {
       this.enabled = true;
     },
-    enabled: false,
-    onPlayerActive: function() {
-      if (this.enabled) {
-        this.refresh();
-      } else {
-        HTomb.Events.unsubscribeAll(this);
-        let menu = HTomb.GUI.Panels.menu;
-        menu.top = undefined;
-        menu.middle = undefined;
-        menu.bottom = undefined;
-        menu.refresh();
-      }
-    },
-    refresh: function() {
-      let menu = HTomb.GUI.Panels.menu;
-      for (let i=0; i<this.text.length; i++) {
-        if (this.text[i].length>1 && this.text[i].substr(0,1)!=="%") {
-          this.text[i] = "%c{lime}" + this.text[i];
-        }
-      }
-      if (this.top.length>0) {
-        menu.top = this.top.concat([" "],this.text);
-      }
-      if (this.middle.length>0) {
-        menu.middle = this.middle;
-      }
-      if (this.bottom.length>0) {
-        menu.middle = this.bottom;
-      }
-      menu.refresh();
-    },
+    enabled: true,
     top: [
       "Esc: System view.",
       "K: Toggle mouse or keyboard-only mode.",
@@ -424,8 +381,6 @@ HTomb = (function(HTomb) {
     "A: Achievements, F: Submit Feedback."
   ];
 
-
-  HTomb.Events.subscribe(HTomb.Tutorial,"PlayerActive");
   function Tutorial(args) {
     args = args || {};
     this.unlocked = false;

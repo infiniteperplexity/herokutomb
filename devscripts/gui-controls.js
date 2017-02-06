@@ -58,7 +58,8 @@ HTomb = (function(HTomb) {
     menu.refresh();
     // This can be a bit annoying at times...
     let p = HTomb.Player;
-    if (!GUI.getKeyCursor || gameScreen.xoffset>p.x || gameScreen.yoffset>p.y || gameScreen.xoffset<=p.x-SCREENW || gameScreen.yoffset<=p.y-SCREENW) {
+    //if (!GUI.getKeyCursor || gameScreen.xoffset>p.x || gameScreen.yoffset>p.y || gameScreen.xoffset<=p.x-SCREENW || gameScreen.yoffset<=p.y-SCREENW) {
+    if (gameScreen.xoffset>p.x || gameScreen.yoffset>p.y || gameScreen.xoffset<=p.x-SCREENW || gameScreen.yoffset<=p.y-SCREENW) {
       gameScreen.recenter();
     }
     GUI.render();
@@ -133,11 +134,6 @@ HTomb = (function(HTomb) {
     let hover = options.hover || function(x, y, z, sq) {};
     //var context = Object.create(survey);
     var context = HTomb.Utils.clone(survey);
-    GUI.bindKey(context, "VK_K", function() {
-      HTomb.GUI.toggleKeyCursor();;
-      GUI.selectSquareZone(z, callb, options);
-      menu.refresh();
-    });
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "%c{orange}**Esc: Cancel.**",
@@ -167,14 +163,9 @@ HTomb = (function(HTomb) {
       menu.refresh();
     };
     context.clickTile = function (x,y) {
-      context.menuText[1] = "%c{yellow}Select second corner" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse.");
+      context.menuText[1] = "%c{yellow}Select second corner" + ((HTomb.GUI.getKeyCursor()) ? " with keys or mouse.");
       context.menuText[2] = "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.";
       var context2 = HTomb.Utils.clone(survey);
-      GUI.bindKey(context2, "VK_K", function() {
-        HTomb.GUI.toggleKeyCursor();;
-        context.clickTile(x,y);
-        menu.refresh();
-      });
       Contexts.active = context2;
       context2.menuText = context.menuText;
       menu.refresh();
@@ -261,17 +252,11 @@ HTomb = (function(HTomb) {
     var gameScreen = GUI.Panels.gameScreen;
     //var context = Object.create(survey);
     var context = HTomb.Utils.clone(survey);
-    GUI.bindKey(context, "VK_K", function() {
-      HTomb.GUI.toggleKeyCursor();;
-      GUI.selectBox(width, height, z, callb, options);
-      menu.refresh();
-    });
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "%c{orange}**Esc: Cancel**.",
-      "%c{yellow}Select an area" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse."),
+      "%c{yellow}Select an area" + ((HTomb.GUI.getKeyCursor()) ? " with keys or mouse."),
       "Backspace / Delete: Center on player.",
-      "K: Keyboard-only mode.",
       " ",
       "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
       "(Control+Arrows for diagonal.)",
@@ -582,12 +567,6 @@ HTomb = (function(HTomb) {
     VK_NUMPAD3: Commands.tryMoveSouthEast,
     VK_PERIOD: Commands.tryMoveDown,
     VK_COMMA: Commands.tryMoveUp,
-    VK_K: function() {
-      GUI.toggleKeyCursor();
-      //if (GUI.getKeyCursor()) {
-      //  Main.surveyMode();
-      //}
-    },
     VK_G: Commands.pickup,
     VK_D: Commands.drop,
     VK_I: Commands.inventory,
@@ -738,7 +717,6 @@ HTomb = (function(HTomb) {
     VK_NUMPAD1: Main.surveyMove(-1,+1,0),
     VK_NUMPAD2: Main.surveyMove(0,+1,0),
     VK_NUMPAD3: Main.surveyMove(+1,+1,0),
-    VK_K: GUI.toggleKeyCursor,
     VK_RETURN: HTomb.Time.toggleTime,
     // Exit survey mode and return to the original position
     VK_ESCAPE: function() {Views.systemView();},
