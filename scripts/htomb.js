@@ -53,9 +53,7 @@ var HTomb = (function() {
       // Prepare the GUI and throw up an intro screen
       GUI.Views.parentView = GUI.Views.Main.reset;
       GUI.Panels.scroll.reset();
-      GUI.reset();
       GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
-      GUI.render();
       HTomb.Time.stopTime();
       HTomb.Time.initialPaused = true;
       HTomb.Time.turn();

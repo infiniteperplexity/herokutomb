@@ -233,6 +233,15 @@ HTomb = (function(HTomb) {
   menu.render = function() {
     // compose menu text with proper spacing
     let menuTop = menu.top;
+    if (HTomb.Tutorial.enabled) {
+      for (let i=0; i<HTomb.Tutorial.text.length; i++) {
+        let text = HTomb.Tutorial.text[i];
+        if (text.length>1 && text.substr(0,1)!=="%") {
+          HTomb.Tutorial.text[i] = "%c{lime}"+text;
+        }
+      }
+      menuTop = HTomb.Tutorial.top.concat([" "],HTomb.Tutorial.text);
+    }
     if (!menuTop || menuTop.length===0) {
       menuTop = GUI.Contexts.active.menuText;
     }
@@ -240,12 +249,18 @@ HTomb = (function(HTomb) {
       menuTop = menu.defaultTop;
     }
     let menuMiddle = menu.middle;
+    if (HTomb.Tutorial.enabled) {
+      menuMiddle = HTomb.Tutorial.middle;
+    }
     if (!menuMiddle|| menuMiddle.length===0) {
       menuMiddle = menu.defaultMiddle;
     }
     let menuBottom = menu.bottom;
     if (!menuBottom || menuBottom.length===0) {
       menuBottom = menu.defaultBottom;
+    }
+    if (HTomb.Tutorial.enabled) {
+      menuBottom = HTomb.Tutorial.bottom;
     }
     let menuText = menuTop;
     menuText = menuText.concat([" ","-".repeat(HTomb.Constants.MENUW-2)]);
@@ -301,10 +316,8 @@ HTomb = (function(HTomb) {
             }
           }
         }
-        if (menuText[i]==="K: Keyboard-only mode." && GUI.getKeyCursor()) {
-          menuDisplay.drawText(this.x0+j, this.y0+i, "%c{cyan}K: Enable mouse control.");
-        } else if (menuText[i]==="Click/Enter: Enable auto-pause." && GUI.autopause===true) {
-          menuDisplay.drawText(this.x0+j, this.y0+i, "%c{cyan}Click/Enter: Disable auto-pause.");
+        if (menuText[i]==="Enter: Enable auto-pause." && GUI.autopause===true) {
+          menuDisplay.drawText(this.x0+j, this.y0+i, "Enter: Disable auto-pause.");
         } else {
           menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
         }
@@ -314,6 +327,9 @@ HTomb = (function(HTomb) {
 
   GUI.reset = function() {
     GUI.Views.parentView();
+    if (HTomb.Time.dailyCycle.turn===0) {
+      HTomb.Events.publish({type: "Tutorial", beginGame: true});
+    }
   };
   // This should probably be an Event, not a GUI method
   GUI.sensoryEvent = function(strng,x,y,z,color) {
@@ -357,21 +373,21 @@ HTomb = (function(HTomb) {
   menu.defaultTop = [
     "Esc: System view.",
     "%c{yellow}Avatar mode (Tab: Move viewing window)",
-    "Backspace / Delete: Center on player.",
-    "K: Keyboard-only mode.",
     " ",
     "Move: NumPad/Arrows, </>: Up/Down.",
     "(Control+Arrows for diagonal.)",
+    "Wait: NumPad 5 / Control+Space.",
+    " ",
+    "Enter: Enable auto-pause.",
+    "+/-: Change speed.",
     " ",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary.",
     "G: Pick Up, D: Drop, I: Inventory.",
     " ",
-    "Space: Wait, +/-: Change speed.",
-    "Click/Enter: Enable auto-pause.",
-    " ",
-    "PageUp/Down to scroll messages.",
-    "A: Achievements, F: Submit Feedback."
+    "PageUp/Down: Scroll messages.",
+    "A: Achievements, ?: Tutorial.",
+    "F: Submit Feedback."
   ];
   menu.defaultMiddle = [];
   menu.defaultBottom = [];

@@ -88,6 +88,7 @@ HTomb = (function(HTomb) {
   // Attach input events
   var controlArrow = null;
   var shiftDown = false;
+  var controlDown = false;
   GUI.autopause = false;
   var keydown = function(key) {
     let shortcuts = [
@@ -111,7 +112,7 @@ HTomb = (function(HTomb) {
       ROT.VK_RIGHT
     ];
     if (key.altKey || shortcuts.indexOf(key.keyCode)!==-1
-        || (key.ctrlKey && arrows.indexOf(key.keyCode)===-1)) {
+        || (key.ctrlKey && arrows.indexOf(key.keyCode)===-1 && key.keyCode!==ROT.VK_CONTROL && key.keyCode!==ROT.VK_SPACE)) {
       return;
     } else {
       key.preventDefault();
@@ -121,11 +122,14 @@ HTomb = (function(HTomb) {
       //experiment with no auto-pause
       HTomb.Time.stopTime();
     }
+    if (key.keyCode===ROT.VK_SHIFT) {
+      shiftDown = true;
+    }
+    if (key.keyCode===ROT.VK_CONTROL) {
+      controlDown = true;
+    }
     if (GUI.Contexts.locked===true) {
       return;
-    }
-    if (key.shiftKey) {
-      shiftDown = true;
     }
     // Pass the keystroke to the current control context
     var diagonal = null;
@@ -175,29 +179,22 @@ HTomb = (function(HTomb) {
   function keyup(key) {
     if (key.keyCode===controlArrow) {
       controlArrow=null;
-    } else if (key.shiftKey) {
+    }
+    if (key.keyCode===ROT.VK_SHIFT) {
       shiftDown = false;
+    }
+    if (key.keyCode===ROT.VK_CONTROL) {
+      controlDown = false;
     }
   }
   HTomb.GUI.shiftDown = function() {
     return shiftDown;
   };
-  var keyCursor = true;
-  HTomb.GUI.toggleKeyCursor = function() {
-    keyCursor = !keyCursor;
-    //HTomb.GUI.reset();
-    if (keyCursor) {
-      let k = HTomb.GUI.getKeyCursor();
-      HTomb.GUI.Contexts.active.mouseTile(k[0],k[1]);
-    }
-    HTomb.GUI.Panels.menu.refresh();
+  HTomb.GUI.controlDown = function() {
+    return controlDown;
   };
   HTomb.GUI.getKeyCursor = function() {
-    if (keyCursor) {
-      return [HTomb.GUI.Panels.gameScreen.xoffset+Math.floor(HTomb.Constants.SCREENW/2),HTomb.GUI.Panels.gameScreen.yoffset+Math.floor(HTomb.Constants.SCREENH/2)];
-    } else {
-      return false;
-    }
+    return [HTomb.GUI.Panels.gameScreen.xoffset+Math.floor(HTomb.Constants.SCREENW/2),HTomb.GUI.Panels.gameScreen.yoffset+Math.floor(HTomb.Constants.SCREENH/2)];
   };
 
   HTomb.GUI.getMouseCursor = function() {
@@ -210,9 +207,6 @@ HTomb = (function(HTomb) {
   var mousedown = function(click) {
     click.preventDefault();
     if (GUI.Contexts.locked===true) {
-      return;
-    }
-    if (GUI.getKeyCursor()) {
       return;
     }
     // Convert X and Y from pixels to characters
@@ -230,13 +224,12 @@ HTomb = (function(HTomb) {
   };
   var lastMouseX = null;
   var lastMouseY = null;
+  GUI.mouseMovedLast = false;
   var mousemove = function(move) {
+    GUI.mouseMovedLast = true;
     lastMouseX = Math.floor((move.clientX+XSKEW)/CHARWIDTH-1);
     lastMouseY = Math.floor((move.clientY+YSKEW)/CHARHEIGHT-1);
     if (GUI.Contexts.locked===true) {
-      return;
-    }
-    if (GUI.getKeyCursor()) {
       return;
     }
     // Convert X and Y from pixels to characters

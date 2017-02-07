@@ -71,6 +71,10 @@ HTomb = (function(HTomb) {
     commandsText: function() {
       let txt = [
         "%c{orange}**Esc: Done.**",
+        "Wait: NumPad 5 / Control+Space.",
+        "Click / Space: Select.",
+        "Enter: Toggle Pause.",
+        " ",
         this.headerText(),
         "a-z: Toggle option.",
         "Tab: Next structure.",
@@ -341,6 +345,10 @@ HTomb = (function(HTomb) {
       }
       let txt = [
         "%c{orange}**Esc: Done.**",
+        "Wait: NumPad 5 / Control+Space.",
+        "Click / Space: Select.",
+        "Enter: Toggle Pause.",
+        " ",
         "%c{yellow}Workshop: "+this.describe({capitalized: true, atCoordinates: true})+".",
         "Up/Down: Traverse queue.",
         "Left/Right: Alter repeat.",
@@ -970,6 +978,10 @@ HTomb = (function(HTomb) {
     detailsText: function() {
       let txt = [
         "%c{orange}**Esc: Done.**",
+        "Wait: NumPad 5 / Control+Space.",
+        "Click / Space: Select.",
+        "Enter: Toggle Pause.",
+        " ",
         "%c{yellow}Structure: "+this.describe({capitalized: true, atCoordinates: true})+".",
         "Up/Down: Choose property.",
         "Left/Right: Up or down by 1.",

@@ -268,7 +268,10 @@ HTomb = (function(HTomb) {
   Views.Summary.summaryText = function() {
     var text = [
       "%c{orange}**Esc: Done.**",
-      "Click/Enter: Pause/Unpause.",
+      "Wait: NumPad 5 / Control+Space.",
+      "Click / Space: Select.",
+      "Enter: Toggle Pause.",
+      " ",
       "%c{yellow}Summary:",
       "Up/Down: Scroll text."
     ];
@@ -325,7 +328,10 @@ HTomb = (function(HTomb) {
     if (w===null) {
       GUI.Contexts.active = GUI.Contexts.structures;
       GUI.Contexts.structures.menuText = ["%c{orange}**Esc: Done.**",
-      "Click/Enter: Pause/Unpause.",
+      "Wait: NumPad 5 / Control+Space.",
+      "Click / Space: Select.",
+      "Enter: Toggle Pause.",
+      " ",
       "%c{orange}You have no current structures."];
       menu.bottom = menu.defaultBottom;
       menu.render();
@@ -521,7 +527,10 @@ HTomb = (function(HTomb) {
     } else {
       let txt = [
         "%c{orange}**Esc: Done.**",
-        "Click/Enter: Pause/Unpause.",
+        "Wait: NumPad 5 / Control+Space.",
+        "Click / Space: Select.",
+        "Enter: Toggle Pause.",
+        " ",
         "%c{yellow}Creature: "+c.describe({capitalized: true})+" at ??, ??, ??.",
         "Tab: View player and minions.",
         " "
@@ -535,17 +544,20 @@ HTomb = (function(HTomb) {
   Views.Creature.creatureDetails = function(c) {
     let txt = [
       "%c{orange}**Esc: Done.**",
-      "Click/Enter: Pause/Unpause.",
+      "Wait: NumPad 5 / Control+Space.",
+      "Click / Space: Select.",
+      "Enter: Toggle Pause.",
+      " ",
       "%c{yellow}Creature: "+c.describe({capitalized: true, atCoordinates: true}),
       "Tab: Next minion.",
       " "
     ];
     if (c===HTomb.Player) {
-      txt[2] = "Tab: View minions.";
+      txt[6] = "Tab: View minions.";
     } else if (HTomb.Player.master && HTomb.Player.master.minions.indexOf(c)===-1) {
-      txt[2] = "Tab: View player and minions.";
+      txt[6] = "Tab: View player and minions.";
     } else if (HTomb.Player.master && c===HTomb.Player.master.minions[HTomb.Player.master.minions.length-1]) {
-      txt[2] = "Tab: View player.";
+      txt[6] = "Tab: View player.";
     }
     if (c.ai && c.ai.target) {
       let b = c.ai.target;
