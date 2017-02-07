@@ -344,7 +344,7 @@ HTomb = (function(HTomb) {
     enable: function() {
       this.enabled = true;
     },
-    enabled: true,
+    enabled: false,
     top: [
       "Esc: System view.",
       "K: Toggle mouse or keyboard-only mode.",

@@ -75,7 +75,7 @@ HTomb = (function(HTomb) {
     oldCursor = null;
   };
 
-  function mouseTile(x,y) {
+  function highlightTile(x,y) {
     if (oldCursor!==null) {
       gameScreen.refreshTile(oldCursor[0],oldCursor[1]);
     }
@@ -84,29 +84,24 @@ HTomb = (function(HTomb) {
   }
 
   Contexts.default.mouseTile = function(x,y) {
-    mouseTile(x,y);
+    this.hoverTile(x,y);
+  };
+  Contexts.default.hoverTile = function(x,y) {
+    highlightTile(x,y);
     menu.bottom = examineSquare(x,y,gameScreen.z);
     menu.refresh();
   };
 
-  Contexts.default.clickAt = HTomb.Time.toggleTime;
-  // This is a really ad hoc thing to keep wandering creatures from grabbing focus
-  let movedSinceLastWait = true;
-  Contexts.default.clickTile = function(x,y) {
+  // For now default click action is nothing
+  Contexts.default.clickAt = function() {};
+
+  Contexts.default.selectTile = function(x,y) {
     // If we clicked on a creature, go to creature view
     let c = HTomb.World.creatures[coord(x,y,gameScreen.z)];
     let visible = HTomb.World.visible[coord(x,y,gameScreen.z)];
-    let keyCursor = GUI.getKeyCursor();
-    if (c && visible && movedSinceLastWait) {
-      // In keyboard cursor mode, don't select the player; wait instead
-      if (keyCursor && c===HTomb.Player) {
-        Commands.wait();
-        GUI.Contexts.active.mouseTile(keyCursor[0],keyCursor[1]);
-        return;
-      } else {
-        GUI.Views.creatureView(c);
-        return;
-      }
+    if (c && visible) {
+      GUI.Views.creatureView(c);
+      return;
     }
     // If we clicked on a workshop, go to workshop view
     let f = HTomb.World.features[coord(x,y,gameScreen.z)];
@@ -114,16 +109,14 @@ HTomb = (function(HTomb) {
       GUI.Views.structureView(f.structure);
       return;
     }
-    // In keyboard cursor mode, if you didn't click on anything interesting, wait
-    if (keyCursor) {
-      Commands.wait();
-      GUI.Contexts.active.mouseTile(keyCursor[0],keyCursor[1]);
-      movedSinceLastWait = false;
-      return;
-    }
-    // Otherwise, toggle time
-    Contexts.default.clickAt();
-  }
+    // Otherwise fall back on a default
+    this.clickAt();
+  };
+
+  Contexts.default.clickTile = function(x,y) {
+    this.selectTile(x,y);
+  };
+
   Contexts.default.rightClickTile = function(x,y) {
     this.clickTile(x,y);
   };
@@ -137,16 +130,14 @@ HTomb = (function(HTomb) {
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "%c{orange}**Esc: Cancel.**",
-      //"%c{yellow}Select first corner.",
-      "%c{yellow}Select first corner" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse."),
-      "Backspace / Delete: Center on player.",
-      "K: Keyboard-only mode.",
+      "%c{yellow}Select first corner with keys or mouse.",
       " ",
-      "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
+      "Move: NumPad/Arrows, </>: Up/Down.",
       "(Control+Arrows for diagonal.)",
-      "<: Up, >: Down.",
-      "Click or Space: Select.",
-      "Enter: Pause/Unpause."
+      "Wait: NumPad 5 / Control+Space.",
+      " ",
+      "Click / Space: Select.",
+      "Enter: Toggle Pause."
     ];
     if (options.message) {
       context.menuText.unshift("");
@@ -156,30 +147,25 @@ HTomb = (function(HTomb) {
     survey.saveX = gameScreen.xoffset;
     survey.saveY = gameScreen.yoffset;
     survey.saveZ = gameScreen.z;
-    context.mouseTile = function(x,y) {
-      mouseTile(x,y)
+    context.hoverTile = function(x,y) {
+      highlightTile(x,y)
       hover(x, y, gameScreen.z);
       menu.bottom = examineSquare(x,y,gameScreen.z);
       menu.refresh();
     };
-    context.clickTile = function (x,y) {
-      context.menuText[1] = "%c{yellow}Select second corner" + ((HTomb.GUI.getKeyCursor()) ? " with keys or mouse.");
-      context.menuText[2] = "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.";
+    context.selectTile = function (x,y) {
+      context.menuText[1] = "%c{yellow}Select second corner with keys or mouse.";
       var context2 = HTomb.Utils.clone(survey);
       Contexts.active = context2;
       context2.menuText = context.menuText;
       menu.refresh();
-      context2.clickTile = secondSquare(x,y);
-      context2.mouseTile = drawSquareBox(x,y);
+      context2.selectTile = secondSquare(x,y);
+      context2.hoverTile = drawSquareBox(x,y);
       let keyCursor2 = GUI.getKeyCursor();
-      if (keyCursor2) {
-        context2.mouseTile(keyCursor2[0],keyCursor2[1]);
-      }
+      context2.hoverTile(keyCursor2[0],keyCursor2[1]);
     };
     let keyCursor = GUI.getKeyCursor();
-    if (keyCursor) {
-      context.mouseTile(keyCursor[0],keyCursor[1]);
-    }
+    context.hoverTile(keyCursor[0],keyCursor[1]);
     var drawSquareBox = function(x0,y0) {
       var bg = options.bg || "#550000";
       return function(x1,y1) {
@@ -255,16 +241,17 @@ HTomb = (function(HTomb) {
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "%c{orange}**Esc: Cancel**.",
-      "%c{yellow}Select an area" + ((HTomb.GUI.getKeyCursor()) ? " with keys or mouse."),
-      "Backspace / Delete: Center on player.",
+      "%c{yellow}Select a box with keys or mouse.",
       " ",
-      "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
+      "Move: NumPad/Arrows, </>: Up/Down.",
       "(Control+Arrows for diagonal.)",
-      "<: Up, >: Down",
-      "Click or Space: Select.",
-      "Enter: Pause/Unpause."
+      "Wait: NumPad 5 / Control+Space.",
+      " ",
+      "Click / Space: Select.",
+      "Enter: Toggle Pause."
     ];
-    context.mouseTile = function(x0,y0) {
+
+    context.hoverTile = function(x0,y0) {
       var bg = options.bg || "#550000";
       gameScreen.render();
       var squares = [];
@@ -284,9 +271,7 @@ HTomb = (function(HTomb) {
     };
     Contexts.active = context;
     let keyCursor = GUI.getKeyCursor();
-    if (keyCursor) {
-      context.mouseTile(keyCursor[0],keyCursor[1]);
-    }
+    context.hoverTile(keyCursor[0],keyCursor[1]);
     if (options.message) {
       context.menuText.unshift("");
       context.menuText.unshift(options.message);
@@ -295,7 +280,7 @@ HTomb = (function(HTomb) {
     survey.saveX = gameScreen.xoffset;
     survey.saveY = gameScreen.yoffset;
     survey.saveZ = gameScreen.z;
-    context.clickTile = function(x0,y0) {
+    context.selectTile = function(x0,y0) {
       var squares = [];
       for (var y=0; y<height; y++) {
         for (var x=0; x<width; x++) {
@@ -311,8 +296,12 @@ HTomb = (function(HTomb) {
     HTomb.Time.stopTime();
     var alpha = "abcdefghijklmnopqrstuvwxyz";
     var contrls = {};
-    var choices = ["%c{orange}**Esc: Cancel**.","Click/Enter: Pause/Unpause.","%c{yellow}"+header];
-    // there is probably a huge danger of memory leaks here
+    var choices = [
+      "%c{orange}**Esc: Cancel**.",
+      "%c{yellow}"+header
+    ];
+    let context = HTomb.Utils.clone(survey);
+    GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     for (var i=0; i<items.length; i++) {
       var desc;
       if (format) {
@@ -325,15 +314,13 @@ HTomb = (function(HTomb) {
       var choice = items[i];
       // Bind a callback function and its closure to each keystroke
       let func = action(choice);
-      contrls["VK_" + alpha[i].toUpperCase()] = function() {
+      GUI.bindKey(context, "VK_" + alpha[i].toUpperCase(), function() {
         func();
         menu.refresh();
-      }
+      });
       choices.push(alpha[i]+") " + desc);
     }
-    contrls.VK_ESCAPE = GUI.reset;
-    contrls.VK_RETURN = HTomb.Time.toggleTime;
-    Contexts.active = Contexts.new(contrls);
+    Contexts.active = context;
     Contexts.active.menuText = choices;
     menu.refresh();
   };
@@ -348,15 +335,14 @@ HTomb = (function(HTomb) {
 
     context.menuText = [
       "%c{orange}**Esc: Cancel.**",
-      "%c{yellow}Select a square" + ((HTomb.GUI.getKeyCursor()) ? " with keyboard." : " with the mouse."),
-      "Backspace / Delete: Center on player.",
-      "K: Keyboard-only mode.",
+      "%c{yellow}Select a square with keys or mouse.",
       " ",
-      "Move" + ((HTomb.GUI.getKeyCursor()) ? " cursor" : " screen") + ": NumPad / Arrows.",
+      "Move: NumPad/Arrows, </>: Up/Down.",
       "(Control+Arrows for diagonal.)",
-      "<: Up, >: Down",
-      "Click or Space: Select.",
-      "Enter: Pause/Unpause."
+      "Wait: NumPad 5 / Control+Space.",
+      " ",
+      "Click / Space: Select.",
+      "Enter: Toggle Pause."
     ];
     Contexts.active = context;
     if (options.message) {
@@ -366,25 +352,23 @@ HTomb = (function(HTomb) {
     survey.saveX = gameScreen.xoffset;
     survey.saveY = gameScreen.yoffset;
     survey.saveZ = gameScreen.z;
-    context.clickTile = function(x,y) {
+    context.selectTile = function(x,y) {
       callb(x,y,gameScreen.z,options);
       GUI.reset();
     };
-    context.mouseTile = function(x,y) {
-      mouseTile(x,y);
+    context.hoverTile = function(x,y) {
+      highlightTile(x,y);
       hover(x, y, gameScreen.z);
       menu.bottom = examineSquare(x,y,gameScreen.z);
       menu.refresh();
     }
     let keyCursor = GUI.getKeyCursor();
-    if (keyCursor) {
-      context.mouseTile(keyCursor[0],keyCursor[1]);
-    }
+    context.hoverTile(keyCursor[0],keyCursor[1]);
     if (options.line!==undefined) {
       var x0 = options.line.x || HTomb.Player.x;
       var y0 = options.line.y || HTomb.Player.y;
       var bg = options.line.bg || "#550000";
-      context.mouseTile = function(x,y) {
+      context.hoverTile = function(x,y) {
         gameScreen.render();
         var line = HTomb.Path.line(x0,y0,x,y);
         for (var i in line) {
@@ -573,10 +557,16 @@ HTomb = (function(HTomb) {
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
     VK_SLASH: function() {
-      HTomb.GUI.splash(GUI.helpText);
+      if (HTomb.Tutorial.enabled) {
+        HTomb.Tutorial.disable();
+      } else {
+        HTomb.Tutorial.enable();
+      }
     },
     VK_TAB: function() {Main.surveyMode();},
-    VK_SPACE: Commands.wait,
+    VK_SPACE: function() {
+        Commands.wait();
+    },
     VK_RETURN: HTomb.Time.toggleTime,
     VK_ESCAPE: function() {Views.systemView();},
     VK_HYPHEN_MINUS: function() {
@@ -604,8 +594,6 @@ HTomb = (function(HTomb) {
     VK_U: function() {
       HTomb.GUI.Views.summaryView();
     },
-    VK_DELETE: Commands.centerOnPlayer,
-    VK_BACK_SPACE: Commands.centerOnPlayer,
     VK_A: function() {
       Main.showAchievements();
     },
@@ -616,7 +604,11 @@ HTomb = (function(HTomb) {
 
   Main.showAchievements = function() {
     HTomb.Time.stopTime();
-    let txt = ["%c{lime}Achievements:"," "];
+    let txt = [
+      "%c{orange}Esc: Go back.",
+      "%c{lime}Achievements:",
+      " "
+    ];
     for (let i=0; i<HTomb.Achievements.list.length; i++) {
       let a = HTomb.Achievements.list[i];
       let s = "";
@@ -634,6 +626,7 @@ HTomb = (function(HTomb) {
   };
   // ***** Survey mode *********
   Main.surveyMode = function() {
+    HTomb.GUI.mouseMovedLast = false;
     Main.inSurveyMode = true;
     Contexts.active = survey;
     survey.saveX = gameScreen.xoffset;
@@ -643,14 +636,12 @@ HTomb = (function(HTomb) {
     menu.bottom = menu.defaultBottom;
     let keyCursor = GUI.getKeyCursor();
     GUI.render();
-    if (keyCursor) {
-      GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
-    }
+    GUI.Contexts.active.hoverTile(keyCursor[0], keyCursor[1]);
   };
   // Enter survey mode and save the screen's current position
   Main.surveyMove = function(dx,dy,dz) {
     var f = function() {
-      movedSinceLastWait = true;
+      HTomb.GUI.mouseMovedLast = false;
       let n = 1;
       if (HTomb.GUI.shiftDown()) {
         n = 8;
@@ -668,12 +659,7 @@ HTomb = (function(HTomb) {
       }
       GUI.render();
       let keyCursor = GUI.getKeyCursor();
-      if (keyCursor) {
-        GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
-      } else {
-        let gameScreen = HTomb.GUI.Panels.gameScreen;
-        GUI.fakeMouseMove();
-      }
+      GUI.Contexts.active.hoverTile(keyCursor[0], keyCursor[1]);
     };
     // Actually this returns a custom function for each type of movement
     return f;
@@ -713,6 +699,7 @@ HTomb = (function(HTomb) {
     VK_NUMPAD8: Main.surveyMove(0,-1,0),
     VK_NUMPAD9: Main.surveyMove(+1,-1,0),
     VK_NUMPAD4: Main.surveyMove(-1,0,0),
+    VK_NUMPAD5: Commands.wait,
     VK_NUMPAD6: Main.surveyMove(+1,0,0),
     VK_NUMPAD1: Main.surveyMove(-1,+1,0),
     VK_NUMPAD2: Main.surveyMove(0,+1,0),
@@ -721,10 +708,17 @@ HTomb = (function(HTomb) {
     // Exit survey mode and return to the original position
     VK_ESCAPE: function() {Views.systemView();},
     VK_TAB: function() {
+      HTomb.GUI.mouseMovedLast = false;
       gameScreen.z = survey.saveZ;
       gameScreen.recenter();
-      Main.inSurveyMode = false;
-      GUI.reset();
+      if (GUI.Contexts.active===GUI.Contexts.survey) {
+        Main.inSurveyMode = false;
+        GUI.reset();
+      } else {
+        gameScreen.render();
+        let keyCursor = HTomb.GUI.getKeyCursor();
+        GUI.Contexts.active.hoverTile(keyCursor[0],keyCursor[1]);
+      }
     },
     VK_J: Commands.showJobs,
     VK_Z: Commands.showSpells,
@@ -745,9 +739,12 @@ HTomb = (function(HTomb) {
     VK_PAGE_UP: function() {scroll.scrollUp();},
     VK_PAGE_DOWN: function() {scroll.scrollDown();},
     VK_SLASH: function() {
-      HTomb.GUI.splash(GUI.helpText);
+      if (HTomb.Tutorial.enabled) {
+        HTomb.Tutorial.disable();
+      } else {
+        HTomb.Tutorial.enable();
+      }
     },
-    //VK_TILDE: function() {Views.summaryView();}
     VK_M: function() {
       HTomb.GUI.Views.creatureView();
     },
@@ -757,17 +754,16 @@ HTomb = (function(HTomb) {
     VK_U: function() {
       HTomb.GUI.Views.summaryView();
     },
-    VK_DELETE: Commands.centerOnPlayer,
-    VK_BACK_SPACE: Commands.centerOnPlayer,
     VK_SPACE: function() {
-      let keyCursor = GUI.getKeyCursor();
-      if (keyCursor) {
-        HTomb.GUI.Contexts.active.clickTile(keyCursor[0],keyCursor[1]);
-      } else if (HTomb.GUI.Contexts.active===survey) {
+      if (HTomb.GUI.controlDown()) {
         Commands.wait();
-      } else {
+        return;
+      } else if (HTomb.GUI.mouseMovedLast) {
         let cursor = HTomb.GUI.getMouseCursor();
-        HTomb.GUI.Contexts.active.clickTile(cursor[0],cursor[1]);
+        HTomb.GUI.Contexts.active.selectTile(cursor[0],cursor[1]);
+      } else {
+        let keyCursor = GUI.getKeyCursor();
+        HTomb.GUI.Contexts.active.selectTile(keyCursor[0],keyCursor[1]);
       }
     },
     VK_A: Main.showAchievements,
@@ -779,22 +775,24 @@ HTomb = (function(HTomb) {
   survey.menuText =
   [ "Esc: System view.",
     "%c{yellow}*Navigation mode (Tab: Player view)*",
-    "Backspace / Delete: Center on player.",
-    "K: Keyboard-only mode.",
     " ",
-    "Move Screen: NumPad/Arrows.",
+    "Move: NumPad/Arrows, </>: Up/Down",
     "(Control+Arrows for diagonal.)",
-    "< / >: Up / Down.",
+    "Wait: NumPad 5 / Control+Space.",
+    " ",
+    "Enter: Enable auto-pause.",
+    "+/-: Change speed.",
     " ",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary",
     " ",
-    "Space: Wait, +/-: Change speed.",
-    "Click/Enter: Enable auto-pause.",
-    " ",
-    "PageUp/Down to scroll messages.",
-    "A: Achievements, F: Submit Feedback."
+    "PageUp/Down: Scroll messages.",
+    "A: Achievements, ?: Tutorial.",
+    "F: Submit Feedback."
   ];
 
+  survey.clickAt = function() {
+    Commands.wait();
+  };
   return HTomb;
 })(HTomb);

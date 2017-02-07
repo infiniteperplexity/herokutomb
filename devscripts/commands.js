@@ -102,12 +102,12 @@ HTomb = (function(HTomb) {
     HTomb.Player.ai.acted = true;
     HTomb.Player.ai.actionPoints-=16;
     HTomb.Time.resumeActors();
-    let keyCursor = GUI.getKeyCursor();
-    if (keyCursor && HTomb.GUI.Contexts.active!==HTomb.GUI.Contexts.main) {
-      GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
-    } else {
+    if (HTomb.GUI.mouseMovedLast || HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
       let gameScreen = HTomb.GUI.Panels.gameScreen;
       GUI.Contexts.active.mouseTile(GUI.Contexts.mouseX+gameScreen.xoffset, GUI.Contexts.mouseY+gameScreen.yoffset);
+    } else {
+      let keyCursor = GUI.getKeyCursor();
+      GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
     }
   };
 

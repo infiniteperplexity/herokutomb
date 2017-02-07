@@ -55,7 +55,10 @@ HTomb = (function(HTomb) {
 
   // this needs to work correctly in all conditions
   HTomb.Time.toggleTime = function() {
-    if (timePassing===null || HTomb.GUI.autopause===true) {
+    if (HTomb.Time.initialPaused===true && HTomb.GUI.autopause===false) {
+      HTomb.GUI.autopause = true;
+      HTomb.Time.initialPaused = false;
+    } else if (timePassing===null || HTomb.GUI.autopause===true) {
       HTomb.GUI.autopause = false;
       HTomb.Time.startTime();
     } else {
@@ -75,12 +78,12 @@ HTomb = (function(HTomb) {
     HTomb.Player.ai.acted = true;
     HTomb.Player.ai.actionPoints-=16;
     HTomb.Time.resumeActors(null, true);
-    let keyCursor = HTomb.GUI.getKeyCursor();
-    if (keyCursor && HTomb.GUI.Contexts.active!==HTomb.GUI.Contexts.main) {
-      HTomb.GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
-    } else {
+    if (HTomb.GUI.mouseMovedLast || HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
       let gameScreen = HTomb.GUI.Panels.gameScreen;
       HTomb.GUI.Contexts.active.mouseTile(HTomb.GUI.Contexts.mouseX+gameScreen.xoffset, HTomb.GUI.Contexts.mouseY+gameScreen.yoffset);
+    } else {
+      let keyCursor = HTomb.GUI.getKeyCursor();
+      HTomb.GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
     }
   };
 

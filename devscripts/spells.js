@@ -64,6 +64,8 @@ HTomb = (function(HTomb) {
           if (cr.body) {
             cr.body.endure(that.attack);
           }
+          c.ai.acted = true;
+          c.ai.actionPoints-=16;
         } else {
           HTomb.GUI.pushMessage("Can't cast the spell there.");
         }
