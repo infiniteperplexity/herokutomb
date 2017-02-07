@@ -599,6 +599,16 @@ HTomb = (function(HTomb) {
     },
     VK_F: function() {
       HTomb.GUI.Views.feedback();
+    },
+    VK_CLOSE_BRACKET: function() {
+      if (HTomb.Tutorial.enabled) {
+
+      }
+    },
+    VK_OPEN_BRACKET: function() {
+      if (HTomb.Tutorial.enabled) {
+
+      }
     }
   });
 

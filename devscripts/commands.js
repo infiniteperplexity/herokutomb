@@ -61,10 +61,12 @@ HTomb = (function(HTomb) {
     // if you can move, either move or displace
     } else if (HTomb.Player.movement.canMove(newx,newy,newz)) {
       if (square.creature && square.creature.ai && square.creature.ai.isHostile(HTomb.Player)===false) {
+        HTomb.Events.publish({type: "Command", command: "Move", dir: dir});
         Commands.displaceCreature(newx,newy,newz);
         HTomb.GUI.pushMessage("You displace " + square.creature.describe({article: "indefinite"}) + ".");
         return;
       } else {
+        HTomb.Events.publish({type: "Command", command: "Move", dir: dir});
         Commands.movePlayer(newx,newy,newz);
         return;
       }
@@ -73,6 +75,7 @@ HTomb = (function(HTomb) {
       square.feature.activate();
       return;
     } else if (HTomb.Debug.mobility===true && square.creature===undefined) {
+      HTomb.Events.publish({type: "Command", command: "Move", dir: dir});
       Commands.movePlayer(newx,newy,newz);
       return;
     } else if (newz===z) {

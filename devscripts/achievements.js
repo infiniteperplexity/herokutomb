@@ -340,17 +340,20 @@ HTomb = (function(HTomb) {
     },
     disable: function() {
       this.enabled = false;
+      HTomb.GUI.Panels.menu.refresh();
     },
     enable: function() {
       this.enabled = true;
+      HTomb.GUI.Panels.menu.refresh();
     },
-    enabled: false,
+    enabled: true,
     top: [
       "Esc: System view.",
-      "K: Toggle mouse or keyboard-only mode.",
       " ",
-      "%c{yellow}Move: NumPad/Arrows, </>: Up/Down.",
+      "%c{cyan}Move: NumPad/Arrows.",
       "(Control+Arrows for diagonal.)",
+      " ",
+      "?: Tutorial."
     ],
     text: [
     ],
@@ -362,23 +365,23 @@ HTomb = (function(HTomb) {
   };
 
   let fullThing = [
-
+    "Esc: System view.",
     "%c{yellow}Avatar mode (Tab: Move viewing window)",
-    "Backspace / Delete: Center on player.",
-
     " ",
     "Move: NumPad/Arrows, </>: Up/Down.",
     "(Control+Arrows for diagonal.)",
+    "Wait: NumPad 5 / Control+Space.",
+    " ",
+    "Enter: Enable auto-pause.",
+    "+/-: Change speed.",
     " ",
     "Z: Cast spell, J: Assign job.",
     "M: Minions, S: Structures, U: Summary.",
     "G: Pick Up, D: Drop, I: Inventory.",
     " ",
-    "Space: Wait, +/-: Change speed.",
-    "Click/Enter: Enable auto-pause.",
-    " ",
-    "PageUp/Down to scroll messages.",
-    "A: Achievements, F: Submit Feedback."
+    "PageUp/Down: Scroll messages.",
+    "A: Achievements, ?: Tutorial.",
+    "F: Submit Feedback."
   ];
 
   function Tutorial(args) {
@@ -405,7 +408,7 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "Welcome",
     name: "welcome",
-    listens: ["TurnBegin","Tutorial"],
+    listens: ["TurnBegin","Tutorial","Command"],
     onTutorial: function(event) {
     },
     onTurnBegin: function() {
@@ -413,19 +416,82 @@ HTomb = (function(HTomb) {
         HTomb.Tutorial.text = ["",
           "Welcome to HellaTomb!",
           " ",
-          "First, let's take a look at the different parts of the screen.",
-          "The biggest panel is the play area, filled with colorful Unicode symbols.  These represent creatures, items, buildings, terrain, and so on.",
+          "Try walking around using the numeric keypad.",
           " ",
-          "Below the the play area is the status bar.  It shows how much magical energy you have left, your coordinates on the world grid, the time of day, and whether the game is paused.",
-          " ",
-          "Below the status bar is the scroll.  It shows messages informing you about things happening in your surroundings.",
-          " ",
-          "On the right-hand side is the menu bar.  It normally lists which controls are available.  Right now, it also lists tutorial instructions."
+          "If your keyboard has no keypad, use the arrow keys."
         ];
+        this.moves = 0;
+        HTomb.GUI.Panels.menu.refresh();
         HTomb.GUI.pushMessage("Welcome to HellaTomb!");
+      }
+    },
+    onCommand: function(event) {
+      if (event.command==="Move" && this.moves<5) {
+        this.moves+=1;
+      }
+      if (this.moves>=5) {
+        this.moves = undefined;
+        HTomb.Tutorial.text = ["",
+          "You may see different colors and symbols representing elevation.",
+          " ",
+          'Green areas with " are grass.',
+          " ",
+          'Dark green areas with \u02C5 are downward slopes.  Dark green areas with " are grass one level below you.',
+          " ",
+          "\u02C4 symbols are upward slopes.  Gray areas with # are walls, but they may have floors above them.",
+          " ",
+          "You can climb up or down a slope by pressing < or >, or automatically by trying to walk against the slope.",
+          " ",
+          "When you climb up or down, colors change with your relative elevation.",
+          " ",
+          "Try climbing up and down a few slopes."
+        ];
+        this.ups = 0;
+        this.downs = 0;
+        HTomb.Tutorial.top = [
+          "Esc: System view.",
+          " ",
+          "Move: NumPad/Arrows, %c{cyan}</>: Up/Down.",
+          "(Control+Arrows for diagonal.)",
+          " ",
+          "?: Tutorial."
+        ]
+        HTomb.GUI.Panels.menu.refresh();
+        return;
+      }
+      if (event.command==="Move" && event.dir==='U' && this.ups!==undefined) {
+        this.ups+=1;
+      } else if (event.command==="Move" && event.dir==='D' && this.downs!==undefined) {
+        this.downs+=1;
+      }
+      if (this.ups>=2 && this.downs>=2) {
+        HTomb.Tutorial.text = ["",
+          "Good job! Now let's raise your first zombie.",
+          " ",
+          "Near where you started, there should be some symbols like this: \u271D",
+          " ",
+          "Find one.  Then press Z to view a list of spells you can cast."
+        ];
+        HTomb.Tutorial.top = [
+          "Esc: System view.",
+          " ",
+          "Move: NumPad/Arrows, </>: Up/Down.",
+          "(Control+Arrows for diagonal.)",
+          " ",
+          "%c{cyan}Z: Cast spell.",
+          " ",
+          "?: Tutorial."
+        ]
+        HTomb.GUI.Panels.menu.refresh();
+        return;
       }
     }
   });
+
+
+//  ,
+//  "\u2663 and \u2660 are trees.",
+//  "\u2698 are shrubs or herbs."
 
 
 
