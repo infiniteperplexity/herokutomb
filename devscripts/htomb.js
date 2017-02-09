@@ -57,6 +57,7 @@ var HTomb = (function() {
       HTomb.Time.stopTime();
       HTomb.Time.initialPaused = true;
       HTomb.Time.turn();
+      HTomb.Tutorial.tutorials[0].onBegin();
       GUI.delaySplash([
         "%c{yellow}Welcome to HellaTomb!",
         " ",

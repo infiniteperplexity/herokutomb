@@ -42,6 +42,7 @@ HTomb = (function(HTomb) {
 
   Main.inSurveyMode = false;
   Main.reset = function() {
+    HTomb.Events.publish({type: "Special", details: "Reset"});
     if (HTomb.GUI.autopause===false && HTomb.Time.initialPaused!==true) {
       HTomb.Time.startTime();
     }
@@ -558,16 +559,22 @@ HTomb = (function(HTomb) {
     VK_Z: Commands.showSpells,
     VK_SLASH: function() {
       if (HTomb.Tutorial.enabled) {
-        HTomb.Tutorial.disable();
+        HTomb.Tutorial.enabled = false;
       } else {
-        HTomb.Tutorial.enable();
+        HTomb.Tutorial.enabled = true;
       }
+      HTomb.GUI.Panels.menu.refresh();
     },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: function() {
         Commands.wait();
     },
-    VK_RETURN: HTomb.Time.toggleTime,
+    VK_RETURN: function() {
+      HTomb.Time.toggleTime();
+      if (HTomb.GUI.autopause===false) {
+        HTomb.Events.publish({type: "Command", command: "UnPause"});
+      }
+    },
     VK_ESCAPE: function() {Views.systemView();},
     VK_HYPHEN_MINUS: function() {
       let oldSpeed = HTomb.Time.getSpeed();
@@ -613,10 +620,12 @@ HTomb = (function(HTomb) {
   });
 
   Main.showAchievements = function() {
+    HTomb.Events.publish({type: "Command", command: "ShowAchievements"});
     HTomb.Time.stopTime();
     let txt = [
-      "%c{orange}Esc: Go back.",
-      "%c{lime}Achievements:",
+      "%c{orange}**Esc: Go back.**",
+      " ",
+      "%c{yellow}Achievements:",
       " "
     ];
     for (let i=0; i<HTomb.Achievements.list.length; i++) {
@@ -636,6 +645,7 @@ HTomb = (function(HTomb) {
   };
   // ***** Survey mode *********
   Main.surveyMode = function() {
+    HTomb.Events.publish({type: "Command", command: "SurveyMode"});
     HTomb.GUI.mouseMovedLast = false;
     Main.inSurveyMode = true;
     Contexts.active = survey;
@@ -653,6 +663,7 @@ HTomb = (function(HTomb) {
     var f = function() {
       HTomb.GUI.mouseMovedLast = false;
       let n = 1;
+      HTomb.Events.publish({type: "Command", command: "SurveyMove"});
       if (HTomb.GUI.shiftDown()) {
         n = 8;
       }
@@ -750,10 +761,11 @@ HTomb = (function(HTomb) {
     VK_PAGE_DOWN: function() {scroll.scrollDown();},
     VK_SLASH: function() {
       if (HTomb.Tutorial.enabled) {
-        HTomb.Tutorial.disable();
+        HTomb.Tutorial.enabled = false;
       } else {
-        HTomb.Tutorial.enable();
+        HTomb.Tutorial.enabled = true;
       }
+      HTomb.GUI.Panels.menu.refresh();
     },
     VK_M: function() {
       HTomb.GUI.Views.creatureView();
@@ -797,7 +809,7 @@ HTomb = (function(HTomb) {
     "M: Minions, S: Structures, U: Summary",
     " ",
     "PageUp/Down: Scroll messages.",
-    "A: Achievements, ?: Tutorial.",
+    "A: Achievements, ?: Toggle tutorial.",
     "F: Submit Feedback."
   ];
 

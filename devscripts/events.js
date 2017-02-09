@@ -29,8 +29,8 @@ HTomb = (function(HTomb) {
         console.log([listeners[j],event.type]);
         throw new Error("listener lacked method!");
       }
-      //listeners[j].onEvent(event);
     }
+    HTomb.Tutorial.onEvent(event);
   };
   Events.unsubscribeAll = function(listener) {
     for (var i=0; i<Events.types.length; i++) {

@@ -233,15 +233,6 @@ HTomb = (function(HTomb) {
   menu.render = function() {
     // compose menu text with proper spacing
     let menuTop = menu.top;
-    if (HTomb.Tutorial.enabled) {
-      for (let i=0; i<HTomb.Tutorial.text.length; i++) {
-        let text = HTomb.Tutorial.text[i];
-        if (text.length>1 && text.substr(0,1)!=="%") {
-          HTomb.Tutorial.text[i] = "%c{lime}"+text;
-        }
-      }
-      menuTop = HTomb.Tutorial.top.concat([" "],HTomb.Tutorial.text);
-    }
     if (!menuTop || menuTop.length===0) {
       menuTop = GUI.Contexts.active.menuText;
     }
@@ -249,9 +240,6 @@ HTomb = (function(HTomb) {
       menuTop = menu.defaultTop;
     }
     let menuMiddle = menu.middle;
-    if (HTomb.Tutorial.enabled) {
-      menuMiddle = HTomb.Tutorial.middle;
-    }
     if (!menuMiddle|| menuMiddle.length===0) {
       menuMiddle = menu.defaultMiddle;
     }
@@ -260,7 +248,19 @@ HTomb = (function(HTomb) {
       menuBottom = menu.defaultBottom;
     }
     if (HTomb.Tutorial.enabled) {
-      menuBottom = HTomb.Tutorial.bottom;
+      let replace = HTomb.Tutorial.getMenu({
+        top: menuTop,
+        middle: menuMiddle,
+        bottom: menuBottom
+      });
+      for (let i=0; i<replace.instructions.length; i++) {
+        if (replace.instructions[i].substr(0,2)!=="%c") {
+          replace.instructions[i] = "%c{lime}"+replace.instructions[i];
+        }
+      }
+      menuTop = replace.controls.concat([" "],replace.instructions);
+      menuMiddle = replace.middle;
+      menuBottom = replace.bottom;
     }
     let menuText = menuTop;
     menuText = menuText.concat([" ","-".repeat(HTomb.Constants.MENUW-2)]);
@@ -275,11 +275,19 @@ HTomb = (function(HTomb) {
     let br=null;
     //%{\w+}
     while(c<menuText.length) {
-      let pat = /%c{\w+}/;
+      let pat = /%c{\w*}/;
       let match = pat.exec(menuText[c]);
-
+      let measure = menuText[c];
       let txt = menuText[c];
       if (match!==null) {
+        let measure = menuText[c];
+        for (let i=0; i<match.length; i++) {
+          measure = measure.replace(/%c{\w*}/g,"");
+        }
+        if (measure.length<MENUW-2) {
+          c++;
+          continue;
+        }
         txt = menuText[c].replace(match[0],"");
       }
       if (txt.length<MENUW-2) {
@@ -316,8 +324,8 @@ HTomb = (function(HTomb) {
             }
           }
         }
-        if (menuText[i]==="Enter: Enable auto-pause." && GUI.autopause===true) {
-          menuDisplay.drawText(this.x0+j, this.y0+i, "Enter: Disable auto-pause.");
+        if (menuText[i].match("Enter: Enable auto-pause.") && GUI.autopause===true) {
+          menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i].replace("Enter: Enable auto-pause.","Enter: Disable auto-pause."));
         } else {
           menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
         }
@@ -386,7 +394,7 @@ HTomb = (function(HTomb) {
     "G: Pick Up, D: Drop, I: Inventory.",
     " ",
     "PageUp/Down: Scroll messages.",
-    "A: Achievements, ?: Tutorial.",
+    "A: Achievements, ?: Toggle tutorial.",
     "F: Submit Feedback."
   ];
   menu.defaultMiddle = [];

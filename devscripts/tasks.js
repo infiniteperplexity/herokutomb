@@ -83,6 +83,7 @@ HTomb = (function(HTomb) {
     designateTile: function(x,y,z,assigner) {
       if (this.validTile(x,y,z)) {
         let t = HTomb.Things[this.template]({assigner: assigner}).place(x,y,z);
+        HTomb.Events.publish({type: "Designate", task: t.task});
         return t;
       }
     },
@@ -328,6 +329,7 @@ HTomb = (function(HTomb) {
     designateTile: function(x,y,z,assigner) {
       if (this.validTile(x,y,z) || HTomb.World.explored[z][x][y]!==true) {
         let t = HTomb.Things[this.template]({assigner: assigner}).place(x,y,z);
+        HTomb.Events.publish({type: "Designate", task: t.task});
         return t;
       }
     },

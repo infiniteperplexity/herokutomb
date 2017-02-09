@@ -287,12 +287,14 @@ HTomb = (function(HTomb) {
   };
   // Show a menu of the spells the player can cast
   Commands.showSpells = function() {
+    HTomb.Events.publish({type: "Command", command: "ShowSpells"});
     GUI.choosingMenu("Choose a spell (mana cost):", HTomb.Player.caster.spells,
       function(sp) {
         return function() {
           if (HTomb.Player.caster.mana>=sp.getCost()) {
             HTomb.GUI.Panels.menu.middle = [];
             HTomb.GUI.Panels.menu.refresh();
+            HTomb.Events.publish({type: "Command", command: "ChooseSpell", spell: sp});
             HTomb.Player.caster.cast(sp);
           } else {
             HTomb.GUI.Panels.menu.middle = ["%c{orange}Not enough mana."];
@@ -312,9 +314,11 @@ HTomb = (function(HTomb) {
   };
   // Show a menu of the tasks the player can assign
   Commands.showJobs = function() {
+    HTomb.Events.publish({type: "Command", command: "ShowJobs"});
     GUI.choosingMenu("Choose a task:", HTomb.Player.master.listTasks(),
       function(task) {
         return function() {
+          HTomb.Events.publish({type: "Command", command: "ChooseJob", task: task})
           HTomb.Player.master.designate(task);
           //HTomb.Time.resumeActors();
         };
