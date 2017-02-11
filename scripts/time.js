@@ -83,7 +83,7 @@ HTomb = (function(HTomb) {
       HTomb.GUI.Contexts.active.mouseTile(HTomb.GUI.Contexts.mouseX+gameScreen.xoffset, HTomb.GUI.Contexts.mouseY+gameScreen.yoffset);
     } else {
       let keyCursor = HTomb.GUI.getKeyCursor();
-      HTomb.GUI.Contexts.active.mouseTile(keyCursor[0], keyCursor[1]);
+      HTomb.GUI.Contexts.active.hoverTile(keyCursor[0], keyCursor[1]);
     }
   };
 

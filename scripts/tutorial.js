@@ -173,15 +173,17 @@ HTomb = (function(HTomb) {
         "%c{white}You scramble up and down the slopes for a better view of the area.",
         " ",
         '- Green areas with " are grass.',
-        "- Dark green areas are also grass, one elevation level below you.",
+        " ",
+        "- Dim green areas are also grass, one elevation level below you.",
+        " ",
         "- Gray areas with # are walls, but they may have walkable floors one level above you.",
-        "- Black areas have not been explored yet.",
+        " ",
         "- Other symbols (\u2663, \u2660, \u2698) may be",
         "trees or plants.",
-        "- Letters such as 's' or 'b' are wild animals, mostly harmless.",
-        "-The \u02C4 and \u02C5 symbols are slopes.  You can climb up or down a slope by standing on it and pressing < or >, or automatically by trying to walk against the slope.",
         " ",
-        "When you climb up or down, colors change with your relative elevation.",
+        "- Letters such as 's' or 'b' are wild animals, mostly harmless for now.",
+        " ",
+        "-The \u02C4 and \u02C5 symbols are slopes.  You can climb up or down a slope by standing on it and pressing < or >, or automatically by trying to walk against the slope.  When you climb up or down, colors change with your relative elevation.",
         " ",
         "%c{cyan}Try climbing up and down a few slopes."
       ],
@@ -219,7 +221,7 @@ HTomb = (function(HTomb) {
         " ",
         "Near where you started, there should be some symbols like this: \u271D. These are tombstones.  If you want to know what a symbol represents, hover over it with the mouse and look at the bottom half of the right panel.",
         " ",
-        "%c{cyan}Find a tombstone.  Then press Z to view a list of spells you can cast, and press A to choose 'Raise Zombie.'"
+        "%c{cyan}Find a tombstone.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"
       ],
       listens: ["Command"],
       skip: "WaitingForTheZombie",
@@ -237,7 +239,7 @@ HTomb = (function(HTomb) {
         return txt;
       },
       instructions: HTomb.Tutorial.templates.RaisingAZombieStepOne.instructions,
-      backupInstructions: ["%c{cyan}Find a tombstone.  Then press Z to view a list of spells you can cast, and press A to choose 'Raise Zombie.'"],
+      backupInstructions: ["%c{cyan}Find a tombstone.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"],
       listens: ["Command"],
       skip: "WaitingForTheZombie",
       trigger: function(event) {
@@ -365,9 +367,11 @@ HTomb = (function(HTomb) {
       instructions: [
         "%c{white}Your minion bursts forth from the ground!",
         " ",
-        "Don't want to press a key just to make time pass?  Try turning off auto-pause by pressing Enter / Return.",
+        "Notice the word 'Paused' above the right-hand side of the message bar.  The game is currently auto-paused - one turn will pass for each action you take.",
         " ",
-        "Time will begin passing on its own - note the timer above the right-hand side of the message bar.  Press Enter / Return again if you want to turn auto-pause back on, or press + or - to make time pass faster or slower.",
+        "Press Enter / Return to toggle auto-pause.  If you turn it off, turns will pass in realtime.",
+        " ",
+        "Press + or - to make time pass faster or slower.",
         " ",
         "%c{cyan}Wait for some time to pass.  Watch your zombie wander aimlessly."
       ],
@@ -378,7 +382,7 @@ HTomb = (function(HTomb) {
           this.tracking.turns = 0;
         }
         this.tracking.turns+=1;
-        return (this.tracking.turns>=10);
+        return (this.tracking.turns>=20 || (this.tracking.turns>=10 && HTomb.GUI.autopause===true));
       }
     });
 
@@ -438,10 +442,14 @@ HTomb = (function(HTomb) {
         "%c{cyan}Select a rectangular area for your zombie to dig.",
         " ",
         "What 'dig' means is contextual, depending on the terrain you select:",
-        "- Digging on the floor will make a shallow pit.",
-        "- Digging in a wall will make a corridor or tunnel.",
-        "- Digging on a slope will level the slope.",
-        "For now, tell your zombie to dig wherever you like."
+        " ",
+        "- Digging on the floor will make a pit.",
+        " ",
+        "- Digging in a wall will make a tunnel.",
+        " ",
+        "- Digging on a slope levels the slope.",
+        " ",
+        "Look below this panel for a hint about what digging does in the highlighted square."
       ],
       backupInstructions: HTomb.Tutorial.templates.AssignAJob.instructions,
       listens: ["Designate"],
@@ -519,7 +527,7 @@ HTomb = (function(HTomb) {
       name: "navigation mode",
       controls: [
         "Esc: System view.",
-        "%c{cyan}Avatar mode (Tab: Move viewing window)",
+        "%c{cyan}Avatar mode (Tab: Navigation mode)",
         " ",
         "Move: NumPad/Arrows, </>: Up/Down.",
         "(Control+Arrows for diagonal.)",
@@ -553,7 +561,7 @@ HTomb = (function(HTomb) {
       contexts: ["Survey"],
       controls: [
         "Esc: System view.",
-        "%c{yellow}*Navigation mode (Tab: Player view)*",
+        "%c{yellow}*Navigation mode (Tab: Avatar mode)*",
         " ",
         "%c{cyan}Move: NumPad/Arrows, </>: Up/Down",
         "%c{cyan}(Control+Arrows for diagonal.)",
@@ -587,7 +595,7 @@ HTomb = (function(HTomb) {
       name: "harvest resources",
       controls: [
         "Esc: System view.",
-        "%c{yellow}*Navigation mode (Tab: Player view)*",
+        "%c{yellow}*Navigation mode (Tab: Avatar mode)*",
         " ",
         "Move: NumPad/Arrows, </>: Up/Down",
         "(Control+Arrows for diagonal.)",
@@ -602,7 +610,7 @@ HTomb = (function(HTomb) {
         "A: Achievements, ?: Toggle tutorial.",
       ],
       instructions: [
-        "%c{white}The stones of these hills will form the bones of your fortress, and the trees shall fuel its fires.",
+        "%c{white}The boulders of these hills will form the bones of your fortress, and the trees shall fuel its fires.",
         " ",
         "%c{cyan}Press J to assign a job, and then press D to harvest."
       ],
@@ -653,7 +661,7 @@ HTomb = (function(HTomb) {
       contexts: ["Main","ChooseItemToPickup"],
       controls: [
         "Esc: System view.",
-        "%c{yellow}Avatar mode (Tab: Move viewing window)",
+        "%c{yellow}Avatar mode (Tab: Navigation mode)",
         " ",
         "Move: NumPad/Arrows, </>: Up/Down.",
         "(Control+Arrows for diagonal.)",
@@ -691,7 +699,7 @@ HTomb = (function(HTomb) {
         } else {
           return [
             "Esc: System view.",
-            "%c{yellow}Avatar mode (Tab: Move viewing window)",
+            "%c{yellow}Avatar mode (Tab: Navigation mode)",
             " ",
             "Move: NumPad/Arrows, </>: Up/Down.",
             "(Control+Arrows for diagonal.)",
@@ -727,7 +735,7 @@ HTomb = (function(HTomb) {
       name: "end of tutorial",
       controls: [
         "Esc: System view.",
-        "%c{yellow}Avatar mode (Tab: Move viewing window)",
+        "%c{yellow}Avatar mode (Tab: Navigation mode)",
         " ",
         "Move: NumPad/Arrows, </>: Up/Down.",
         "(Control+Arrows for diagonal.)",
@@ -747,9 +755,7 @@ HTomb = (function(HTomb) {
       instructions: [
         "%c{white}Cruel laughter wells in your throat.  Your fortress will cast a shadow of menace over all the land.  The undead under your command will become a legion, a multitude, an army.  And then all who have wronged you will pay!",
         " ",
-        "Congratulations, you finished the tutorial.  Continue experimenting with different tasks.  See if you can unlock all the achievements in the demo.",
-        " ",
-        "Press M to view your minions, S to view structures you have built, or U to view an overall summary.  Press F to submit feedback to the game's author.",
+        "Congratulations, you finished the tutorial.  Experiment with different tasks and commands.  See if you can unlock all the achievements in the demo.",
         " ",
         "%c{cyan}Press ? to dismiss these messages."
       ],

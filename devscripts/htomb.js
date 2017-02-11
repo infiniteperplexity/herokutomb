@@ -73,7 +73,7 @@ var HTomb = (function() {
         " ",
         "This symbol is you: %c{magenta}@",
         " ",
-        "%c{yellow}(Press Space Bar to continue .)"
+        "%c{yellow}(Press Space Bar to continue.)"
       ]);
     }, 500);
   };

@@ -1,4 +1,9 @@
+2/9/17
+- Make harvesting yield predictable amounts
+
 y2/1/17
+
+
 - zombies too similar in color to background?  I've never had a problem though...
 What have the pain points been so far?
 -	Elevation

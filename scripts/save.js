@@ -149,7 +149,6 @@ HTomb = (function(HTomb) {
         for (let i=0; i<values.length; i++) {
           if (values[i].ok===false) {
             console.log("response to " + values[i].url + " not ok");
-            console.log("failed: " + reason);
             HTomb.GUI.splash(["Failed to save "+"'"+name+"'."]);
             HTomb.GUI.Contexts.locked=false;
             HTomb.Time.unlockTime();
@@ -276,6 +275,7 @@ HTomb = (function(HTomb) {
   }
 
   function restoreThings(json) {
+    //length of crashed save was >43 million characters.
     console.log("length of things is " +json.length);
     console.log(json.substr(0,500));
     let tids = [];

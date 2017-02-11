@@ -46,7 +46,7 @@ HTomb = (function(HTomb) {
     symbol: ["\u2663","\u2660"],
     fg: "#77BB00",
     randomColor: 10,
-    yields: {WoodPlank: {n: 2, nozero: true}}
+    yields: {WoodPlank: {n: 1, nozero: true}}
   });
 
   HTomb.Things.defineFeature({
