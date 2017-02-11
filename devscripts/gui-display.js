@@ -326,6 +326,8 @@ HTomb = (function(HTomb) {
         }
         if (menuText[i].match("Enter: Enable auto-pause.") && GUI.autopause===true) {
           menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i].replace("Enter: Enable auto-pause.","Enter: Disable auto-pause."));
+        } else if (menuText[i].match("PageUp/Down") && window.navigator.platform.substr(0,3)==="Mac") {
+          menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i].replace("PageUp/Down","Fn+Up/Down"));
         } else {
           menuDisplay.drawText(this.x0+j, this.y0+i, menuText[i]);
         }

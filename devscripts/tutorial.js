@@ -126,7 +126,7 @@ HTomb = (function(HTomb) {
   }
 
   new Tutorial({
-    template: "WelcomeAndMovement",
+    template: "WelcomeAndMovementStepOne",
     name: "welcome and movement",
     controls: [
       "Esc: System view.",
@@ -157,7 +157,52 @@ HTomb = (function(HTomb) {
       if (event.command==="Move") {
         this.tracking.moves+=1;
       }
-      return (this.tracking.moves>=10);
+      return (this.tracking.moves>=3);
+    }
+  });
+
+  new Tutorial({
+    template: "WelcomeAndMovementStepTwo",
+    name: "welcome and movement",
+    controls: [
+      "Esc: System view.",
+      " ",
+      "%c{cyan}Move: NumPad/Arrows.",
+      "Control+Arrows for diagonal.)",
+      " ",
+      "%c{cyan}?: Toggle tutorial."
+    ],
+    instructions: [
+      "%c{white}You walk amongst the tombstones of a hillside graveyard, searching for the site upon which you will build your mighty fortress.",
+      " ",
+      '- Green areas with " are grass.',
+      " ",
+      "- Dim green areas are also grass, one elevation level below you.",
+      " ",
+      "- Gray areas with # are walls, but they may have walkable floors one level above you.",
+      " ",
+      "- Other symbols (\u2663, \u2660, \u2698) may be",
+      "trees or plants.",
+      " ",
+      "- Letters such as 's' or 'b' are wild animals, mostly harmless for now.",
+      " ",
+      "%c{cyan}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
+    ],
+    listens: ["Command"],
+    skip: "RaisingAZombieStepOne",
+    onBegin: function() {
+      if (HTomb.Tutorial.enabled) {
+        HTomb.GUI.autopause = true;
+      }
+    },
+    trigger: function(event) {
+      if (!this.tracking.moves) {
+        this.tracking.moves = 0;
+      }
+      if (event.command==="Move") {
+        this.tracking.moves+=1;
+      }
+      return (this.tracking.moves>=7);
     }
   });
 
@@ -175,18 +220,13 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}You scramble up and down the slopes for a better view of the area.",
       " ",
-      '- Green areas with " are grass.',
+      "- The \u02C4 and \u02C5 symbols are slopes.",
       " ",
-      "- Dim green areas are also grass, one elevation level below you.",
+      "- You can climb up or down a slope by standing on it and pressing < or >.",
       " ",
-      "- Gray areas with # are walls, but they may have walkable floors one level above you.",
+      "- If you try to walk sideways off a cliff or into a wall, you will automatically climb a slope instead if possible.",
       " ",
-      "- Other symbols (\u2663, \u2660, \u2698) may be",
-      "trees or plants.",
-      " ",
-      "- Letters such as 's' or 'b' are wild animals, mostly harmless for now.",
-      " ",
-      "-The \u02C4 and \u02C5 symbols are slopes.  You can climb up or down a slope by standing on it and pressing < or >, or automatically by trying to walk against the slope.  When you climb up or down, colors change with your relative elevation.",
+      "- When you climb up or down, colors change with your relative elevation.",
       " ",
       "%c{cyan}Try climbing up and down a few slopes."
     ],
@@ -299,7 +339,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}Forbidden runes swirl around you as you call forth a corpse from its grave.",
       " ",
-      "You just earned an achievement, as noted on the message bar below the play area.  You can scroll messages up and down using the PageUp and PageDown keys (on a Mac, Fn+Up/Down.)",
+      "You just earned an achievement, as noted on the message bar below the play area.  You can scroll messages up and down using the PageUp and PageDown keys (on a Mac, Fn+Arrows.)",
       " ",
       "%c{cyan}Press 'A' to view the achievements screen."
     ],
