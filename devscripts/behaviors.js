@@ -139,7 +139,7 @@ HTomb = (function(HTomb) {
         item.item.owner = this.entity.minion.master;
       }
       item.remove();
-      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " picks up " + item.describe({article: "indefinite"}),e.x,e.y,e.z);
+      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " picks up " + item.describe({article: "indefinite"})+".",e.x,e.y,e.z);
       this.add(item);
       this.entity.ai.acted = true;
       this.entity.ai.actionPoints-=16;
@@ -164,7 +164,7 @@ HTomb = (function(HTomb) {
       var e = this.entity;
       this.items.remove(item);
       item.place(e.x,e.y,e.z);
-      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " drops " + item.describe({article: "indefinite"}),e.x,e.y,e.z);
+      HTomb.GUI.sensoryEvent(this.entity.describe({capitalized: true, article: "indefinite"}) + " drops " + item.describe({article: "indefinite"})+".",e.x,e.y,e.z);
       this.entity.ai.acted = true;
       this.entity.ai.actionPoints-=16;
     },

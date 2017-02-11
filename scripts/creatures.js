@@ -45,6 +45,10 @@ HTomb = (function(HTomb) {
       HTomb.Events.subscribe(this, "Destroy");
     },
     onDestroy: function(event) {
+      // no dryads in the extremely early game
+      if (HTomb.Time.dailyCycle.turn<500 && HTomb.Player.master.structures.length===0 && HTomb.Player.master.ownsAllIngredients({WoodPlank: 5})===false) {
+        return;
+      }
       let t = event.entity;
       if (t.template==="Tree") {
         let x = t.x;

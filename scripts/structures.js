@@ -1234,7 +1234,8 @@ HTomb = (function(HTomb) {
               context: that,
               bg: that.bg,
               callback: placeBox,
-              hover: myHover
+              hover: myHover,
+              contextName: "Designate"+this.template
             });
           };
         } else {
@@ -1244,27 +1245,31 @@ HTomb = (function(HTomb) {
               context: that,
               bg: that.bg,
               callback: placeBox,
-              hover: myHover
+              hover: myHover,
+              contextName: "Designate"+this.template
             });
           };
         }
       },
-      function(structure) {
-        let g = structure.describe();
-        let ings = structure.totalIngredients();
-        if (HTomb.Utils.notEmpty(ings)) {
-          g+=" ";
-          g+=HTomb.Utils.listIngredients(ings);
-          if (!assigner || !assigner.master) {
+      {
+        format: function(structure) {
+          let g = structure.describe();
+          let ings = structure.totalIngredients();
+          if (HTomb.Utils.notEmpty(ings)) {
+            g+=" ";
+            g+=HTomb.Utils.listIngredients(ings);
+            if (!assigner || !assigner.master) {
+              return g;
+            }
+            if (assigner.master.ownsAllIngredients(ings)!==true) {
+              g = "%c{gray}"+g;
+            }
+            return g;
+          } else {
             return g;
           }
-          if (assigner.master.ownsAllIngredients(ings)!==true) {
-            g = "%c{gray}"+g;
-          }
-          return g;
-        } else {
-          return g;
-        }
+        },
+        contextName: "ChooseStructure"
       });
     },
     canAssign: function(cr) {

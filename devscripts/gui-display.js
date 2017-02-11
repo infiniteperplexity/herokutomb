@@ -380,7 +380,7 @@ HTomb = (function(HTomb) {
   // ***** Basic right-hand menu stuff *****
   menu.defaultTop = [
     "Esc: System view.",
-    "%c{yellow}Avatar mode (Tab: Move viewing window)",
+    "%c{yellow}Avatar mode (Tab: Navigation mode)",
     " ",
     "Move: NumPad/Arrows, </>: Up/Down.",
     "(Control+Arrows for diagonal.)",

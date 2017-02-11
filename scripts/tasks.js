@@ -47,7 +47,8 @@ HTomb = (function(HTomb) {
         assigner: assigner,
         callback: this.designateTile,
         outline: false,
-        bg: this.bg
+        bg: this.beginMessage,
+        contextName: "Designate"+this.template
       });
     },
     designateSquare: function(x,y,z, options) {
@@ -83,6 +84,7 @@ HTomb = (function(HTomb) {
     designateTile: function(x,y,z,assigner) {
       if (this.validTile(x,y,z)) {
         let t = HTomb.Things[this.template]({assigner: assigner}).place(x,y,z);
+        HTomb.Events.publish({type: "Designate", task: t.task});
         return t;
       }
     },
@@ -322,12 +324,14 @@ HTomb = (function(HTomb) {
         assigner: assigner,
         callback: this.designateTile,
         bg: this.bg,
-        hover: myHover
+        hover: myHover,
+        contextName: "Designate"+this.template
       });
     },
     designateTile: function(x,y,z,assigner) {
       if (this.validTile(x,y,z) || HTomb.World.explored[z][x][y]!==true) {
         let t = HTomb.Things[this.template]({assigner: assigner}).place(x,y,z);
+        HTomb.Events.publish({type: "Designate", task: t.task});
         return t;
       }
     },
@@ -430,7 +434,8 @@ HTomb = (function(HTomb) {
         callback: this.designateTile,
         outline: true,
         bg: this.bg,
-        hover: myHover
+        hover: myHover,
+        contextName: "Designate"+this.template
       });
     }
   });
@@ -459,7 +464,8 @@ HTomb = (function(HTomb) {
         context: this,
         assigner: assigner,
         callback: deleteTasks,
-        hover: myHover
+        hover: myHover,
+        contextName: "Designate"+this.template
       });
     }
   });
@@ -483,7 +489,8 @@ HTomb = (function(HTomb) {
         assigner: assigner,
         context: this,
         callback: this.designateTile,
-        hover: myHover
+        hover: myHover,
+        contextName: "Designate"+this.template
       });
     },
     ai: function() {
@@ -515,7 +522,8 @@ HTomb = (function(HTomb) {
         assigner: assigner,
         context: this,
         callback: this.designateTile,
-        hover: myHover
+        hover: myHover,
+        contextName: "Designate"+this.template
       });
     },
     // this task will never be assigned...
@@ -588,7 +596,8 @@ HTomb = (function(HTomb) {
         assigner: assigner,
         callback: this.designateTile,
         bg: this.bg,
-        hover: myHover
+        hover: myHover,
+        contextName: "Designate"+this.template
       });
     },
     work: function(x,y,z) {
@@ -650,7 +659,8 @@ HTomb = (function(HTomb) {
         context: this,
         assigner: assigner,
         callback: declareHostility,
-        hover: myHover
+        hover: myHover,
+        contextName: "Designate"+this.template
       });
     }
   });
@@ -686,7 +696,8 @@ HTomb = (function(HTomb) {
             assigner: assigner,
             context: that,
             callback: createZone,
-            hover: myHover
+            hover: myHover,
+            contextName: "Designate"+this.template
           });
         };
       },

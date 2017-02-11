@@ -42,7 +42,6 @@ HTomb = (function(HTomb) {
 
   Main.inSurveyMode = false;
   Main.reset = function() {
-    HTomb.Events.publish({type: "Special", details: "Reset"});
     if (HTomb.GUI.autopause===false && HTomb.Time.initialPaused!==true) {
       HTomb.Time.startTime();
     }
@@ -52,6 +51,8 @@ HTomb = (function(HTomb) {
     if (Main.inSurveyMode===true) {
       Main.surveyMode();
       return;
+    } else {
+      HTomb.Events.publish({type: "Command", command: "MainMode"});
     }
     GUI.Contexts.active = GUI.Contexts.main;
     menu.middle = menu.defaultMiddle;
@@ -128,6 +129,9 @@ HTomb = (function(HTomb) {
     let hover = options.hover || function(x, y, z, sq) {};
     //var context = Object.create(survey);
     var context = HTomb.Utils.clone(survey);
+    if (options.contextName) {
+      context.contextName = options.contextName;
+    }
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "%c{orange}**Esc: Cancel.**",
@@ -158,12 +162,17 @@ HTomb = (function(HTomb) {
       context.menuText[1] = "%c{yellow}Select second corner with keys or mouse.";
       var context2 = HTomb.Utils.clone(survey);
       Contexts.active = context2;
+      if (options.contextName) {
+        context2.contextName = options.contextName;
+      }
       context2.menuText = context.menuText;
       menu.refresh();
       context2.selectTile = secondSquare(x,y);
       context2.hoverTile = drawSquareBox(x,y);
-      let keyCursor2 = GUI.getKeyCursor();
-      context2.hoverTile(keyCursor2[0],keyCursor2[1]);
+      if (HTomb.GUI.mouseMovedLast===false) {
+        let keyCursor2 = GUI.getKeyCursor();
+        context2.hoverTile(keyCursor2[0],keyCursor2[1]);
+      }
     };
     let keyCursor = GUI.getKeyCursor();
     context.hoverTile(keyCursor[0],keyCursor[1]);
@@ -239,6 +248,9 @@ HTomb = (function(HTomb) {
     var gameScreen = GUI.Panels.gameScreen;
     //var context = Object.create(survey);
     var context = HTomb.Utils.clone(survey);
+    if (options.contextName) {
+      context.contextName = options.contextName;
+    }
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     context.menuText = [
       "%c{orange}**Esc: Cancel**.",
@@ -293,7 +305,9 @@ HTomb = (function(HTomb) {
     };
   };
 
-  GUI.choosingMenu = function(header, items, action, format) {
+  GUI.choosingMenu = function(header, items, action, options) {
+    options = options || {};
+    let format = options.format;
     HTomb.Time.stopTime();
     var alpha = "abcdefghijklmnopqrstuvwxyz";
     var contrls = {};
@@ -302,6 +316,9 @@ HTomb = (function(HTomb) {
       "%c{yellow}"+header
     ];
     let context = HTomb.Utils.clone(survey);
+    if (options.contextName) {
+      context.contextName = options.contextName;
+    }
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
     for (var i=0; i<items.length; i++) {
       var desc;
@@ -332,6 +349,9 @@ HTomb = (function(HTomb) {
     let hover = options.hover || function(x, y, z) {};
     //var context = Object.create(survey);
     var context = HTomb.Utils.clone(survey);
+    if (options.contextName) {
+      context.contextName = options.contextName;
+    }
     GUI.bindKey(context, "VK_ESCAPE", GUI.reset);
 
     context.menuText = [
@@ -560,6 +580,10 @@ HTomb = (function(HTomb) {
     VK_SLASH: function() {
       if (HTomb.Tutorial.enabled) {
         HTomb.Tutorial.enabled = false;
+        HTomb.Events.publish({type: "Command", command: "DisableTutorial"});
+        if (HTomb.Time.dailyCycle.turn===0) {
+          HTomb.GUI.autopause = false;
+        }
       } else {
         HTomb.Tutorial.enabled = true;
       }
@@ -606,18 +630,9 @@ HTomb = (function(HTomb) {
     },
     VK_F: function() {
       HTomb.GUI.Views.feedback();
-    },
-    VK_CLOSE_BRACKET: function() {
-      if (HTomb.Tutorial.enabled) {
-
-      }
-    },
-    VK_OPEN_BRACKET: function() {
-      if (HTomb.Tutorial.enabled) {
-
-      }
     }
   });
+  main.contextName = "Main";
 
   Main.showAchievements = function() {
     HTomb.Events.publish({type: "Command", command: "ShowAchievements"});
@@ -762,6 +777,10 @@ HTomb = (function(HTomb) {
     VK_SLASH: function() {
       if (HTomb.Tutorial.enabled) {
         HTomb.Tutorial.enabled = false;
+        HTomb.Events.publish({type: "Command", command: "DisableTutorial"});
+        if (HTomb.Time.dailyCycle.turn===0) {
+          HTomb.GUI.autopause = false;
+        }
       } else {
         HTomb.Tutorial.enabled = true;
       }
@@ -793,10 +812,11 @@ HTomb = (function(HTomb) {
       HTomb.GUI.Views.feedback();
     }
   });
+  survey.contextName = "Survey";
 
   survey.menuText =
   [ "Esc: System view.",
-    "%c{yellow}*Navigation mode (Tab: Player view)*",
+    "%c{yellow}*Navigation mode (Tab: Avatar mode)*",
     " ",
     "Move: NumPad/Arrows, </>: Up/Down",
     "(Control+Arrows for diagonal.)",

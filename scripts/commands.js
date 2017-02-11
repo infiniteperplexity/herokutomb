@@ -61,10 +61,12 @@ HTomb = (function(HTomb) {
     // if you can move, either move or displace
     } else if (HTomb.Player.movement.canMove(newx,newy,newz)) {
       if (square.creature && square.creature.ai && square.creature.ai.isHostile(HTomb.Player)===false) {
+        HTomb.Events.publish({type: "Command", command: "Move", dir: dir});
         Commands.displaceCreature(newx,newy,newz);
         HTomb.GUI.pushMessage("You displace " + square.creature.describe({article: "indefinite"}) + ".");
         return;
       } else {
+        HTomb.Events.publish({type: "Command", command: "Move", dir: dir});
         Commands.movePlayer(newx,newy,newz);
         return;
       }
@@ -73,6 +75,7 @@ HTomb = (function(HTomb) {
       square.feature.activate();
       return;
     } else if (HTomb.Debug.mobility===true && square.creature===undefined) {
+      HTomb.Events.publish({type: "Command", command: "Move", dir: dir});
       Commands.movePlayer(newx,newy,newz);
       return;
     } else if (newz===z) {
@@ -225,17 +228,23 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You cannot carry any more items.");
     } else {
       if (square.items.length===1) {
-        HTomb.Player.inventory.pickup(square.items.head());
+        let item = square.items.head();
+        HTomb.Events.publish({type: "Command", command: "PickUp", item: item});
+        HTomb.Player.inventory.pickup(item);
         HTomb.Time.resumeActors();
       } else {
         // If there are multiple items, display a menu
         GUI.choosingMenu("Choose an item:",square.items.exposeArray(),
           function(item) {
             return function() {
+              HTomb.Events.publish({type: "Command", command: "PickUp", item: item});
               HTomb.Player.inventory.pickup(item);
               HTomb.Time.resumeActors();
               HTomb.GUI.reset();
             };
+          },
+          {
+            contextName: "ChooseItemToPickup"
           }
         );
       }
@@ -250,16 +259,23 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You have no items.");
     } else {
       if (p.inventory.items.length===1) {
-        p.inventory.drop(p.inventory.items.head());
+        let item = p.inventory.items.head();
+        p.inventory.drop(item);
+        HTomb.Events.publish({type: "Command", command: "Drop", item: item});
+        HTomb.Time.resumeActors();
       } else {
         // If the player has multiple items, display a menu
         GUI.choosingMenu("Choose an item:",p.inventory.items.exposeItems(),
           function(item) {
             return function() {
               HTomb.Player.inventory.drop(item);
+              HTomb.Events.publish({type: "Command", command: "Drop", item: item});
               HTomb.Time.resumeActors();
               HTomb.GUI.reset();
             };
+          },
+          {
+            contextName: "ChooseItemToDrop"
           }
         );
       }
@@ -278,18 +294,23 @@ HTomb = (function(HTomb) {
           return function() {
             HTomb.GUI.reset();
           };
+        },
+        {
+          contextName: "ViewInventory"
         }
       );
     }
   };
   // Show a menu of the spells the player can cast
   Commands.showSpells = function() {
+    HTomb.Events.publish({type: "Command", command: "ShowSpells"});
     GUI.choosingMenu("Choose a spell (mana cost):", HTomb.Player.caster.spells,
       function(sp) {
         return function() {
           if (HTomb.Player.caster.mana>=sp.getCost()) {
             HTomb.GUI.Panels.menu.middle = [];
             HTomb.GUI.Panels.menu.refresh();
+            HTomb.Events.publish({type: "Command", command: "ChooseSpell", spell: sp});
             HTomb.Player.caster.cast(sp);
           } else {
             HTomb.GUI.Panels.menu.middle = ["%c{orange}Not enough mana."];
@@ -298,27 +319,35 @@ HTomb = (function(HTomb) {
           }
         };
       },
-      function(spell) {
-        let descrip = spell.describe()+" ("+spell.getCost()+")";
-        if (spell.getCost()>spell.caster.mana) {
-          descrip = "%c{gray}"+descrip;
-        }
-        return descrip;
+      {
+        format: function(spell) {
+          let descrip = spell.describe()+" ("+spell.getCost()+")";
+          if (spell.getCost()>spell.caster.mana) {
+            descrip = "%c{gray}"+descrip;
+          }
+          return descrip;
+        },
+        contextName: "ShowSpells"
       }
     );
   };
   // Show a menu of the tasks the player can assign
   Commands.showJobs = function() {
+    HTomb.Events.publish({type: "Command", command: "ShowJobs"});
     GUI.choosingMenu("Choose a task:", HTomb.Player.master.listTasks(),
       function(task) {
         return function() {
+          HTomb.Events.publish({type: "Command", command: "ChooseJob", task: task})
           HTomb.Player.master.designate(task);
           //HTomb.Time.resumeActors();
         };
       },
-      function(task) {
-        let name = task.longName;
-        return (name.substr(0,1).toUpperCase() + name.substr(1)+".");
+      {
+        format: function(task) {
+          let name = task.longName;
+          return (name.substr(0,1).toUpperCase() + name.substr(1)+".");
+        },
+        contextName: "ShowJobs"
       }
     );
   };

@@ -228,17 +228,23 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You cannot carry any more items.");
     } else {
       if (square.items.length===1) {
-        HTomb.Player.inventory.pickup(square.items.head());
+        let item = square.items.head();
+        HTomb.Events.publish({type: "Command", command: "PickUp", item: item});
+        HTomb.Player.inventory.pickup(item);
         HTomb.Time.resumeActors();
       } else {
         // If there are multiple items, display a menu
         GUI.choosingMenu("Choose an item:",square.items.exposeArray(),
           function(item) {
             return function() {
+              HTomb.Events.publish({type: "Command", command: "PickUp", item: item});
               HTomb.Player.inventory.pickup(item);
               HTomb.Time.resumeActors();
               HTomb.GUI.reset();
             };
+          },
+          {
+            contextName: "ChooseItemToPickup"
           }
         );
       }
@@ -253,16 +259,23 @@ HTomb = (function(HTomb) {
       HTomb.GUI.pushMessage("You have no items.");
     } else {
       if (p.inventory.items.length===1) {
-        p.inventory.drop(p.inventory.items.head());
+        let item = p.inventory.items.head();
+        p.inventory.drop(item);
+        HTomb.Events.publish({type: "Command", command: "Drop", item: item});
+        HTomb.Time.resumeActors();
       } else {
         // If the player has multiple items, display a menu
         GUI.choosingMenu("Choose an item:",p.inventory.items.exposeItems(),
           function(item) {
             return function() {
               HTomb.Player.inventory.drop(item);
+              HTomb.Events.publish({type: "Command", command: "Drop", item: item});
               HTomb.Time.resumeActors();
               HTomb.GUI.reset();
             };
+          },
+          {
+            contextName: "ChooseItemToDrop"
           }
         );
       }
@@ -281,6 +294,9 @@ HTomb = (function(HTomb) {
           return function() {
             HTomb.GUI.reset();
           };
+        },
+        {
+          contextName: "ViewInventory"
         }
       );
     }
@@ -303,12 +319,15 @@ HTomb = (function(HTomb) {
           }
         };
       },
-      function(spell) {
-        let descrip = spell.describe()+" ("+spell.getCost()+")";
-        if (spell.getCost()>spell.caster.mana) {
-          descrip = "%c{gray}"+descrip;
-        }
-        return descrip;
+      {
+        format: function(spell) {
+          let descrip = spell.describe()+" ("+spell.getCost()+")";
+          if (spell.getCost()>spell.caster.mana) {
+            descrip = "%c{gray}"+descrip;
+          }
+          return descrip;
+        },
+        contextName: "ShowSpells"
       }
     );
   };
@@ -323,9 +342,12 @@ HTomb = (function(HTomb) {
           //HTomb.Time.resumeActors();
         };
       },
-      function(task) {
-        let name = task.longName;
-        return (name.substr(0,1).toUpperCase() + name.substr(1)+".");
+      {
+        format: function(task) {
+          let name = task.longName;
+          return (name.substr(0,1).toUpperCase() + name.substr(1)+".");
+        },
+        contextName: "ShowJobs"
       }
     );
   };

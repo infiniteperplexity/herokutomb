@@ -184,7 +184,8 @@ HTomb = (function(HTomb) {
         }
       }
       HTomb.GUI.selectSquare(c.z,raiseZombie,{
-        hover: myHover
+        hover: myHover,
+        contextName: "CastRaiseZombie"
       });
     },
     validTile: function(x,y,z) {

@@ -63,17 +63,17 @@ var HTomb = (function() {
         " ",
         "You are a necromancer: A despised sorceror who reanimates the dead to do your bidding.  Cast out from society, you flee to the hills to plot your revenge and pursue the forbidden secrets of immortality.",
         " ",
-        "Cast spells, raise zombies from their graves, and command them to harvest resources and build you a fortress.  Control the necromancer directly in avatar mode, or switch to navigation mode to survey your domain. But beware: The forces of good will not long stand for your vile ways...",
+        "Cast spells, raise zombies from their graves, and command them to harvest resources and build you a fortress.  But beware: The forces of good will not long stand for your vile ways...",
         " ",
         "...except that this is the playtest demo, so the forces of good won't actually show up.",
         " ",
         "Good luck!",
         " ",
-        "Note: This is a so-called 'rogue-like' game inspired by Dwarf Fortress.  It uses Unicode characters instead of graphical art.  Hover with the mouse to find out what a particular symbol means.",
+        "Note: This is a so-called 'rogue-like' game inspired by Dwarf Fortress.  It uses Unicode characters instead of graphical art.",
         " ",
         "This symbol is you: %c{magenta}@",
         " ",
-        "%c{yellow}(Click or press any key to continue.)"
+        "%c{yellow}(Press Space Bar to continue .)"
       ]);
     }, 500);
   };
