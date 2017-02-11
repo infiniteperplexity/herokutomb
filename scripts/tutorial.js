@@ -178,7 +178,7 @@ HTomb = (function(HTomb) {
         "- Black areas have not been explored yet.",
         "- Other symbols (\u2663, \u2660, \u2698) may be",
         "trees or plants.",
-        -"The \u02C4 and \u02C5 symbols are slopes.  You can climb up or down a slope by standing on it and pressing < or >, or automatically by trying to walk against the slope.",
+        "-The \u02C4 and \u02C5 symbols are slopes.  You can climb up or down a slope by standing on it and pressing < or >, or automatically by trying to walk against the slope.",
         " ",
         "When you climb up or down, colors change with your relative elevation.",
         " ",
@@ -708,7 +708,7 @@ HTomb = (function(HTomb) {
         }
       },
       instructions: [
-        "%c{white}You pick up a wooden plank.  From these crude materials, your servants will fashion buildings, tools...and weapons.",
+        "%c{white}You pick up a wooden plank.  From crude materials such as these, your servants will fashion buildings, tools...and weapons.",
         " ",
         "For the most part, you won't carry around many items in this game.  The wood you harvested, for example, is more useful lying on the ground where your zombies can get to it.",
         "Once you build some workshops, the zombies can use the wood planks to create items or furnishings.",
@@ -745,7 +745,7 @@ HTomb = (function(HTomb) {
         "%c{cyan}F: Submit Feedback."
       ],
       instructions: [
-        "%c{white}Cruel laughter wells in your throat.  Your fortress will cast a menacing shadow over these hills.  The undead under your command will become a throng, a multitude, an army.  And then all who have wronged you will pay!",
+        "%c{white}Cruel laughter wells in your throat.  Your fortress will cast a shadow of menace over all the land.  The undead under your command will become a legion, a multitude, an army.  And then all who have wronged you will pay!",
         " ",
         "Congratulations, you finished the tutorial.  Continue experimenting with different tasks.  See if you can unlock all the achievements in the demo.  Press M to view your minions, S to view structures you have built, or U to view an overall summary.  Press F to submit feedback to the game's author.",
         " ",
