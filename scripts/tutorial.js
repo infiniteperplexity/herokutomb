@@ -294,7 +294,7 @@ HTomb = (function(HTomb) {
       instructions: [
         "%c{white}Forbidden runes swirl around you as you call forth a corpse from its grave.",
         " ",
-        "You just earned an achievement, as noted on the message bar below the play area.  You can scroll messages up and down using the PageUp and PageDown keys.",
+        "You just earned an achievement, as noted on the message bar below the play area.  You can scroll messages up and down using the PageUp and PageDown keys (on a Mac, Fn+Up/Down.)",
         " ",
         "%c{cyan}Press 'A' to view the achievements screen."
       ],
@@ -511,7 +511,7 @@ HTomb = (function(HTomb) {
       instructions: [
         "%c{white}This decaying wretch is but the beginning - soon, you will command an undead horde.",
         " ",
-        "Every zombie under your control raises the mana cost of the Raise Zombie spell.  The first zombie costs 10, the second costs 15, and the third costs 20 (the most you can get with your starting mana.)  Your current mana is listed above the left-hand side of the message bar.",
+        "Every zombie under your control raises the mana cost of the Raise Zombie spell.  Your current mana is listed above the left-hand side of the message bar.",
         " ",
         "%c{cyan}Wait until you have 15 mana, then raise a second zombie and wait for it to emerge."
       ],
@@ -580,7 +580,7 @@ HTomb = (function(HTomb) {
         " ",
         "Move the screen around using the keypad or arrows.  Hold Shift to move multiple spaces at a time.  Also try pressing < or > to move the view up or down a level.",
         " ",
-        "%c{cyan}Press Tab to return to 'Avatar Mode', putting you in direct control of the necromancer."
+        "%c{cyan}Press Tab to return to 'Avatar Mode' and recenter the screen, putting you in direct control of the necromancer."
       ],
       listens: ["Command"],
       skip: "WaitingForHarvest",

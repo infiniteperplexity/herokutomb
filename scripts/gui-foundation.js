@@ -117,6 +117,11 @@ HTomb = (function(HTomb) {
     } else {
       key.preventDefault();
     }
+    if (key.keyCode===187) {
+      key.keyCode = 61;
+    } else if (key.keyCode===189) {
+      key.keyCode = 173;
+    }
     // VK_RETURN is often used to toggle time, and stopping time first breaks that
     if (GUI.Contexts.active!==GUI.Contexts.main && GUI.autopause && key.keyCode!==ROT.VK_RETURN) {
       //experiment with no auto-pause
