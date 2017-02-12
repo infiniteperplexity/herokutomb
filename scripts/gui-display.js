@@ -386,7 +386,7 @@ HTomb = (function(HTomb) {
     " ",
     "Move: NumPad/Arrows, </>: Up/Down.",
     "(Control+Arrows for diagonal.)",
-    "Wait: NumPad 5 / Control+Space.",
+    "Wait: NumPad 5 / Space.",
     " ",
     "Enter: Enable auto-pause.",
     "+/-: Change speed.",
