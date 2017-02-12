@@ -302,6 +302,10 @@ HTomb = (function(HTomb) {
       return bg;
     },
     darken: function() {
+      if (this.bg===undefined) {
+        console.log(this);
+        alert("problems in code!");
+      }
       var bg = ROT.Color.fromString(this.bg);
       bg = ROT.Color.multiply(bg,[72,128,192]);
       bg = ROT.Color.toHex(bg);
