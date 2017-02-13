@@ -6,10 +6,14 @@ HTomb = (function(HTomb) {
     active: 0,
     tutorials: [],
     templates: {},
+    finish: function() {
+      this.active = this.tutorials.length-1;
+    },
     reset: function() {
       this.active = 0;
       for (let i=0; i<this.tutorials.length; i++) {
         this.tutorials[i].complete = false;
+        this.tutorials[i].tracking = {};
       }
     },
     onEvent: function(event) {

@@ -26,6 +26,7 @@ HTomb = (function(HTomb) {
     HTomb.Events.reset();
     HTomb.Achievements.reset();
     HTomb.Path.reset();
+    HTomb.Tutorial.reset();
     HTomb.Types.templates.Team.hostilityMatrix.reset();
     HTomb.World.validate.reset();
     while(HTomb.World.things.length>0) {

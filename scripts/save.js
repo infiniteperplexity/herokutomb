@@ -544,6 +544,7 @@ HTomb = (function(HTomb) {
         finalSwap();
         HTomb.Save.currentGame = name;
         HTomb.Path.reset();
+        HTomb.Tutorial.finish();
         HTomb.Types.templates.Team.hostilityMatrix.reset();
         HTomb.World.validate.reset();
         HTomb.World.validate.all();

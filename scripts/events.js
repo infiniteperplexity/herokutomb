@@ -50,16 +50,20 @@ HTomb = (function(HTomb) {
     let saveListeners = [];
     for (let i=0; i<HTomb.Events.types.length; i++) {
       let type = HTomb.Events.types[i];
-      for (let j=0; j<HTomb.Events[type].length; j++) {
-        let l = HTomb.Events[type][j];
-        // everything except for instances Things
-        if (l.template===undefined || l.hasOwnProperty("template")) {
-          saveListeners.push([l,type]);
+      if (HTomb.Events[type]) {
+        for (let j=0; j<HTomb.Events[type].length; j++) {
+          let l = HTomb.Events[type][j];
+          // everything except for instances Things
+          if (l.template===undefined || l.hasOwnProperty("template")) {
+            saveListeners.push([l,type]);
+          }
         }
       }
     }
     for (let i=0; i<this.types.length; i++) {
-      delete this[this.types[i]];
+      if (this[this.types[i]]) {
+        delete this[this.types[i]];
+      }
     }
     for (let i=0; i<saveListeners.length; i++) {
       HTomb.Events.subscribe(saveListeners[i][0],saveListeners[i][1]);
