@@ -697,7 +697,7 @@ HTomb = (function(HTomb) {
             context: that,
             callback: createZone,
             hover: myHover,
-            contextName: "Designate"+this.template
+            contextName: "Designate"+that.template
           });
         };
       },
