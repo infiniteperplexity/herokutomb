@@ -1235,7 +1235,7 @@ HTomb = (function(HTomb) {
               bg: that.bg,
               callback: placeBox,
               hover: myHover,
-              contextName: "Designate"+this.template
+              contextName: "Designate"+that.template
             });
           };
         } else {
@@ -1246,7 +1246,7 @@ HTomb = (function(HTomb) {
               bg: that.bg,
               callback: placeBox,
               hover: myHover,
-              contextName: "Designate"+this.template
+              contextName: "Designate"+that.template
             });
           };
         }
