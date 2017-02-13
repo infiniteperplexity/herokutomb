@@ -524,6 +524,12 @@ HTomb = (function(HTomb) {
     skip: "RaiseASecondZombie",
     listens: ["Complete"],
     trigger: function(event) {
+      // special handling for the one tutorial you're allowed to do out of order
+      if (event.task && event.task.template==="ZombieEmergeTask" && HTomb.Player.master.minions.length>=2) {
+          console.log("Skipping ahead in tutorial.");
+          HTomb.Tutorial.goto("NavigationModeStepOne");
+          return false;
+      }
       return (event.task && event.task.template==="DigTask");
     }
   });
@@ -664,7 +670,7 @@ HTomb = (function(HTomb) {
       "%c{cyan}Press J to assign a job, and then press D to harvest."
     ],
     listens: ["Command"],
-    skip: "HarvestResourcesStepThree",
+    skip: "WaitingForHarvest",
     trigger: function(event) {
       return (event.command==="ShowJobs");
     }
@@ -680,7 +686,7 @@ HTomb = (function(HTomb) {
     },
     instructions: HTomb.Tutorial.templates.HarvestResourcesStepOne.instructions,
     listens: ["Command"],
-    skip: "HarvestResourcesStepThree",
+    skip: "WaitingForHarvest",
     rewind: "HarvestResourcesStepOne",
     trigger: function(event) {
       return (event.command==="ChooseJob" && event.task && event.task.template==="DismantleTask");
@@ -694,6 +700,7 @@ HTomb = (function(HTomb) {
     controls: null,
     instructions: HTomb.Tutorial.templates.HarvestResourcesStepOne.instructions,
     listens: ["Designate"],
+    skip: "WaitingForHarvest",
     rewind: "HarvestResourcesStepOne",
     trigger: function(event) {
       return (event.task && event.task.template==="DismantleTask");
