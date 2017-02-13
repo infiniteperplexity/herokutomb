@@ -584,7 +584,7 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Tutorial."
+      "A: Achievements, ?: Toggle tutorial."
     ],
     instructions: [
       "%c{white}These mindless servants shall be your hands, eyes, and ears.",
