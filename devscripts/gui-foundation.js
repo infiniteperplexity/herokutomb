@@ -233,14 +233,14 @@ HTomb = (function(HTomb) {
   GUI.mouseMovedLast = false;
   var mousemove = function(move) {
     GUI.mouseMovedLast = true;
+    // Convert X and Y from pixels to characters
     lastMouseX = Math.floor((move.clientX+XSKEW)/CHARWIDTH-1);
     lastMouseY = Math.floor((move.clientY+YSKEW)/CHARHEIGHT-1);
     if (GUI.Contexts.locked===true) {
       return;
     }
-    // Convert X and Y from pixels to characters
-    var x = Math.floor((move.clientX+XSKEW)/CHARWIDTH-1);
-    var y = Math.floor((move.clientY+YSKEW)/CHARHEIGHT-1);
+    var x = lastMouseX;
+    var y = lastMouseY;
       // If the hover is on the game screen, pass the X and Y tile coordinates
     var gameScreen = GUI.Panels.gameScreen;
     GUI.Contexts.mouseX = x;

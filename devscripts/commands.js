@@ -107,7 +107,13 @@ HTomb = (function(HTomb) {
     HTomb.Time.resumeActors();
     if (HTomb.GUI.mouseMovedLast || HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
       let gameScreen = HTomb.GUI.Panels.gameScreen;
-      GUI.Contexts.active.mouseTile(GUI.Contexts.mouseX+gameScreen.xoffset, GUI.Contexts.mouseY+gameScreen.yoffset);
+      let x = HTomb.GUI.Contexts.mouseX;
+      let y = HTomb.GUI.Contexts.mouseY;
+      if (x+gameScreen.xoffset>=LEVELW || x+gameScreen.xoffset<0 || y+gameScreen.yoffset>=LEVELH || y+gameScreen.yoffset<0) {
+        HTomb.GUI.Contexts.active.mouseOver();
+      } else {
+        HTomb.GUI.Contexts.active.mouseTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
+      }
     } else {
       let keyCursor = GUI.getKeyCursor();
       GUI.Contexts.active.hoverTile(keyCursor[0], keyCursor[1]);

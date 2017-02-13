@@ -80,7 +80,13 @@ HTomb = (function(HTomb) {
     HTomb.Time.resumeActors(null, true);
     if (HTomb.GUI.mouseMovedLast || HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
       let gameScreen = HTomb.GUI.Panels.gameScreen;
-      HTomb.GUI.Contexts.active.mouseTile(HTomb.GUI.Contexts.mouseX+gameScreen.xoffset, HTomb.GUI.Contexts.mouseY+gameScreen.yoffset);
+      let x = HTomb.GUI.Contexts.mouseX;
+      let y = HTomb.GUI.Contexts.mouseY;
+      if (x+gameScreen.xoffset>=HTomb.Constants.LEVELW || x+gameScreen.xoffset<0 || y+gameScreen.yoffset>=HTomb.Constants.LEVELH || y+gameScreen.yoffset<0) {
+        HTomb.GUI.Contexts.active.mouseOver();
+      } else {
+        HTomb.GUI.Contexts.active.mouseTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
+      }
     } else {
       let keyCursor = HTomb.GUI.getKeyCursor();
       HTomb.GUI.Contexts.active.hoverTile(keyCursor[0], keyCursor[1]);
