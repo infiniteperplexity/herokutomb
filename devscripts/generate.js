@@ -96,16 +96,16 @@ timeIt("elevation", function() {
     //graveyards2();
 }); timeIt("slopes", function() {
     addSlopes();
+}); timeIt("caverns", function() {
+    cavernLevels(3);
+}); timeIt("labyrinths", function() {
+    labyrinths();
 }); timeIt("minerals", function() {
     placeMinerals({template: "IronVein", p: 0.0025});
     placeMinerals({template: "BloodstoneCluster", p: 0.001});
     placeMinerals({template: "GoldVein", p: 0.0025});
     placeMinerals({template: "MoonstoneCluster", p: 0.001});
     placeMinerals({template: "JadeCluster", p: 0.0025});
-}); timeIt("caverns", function() {
-    cavernLevels(3);
-}); timeIt("labyrinths", function() {
-    labyrinths();
 }); timeIt("grass", function() {
     grassify();
 }); timeIt("plants", function() {

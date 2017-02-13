@@ -144,14 +144,14 @@ HTomb = (function(HTomb) {
       return HTomb.World.features[crd].highlightColor;
     }
     // *********** Choose the background color *******************************
-    if (covers[z][x][y]!==HTomb.Covers.NoCover && covers[z][x][y].bg!==undefined && covers[z][x][y].liquid && tile.solid!==true) {
+    if (covers[z][x][y].liquid && tile.solid!==true) {
       if (vis) {
         bg = bg || covers[z][x][y].shimmer();
       } else {
         bg = bg || covers[z][x][y].darken();
       }
     // !!!Experimental - show darkened covers on level below
-    } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && covers[z-1][x][y].bg!==undefined && tiles[z-1][x][y].solid!==true) {
+  } else if (zview===-1 && covers[z-1][x][y]!==HTomb.Covers.NoCover && !covers[z-1][x][y].solid && tiles[z-1][x][y].solid!==true) {
       if (vis && covers[z-1][x][y].liquid) {
         bg = bg || covers[z-1][x][y].shimmer();
       } else {
@@ -164,7 +164,7 @@ HTomb = (function(HTomb) {
     } else if (items[crd] && items[crd].tail().bg) {
       bg = bg || items[crd].tail().bg;
     } else if (zview===-1 && tiles[z-1][x][y].zview===-1 && tiles[z-2][x][y].solid!==true
-        && covers[z-2][x][y]!==HTomb.Covers.NoCover && covers[z-2][x][y].bg!==undefined && covers[z-2][x][y].liquid) {
+      && covers[z-2][x][y]!==HTomb.Covers.NoCover && covers[z-2][x][y].liquid) {
       bg = bg || covers[z-2][x][y].darken();
     } else if (covers[z][x][y]!==HTomb.Covers.NoCover) {
       bg = bg || covers[z][x][y].bg;

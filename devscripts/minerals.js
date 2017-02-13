@@ -25,9 +25,11 @@ HTomb = (function(HTomb) {
         base: args.template,
         mine: mineral.mine,
         fg: args.fg,
+        bg: HTomb.Constants.WALLBG,
         symbol: symbol,
         metallic: args.metallic,
-        mineral: true
+        mineral: true,
+        solid: true
       });
       HTomb.Things.defineItem({
         template: this.item,

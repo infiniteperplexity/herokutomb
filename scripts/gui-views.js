@@ -511,7 +511,7 @@ HTomb = (function(HTomb) {
   });
   GUI.Contexts.creatures.mouseTile = function() {};
   GUI.Contexts.creatures.clickAt = function() {
-    HTomb.Time.toggletime();
+    HTomb.Time.toggleTime();
   };
   GUI.Contexts.creatures.rightClickTile = function(x, y) {
     this.clickTile(x,y);

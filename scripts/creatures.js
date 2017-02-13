@@ -166,7 +166,7 @@ HTomb = (function(HTomb) {
     },
     onTurnBegin: function(args) {
       // ghouls only show up at night
-      if (HTomb.Time.dailyCycle.hour>=HTomb.Time.dailyCycle.dawn || HTomb.Time.dailyCycle.hour<=HTomb.Time.dailyCycle.dusk) {
+      if (HTomb.Time.dailyCycle.hour>=HTomb.Constants.DAWN || HTomb.Time.dailyCycle.hour<=HTomb.Constants.DUSK) {
         return;
       }
       if (HTomb.Utils.dice(1,120)===1 && HTomb.Types.templates.Team.teams.GhoulTeam.members.length<10) {
