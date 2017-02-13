@@ -38,7 +38,7 @@ HTomb = (function(HTomb) {
         base: args.template,
         fg: args.fg,
         symbol: symbol,
-        tags: "Mineral",
+        tags: ["Minerals"],
         metallic: args.metallic
       });
       //defineMaterial

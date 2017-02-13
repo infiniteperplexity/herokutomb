@@ -701,41 +701,44 @@ HTomb = (function(HTomb) {
           });
         };
       },
-      function(feature) {
-        let g = feature.describe();
-        let ings = [];
-        for (let ing in feature.ingredients) {
-          ings.push([ing, feature.ingredients[ing]]);
-        }
-        let hasAll = true;
-        if (ings.length>0) {
-          g+=" ($: ";
-          for (let i=0; i<ings.length; i++) {
-            g+=ings[i][1];
-            g+=" ";
-            g+=HTomb.Things.templates[ings[i][0]].name;
-            if (i<ings.length-1) {
-              g+=", ";
-            } else {
-              g+=")";
-            }
-            if (assigner.master) {
-              let has = false;
-              for (let j=0; j<assigner.master.ownedItems.length; j++) {
-                if (assigner.master.ownedItems[j].template===ings[i][0]) {
-                  has = true;
-                }
+      {
+        format: function(feature) {
+          let g = feature.describe();
+          let ings = [];
+          for (let ing in feature.ingredients) {
+            ings.push([ing, feature.ingredients[ing]]);
+          }
+          let hasAll = true;
+          if (ings.length>0) {
+            g+=" ($: ";
+            for (let i=0; i<ings.length; i++) {
+              g+=ings[i][1];
+              g+=" ";
+              g+=HTomb.Things.templates[ings[i][0]].name;
+              if (i<ings.length-1) {
+                g+=", ";
+              } else {
+                g+=")";
               }
-              if (has===false) {
-                hasAll = false;
+              if (assigner.master) {
+                let has = false;
+                for (let j=0; j<assigner.master.ownedItems.length; j++) {
+                  if (assigner.master.ownedItems[j].template===ings[i][0]) {
+                    has = true;
+                  }
+                }
+                if (has===false) {
+                  hasAll = false;
+                }
               }
             }
           }
-        }
-        if (hasAll!==true) {
-          g = "%c{gray}"+g;
-        }
-        return g;
+          if (hasAll!==true) {
+            g = "%c{gray}"+g;
+          }
+          return g;
+        },
+        contextName: "ChooseFixture"
       });
       HTomb.GUI.Panels.menu.middle = ["%c{orange}Choose a fixture before placing it."];
     }

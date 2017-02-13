@@ -260,11 +260,13 @@ timeIt("elevation", function() {
     cells.apply(function(x,y,val) {
       if (val) {
         var z = HTomb.Tiles.groundLevel(x,y);
-        if (HTomb.Tiles.countNeighborsWhere(x,y,z,fallables)===0
-            && HTomb.World.covers[z][x][y]===HTomb.Covers.NoCover
-            && HTomb.World.covers[z-1][x][y]===HTomb.Covers.NoCover) {
-          var grave = HTomb.Things["Tombstone"]();
-          placement.stack(grave,x,y,z);
+        if (z>lowest+4) {
+          if (HTomb.Tiles.countNeighborsWhere(x,y,z,fallables)===0
+              && HTomb.World.covers[z][x][y]===HTomb.Covers.NoCover
+              && HTomb.World.covers[z-1][x][y]===HTomb.Covers.NoCover) {
+            var grave = HTomb.Things["Tombstone"]();
+            placement.stack(grave,x,y,z);
+          }
         }
       }
     });
