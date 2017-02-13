@@ -165,6 +165,10 @@ HTomb = (function(HTomb) {
       HTomb.Events.subscribe(this, "TurnBegin");
     },
     onTurnBegin: function(args) {
+      // ghouls only show up at night
+      if (HTomb.Time.dailyCycle.hour>=HTomb.Time.dailyCycle.dawn || HTomb.Time.dailyCycle.hour<=HTomb.Time.dailyCycle.dusk) {
+        return;
+      }
       if (HTomb.Utils.dice(1,120)===1 && HTomb.Types.templates.Team.teams.GhoulTeam.members.length<10) {
         let graves = HTomb.Utils.where(HTomb.World.features,function(e) {
           if (e.template==="Tombstone") {
