@@ -698,7 +698,11 @@ HTomb = (function(HTomb) {
     name: "harvest resources",
     contexts: ["DesignateDismantleTask"],
     controls: null,
-    instructions: HTomb.Tutorial.templates.HarvestResourcesStepOne.instructions,
+    instructions: [
+      "The green \u2663 and \u2660 symbols on the map are trees.",
+      " ",
+      "%c{cyan}Select a rectangular area that includes some trees, then wait for your zombies to harvest some wood."
+    ],
     listens: ["Designate"],
     skip: "WaitingForHarvest",
     rewind: "HarvestResourcesStepOne",
@@ -710,14 +714,10 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "WaitingForHarvest",
     name: "harvest resources",
-    contexts: ["DesignateDismantleTask"],
     controls: null,
     instructions: [
-      "The green \u2663 and \u2660 symbols on the map are trees.",
-      " ",
-      "%c{cyan}Select a rectangular area that includes some trees, then wait for your zombies to harvest some wood."
+      "%c{cyan}Wait for your zombies to harvest some wood."
     ],
-    backupInstructions: ["%c{cyan}Wait for your zombies to harvest some wood."],
     listens: ["Complete"],
     trigger: function(event) {
       //even if you skip ahead, it'll trigger when the task completes
