@@ -20,6 +20,8 @@ Name of saved game (optional):
 <br>
 <input type="text" name="savegame" id="savegame" value=" ">
 <br>
+<input type="checkbox" name="navigator" id="navigator" checked="true"> Send browser and OS info (no private information will be collected.)
+<br>
 Feedback / bug report:
 <br>
 <textarea name="text" id="text" rows="20" cols="100">
@@ -41,6 +43,33 @@ function reset() {
 
 reset();
 
+function serializeNavigator() {
+  let n = window.navigator;
+  let obj = {};
+  let props = [
+    "oscpu",
+    "vendor",
+    "vendorSub",
+    "productSub",
+    "buildID",
+    "appCodeName",
+    "appName",
+    "appVersion",
+    "platform",
+    "userAgent",
+    "product",
+    "language",
+    "languages"
+  ];
+  for (let i=0; i<props.length; i++) {
+    if (n[props[i]]!==undefined) {
+      obj[props[i]] = n[props[i]];
+    } else {
+      alert(props[i]);
+    }
+  }
+  return JSON.stringify(obj);
+}
 function submit() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -68,6 +97,11 @@ function submit() {
   json.savegame = document.getElementById("savegame").value;
   if (json.savegame===defaultSave) {
     json.savegame = "null";
+  }
+  if (document.getElementById("navigator").checked) {
+    json.navigator = serializeNavigator();
+  } else {
+    json.navigator = "null";
   }
   json.text = document.getElementById("text").value;
   if (json.text===defaultText) {
