@@ -431,7 +431,8 @@ HTomb = (function(HTomb) {
         this.tracking.turns = 0;
       }
       this.tracking.turns+=1;
-      return (this.tracking.turns>=20 || (this.tracking.turns>=10 && HTomb.GUI.autopause===true));
+      let split = HTomb.Time.getSpeed().split("/");
+      return ((this.tracking.turns>=10  && ((split[1]/split[0])>=1 || HTomb.GUI.autopause===true)) || this.tracking.turns>=20);
     }
   });
 
@@ -521,7 +522,7 @@ HTomb = (function(HTomb) {
       " ",
       "There is a chance that you will unlock one or more additional achievements, depending on where your zombie digs and what it finds."
     ],
-    skip: "RaiseASecondZombie",
+    skip: "WaitForSecondZombie",
     listens: ["Complete"],
     trigger: function(event) {
       // special handling for the one tutorial you're allowed to do out of order
@@ -569,6 +570,38 @@ HTomb = (function(HTomb) {
       "Every zombie under your control raises the mana cost of the Raise Zombie spell.  Your current mana is listed above the left-hand side of the message bar.",
       " ",
       "%c{cyan}Wait until you have 15 mana, then raise a second zombie and wait for it to emerge."
+    ],
+    listens: ["Cast"],
+    skip: "WaitForSecondZombie",
+    trigger: function(event) {
+      return (event.spell.template==="RaiseZombie");
+    }
+  });
+
+  new Tutorial({
+    template: "WaitForSecondZombie",
+    name: "raise a second zombie",
+    controls: [
+      "Esc: System view.",
+      " ",
+      "Move: NumPad/Arrows, </>: Up/Down.",
+      "(Control+Arrows for diagonal.)",
+      "Wait: NumPad 5 / Space.",
+      " ",
+      "Enter: Enable auto-pause.",
+      "+/-: Change speed.",
+      " ",
+      "%c{cyan}Z: Cast spell, %c{}J: Assign job.",
+      " ",
+      "PageUp/Down: Scroll messages.",
+      "A: Achievements, ?: Toggle tutorial."
+    ],
+    instructions: [
+      "%c{white}This decaying wretch is but the beginning - soon, you will command an undead horde.",
+      " ",
+      "Every zombie under your control raises the mana cost of the Raise Zombie spell.  Your current mana is listed above the left-hand side of the message bar.",
+      " ",
+      "%c{cyan}Wait for your second zombie to emerge."
     ],
     listens: ["Complete"],
     skip: "WaitingForHarvest",
@@ -720,8 +753,16 @@ HTomb = (function(HTomb) {
     ],
     listens: ["Complete"],
     trigger: function(event) {
-      //even if you skip ahead, it'll trigger when the task completes
-      return (event.task && event.task.template==="DismantleTask");
+      // This logic attempts to catch whether someone harvested the wrong thing
+      if (event.task && event.task.template==="DismantleTask") {
+        if (HTomb.Player.master.ownsAllIngredients({WoodPlank: 1})) {
+          console.log(HTomb.Player.master.taskList.length);
+          return true;
+        } else if (HTomb.Player.master.taskList.length<=1) {
+          HTomb.Tutorial.goto("HarvestResourcesStepOne");
+          return false;
+        }
+      }
     }
   });
 
