@@ -88,13 +88,13 @@ HTomb = (function(HTomb) {
         return obj;
       } else {
         if (context.contextName==="Survey") {
-          obj.instructions = ["%c{orange}You have deviated from the tutorial.  Press Tab to get back on track or ? to exit the tutorial."];
+          obj.instructions = ["%c{orange}You have strayed from the tutorial.  Press Tab to get back on track or ? to hide tutorial messages."];
         } else if (active.backupInstructions) {
           obj.instructions = active.backupInstructions;
         } else if (context.contextName!=="Main") {
-          obj.instructions = ["%c{orange}You have deviated from the tutorial.  Press Escape to get back on track or ? to exit the tutorial."];
+          obj.instructions = ["%c{orange}You have strayed from the tutorial.  Press Escape to get back on track or ? to hide tutorial messages."];
         } else {
-          obj.instructions = ["Think about what should go here..."];
+          obj.instructions = ["If you see this, something has gone wrong..."];
         }
         return obj;
       }
@@ -422,7 +422,7 @@ HTomb = (function(HTomb) {
       " ",
       "Press + or - to make time pass faster or slower.",
       " ",
-      "%c{cyan}Wait for some time to pass.  Watch your zombie wander aimlessly."
+      "%c{cyan}Wait for some time to pass.  Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
     ],
     listens: ["TurnBegin"],
     skip: "AssignAJob",
