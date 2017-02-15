@@ -262,5 +262,5 @@ function addColumn() {
       console.log(err);
       return;
     }
-  }
+  });
 }
