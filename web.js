@@ -212,6 +212,7 @@ app.post('/feedback', function(req, res) {
 app.listen(port, function () {
   console.log('Example app listening on port' + port + '.');
   ram("application start");
+  startupTask();
 });
 setInterval(function() {
   connection.ping();
@@ -248,4 +249,18 @@ function sweepdb() {
       });
     }
   });
+}
+
+function startupTask() {
+  addColumn();
+}
+
+function addColumn() {
+  connection.query("ALTER TABLE feedback ADD COLUMN navigator TEXT AFTER savegame", function (err, row) {
+    if (err) {
+      console.log("failed to add column");
+      console.log(err);
+      return;
+    }
+  }
 }
