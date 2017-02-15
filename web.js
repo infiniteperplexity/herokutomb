@@ -252,7 +252,7 @@ function sweepdb() {
 }
 
 function startupTask() {
-  addColumn();
+  //addColumn();
 }
 
 function addColumn() {
