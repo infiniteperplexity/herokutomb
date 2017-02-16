@@ -681,22 +681,45 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "HarvestResourcesStepOne",
     name: "harvest resources",
-    controls: [
-      "Esc: System view.",
-      "%c{yellow}Avatar mode (Tab: Navigation mode)",
-      " ",
-      "Move: NumPad/Arrows, </>: Up/Down",
-      "(Control+Arrows for diagonal.)",
-      "Wait: NumPad 5 / Space.",
-      " ",
-      "Enter: Enable auto-pause.",
-      "+/-: Change speed.",
-      " ",
-      "Z: Cast spell, %c{cyan}J: Assign job.",
-      " ",
-      "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial.",
-    ],
+    contexts: ["Main","Survey"],
+    controls: function(txt) {
+      let context = HTomb.GUI.Contexts.active.contextName;
+      if (context==="Main") {
+        return [
+          "Esc: System view.",
+          "%c{yellow}Avatar mode (Tab: Navigation mode)",
+          " ",
+          "Move: NumPad/Arrows, </>: Up/Down",
+          "(Control+Arrows for diagonal.)",
+          "Wait: NumPad 5 / Space.",
+          " ",
+          "Enter: Enable auto-pause.",
+          "+/-: Change speed.",
+          " ",
+          "Z: Cast spell, %c{cyan}J: Assign job.",
+          " ",
+          "PageUp/Down: Scroll messages.",
+          "A: Achievements, ?: Toggle tutorial.",
+        ];
+      } else {
+        return [
+          "Esc: System view.",
+          "%c{yellow}*Navigation mode (Tab: Avatar mode)*",
+          " ",
+          "Move: NumPad/Arrows, </>: Up/Down",
+          "(Control+Arrows for diagonal.)",
+          "Wait: NumPad 5 / Control+Space.",
+          " ",
+          "Enter: Enable auto-pause.",
+          "+/-: Change speed.",
+          " ",
+          "Z: Cast spell, %c{cyan}J: Assign job.",
+          " ",
+          "PageUp/Down: Scroll messages.",
+          "A: Achievements, ?: Toggle tutorial."
+        ];
+      }
+    },
     instructions: [
       "%c{white}The boulders of these hills will form the bones of your fortress, and the trees shall fuel its fires.",
       " ",
@@ -712,7 +735,7 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "HarvestResourcesStepTwo.",
     name: "harvest resources",
-    contexts: ["ShowJobs","Main"],
+    contexts: ["ShowJobs"],
     controls: function(txt) {
       txt[5] = "%c{cyan}" + txt[5];
       return txt;
@@ -747,6 +770,7 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "WaitingForHarvest",
     name: "harvest resources",
+    contexts: ["Main","Survey"],
     controls: null,
     instructions: [
       "%c{cyan}Wait for your zombies to harvest some wood."
