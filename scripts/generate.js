@@ -392,7 +392,7 @@ timeIt("elevation", function() {
           for (let y=dy-1; y<=dy+1; y++) {
             if (HTomb.Tiles.countNeighborsWhere(x,y,z,nonsolids)>0) {
               continue;
-            } else if (Math.random()<oreChance) {
+            } else if (Math.random()<oreChance && !placement.items[coord(x,y,z)]) {
               HTomb.World.covers[z][x][y] = HTomb.Covers[template];
             }
           }

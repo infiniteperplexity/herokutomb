@@ -49,6 +49,7 @@ HTomb = (function(HTomb) {
       overlay.hide();
     }
     if (Main.inSurveyMode===true) {
+      HTomb.Events.publish({type: "Command", command: "SurveyMode"});
       Main.surveyMode();
       return;
     } else {
@@ -161,6 +162,7 @@ HTomb = (function(HTomb) {
     context.selectTile = function (x,y) {
       context.menuText[1] = "%c{yellow}Select second corner with keys or mouse.";
       var context2 = HTomb.Utils.clone(survey);
+      GUI.bindKey(context2, "VK_ESCAPE", GUI.reset);
       Contexts.active = context2;
       if (options.contextName) {
         context2.contextName = options.contextName;
@@ -816,7 +818,7 @@ HTomb = (function(HTomb) {
 
   survey.menuText =
   [ "Esc: System view.",
-    "%c{yellow}*Navigation mode (Tab: Avatar mode)*",
+    "%c{yellow}Navigation mode (Tab: Avatar mode)",
     " ",
     "Move: NumPad/Arrows, </>: Up/Down",
     "(Control+Arrows for diagonal.)",
@@ -826,7 +828,7 @@ HTomb = (function(HTomb) {
     "+/-: Change speed.",
     " ",
     "Z: Cast spell, J: Assign job.",
-    "M: Minions, S: Structures, U: Summary",
+    "M: Minions, S: Structures, U: Summary.",
     " ",
     "PageUp/Down: Scroll messages.",
     "A: Achievements, ?: Toggle tutorial.",

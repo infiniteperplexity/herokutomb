@@ -8,7 +8,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineFeature({
     template: "Tombstone",
     name: "tombstone",
-    symbol: ["\u271D", "\u271E","\u271F","\u2670","\u2671"],
+    symbol: "\u2670",
     fg: "#AAAAAA",
     randomColor: 5,
     onPlace: function(x,y,z) {
@@ -165,9 +165,6 @@ HTomb = (function(HTomb) {
       // If there is a slope below, dig out the floor
       if (tiles[z-1][x][y]===UpSlopeTile && HTomb.World.explored[z-1][x][y] && (t===WallTile || t===FloorTile)) {
         tiles[z][x][y] = DownSlopeTile;
-        if (c.mine) {
-          c.mine(x,y,z);
-        }
       // If it's a wall, dig a tunnel
       } else if (t===WallTile) {
         tiles[z][x][y] = FloorTile;
@@ -181,7 +178,7 @@ HTomb = (function(HTomb) {
           tiles[z-1][x][y] = UpSlopeTile;
           c = HTomb.World.covers[z-1][x][y];
           if (c.mine) {
-            c.mine(x,y,z);
+            c.mine(x,y,z-1);
           }
         // Otherwise just remove the floor
         } else {

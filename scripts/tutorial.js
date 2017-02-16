@@ -31,7 +31,7 @@ HTomb = (function(HTomb) {
           }
         }
       }
-      if (event.type==="Command" && event.command==="MainMode" && this.tutorials[this.active].rewind) {
+      if (event.type==="Command" && (event.command==="MainMode" || event.command==="SurveyMode") && this.tutorials[this.active].rewind) {
        console.log("Rewinding tutorial: "+this.tutorials[this.active].rewind);
        this.goto(this.tutorials[this.active].rewind);
        return;
@@ -64,7 +64,7 @@ HTomb = (function(HTomb) {
         bottom: HTomb.Utils.copy(menu.bottom)
       };
       let context = HTomb.GUI.Contexts.active;
-      if (active.contexts.indexOf(context.contextName)!==-1) {
+      if (active.contexts==="All" || active.contexts.indexOf(context.contextName)!==-1) {
         if (active.controls!==null) {
           if (typeof(active.controls)==="function") {
             let txt = obj.controls;
@@ -141,7 +141,7 @@ HTomb = (function(HTomb) {
       "%c{cyan}?: Toggle tutorial."
     ],
     instructions: [
-      "%c{yellow}Welcome to HellaTomb!",
+      "%c{yellow}Welcome to the HellaTomb in-game tutorial.  Follow the instructions on this panel to proceed through the tutorial, or press ? to turn off these messages and play without the tutorial.",
       " ",
       "%c{white}You walk amongst the tombstones of a hillside graveyard, searching for the site upon which you will build your mighty fortress.",
       " ",
@@ -161,7 +161,7 @@ HTomb = (function(HTomb) {
       if (event.command==="Move") {
         this.tracking.moves+=1;
       }
-      return (this.tracking.moves>=3);
+      return (this.tracking.moves>=5);
     }
   });
 
@@ -206,7 +206,7 @@ HTomb = (function(HTomb) {
       if (event.command==="Move") {
         this.tracking.moves+=1;
       }
-      return (this.tracking.moves>=7);
+      return (this.tracking.moves>=10);
     }
   });
 
@@ -266,9 +266,9 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}Enough of this pointless wandering - it is time to summon an undead servant.",
       " ",
-      "Near where you started, there should be some symbols like this: \u271D. These are tombstones.  If you want to know what a symbol represents, hover over it with the mouse and look at the bottom half of the right panel.",
+      "Near where you started, there should be some symbols like this: \u2670. These are tombstones.  If you want to know what a symbol represents, hover over it with the mouse and look at the bottom half of the right panel.",
       " ",
-      "%c{cyan}Find a tombstone.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"
+      "%c{cyan}Find a tombstone - you don't have to stand right next to it.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"
     ],
     listens: ["Command"],
     skip: "WaitingForTheZombie",
@@ -286,7 +286,7 @@ HTomb = (function(HTomb) {
       return txt;
     },
     instructions: HTomb.Tutorial.templates.RaisingAZombieStepOne.instructions,
-    backupInstructions: ["%c{cyan}Find a tombstone.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"],
+    backupInstructions: ["%c{cyan}Find a tombstone - you don't have to stand right next to it.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"],
     listens: ["Command"],
     skip: "WaitingForTheZombie",
     rewind: "RaisingAZombieStepOne",
@@ -310,7 +310,7 @@ HTomb = (function(HTomb) {
       "Click / Space: Select.",
     ],
     instructions: [
-      "%c{cyan}Select a tombstone using the mouse, or by navigating with the arrow keys and pressing space to select.",
+      "%c{cyan}Select a tombstone, either by using the mouse, or by navigating with the direction keys and pressing space to select.",
       " ",
       "Notice that the bottom portion of this panel gives you information about the square you are hovering over - whether it's a valid target for your spell, what the terrain is like, and so on."
     ],
@@ -457,7 +457,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}You close your eyes and concentrate, formulating a task for your unthinking slave.",
       " ",
-      "%c{cyan}Press J to assign a job, and then press A to make your zombie dig."
+      "%c{cyan}Press J to assign a job, and then press A to make your zombie dig.  You can assign a job from any distance."
     ],
     listens: ["Command"],
     skip: "WaitingForDig",
@@ -490,7 +490,7 @@ HTomb = (function(HTomb) {
     contexts: ["DesignateDigTask"],
     controls: null,
     instructions: [
-      "%c{cyan}Select a rectangular area for your zombie to dig.",
+      "%c{cyan}Using the mouse or keyboard, select two corners of a rectangular area for your zombie to dig.",
       " ",
       "What 'dig' means is contextual, depending on the terrain you select:",
       " ",
@@ -514,7 +514,21 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "WaitingForDig",
     name: "waiting for zombie to dig",
-    controls: null,
+    controls: [
+      "Esc: System view.",
+      " ",
+      "Move: NumPad/Arrows, </>: Up/Down.",
+      "(Control+Arrows for diagonal.)",
+      "%c{cyan}Wait: NumPad 5 / Space.",
+      " ",
+      "Enter: Enable auto-pause.",
+      "+/-: Change speed.",
+      " ",
+      "Z: Cast spell, J: Assign job.",
+      " ",
+      "PageUp/Down: Scroll messages.",
+      "A: Achievements, ?: Toggle tutorial."
+    ],
     instructions: [
       "%c{white}The zombie shuffles dutifully to complete its task.",
       " ",
@@ -547,7 +561,7 @@ HTomb = (function(HTomb) {
           " ",
           "Move: NumPad/Arrows, </>: Up/Down.",
           "(Control+Arrows for diagonal.)",
-          "Wait: NumPad 5 / Space.",
+          "%c{cyan}Wait: NumPad 5 / Space.",
           " ",
           "Enter: Enable auto-pause.",
           "+/-: Change speed.",
@@ -567,7 +581,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}This decaying wretch is but the beginning - soon, you will command an undead horde.",
       " ",
-      "Every zombie under your control raises the mana cost of the Raise Zombie spell.  Your current mana is listed above the left-hand side of the message bar.",
+      "Every zombie under your control raises the mana cost of the 'raise zombie' spell.  Your current mana is listed above the left-hand side of the message bar.",
       " ",
       "%c{cyan}Wait until you have 15 mana, then raise a second zombie and wait for it to emerge."
     ],
@@ -586,12 +600,12 @@ HTomb = (function(HTomb) {
       " ",
       "Move: NumPad/Arrows, </>: Up/Down.",
       "(Control+Arrows for diagonal.)",
-      "Wait: NumPad 5 / Space.",
+      "%c{cyan}Wait: NumPad 5 / Space.",
       " ",
       "Enter: Enable auto-pause.",
       "+/-: Change speed.",
       " ",
-      "%c{cyan}Z: Cast spell, %c{}J: Assign job.",
+      "Z: Cast spell, %c{}J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
       "A: Achievements, ?: Toggle tutorial."
@@ -599,7 +613,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}This decaying wretch is but the beginning - soon, you will command an undead horde.",
       " ",
-      "Every zombie under your control raises the mana cost of the Raise Zombie spell.  Your current mana is listed above the left-hand side of the message bar.",
+      "Every zombie under your control raises the mana cost of the 'raise zombie' spell.  Your current mana is listed above the left-hand side of the message bar.",
       " ",
       "%c{cyan}Wait for your second zombie to emerge."
     ],
@@ -649,7 +663,7 @@ HTomb = (function(HTomb) {
     contexts: ["Survey"],
     controls: [
       "Esc: System view.",
-      "%c{yellow}*Navigation mode (Tab: Avatar mode)*",
+      "%c{cyan}Navigation mode (Tab: Avatar mode)",
       " ",
       "%c{cyan}Move: NumPad/Arrows, </>: Up/Down",
       "%c{cyan}(Control+Arrows for diagonal.)",
@@ -683,42 +697,18 @@ HTomb = (function(HTomb) {
     name: "harvest resources",
     contexts: ["Main","Survey"],
     controls: function(txt) {
-      let context = HTomb.GUI.Contexts.active.contextName;
-      if (context==="Main") {
-        return [
-          "Esc: System view.",
-          "%c{yellow}Avatar mode (Tab: Navigation mode)",
-          " ",
-          "Move: NumPad/Arrows, </>: Up/Down",
-          "(Control+Arrows for diagonal.)",
-          "Wait: NumPad 5 / Space.",
-          " ",
-          "Enter: Enable auto-pause.",
-          "+/-: Change speed.",
-          " ",
-          "Z: Cast spell, %c{cyan}J: Assign job.",
-          " ",
-          "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Toggle tutorial.",
-        ];
-      } else {
-        return [
-          "Esc: System view.",
-          "%c{yellow}*Navigation mode (Tab: Avatar mode)*",
-          " ",
-          "Move: NumPad/Arrows, </>: Up/Down",
-          "(Control+Arrows for diagonal.)",
-          "Wait: NumPad 5 / Control+Space.",
-          " ",
-          "Enter: Enable auto-pause.",
-          "+/-: Change speed.",
-          " ",
-          "Z: Cast spell, %c{cyan}J: Assign job.",
-          " ",
-          "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Toggle tutorial."
-        ];
-      }
+      let i = 0;
+      txt = HTomb.Utils.copy(txt);
+      do {
+        if (txt[i]==="Z: Cast spell, J: Assign job.") {
+          txt[i] = "Z: Cast spell, %c{cyan}J: Assign job.";
+        } else if (txt[i]==="G: Pick Up, D: Drop, I: Inventory." || txt[i]==="M: Minions, S: Structures, U: Summary." || txt[i]==="F: Submit Feedback.") {
+          txt.splice(i,1);
+          i--;
+        }
+        i++;
+      } while (i<txt.length);
+      return txt;
     },
     instructions: [
       "%c{white}The boulders of these hills will form the bones of your fortress, and the trees shall fuel its fires.",
@@ -755,9 +745,9 @@ HTomb = (function(HTomb) {
     contexts: ["DesignateDismantleTask"],
     controls: null,
     instructions: [
-      "The green \u2663 and \u2660 symbols on the map are trees.",
+      "The green \u2663 and \u2660 symbols on the map are trees (gray trees are one elevation level below your point of view - ignore them for now.)",
       " ",
-      "%c{cyan}Select a rectangular area that includes some trees, then wait for your zombies to harvest some wood."
+      "%c{cyan}Using the mouse or keyboard, select two corners of a rectangular area that includes some trees.  Then wait for your zombies to harvest some wood."
     ],
     listens: ["Designate"],
     skip: "WaitingForHarvest",
@@ -771,7 +761,20 @@ HTomb = (function(HTomb) {
     template: "WaitingForHarvest",
     name: "harvest resources",
     contexts: ["Main","Survey"],
-    controls: null,
+    controls: function(txt) {
+      let i = 0;
+      txt = HTomb.Utils.copy(txt);
+      do {
+        if (txt[i]==="Wait: NumPad 5 / Space." || txt[i]==="Wait: NumPad 5 / Control+Space.") {
+          txt[i] = "%c{cyan}"+txt[i];
+        } else if (txt[i]==="G: Pick Up, D: Drop, I: Inventory." || txt[i]==="M: Minions, S: Structures, U: Summary." || txt[i]==="F: Submit Feedback.") {
+          txt.splice(i,1);
+          i--;
+        }
+        i++;
+      } while (i<txt.length);
+      return txt;
+    },
     instructions: [
       "%c{cyan}Wait for your zombies to harvest some wood."
     ],
@@ -793,31 +796,48 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "PickingUpItems",
     name: "picking up items",
-    contexts: ["Main","ChooseItemToPickup"],
-    controls: [
-      "Esc: System view.",
-      "%c{yellow}Avatar mode (Tab: Navigation mode)",
-      " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
-      "(Control+Arrows for diagonal.)",
-      "Wait: NumPad 5 / Space.",
-      " ",
-      "Enter: Enable auto-pause.",
-      "+/-: Change speed.",
-      " ",
-      "Z: Cast spell, J: Assign job.",
-      "%c{cyan}G: Pick Up, %c{}D: Drop, I: Inventory.",
-      " ",
-      "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Tutorial.",
-    ],
-    instructions: [
-      "%c{white}Your zombies chop down a tree.  You approach to examine their handiwork.",
-      " ",
-      "Once you build some workshops, your zombies can use this wood to craft items.  Also, you can press G, D, or I to have your necromancer pick up, drop, and examine items.",
-      " ",
-      "%c{cyan}Walk over to the wood and try picking it up."
-    ],
+    contexts: ["Main","Survey","ChooseItemToPickup"],
+    controls: function(txt) {
+      let context = HTomb.GUI.Contexts.active.contextName;
+      if (context==="Main") {
+        return [
+          "Esc: System view.",
+          "%c{yellow}Avatar mode (Tab: Navigation mode)",
+          " ",
+          "Move: NumPad/Arrows, </>: Up/Down.",
+          "(Control+Arrows for diagonal.)",
+          "Wait: NumPad 5 / Space.",
+          " ",
+          "Enter: Enable auto-pause.",
+          "+/-: Change speed.",
+          " ",
+          "Z: Cast spell, J: Assign job.",
+          "%c{cyan}G: Pick Up, %c{}D: Drop, I: Inventory.",
+          " ",
+          "PageUp/Down: Scroll messages.",
+          "A: Achievements, ?: Tutorial.",
+        ];
+      } else {
+        return txt;
+      }
+    },
+    instructions: function() {
+      let context = HTomb.GUI.Contexts.active.contextName;
+      let txt = [
+        "%c{white}Your zombies chop down a tree.  You approach to examine their handiwork.",
+        " ",
+        "Once you build some workshops, your zombies can use this wood to craft items.  Also, you can press G, D, or I to have your necromancer pick up, drop, and examine items.",
+        " "
+      ];
+      if (context==="Main") {
+        txt.push("%c{cyan}Walk until you are standing on the wooden plank, then try picking it up.");
+      } else if (context==="Survey") {
+        txt.push("%c{cyan}Press Tab to directly control the necromancer.");
+      } else {
+        txt.push("%c{cyan}Press a letter key to choose an item.");
+      }
+      return txt;
+    },
     listens: ["Command"],
     trigger: function(event) {
       return (event.command==="PickUp" && event.item.template==="WoodPlank");
@@ -868,29 +888,22 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "EndOfTutorial",
     name: "end of tutorial",
-    controls: [
-      "Esc: System view.",
-      "%c{yellow}Avatar mode (Tab: Navigation mode)",
-      " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
-      "(Control+Arrows for diagonal.)",
-      "Wait: NumPad 5 / Space.",
-      " ",
-      "Enter: Enable auto-pause.",
-      "+/-: Change speed.",
-      " ",
-      "Z: Cast spell, J: Assign job.",
-      "%c{cyan}M: Minions, S: Structures, U: Summary.",
-      "G: Pick Up, D: Drop, I: Inventory.",
-      " ",
-      "PageUp/Down: Scroll messages.",
-      "A: Achievements, %c{cyan}?: Tutorial.",
-      "%c{cyan}F: Submit Feedback."
-    ],
+    contexts: ["Main","Survey"],
+    controls: function(txt) {
+      txt = HTomb.Utils.copy(txt);
+      for (let i=0; i<txt.length; i++) {
+        if (txt[i]==="M: Minions, S: Structures, U: Summary." || txt[i]==="F: Submit Feedback.") {
+          txt[i] = "%c{cyan}"+txt[i];
+        } else if (txt[i]==="A: Achievements, ?: Tutorial.") {
+          txt[i] = "A: Achievements, %c{cyan}?: Tutorial.";
+        }
+      }
+      return txt;
+    },
     instructions: [
       "%c{white}Cruel laughter wells in your throat.  Your fortress will cast a shadow of menace over all the land.  The undead under your command will become a legion, a multitude, an army.  And then all who have wronged you will pay!",
       " ",
-      "Congratulations, you finished the tutorial.  Experiment with different tasks and commands.  See if you can unlock all the achievements in the demo.",
+      "Congratulations, you finished the in-game tutorial.  Experiment with different tasks and commands.  See if you can unlock all the achievements in the demo.",
       " ",
       "%c{cyan}Press ? to dismiss these messages."
     ],
@@ -903,10 +916,10 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "EndOfTutorial",
     name: "end of tutorial",
-    contexts: ["Survey","Main"],
+    contexts: "All",
     controls: null,
     instructions: [
-      "You have finished the tutorial.",
+      "You have finished the in-game tutorial.  Enjoy the rest of the demo!",
       " ",
       "%c{cyan}Press ? to dismiss these messages."
     ],
