@@ -747,9 +747,9 @@ HTomb = (function(HTomb) {
     contexts: ["DesignateDismantleTask"],
     controls: null,
     instructions: [
-      "The green \u2663 and \u2660 symbols on the map are trees (gray trees are one elevation level below your point of view - ignore them for now.)",
+      "The green \u2663 and \u2660 symbols on the map are trees.",
       " ",
-      "%c{cyan}Using the mouse or keyboard, select two corners of a rectangular area that includes some trees.  Then wait for your zombies to harvest some wood."
+      "%c{cyan}Using the mouse or keyboard, select two corners of a rectangular area that includes some trees that are on your current elevation level.  Then wait for your zombies to harvest some wood."
     ],
     listens: ["Designate"],
     skip: "WaitingForHarvest",
