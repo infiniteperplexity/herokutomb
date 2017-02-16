@@ -226,6 +226,8 @@ HTomb = (function(HTomb) {
       " ",
       "- The \u02C4 and \u02C5 symbols are slopes.",
       " ",
+      "- The game world is a 3D grid of tiles.  Slopes provide access to different elevation levels.",
+      " ",
       "- You can climb up or down a slope by standing on it and pressing < or >.",
       " ",
       "- If you try to walk sideways off a cliff or into a wall, you will automatically climb a slope instead if possible.",

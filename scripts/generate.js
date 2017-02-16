@@ -86,14 +86,9 @@ HTomb = (function(HTomb) {
 timeIt("elevation", function() {
     assignElevation(50);
 }); timeIt("lava", function() {
-    if (HTomb.Debug.faster!==true) {
-      placeLava(10);
-    }
+    placeLava(10);
 }); timeIt("water", function() {
     waterTable(48,4);
-}); timeIt("graveyards", function() {
-    graveyards();
-    //graveyards2();
 }); timeIt("slopes", function() {
     addSlopes();
 }); timeIt("caverns", function() {
@@ -116,7 +111,9 @@ timeIt("elevation", function() {
     growPlants({template: "MandrakePlant", p: 0.001});
     growPlants({template: "WormwoodPlant", p: 0.001});
     growPlants({template: "BloodwortPlant", p: 0.001});
-});  timeIt("critters", function() {
+}); timeIt("graveyards", function() {
+    graveyards();
+}); timeIt("critters", function() {
     placeCritters();
 }); timeIt("resolving", function() {
     placement.resolve();
@@ -243,9 +240,34 @@ timeIt("elevation", function() {
       }
     }
   }
+
   function graveyards(options) {
     options = options || {};
-    var template = options.template || "Shrub";
+    let yardChance = options.p || 0.005;
+    let graveChance = 0.5;
+    function nonsolids(x,y,z) {return HTomb.World.tiles[z][x][y].solid!==true;}
+    let dirs = ROT.DIRS[4];
+    for (let i=0; i<LEVELW*LEVELH*yardChance; i++) {
+      let x = HTomb.Utils.dice(1,LEVELW-4);
+      let y = HTomb.Utils.dice(1,LEVELH-4);
+      let z = HTomb.Tiles.groundLevel(x,y);
+      if (z<=lowest+4) {
+        continue;
+      }
+      for (let j=0; j<dirs.length; j++) {
+        if (HTomb.Tiles.countNeighborsWhere(x+dirs[j][0],y+dirs[j][1],z-1,nonsolids)>0) {
+          continue;
+        } else if (Math.random()<graveChance) {
+          placement.stack(HTomb.Things.Tombstone(),x+dirs[j][0],y+dirs[j][1],z);
+          HTomb.World.covers[z-1][x][y] = HTomb.Covers.NoCover;
+        }
+      }
+    }
+  }
+
+/*
+  function graveyards(options) {
+    options = options || {};
     var p = options.p || 0.01;
     var n = options.n || 3;
     var born = options.born || [0,0.1,0.2,0.3,0.5,0.3,0.2,0];
@@ -270,7 +292,7 @@ timeIt("elevation", function() {
         }
       }
     });
-  }
+  }*/
 
   function graveyards2(options) {
     options = options || {};
@@ -392,7 +414,7 @@ timeIt("elevation", function() {
           for (let y=dy-1; y<=dy+1; y++) {
             if (HTomb.Tiles.countNeighborsWhere(x,y,z,nonsolids)>0) {
               continue;
-            } else if (Math.random()<oreChance && !placement.items[coord(x,y,z)]) {
+            } else if (Math.random()<oreChance) {
               HTomb.World.covers[z][x][y] = HTomb.Covers[template];
             }
           }
