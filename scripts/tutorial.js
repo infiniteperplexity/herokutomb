@@ -666,7 +666,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "Now you are in navigation mode.",
       " ",
-      "Move the screen around using the keypad or arrows.  Hold Shift to move multiple spaces at a time.  Also try pressing < or > to move the view up or down a level.  To wait in Navigation Mode, press Control+Space.",
+      "Move the screen around using the keypad or arrows.  Hold Shift to move multiple spaces at a time.  Also try pressing < or > to move the view up or down a level.  To wait in Navigation Mode, press 5 on the keypad, or Control+Space.",
       " ",
       "%c{cyan}Press Tab to return to 'Avatar Mode' and recenter the screen, putting you in direct control of the necromancer."
     ],
