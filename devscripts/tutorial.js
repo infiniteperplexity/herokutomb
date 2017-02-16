@@ -31,7 +31,7 @@ HTomb = (function(HTomb) {
           }
         }
       }
-      if (event.type==="Command" && event.command==="MainMode" && this.tutorials[this.active].rewind) {
+      if (event.type==="Command" && (event.command==="MainMode" || event.command==="SurveyMode") && this.tutorials[this.active].rewind) {
        console.log("Rewinding tutorial: "+this.tutorials[this.active].rewind);
        this.goto(this.tutorials[this.active].rewind);
        return;
@@ -64,7 +64,7 @@ HTomb = (function(HTomb) {
         bottom: HTomb.Utils.copy(menu.bottom)
       };
       let context = HTomb.GUI.Contexts.active;
-      if (active.contexts.indexOf(context.contextName)!==-1) {
+      if (active.contexts==="All" || active.contexts.indexOf(context.contextName)!==-1) {
         if (active.controls!==null) {
           if (typeof(active.controls)==="function") {
             let txt = obj.controls;
@@ -683,42 +683,18 @@ HTomb = (function(HTomb) {
     name: "harvest resources",
     contexts: ["Main","Survey"],
     controls: function(txt) {
-      let context = HTomb.GUI.Contexts.active.contextName;
-      if (context==="Main") {
-        return [
-          "Esc: System view.",
-          "%c{yellow}Avatar mode (Tab: Navigation mode)",
-          " ",
-          "Move: NumPad/Arrows, </>: Up/Down",
-          "(Control+Arrows for diagonal.)",
-          "Wait: NumPad 5 / Space.",
-          " ",
-          "Enter: Enable auto-pause.",
-          "+/-: Change speed.",
-          " ",
-          "Z: Cast spell, %c{cyan}J: Assign job.",
-          " ",
-          "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Toggle tutorial.",
-        ];
-      } else {
-        return [
-          "Esc: System view.",
-          "%c{yellow}*Navigation mode (Tab: Avatar mode)*",
-          " ",
-          "Move: NumPad/Arrows, </>: Up/Down",
-          "(Control+Arrows for diagonal.)",
-          "Wait: NumPad 5 / Control+Space.",
-          " ",
-          "Enter: Enable auto-pause.",
-          "+/-: Change speed.",
-          " ",
-          "Z: Cast spell, %c{cyan}J: Assign job.",
-          " ",
-          "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Toggle tutorial."
-        ];
-      }
+      let i = 0;
+      txt = HTomb.Utils.copy(txt);
+      do {
+        if (txt[i]==="Z: Cast spell, J: Assign job.") {
+          txt[i] = "Z: Cast spell, %c{cyan}J: Assign job.";
+        } else if (txt[i]==="G: Pick Up, D: Drop, I: Inventory." || txt[i]==="M: Minions, S: Structures, U: Summary." || txt[i]==="F: Submit Feedback.") {
+          txt.splice(i,1);
+          i--;
+        }
+        i++;
+      } while (i<txt.length);
+      return txt;
     },
     instructions: [
       "%c{white}The boulders of these hills will form the bones of your fortress, and the trees shall fuel its fires.",
@@ -771,7 +747,19 @@ HTomb = (function(HTomb) {
     template: "WaitingForHarvest",
     name: "harvest resources",
     contexts: ["Main","Survey"],
-    controls: null,
+    controls: function(txt) {
+      let i = 0;
+      txt = HTomb.Utils.copy(txt);
+      do {
+        if (txt[i]==="Z: Cast spell, J: Assign job.") {
+          txt[i] = "Z: Cast spell, J: Assign job.";
+        } else if (txt[i]==="G: Pick Up, D: Drop, I: Inventory." || txt[i]==="M: Minions, S: Structures, U: Summary." || txt[i]==="F: Submit Feedback.") {
+          txt.splice(i,1);
+          i-=1;
+        }
+      } while (i<txt.length);
+      return txt;
+    },
     instructions: [
       "%c{cyan}Wait for your zombies to harvest some wood."
     ],
@@ -868,25 +856,18 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "EndOfTutorial",
     name: "end of tutorial",
-    controls: [
-      "Esc: System view.",
-      "%c{yellow}Avatar mode (Tab: Navigation mode)",
-      " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
-      "(Control+Arrows for diagonal.)",
-      "Wait: NumPad 5 / Space.",
-      " ",
-      "Enter: Enable auto-pause.",
-      "+/-: Change speed.",
-      " ",
-      "Z: Cast spell, J: Assign job.",
-      "%c{cyan}M: Minions, S: Structures, U: Summary.",
-      "G: Pick Up, D: Drop, I: Inventory.",
-      " ",
-      "PageUp/Down: Scroll messages.",
-      "A: Achievements, %c{cyan}?: Tutorial.",
-      "%c{cyan}F: Submit Feedback."
-    ],
+    contexts: ["Main","Survey"],
+    controls: function(txt) {
+      txt = HTomb.Utils.copy(txt);
+      for (let i=0; i<txt.length; i++) {
+        if (txt[i]==="M: Minions, S: Structures, U: Summary." || txt[i]==="F: Submit Feedback.") {
+          txt[i] = "%c{cyan}"+txt[i];
+        } else if (txt[i]==="A: Achievements, ?: Tutorial.") {
+          txt[i] = "A: Achievements, %c{cyan}?: Tutorial.";
+        }
+      }
+      return txt;
+    },
     instructions: [
       "%c{white}Cruel laughter wells in your throat.  Your fortress will cast a shadow of menace over all the land.  The undead under your command will become a legion, a multitude, an army.  And then all who have wronged you will pay!",
       " ",
@@ -903,7 +884,7 @@ HTomb = (function(HTomb) {
   new Tutorial({
     template: "EndOfTutorial",
     name: "end of tutorial",
-    contexts: ["Survey","Main"],
+    contexts: "All",
     controls: null,
     instructions: [
       "You have finished the tutorial.",

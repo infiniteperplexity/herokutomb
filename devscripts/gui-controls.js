@@ -49,6 +49,7 @@ HTomb = (function(HTomb) {
       overlay.hide();
     }
     if (Main.inSurveyMode===true) {
+      HTomb.Events.publish({type: "Command", command: "SurveyMode"});
       Main.surveyMode();
       return;
     } else {
