@@ -75,8 +75,8 @@ HTomb = (function(HTomb) {
   };
 
   HTomb.Time.autoWait = function() {
-    HTomb.Player.ai.acted = true;
-    HTomb.Player.ai.actionPoints-=16;
+    HTomb.Player.player.delegate.ai.acted = true;
+    HTomb.Player.player.delegate.ai.actionPoints-=16;
     HTomb.Time.resumeActors(null, true);
     if (HTomb.GUI.mouseMovedLast || HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
       let gameScreen = HTomb.GUI.Panels.gameScreen;
@@ -135,7 +135,7 @@ HTomb = (function(HTomb) {
     // Take the next actor off the queue
     let actor = queue.pop();
     // Eventually we will do this in a more complex way to allow for round-robin combat mode
-    if (actor===HTomb.Player) {
+    if (actor===HTomb.Player.player.delegate) {
       HTomb.Events.publish({type: "PlayerActive"});
       // When we hit the player, halt recursion and update visibility
       HTomb.Player.player.visibility();
@@ -172,7 +172,7 @@ HTomb = (function(HTomb) {
     if (nodelay!==true) {
       HTomb.GUI.Contexts.locked = true;
     }
-    actor = actor || HTomb.Player;
+    actor = actor || HTomb.Player.player.delegate;
     if (actor.ai.actionPoints>0 && actor.isPlaced()) {
       deck.push(actor);
     }

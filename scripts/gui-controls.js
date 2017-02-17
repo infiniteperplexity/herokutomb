@@ -60,7 +60,8 @@ HTomb = (function(HTomb) {
     menu.bottom = menu.defaultBottom;
     menu.refresh();
     // This can be a bit annoying at times...
-    let p = HTomb.Player;
+    // should this delegate?
+    let p = HTomb.Player.player.delegate;
     //if (!GUI.getKeyCursor || gameScreen.xoffset>p.x || gameScreen.yoffset>p.y || gameScreen.xoffset<=p.x-SCREENW || gameScreen.yoffset<=p.y-SCREENW) {
     if (gameScreen.xoffset>p.x || gameScreen.yoffset>p.y || gameScreen.xoffset<=p.x-SCREENW || gameScreen.yoffset<=p.y-SCREENW) {
       gameScreen.recenter();
@@ -388,8 +389,8 @@ HTomb = (function(HTomb) {
     let keyCursor = GUI.getKeyCursor();
     context.hoverTile(keyCursor[0],keyCursor[1]);
     if (options.line!==undefined) {
-      var x0 = options.line.x || HTomb.Player.x;
-      var y0 = options.line.y || HTomb.Player.y;
+      var x0 = options.line.x || HTomb.Player.player.delegate.x;
+      var y0 = options.line.y || HTomb.Player.player.delegate.y;
       var bg = options.line.bg || "#550000";
       context.hoverTile = function(x,y) {
         gameScreen.render();

@@ -71,29 +71,13 @@ HTomb = (function(HTomb) {
     gameScreen.renderParticles();
   };
   gameScreen.recenter = function() {
-    /*var Player = HTomb.Player;
-    gameScreen.z = Player.z;
-    if (Player.x >= gameScreen.xoffset+SCREENW-2) {
-      gameScreen.xoffset = Player.x-SCREENW+2;
-    } else if (Player.x <= gameScreen.xoffset) {
-      gameScreen.xoffset = Player.x-1;
-    }
-    if (Player.y >= gameScreen.yoffset+SCREENH-2) {
-      gameScreen.yoffset = Player.y-SCREENH+2;
-    } else if (Player.y <= gameScreen.yoffset) {
-      gameScreen.yoffset = Player.y-1;
-    }*/
-    let p = HTomb.Player;
+    let p = HTomb.Player.player.delegate;
     gameScreen.center(p.x,p.y,p.z);
   };
   gameScreen.center = function(x,y,z) {
     x = x-Math.floor(SCREENW/2);
     y = y-Math.floor(SCREENH/2);
-    z = z || HTomb.Player.z;
-    //x = Math.max(x,0);
-    //y = Math.max(y,0);
-    //x = Math.min(x,LEVELW-1-SCREENW);
-    //y = Math.min(y,LEVELH-1-SCREENH);
+    z = z || HTomb.Player.player.delegate.z;
     gameScreen.xoffset = x;
     gameScreen.yoffset = y;
     if (z!==undefined) {
@@ -177,13 +161,14 @@ HTomb = (function(HTomb) {
   status.render = function() {
     //black out the entire line with solid blocks
     var cursor = 0;
-    if (HTomb.Player.caster) {
-      scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Mana:" + HTomb.Player.caster.mana + "/" + HTomb.Player.caster.maxmana);
+    let p = (HTomb.Player.player) ? HTomb.Player.player.delegate : HTomb.Player;
+    if (p.caster) {
+      scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Mana:" + HTomb.Player.player.delegate.caster.mana + "/" + p.caster.maxmana);
     }
     cursor+=12;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"X:" + HTomb.Player.x);
+    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"X:" + p.x);
     cursor+=6;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Y:" + HTomb.Player.y);
+    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Y:" + p.y);
     cursor+=6;
     scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Z:" + gameScreen.z);
     cursor+=7;

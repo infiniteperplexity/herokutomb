@@ -315,6 +315,7 @@ HTomb = (function(HTomb) {
       }
     }
     HTomb.Player = player.entity;
+    HTomb.Things.templates.Player.delegate = null;
     // Fix ItemContainer references
     while(HTomb.World.things.length>0) {
       let thing = HTomb.World.things.pop();

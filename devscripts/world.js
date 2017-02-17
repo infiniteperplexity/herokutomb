@@ -22,6 +22,7 @@ HTomb = (function(HTomb) {
   HTomb.World.covers = HTomb.Utils.grid3d();
 
   HTomb.World.reset = function() {
+    HTomb.Things.templates.Player.delegate = null;
     HTomb.Time.dailyCycle.reset();
     HTomb.Events.reset();
     HTomb.Achievements.reset();

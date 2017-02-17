@@ -9,6 +9,7 @@ HTomb = (function(HTomb) {
   HTomb.Things.defineBehavior({
     template: "Player",
     name: "player",
+    controlling: null,
     onAdd: function() {
       HTomb.Player = this.entity;
     },
@@ -46,6 +47,20 @@ HTomb = (function(HTomb) {
           }
         }
       }
+    }
+  });
+
+  let player = HTomb.Things.templates.Player;
+  let delegate = null;
+  Object.defineProperty(player,"delegate", {
+    get: function() {
+      if (delegate===null) {
+        delegate = HTomb.Player;
+      }
+      return delegate;
+    },
+    set: function(d) {
+      delegate = d;
     }
   });
 

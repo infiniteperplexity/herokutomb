@@ -278,6 +278,7 @@ HTomb = (function(HTomb) {
     text.push(" ");
     var s;
     text.push("Minions:");
+    // none of these should delegate
     for (let i=0; i<HTomb.Player.master.minions.length; i++) {
       var cr = HTomb.Player.master.minions[i];
       s = "  "+cr.describe({atCoordinates: true})+".";

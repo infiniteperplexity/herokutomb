@@ -370,9 +370,9 @@ HTomb = (function(HTomb) {
     },
     act: function() {
       // If the entity is the player, don't choose for it...maybe this should be a Behavior?
-      if (this.entity===HTomb.Player) {
-        return false;
-      }
+      //if (this.entity===HTomb.Player) {
+      //  return false;
+      //}
       // If the creature has already acted, bail out
       if (this.acted===false) {
         this.alert.act(this);

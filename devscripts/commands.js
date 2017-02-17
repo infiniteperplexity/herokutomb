@@ -18,9 +18,10 @@ HTomb = (function(HTomb) {
   Commands.tryMoveUp = function() {Commands.tryMove('U');};
   Commands.tryMoveDown = function() {Commands.tryMove('D');};
   Commands.tryMove = function(dir) {
-    var x = HTomb.Player.x;
-    var y = HTomb.Player.y;
-    var z = HTomb.Player.z;
+    let p = HTomb.Player.player.delegate;
+    var x = p.x;
+    var y = p.y;
+    var z = p.z;
     var newx = x;
     var newy = y;
     var newz = z;
@@ -50,17 +51,17 @@ HTomb = (function(HTomb) {
       newz-=1;
     }
     var square = HTomb.Tiles.getSquare(newx,newy,newz);
-    if (HTomb.Player.movement===undefined) {
+    if (p.movement===undefined) {
       HTomb.GUI.pushMessage("You can't move!");
     // attack a touchable, hostile creature
-    } else if (square.creature && square.creature.ai && square.creature.ai.isHostile(HTomb.Player) && HTomb.Tiles.isTouchableFrom(newx, newy, newz, x, y, z)) {
+    } else if (square.creature && square.creature.ai && square.creature.ai.isHostile(p) && HTomb.Tiles.isTouchableFrom(newx, newy, newz, x, y, z)) {
     //} else if (square.creature && square.creature.ai && square.creature.ai.hostile && HTomb.Tiles.isTouchableFrom(newx, newy, newz, x, y, z)) {
-      HTomb.Player.combat.attack(square.creature);
-      HTomb.Time.resumeActors();
+      p.combat.attack(square.creature);
+      HTomb.Time.resumeActors(p);
       return;
     // if you can move, either move or displace
-    } else if (HTomb.Player.movement.canMove(newx,newy,newz)) {
-      if (square.creature && square.creature.ai && square.creature.ai.isHostile(HTomb.Player)===false) {
+    } else if (p.movement.canMove(newx,newy,newz)) {
+      if (square.creature && square.creature.ai && square.creature.ai.isHostile(p)===false) {
         HTomb.Events.publish({type: "Command", command: "Move", dir: dir});
         Commands.displaceCreature(newx,newy,newz);
         HTomb.GUI.pushMessage("You displace " + square.creature.describe({article: "indefinite"}) + ".");
@@ -102,9 +103,10 @@ HTomb = (function(HTomb) {
   }
   // Do nothing
   Commands.wait = function() {
-    HTomb.Player.ai.acted = true;
-    HTomb.Player.ai.actionPoints-=16;
-    HTomb.Time.resumeActors();
+    let p = HTomb.Player.player.delegate;
+    p.ai.acted = true;
+    p.ai.actionPoints-=16;
+    HTomb.Time.resumeActors(p);
     if (HTomb.GUI.mouseMovedLast || HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
       let gameScreen = HTomb.GUI.Panels.gameScreen;
       let x = HTomb.GUI.Contexts.mouseX;
@@ -121,13 +123,13 @@ HTomb = (function(HTomb) {
   };
 
   HTomb.Debug.teleport = function(x,y,z) {
-    HTomb.Player.remove();
-    HTomb.Player.place(x,y,z);
-    HTomb.Time.resumeActors();
+    HTomb.Player.player.delegate.remove();
+    HTomb.Player.player.delegate.place(x,y,z);
+    HTomb.Time.resumeActors(HTomb.Player.player.delegate);
   }
 
   Commands.centerOnPlayer = function() {
-    let p = HTomb.Player;
+    let p = HTomb.Player.player.delegate;
     HTomb.GUI.Panels.gameScreen.center(p.x,p.y,p.z);
     HTomb.GUI.Panels.gameScreen.render();
     let keyCursor = HTomb.GUI.getKeyCursor();
@@ -197,46 +199,47 @@ HTomb = (function(HTomb) {
   };
   // Move the player, glance, and spend an action
   Commands.movePlayer = function(x,y,z) {
-    var x0 = HTomb.Player.x;
-    var y0 = HTomb.Player.y;
-    var z0 = HTomb.Player.z;
+    let p = HTomb.Player.player.delegate;
+    var x0 = p.x;
+    var y0 = p.y;
+    var z0 = p.z;
     if (z===z0+1) {
       HTomb.GUI.pushMessage("You scramble up the slope.");
     } else if (z===z0-1) {
       HTomb.GUI.pushMessage("You scramble down the slope.");
     }
-    HTomb.Player.movement.stepTo(x,y,z);
+    p.movement.stepTo(x,y,z);
     //HTomb.Player.place(x,y,z);
     var square = HTomb.Tiles.getSquare(x,y,z);
     Commands.glance(square);
-    HTomb.Time.resumeActors();
+    HTomb.Time.resumeActors(p);
   };
   Commands.displaceCreature = function(x,y,z) {
-    var p = HTomb.Player;
-    var x0 = HTomb.Player.x;
-    var y0 = HTomb.Player.y;
-    var z0 = HTomb.Player.z;
+    var p = HTomb.Player.player.delegate;
+    var x0 = p.x;
+    var y0 = p.y;
+    var z0 = p.z;
     var cr = HTomb.World.creatures[coord(x,y,z)];
-    HTomb.Player.movement.displaceCreature(cr);
+    p.movement.displaceCreature(cr);
     Commands.glance(HTomb.Tiles.getSquare(x,y,z));
-    HTomb.Time.resumeActors();
+    HTomb.Time.resumeActors(p);
 
   };
   // Try to pick up items
   Commands.pickup = function() {
-    var p = HTomb.Player;
+    var p = HTomb.Player.player.delegate;
     var square = HTomb.Tiles.getSquare(p.x,p.y,p.z);
     if (!square.items) {
       HTomb.GUI.pushMessage("Nothing here to pick up.");
-    } else if (!HTomb.Player.inventory) {
+    } else if (!p.inventory) {
       HTomb.GUI.pushMessage("You cannot carry items.");
-    } else if (HTomb.Player.inventory.n >= HTomb.Player.inventory.capacity) {
+    } else if (p.inventory.n >= p.inventory.capacity) {
       HTomb.GUI.pushMessage("You cannot carry any more items.");
     } else {
       if (square.items.length===1) {
         let item = square.items.head();
         HTomb.Events.publish({type: "Command", command: "PickUp", item: item});
-        HTomb.Player.inventory.pickup(item);
+        p.inventory.pickup(item);
         HTomb.Time.resumeActors();
       } else {
         // If there are multiple items, display a menu
@@ -244,7 +247,7 @@ HTomb = (function(HTomb) {
           function(item) {
             return function() {
               HTomb.Events.publish({type: "Command", command: "PickUp", item: item});
-              HTomb.Player.inventory.pickup(item);
+              p.inventory.pickup(item);
               HTomb.Time.resumeActors();
               HTomb.GUI.reset();
             };
@@ -258,7 +261,7 @@ HTomb = (function(HTomb) {
   };
   // Try to drop an item
   Commands.drop = function() {
-    var p = HTomb.Player;
+    var p = HTomb.Player.player.delegate;
     if (!p.inventory) {
       HTomb.GUI.pushMessage("You cannot carry items.");
     } else if (p.inventory.items.length===0) {
@@ -274,7 +277,7 @@ HTomb = (function(HTomb) {
         GUI.choosingMenu("Choose an item:",p.inventory.items.exposeItems(),
           function(item) {
             return function() {
-              HTomb.Player.inventory.drop(item);
+              p.inventory.drop(item);
               HTomb.Events.publish({type: "Command", command: "Drop", item: item});
               HTomb.Time.resumeActors();
               HTomb.GUI.reset();
@@ -288,7 +291,7 @@ HTomb = (function(HTomb) {
     }
   };
   Commands.inventory = function() {
-    var p = HTomb.Player;
+    var p = HTomb.Player.player.delegate;
     if (!p.inventory) {
       HTomb.GUI.pushMessage("You cannot carry items.");
     } else if (p.inventory.items.length===0) {
@@ -309,15 +312,20 @@ HTomb = (function(HTomb) {
   };
   // Show a menu of the spells the player can cast
   Commands.showSpells = function() {
+    let p = HTomb.Player.player.delegate;
+    if (!p.caster || !p.caster.spells || p.caster.spells.length===0) {
+      HTomb.GUI.pushMessage("You have no spells.");
+      return;
+    }
     HTomb.Events.publish({type: "Command", command: "ShowSpells"});
-    GUI.choosingMenu("Choose a spell (mana cost):", HTomb.Player.caster.spells,
+    GUI.choosingMenu("Choose a spell (mana cost):", p.caster.spells,
       function(sp) {
         return function() {
-          if (HTomb.Player.caster.mana>=sp.getCost()) {
+          if (p.caster.mana>=sp.getCost()) {
             HTomb.GUI.Panels.menu.middle = [];
             HTomb.GUI.Panels.menu.refresh();
             HTomb.Events.publish({type: "Command", command: "ChooseSpell", spell: sp});
-            HTomb.Player.caster.cast(sp);
+            p.caster.cast(sp);
           } else {
             HTomb.GUI.Panels.menu.middle = ["%c{orange}Not enough mana."];
             HTomb.GUI.Panels.menu.refresh();
@@ -339,6 +347,7 @@ HTomb = (function(HTomb) {
   };
   // Show a menu of the tasks the player can assign
   Commands.showJobs = function() {
+    // This one alone should *not* delegate
     HTomb.Events.publish({type: "Command", command: "ShowJobs"});
     GUI.choosingMenu("Choose a task:", HTomb.Player.master.listTasks(),
       function(task) {
@@ -356,6 +365,28 @@ HTomb = (function(HTomb) {
         contextName: "ShowJobs"
       }
     );
+  };
+
+  Commands.possess = function(cr) {
+    let p = HTomb.Player.player.delegate;
+    p.ai.acted = true;
+    p.ai.actionPoints-=16;
+    HTomb.Player.player.delegate = cr;
+    HTomb.GUI.Panels.gameScreen.recenter();
+    HTomb.Time.resumeActors(p);
+    if (HTomb.GUI.mouseMovedLast || HTomb.GUI.Contexts.active===HTomb.GUI.Contexts.main) {
+      let gameScreen = HTomb.GUI.Panels.gameScreen;
+      let x = HTomb.GUI.Contexts.mouseX;
+      let y = HTomb.GUI.Contexts.mouseY;
+      if (x+gameScreen.xoffset>=LEVELW || x+gameScreen.xoffset<0 || y+gameScreen.yoffset>=LEVELH || y+gameScreen.yoffset<0) {
+        HTomb.GUI.Contexts.active.mouseOver();
+      } else {
+        HTomb.GUI.Contexts.active.mouseTile(x+gameScreen.xoffset,y+gameScreen.yoffset);
+      }
+    } else {
+      let keyCursor = GUI.getKeyCursor();
+      GUI.Contexts.active.hoverTile(keyCursor[0], keyCursor[1]);
+    }
   };
   return HTomb;
 })(HTomb);
