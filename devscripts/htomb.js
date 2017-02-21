@@ -61,19 +61,15 @@ var HTomb = (function() {
       GUI.delaySplash([
         "%c{yellow}Welcome to HellaTomb!",
         " ",
-        "You are a necromancer: A despised sorceror who reanimates the dead to do your bidding.  Cast out from society, you flee to the hills to plot your revenge and pursue the forbidden secrets of immortality.",
+        "%c{white}You are a necromancer: A despised sorceror who reanimates the dead to do your bidding.  Cast out from society, you flee to the hills to plot your revenge and pursue the forbidden secrets of immortality.",
         " ",
-        "Cast spells, raise zombies from their graves, and command them to harvest resources and build you a fortress.  But beware: The forces of good will not long stand for your vile ways...",
+        "%c{lime}Cast spells, raise zombies from their graves, and command them to harvest resources and build you a fortress.  But beware: The forces of good will not long stand for your vile ways...",
         " ",
-        "...except that this is the playtest demo, so the forces of good won't actually show up.",
+        "%c{lime}...except that this is the playtest demo, so the forces of good won't actually show up.",
         " ",
-        "Good luck!",
+        "%c{cyan}Once the game begins, follow the in-game tutorial instructions on the right-hand panel, or press ? to turn off the messages.",
         " ",
-        "Note: This is a so-called 'rogue-like' game inspired by Dwarf Fortress.  It uses Unicode characters instead of graphical art.",
-        " ",
-        "This symbol is you: %c{magenta}@",
-        " ",
-        "%c{yellow}(Press Space Bar to continue.)"
+        "%c{cyan}(Press Space Bar to continue.)"
       ]);
     }, 500);
   };

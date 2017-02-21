@@ -145,6 +145,8 @@ HTomb = (function(HTomb) {
       " ",
       "%c{white}You walk amongst the tombstones of a hillside graveyard, searching for the site upon which you will build your mighty fortress.",
       " ",
+      "%c{lime}This symbol is you: %c{magenta}@",
+      " ",
       "%c{cyan}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
     ],
     listens: ["Command"],
