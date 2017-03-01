@@ -1,3 +1,7 @@
+Bugs:
+- Under some circumstances, ConstructTasks can have no "makes."  I suspect it may have something to do with designating overlapping structures of the same type.
+
+
 2/9/17
 - Make harvesting yield predictable amounts
 

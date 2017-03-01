@@ -789,8 +789,9 @@ HTomb = (function(HTomb) {
       }
     },
     ai: function() {
-      var cr = this.assignee;
-      var t = cr.ai.target;
+      let cr = this.assignee;
+      // this could be either the task square or the item
+      let t = cr.ai.target;
       if (cr.movement) {
         var x = this.entity.x;
         var y = this.entity.y;
@@ -810,12 +811,14 @@ HTomb = (function(HTomb) {
             let item = cr.inventory.items.expose(j);
             if (this.itemAllowed(item)) {
               carrying=true;
+              // if you're standing on the square and have a valid item, drop it
               if (cr.x===x && cr.y===y && cr.z===z) {
                 cr.inventory.drop(item);
                 cr.ai.target = null;
                 this.unassign();
                 HTomb.Events.publish({type: "Complete", task: this});
               } else {
+                // otherwise if you have a valid item
                 cr.ai.walkToward(x,y,z, {
                   searcher: cr,
                   searchee: item,
@@ -826,7 +829,10 @@ HTomb = (function(HTomb) {
             }
           }
           if (carrying===false) {
-            cr.ai.target = this.getSomeValidItem(cr);
+            // if not carrying any valid item...hold on...shouldn't we keep a valid target if we already have one?
+            if (!t || !t.item || !this.itemAllowed(t) || !t.isPlaced()) {
+              cr.ai.target = this.getSomeValidItem(cr);
+            }
             // should maybe use fetch with an option to avoid things in hoards?
             if (cr.ai.target===null) {
               this.unassign();
@@ -1178,19 +1184,21 @@ HTomb = (function(HTomb) {
           }
           for (let i=0; i<squares.length; i++) {
             let crd = squares[i];
+            // this might get weird if you try overlapping a farm with anothern farm...
             if (HTomb.World.features[coord(crd[0],crd[1],crd[2])] && HTomb.World.features[coord(crd[0],crd[1],crd[2])].template===w.template+"Feature") {
               continue;
             }
             this.makes = w.structure.template+"Feature";
             let task = this.designateTile(crd[0],crd[1],crd[2],assigner);
             if (task) {
+              //Bugs have occurred here...I may have fixed them...
               task.task.structure = w;
-              task.task.makes = structure.template+"Feature";
-              if (structure.height!==null && structure.width!==null) {
+              task.task.makes = w.structure.template+"Feature";
+              if (w.structure.height!==null && w.structure.width!==null) {
                 task.task.ingredients = HTomb.Utils.clone(w.structure.ingredients[i]);
               }
               task.task.position = i;
-              task.name = task.name + " " + structure.name;
+              task.name = task.name + " " + w.structure.name;
             }
           }
         }
