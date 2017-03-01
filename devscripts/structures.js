@@ -789,8 +789,9 @@ HTomb = (function(HTomb) {
       }
     },
     ai: function() {
-      var cr = this.assignee;
-      var t = cr.ai.target;
+      let cr = this.assignee;
+      // this could be either the task square or the item
+      let t = cr.ai.target;
       if (cr.movement) {
         var x = this.entity.x;
         var y = this.entity.y;
@@ -810,12 +811,14 @@ HTomb = (function(HTomb) {
             let item = cr.inventory.items.expose(j);
             if (this.itemAllowed(item)) {
               carrying=true;
+              // if you're standing on the square and have a valid item, drop it
               if (cr.x===x && cr.y===y && cr.z===z) {
                 cr.inventory.drop(item);
                 cr.ai.target = null;
                 this.unassign();
                 HTomb.Events.publish({type: "Complete", task: this});
               } else {
+                // otherwise if you have a valid item
                 cr.ai.walkToward(x,y,z, {
                   searcher: cr,
                   searchee: item,
@@ -826,7 +829,10 @@ HTomb = (function(HTomb) {
             }
           }
           if (carrying===false) {
-            cr.ai.target = this.getSomeValidItem(cr);
+            // if not carrying any valid item...hold on...shouldn't we keep a valid target if we already have one?
+            if (!t || !t.item || !this.itemAllowed(t) {
+              cr.ai.target = this.getSomeValidItem(cr);
+            }
             // should maybe use fetch with an option to avoid things in hoards?
             if (cr.ai.target===null) {
               this.unassign();
