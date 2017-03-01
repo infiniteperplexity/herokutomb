@@ -582,10 +582,12 @@ HTomb = (function(HTomb) {
     VK_Z: Commands.showSpells,
     VK_SLASH: function() {
       if (HTomb.Tutorial.enabled) {
-        HTomb.Tutorial.enabled = false;
-        HTomb.Events.publish({type: "Command", command: "DisableTutorial"});
-        if (HTomb.Time.dailyCycle.turn===0) {
-          HTomb.GUI.autopause = false;
+        if (HTomb.Tutorial.active >= HTomb.Tutorial.tutorials.length-2 || confirm("Really disable tutorials?")) {
+          HTomb.Tutorial.enabled = false;
+          HTomb.Events.publish({type: "Command", command: "DisableTutorial"});
+          if (HTomb.Time.dailyCycle.turn===0) {
+            HTomb.GUI.autopause = false;
+          }
         }
       } else {
         HTomb.Tutorial.enabled = true;
@@ -779,10 +781,12 @@ HTomb = (function(HTomb) {
     VK_PAGE_DOWN: function() {scroll.scrollDown();},
     VK_SLASH: function() {
       if (HTomb.Tutorial.enabled) {
-        HTomb.Tutorial.enabled = false;
-        HTomb.Events.publish({type: "Command", command: "DisableTutorial"});
-        if (HTomb.Time.dailyCycle.turn===0) {
-          HTomb.GUI.autopause = false;
+        if (HTomb.Tutorial.active >= HTomb.Tutorial.tutorials.length-2 || confirm("Really disable tutorials?")) {
+          HTomb.Tutorial.enabled = false;
+          HTomb.Events.publish({type: "Command", command: "DisableTutorial"});
+          if (HTomb.Time.dailyCycle.turn===0) {
+            HTomb.GUI.autopause = false;
+          }
         }
       } else {
         HTomb.Tutorial.enabled = true;

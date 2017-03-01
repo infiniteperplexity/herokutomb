@@ -88,11 +88,11 @@ HTomb = (function(HTomb) {
         return obj;
       } else {
         if (context.contextName==="Survey") {
-          obj.instructions = ["%c{orange}You have strayed from the tutorial.  Press Tab to get back on track or ? to hide tutorial messages."];
+          obj.instructions = ["%c{orange}%b{DarkGreen}You have strayed from the tutorial.  Press Tab to get back on track or ? to hide tutorial messages."];
         } else if (active.backupInstructions) {
           obj.instructions = active.backupInstructions;
         } else if (context.contextName!=="Main") {
-          obj.instructions = ["%c{orange}You have strayed from the tutorial.  Press Escape to get back on track or ? to hide tutorial messages."];
+          obj.instructions = ["%c{orange}%b{DarkGreen}You have strayed from the tutorial.  Press Escape to get back on track or ? to hide tutorial messages."];
         } else {
           obj.instructions = ["If you see this, something has gone wrong..."];
         }
@@ -136,9 +136,9 @@ HTomb = (function(HTomb) {
       "Esc: System view.",
       " ",
       "%c{cyan}Move: NumPad/Arrows.",
-      "Control+Arrows for diagonal.)",
+      "(Control+Arrows for diagonal.)",
       " ",
-      "%c{cyan}?: Toggle tutorial."
+      "?: Toggle tutorial."
     ],
     instructions: [
       "%c{yellow}Welcome to the HellaTomb in-game tutorial.  Follow the instructions on this panel to proceed through the tutorial, or press ? to turn off these messages and play without the tutorial.",
@@ -147,13 +147,15 @@ HTomb = (function(HTomb) {
       " ",
       "%c{lime}This symbol is you: %c{magenta}@",
       " ",
-      "%c{cyan}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
+      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
     ],
     listens: ["Command"],
     skip: "RaisingAZombieStepOne",
     onBegin: function() {
       if (HTomb.Tutorial.enabled) {
-        HTomb.GUI.autopause = true;
+        HTomb.Time.slowDown();
+        HTomb.Time.slowDown();
+        //HTomb.GUI.autopause = true;
       }
     },
     trigger: function(event) {
@@ -174,9 +176,9 @@ HTomb = (function(HTomb) {
       "Esc: System view.",
       " ",
       "%c{cyan}Move: NumPad/Arrows.",
-      "Control+Arrows for diagonal.)",
+      "(Control+Arrows for diagonal.)",
       " ",
-      "%c{cyan}?: Toggle tutorial."
+      "?: Toggle tutorial."
     ],
     instructions: [
       "%c{white}You walk amongst the tombstones of a hillside graveyard, searching for the site upon which you will build your mighty fortress.",
@@ -192,7 +194,7 @@ HTomb = (function(HTomb) {
       " ",
       "- Letters such as 's' or 'b' are wild animals, mostly harmless for now.",
       " ",
-      "%c{cyan}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
+      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
     ],
     listens: ["Command"],
     skip: "RaisingAZombieStepOne",
@@ -236,7 +238,7 @@ HTomb = (function(HTomb) {
       " ",
       "- When you climb up or down, colors change with your relative elevation.",
       " ",
-      "%c{cyan}Try climbing up and down a few slopes."
+      "%c{cyan}%b{DarkRed}Try climbing up and down a few slopes."
     ],
     listens: ["Command"],
     skip: "RaisingAZombieStepOne",
@@ -272,7 +274,7 @@ HTomb = (function(HTomb) {
       " ",
       "Near where you started, there should be some symbols like this: \u2670. These are tombstones.  If you want to know what a symbol represents, hover over it with the mouse and look at the bottom half of the right panel.",
       " ",
-      "%c{cyan}Find a tombstone - you don't have to stand right next to it.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"
+      "%c{cyan}%b{DarkRed}Find a tombstone - you don't have to stand right next to it.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"
     ],
     listens: ["Command"],
     skip: "WaitingForTheZombie",
@@ -290,7 +292,7 @@ HTomb = (function(HTomb) {
       return txt;
     },
     instructions: HTomb.Tutorial.templates.RaisingAZombieStepOne.instructions,
-    backupInstructions: ["%c{cyan}Find a tombstone - you don't have to stand right next to it.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"],
+    backupInstructions: ["%c{cyan}%b{DarkRed}Find a tombstone - you don't have to stand right next to it.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"],
     listens: ["Command"],
     skip: "WaitingForTheZombie",
     rewind: "RaisingAZombieStepOne",
@@ -311,10 +313,10 @@ HTomb = (function(HTomb) {
       "Move: NumPad/Arrows, </>: Up/Down.",
       "(Control+Arrows for diagonal.)",
       " ",
-      "Click / Space: Select.",
+      "%c{cyan}Click / Space: Select.",
     ],
     instructions: [
-      "%c{cyan}Select a tombstone, either by using the mouse, or by navigating with the direction keys and pressing space to select.",
+      "%c{cyan}%b{DarkRed}Select a tombstone, either by using the mouse, or by navigating with the direction keys and pressing space to select.  Make sure the tombstone is on the current elevation level.",
       " ",
       "Notice that the bottom portion of this panel gives you information about the square you are hovering over - whether it's a valid target for your spell, what the terrain is like, and so on."
     ],
@@ -349,7 +351,7 @@ HTomb = (function(HTomb) {
       " ",
       "You just earned an achievement, as noted on the message bar below the play area.  You can scroll messages up and down using the PageUp and PageDown keys (on a Mac, Fn+Arrows.)",
       " ",
-      "%c{cyan}Press 'A' to view the achievements screen."
+      "%c{cyan}%b{DarkRed}Press 'A' to view the achievements screen."
     ],
     listens: ["Command"],
     skip: "WaitingForTheZombie",
@@ -390,7 +392,7 @@ HTomb = (function(HTomb) {
       " ",
       "The orange background around the tombstone indicates that there is a task assigned in that square.",
       " ",
-      "%c{cyan}Press 5 on the numeric keypad several times, until your zombie emerges.  If you have no numeric keypad, press Space to wait."
+      "%c{cyan}%b{DarkRed}Press 5 on the numeric keypad several times, until your zombie emerges.  If you have no numeric keypad, press Space to wait."
     ],
     listens: ["Complete"],
     skip: "AssignAJob",
@@ -426,7 +428,7 @@ HTomb = (function(HTomb) {
       " ",
       "Press + or - to make time pass faster or slower.",
       " ",
-      "%c{cyan}Wait for some time to pass.  Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
+      "%c{cyan}%b{DarkRed}Wait for some time to pass, using the Wait button if you wish.  Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
     ],
     listens: ["TurnBegin"],
     skip: "AssignAJob",
@@ -461,7 +463,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}You close your eyes and concentrate, formulating a task for your unthinking slave.",
       " ",
-      "%c{cyan}Press J to assign a job, and then press A to make your zombie dig.  You can assign a job from any distance."
+      "%c{cyan}%b{DarkRed}Press J to assign a job, and then press A to make your zombie dig.  You can assign a job from any distance."
     ],
     listens: ["Command"],
     skip: "WaitingForDig",
@@ -494,7 +496,7 @@ HTomb = (function(HTomb) {
     contexts: ["DesignateDigTask"],
     controls: null,
     instructions: [
-      "%c{cyan}Using the mouse or keyboard, select two corners of a rectangular area for your zombie to dig.",
+      "%c{cyan}%b{DarkRed}Using the mouse or keyboard, select two corners of a rectangular area for your zombie to dig.",
       " ",
       "What 'dig' means is contextual, depending on the terrain you select:",
       " ",
@@ -536,7 +538,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}The zombie shuffles dutifully to complete its task.",
       " ",
-      "%c{cyan}Now wait for your zombie to dig.",
+      "%c{cyan}%b{DarkRed}Now wait for your zombie to dig.",
       " ",
       "There is a chance that you will unlock one or more additional achievements, depending on where your zombie digs and what it finds."
     ],
@@ -587,7 +589,7 @@ HTomb = (function(HTomb) {
       " ",
       "Every zombie under your control raises the mana cost of the 'raise zombie' spell.  Your current mana is listed above the left-hand side of the message bar.",
       " ",
-      "%c{cyan}Wait until you have 15 mana, then raise a second zombie and wait for it to emerge."
+      "%c{cyan}%b{DarkRed}Wait until you have 15 mana, then raise a second zombie and wait for it to emerge."
     ],
     listens: ["Cast"],
     skip: "WaitForSecondZombie",
@@ -619,7 +621,7 @@ HTomb = (function(HTomb) {
       " ",
       "Every zombie under your control raises the mana cost of the 'raise zombie' spell.  Your current mana is listed above the left-hand side of the message bar.",
       " ",
-      "%c{cyan}Wait for your second zombie to emerge."
+      "%c{cyan}%b{DarkRed}Wait for your second zombie to emerge."
     ],
     listens: ["Complete"],
     skip: "WaitingForHarvest",
@@ -652,7 +654,7 @@ HTomb = (function(HTomb) {
       " ",
       "Once you have several zombies, there is less need for your necromancer to walk around.  You may wish to spend most of your time in 'Navigation Mode', moving the viewing window independently while your necromancer meditates on a throne or conducts research in a laboratory.",
       " ",
-      "%c{cyan}Press Tab to enter Navigation Mode.",
+      "%c{cyan}%b{DarkRed}Press Tab to enter Navigation Mode.",
     ],
     listens: ["Command"],
     skip: "WaitingForHarvest",
@@ -686,7 +688,7 @@ HTomb = (function(HTomb) {
       " ",
       "Move the screen around using the keypad or arrows.  Hold Shift to move multiple spaces at a time.  Also try pressing < or > to move the view up or down a level.  To wait in Navigation Mode, press 5 on the keypad, or Control+Space.",
       " ",
-      "%c{cyan}Press Tab to return to 'Avatar Mode' and recenter the screen, putting you in direct control of the necromancer."
+      "%c{cyan}%b{DarkRed}Press Tab to return to 'Avatar Mode' and recenter the screen, putting you in direct control of the necromancer."
     ],
     listens: ["Command"],
     skip: "WaitingForHarvest",
@@ -751,7 +753,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "The green \u2663 and \u2660 symbols on the map are trees.",
       " ",
-      "%c{cyan}Using the mouse or keyboard, select two corners of a rectangular area that includes some trees that are on your current elevation level.  Then wait for your zombies to harvest some wood."
+      "%c{cyan}%b{DarkRed}Using the mouse or keyboard, select two corners of a rectangular area that includes some trees that are on your current elevation level.  Then wait for your zombies to harvest some wood."
     ],
     listens: ["Designate"],
     skip: "WaitingForHarvest",
@@ -780,7 +782,7 @@ HTomb = (function(HTomb) {
       return txt;
     },
     instructions: [
-      "%c{cyan}Wait for your zombies to harvest some wood."
+      "%c{cyan}%b{DarkRed}Wait for your zombies to harvest some wood."
     ],
     listens: ["Complete"],
     trigger: function(event) {
@@ -834,11 +836,11 @@ HTomb = (function(HTomb) {
         " "
       ];
       if (context==="Main") {
-        txt.push("%c{cyan}Walk until you are standing on the wooden plank, then try picking it up.");
+        txt.push("%c{cyan}%b{DarkRed}Walk until you are standing on the wooden plank, then try picking it up.");
       } else if (context==="Survey") {
-        txt.push("%c{cyan}Press Tab to directly control the necromancer.");
+        txt.push("%c{cyan}%b{DarkRed}Press Tab to directly control the necromancer.");
       } else {
-        txt.push("%c{cyan}Press a letter key to choose an item.");
+        txt.push("%c{cyan}%b{DarkRed}Press a letter key to choose an item.");
       }
       return txt;
     },
@@ -880,7 +882,7 @@ HTomb = (function(HTomb) {
       " ",
       "For the most part, you won't carry around many items in this game.  The wood you harvested, for example, is more useful lying on the ground where your zombies can get to it.  Once you build some workshops, the zombies can use the wood planks to create items or furnishings.",
       " ",
-      "%c{cyan}Try dropping an item now."
+      "%c{cyan}%b{DarkRed}Try dropping an item now."
     ],
     listens: ["Command"],
     trigger: function(event) {
@@ -909,7 +911,7 @@ HTomb = (function(HTomb) {
       " ",
       "Congratulations, you finished the in-game tutorial.  Experiment with different tasks and commands.  See if you can unlock all the achievements in the demo.",
       " ",
-      "%c{cyan}Press ? to dismiss these messages."
+      "%c{cyan}%b{DarkRed}Press ? to dismiss these messages."
     ],
     listens: ["Command"],
     trigger: function(event) {

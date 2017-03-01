@@ -19,7 +19,8 @@ HTomb = (function(HTomb) {
         Master: {tasks: ["DigTask","BuildTask","ConstructTask","DismantleTask","PatrolTask","FurnishTask","Undesignate","HostileTask"]},
         //Master: {tasks: ["DigTask","BuildTask","ConstructTask","DismantleTask","PatrolTask","FurnishTask","ForbidTask","Undesignate"]},
         //Master: {tasks: ["DigTask","BuildTask","CraftTask","DismantleTask","PatrolTask","FarmTask","WorkshopTask","ForbidTask","HoardTask","Undesignate"]},
-        SpellCaster: {spells: ["RaiseZombie","AcidBolt","ParticleTest"]},
+        //SpellCaster: {spells: ["RaiseZombie","AcidBolt","ParticleTest"]},
+        SpellCaster: {spells: ["RaiseZombie","AcidBolt"]},
         Body: {
           materials: {
             Flesh: 25,

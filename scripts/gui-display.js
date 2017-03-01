@@ -258,37 +258,31 @@ HTomb = (function(HTomb) {
     // handle line breaks
     let c=0;
     let br=null;
-    //%{\w+}
+    let fgpat = /%c{\w*}/g;
+    let bgpat = /%b{\w*}/g;
     while(c<menuText.length) {
-      let pat = /%c{\w*}/;
-      let match = pat.exec(menuText[c]);
-      let measure = menuText[c];
       let txt = menuText[c];
-      if (match!==null) {
-        let measure = menuText[c];
-        for (let i=0; i<match.length; i++) {
-          measure = measure.replace(/%c{\w*}/g,"");
-        }
-        if (measure.length<MENUW-2) {
-          c++;
-          continue;
-        }
-        txt = menuText[c].replace(match[0],"");
-      }
-      if (txt.length<MENUW-2) {
+      let fg = fgpat.exec(txt);
+      let bg = bgpat.exec(txt);
+      let measure = txt.replace(fgpat,"").replace(bgpat,"");
+      if (measure.length<MENUW-2) {
         c++;
         continue;
       }
-      for (var j=0; j<txt.length; j++) {
-        if (txt[j]===" ") {
+      for (var j=0; j<measure.length; j++) {
+        if (measure[j]===" ") {
           br = j;
         }
         if (j>=MENUW-2) {
-          var one = txt.substring(0,br);
-          var two = txt.substring(br+1);
-          if (match!==null) {
-            one = match[0]+one;
-            two = match[0]+two;
+          var one = measure.substring(0,br);
+          var two = measure.substring(br+1);
+          if (fg!==null) {
+            one = fg[0]+one;
+            two = fg[0]+two;
+          }
+          if (bg!==null) {
+            one = bg[0]+one;
+            two = bg[0]+two;
           }
           menuText[c] = one;
           menuText.splice(c+1,0,two);
