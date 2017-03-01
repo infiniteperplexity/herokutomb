@@ -830,7 +830,7 @@ HTomb = (function(HTomb) {
           }
           if (carrying===false) {
             // if not carrying any valid item...hold on...shouldn't we keep a valid target if we already have one?
-            if (!t || !t.item || !this.itemAllowed(t) {
+            if (!t || !t.item || !this.itemAllowed(t)) {
               cr.ai.target = this.getSomeValidItem(cr);
             }
             // should maybe use fetch with an option to avoid things in hoards?
