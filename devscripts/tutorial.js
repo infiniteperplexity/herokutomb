@@ -18,13 +18,15 @@ HTomb = (function(HTomb) {
     finish: function() {
       this.active = this.tutorials.length-1;
     },
-    back: function() {
+    rewind: function() {
       while (this.active>0) {
         this.active-=1;
-        if (this.tutorials[this.active].skipMe!==true) {
+        if (this.tutorials[this.active].norepeat!==true && this.tutorials[this.active].rollback===null) {
+          this.tutorials[this.active].tracking = {};
           break;
         }
       }
+      console.log("Rewinding to tutorial: "+this.tutorials[this.active].rollback);
       HTomb.GUI.Panels.menu.render();
     },
     reset: function() {
@@ -43,6 +45,9 @@ HTomb = (function(HTomb) {
           this.tutorials[this.active].onComplete();
           if (this.active<this.tutorials.length-1) {
             this.active+=1;
+            while (this.tutorials[this.active].norepeat===true) {
+              this.active+=1;
+            }
             this.tutorials[this.active].tracking = {};
             console.log("Beginning tutorial: "+this.tutorials[this.active].template);
             this.tutorials[this.active].onBegin();
@@ -50,9 +55,9 @@ HTomb = (function(HTomb) {
           }
         }
       }
-      if (event.type==="Command" && (event.command==="MainMode" || event.command==="SurveyMode") && this.tutorials[this.active].rewind) {
-       console.log("Rewinding tutorial: "+this.tutorials[this.active].rewind);
-       this.goto(this.tutorials[this.active].rewind);
+      if (event.type==="Command" && (event.command==="MainMode" || event.command==="SurveyMode") && this.tutorials[this.active].rollback) {
+       console.log("Rolling back tutorial: "+this.tutorials[this.active].rollback);
+       this.goto(this.tutorials[this.active].rollback);
        return;
      }
       let skip = this.templates[this.tutorials[this.active].skip];
@@ -121,16 +126,16 @@ HTomb = (function(HTomb) {
     goto: function(arg) {
       if (typeof(arg)==="number") {
         this.active = arg;
-        this.tutorials[this.active].tracking = {};
-        console.log("Beginning tutorial: "+this.tutorials[this.active].template);
-        this.tutorials[this.active].onBegin();
       } else if (typeof(arg)==="string") {
         let template = this.templates[arg];
         this.active = this.tutorials.indexOf(template);
-        this.tutorials[this.active].tracking = {};
-        console.log("Beginning tutorial: "+this.tutorials[this.active].template);
-        this.tutorials[this.active].onBegin();
       }
+      while(this.tutorials[this.active].norepeat===true) {
+        this.active+=1;
+      }
+      this.tutorials[this.active].tracking = {};
+      console.log("Beginning tutorial: "+this.tutorials[this.active].template);
+      this.tutorials[this.active].onBegin();
     }
   };
 
@@ -144,8 +149,9 @@ HTomb = (function(HTomb) {
     this.instructions = args.instructions || null;
     this.backupInstructions = args.backupInstructions || null;
     this.completed = false;
+    this.norepeat = false;
     this.skip = args.skip || null;
-    this.rewind = args.rewind || null;
+    this.rollback = args.rollback || null;
     this.middle = args.middle || null;
     this.bottom = args.bottom || null;
     this.listens = args.listens || [];
@@ -204,8 +210,8 @@ HTomb = (function(HTomb) {
       "%c{cyan}Move: NumPad/Arrows.",
       "(Control+Arrows for diagonal.)",
       " ",
-      "?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}You walk amongst the tombstones of a hillside graveyard, searching for the site upon which you will build your mighty fortress.",
@@ -250,8 +256,8 @@ HTomb = (function(HTomb) {
       "Move: NumPad/Arrows, %c{cyan}</>: Up/Down.",
       "(Control+Arrows for diagonal.)",
       " ",
-      "?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}You scramble up and down the slopes for a better view of the area.",
@@ -270,6 +276,19 @@ HTomb = (function(HTomb) {
     ],
     listens: ["Command"],
     skip: "RaisingAZombieStepOne",
+    onBegin: function() {
+      if (HTomb.Player.master.minions.length>=1) {
+        let m = HTomb.Player.master.minions[0];
+        if (m.worker.task && m.worker.task.template==="ZombieEmergeTask") {
+          HTomb.Tutorial.templates.RaisingAZombieStepThree.onComplete();
+          HTomb.Tutorial.goto("AchievementsAndScrolling");
+        } else {
+          HTomb.Tutorial.templates.RaisingAZombieStepThree.onComplete();
+          HTomb.Tutorial.templates.WaitingForTheZombie.onComplete();
+          HTomb.Tutorial.goto("UnpausingAndChangingSpeeds");
+        }
+      }
+    },
     trigger: function(event) {
       if (this.tracking.ups===undefined && this.tracking.downs===undefined) {
         this.tracking.ups = 0;
@@ -295,8 +314,8 @@ HTomb = (function(HTomb) {
       " ",
       "%c{cyan}Z: Cast spell.",
       " ",
-      "?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}Enough of this pointless wandering - it is time to summon an undead servant.",
@@ -324,7 +343,7 @@ HTomb = (function(HTomb) {
     backupInstructions: ["%c{cyan}%b{DarkRed}Find a tombstone - you don't have to stand right next to it.  Then press Z to view a list of spells you can cast, and press A to choose 'raise zombie.'"],
     listens: ["Command"],
     skip: "WaitingForTheZombie",
-    rewind: "RaisingAZombieStepOne",
+    rollback: "RaisingAZombieStepOne",
     trigger: function(event) {
       return (event.command==="ChooseSpell" && event.spell.template==="RaiseZombie");
     }
@@ -352,14 +371,14 @@ HTomb = (function(HTomb) {
     backupInstructions: HTomb.Tutorial.templates.RaisingAZombieStepTwo.backupInstructions,
     listens: ["Cast"],
     skip: "WaitingForTheZombie",
-    rewind: "RaisingAZombieStepOne",
+    rollback: "RaisingAZombieStepOne",
     trigger: function(event) {
       return (event.spell.template==="RaiseZombie");
     },
     onComplete: function() {
-      HTomb.Tutorial.templates.RaisingAZombieStepOne.skipMe = true;
-      HTomb.Tutorial.templates.RaisingAZombieStepTwo.skipMe = true;
-      HTomb.Tutorial.templates.RaisingAZombieStepThree.skipMe = true;
+      HTomb.Tutorial.templates.RaisingAZombieStepOne.norepeat = true;
+      HTomb.Tutorial.templates.RaisingAZombieStepTwo.norepeat = true;
+      HTomb.Tutorial.templates.RaisingAZombieStepThree.norepeat = true;
     }
   });
 
@@ -378,8 +397,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell.",
       " ",
       "%c{cyan}PageUp/Down: Scroll messages.",
-      "%c{cyan}A: Achievements, %c{}?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "%c{cyan}A: Achievements, %c{}?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}Forbidden runes swirl around you as you call forth a corpse from its grave.",
@@ -390,6 +409,15 @@ HTomb = (function(HTomb) {
     ],
     listens: ["Command"],
     skip: "WaitingForTheZombie",
+    onBegin: function() {
+      if (HTomb.Player.master.minions.length>=1) {
+        let m = HTomb.Player.master.minions[0];
+        if (!m.worker.task || m.worker.task.template!=="ZombieEmergeTask") {
+          this.onComplete();
+          HTomb.Tutorial.goto("UnpausingAndChangingSpeeds");
+        }
+      }
+    },
     trigger: function(event) {
       if (this.tracking.achievements===undefined) {
         this.tracking.achievements = false;
@@ -420,8 +448,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "A: Achievements, ?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}You wait, smiling grimly as your undead thrall claws its way out of its grave.",
@@ -436,7 +464,11 @@ HTomb = (function(HTomb) {
       return (event.task && event.task.template==="ZombieEmergeTask");
     },
     onComplete: function() {
-      HTomb.Tutorial.templates.WaitingForTheZombie.skipMe = true;
+      // the first three should already be true, but...
+      HTomb.Tutorial.templates.RaisingAZombieStepOne.norepeat = true;
+      HTomb.Tutorial.templates.RaisingAZombieStepTwo.norepeat = true;
+      HTomb.Tutorial.templates.RaisingAZombieStepThree.norepeat = true;
+      HTomb.Tutorial.templates.WaitingForTheZombie.norepeat = true;
     }
   });
 
@@ -456,8 +488,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "A: Achievements, ?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}Your minion bursts forth from the ground!",
@@ -498,8 +530,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, %c{cyan}J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "A: Achievements, ?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}You close your eyes and concentrate, formulating a task for your unthinking slave.",
@@ -525,7 +557,7 @@ HTomb = (function(HTomb) {
     backupInstructions: HTomb.Tutorial.templates.AssignAJob.instructions,
     listens: ["Command"],
     skip: "WaitingForDig",
-    rewind: "AssignAJob",
+    rollback: "AssignAJob",
     trigger: function(event) {
       return (event.command==="ChooseJob" && event.task && event.task.template==="DigTask");
     }
@@ -552,7 +584,7 @@ HTomb = (function(HTomb) {
     backupInstructions: HTomb.Tutorial.templates.AssignAJob.instructions,
     listens: ["Designate"],
     skip: "WaitingForDig",
-    rewind: "AssignAJob",
+    rollback: "AssignAJob",
     trigger: function(event) {
       return (event.task && event.task.template==="DigTask");
     }
@@ -574,8 +606,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "A: Achievements, ?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}The zombie shuffles dutifully to complete its task.",
@@ -590,6 +622,8 @@ HTomb = (function(HTomb) {
       // special handling for the one tutorial you're allowed to do out of order
       if (event.task && event.task.template==="ZombieEmergeTask" && HTomb.Player.master.minions.length>=2) {
           console.log("Skipping ahead in tutorial.");
+          HTomb.Tutorial.templates.RaiseASecondZombie.norepeat = true;
+          HTomb.Tutorial.templates.WaitForSecondZombie.norepeat = true;
           HTomb.Tutorial.goto("NavigationModeStepOne");
           return false;
       }
@@ -617,8 +651,8 @@ HTomb = (function(HTomb) {
           "%c{cyan}Z: Cast spell, %c{}J: Assign job.",
           " ",
           "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Toggle tutorial.",
-          "Backspace / Delete: Previous tutorial."
+          "A: Achievements, ?: Toggle tutorial."
+          //,"Backspace / Delete: Previous tutorial."
         ];
       } else if (context==="ShowSpells") {
         txt[2] = "%c{cyan}"+txt[2];
@@ -640,7 +674,7 @@ HTomb = (function(HTomb) {
       return (event.spell.template==="RaiseZombie");
     },
     onComplete: function() {
-      HTomb.Tutorial.templates.RaiseASecondZombie.skipMe = true;
+      this.norepeat = true;
     }
   });
 
@@ -660,8 +694,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, %c{}J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "A: Achievements, ?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}This decaying wretch is but the beginning - soon, you will command an undead horde.",
@@ -676,7 +710,8 @@ HTomb = (function(HTomb) {
       return (event.task && event.task.template==="ZombieEmergeTask" && HTomb.Player.master.minions.length>=2);
     },
     onComplete: function() {
-      HTomb.Tutorial.templates.WaitForSecondZombie.skipMe = true;
+      HTomb.Tutorial.templates.RaiseASecondZombie.norepeat = true;
+      this.norepeat = true;
     }
   });
 
@@ -697,8 +732,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "A: Achievements, ?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}These mindless servants shall be your hands, eyes, and ears.",
@@ -732,8 +767,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial.",
-      "Backspace / Delete: Previous tutorial."
+      "A: Achievements, ?: Toggle tutorial."
+      //,"Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "Now you are in navigation mode.",
@@ -771,7 +806,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}The boulders of these hills will form the bones of your fortress, and the trees shall fuel its fires.",
       " ",
-      "%c{cyan}Press J to assign a job, and then press D to harvest."
+      "%c{cyan}%b{DarkRed}Press J to assign a job, and then press D to harvest."
     ],
     listens: ["Command"],
     skip: "WaitingForHarvest",
@@ -791,7 +826,7 @@ HTomb = (function(HTomb) {
     instructions: HTomb.Tutorial.templates.HarvestResourcesStepOne.instructions,
     listens: ["Command"],
     skip: "WaitingForHarvest",
-    rewind: "HarvestResourcesStepOne",
+    rollback: "HarvestResourcesStepOne",
     trigger: function(event) {
       return (event.command==="ChooseJob" && event.task && event.task.template==="DismantleTask");
     }
@@ -809,7 +844,7 @@ HTomb = (function(HTomb) {
     ],
     listens: ["Designate"],
     skip: "WaitingForHarvest",
-    rewind: "HarvestResourcesStepOne",
+    rollback: "HarvestResourcesStepOne",
     trigger: function(event) {
       return (event.task && event.task.template==="DismantleTask");
     }
@@ -873,8 +908,8 @@ HTomb = (function(HTomb) {
           "%c{cyan}G: Pick Up, %c{}D: Drop, I: Inventory.",
           " ",
           "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Tutorial.",
-          "Backspace / Delete: Previous tutorial."
+          "A: Achievements, ?: Tutorial."
+          //,"Backspace / Delete: Previous tutorial."
         ];
       } else {
         return txt;
@@ -926,8 +961,8 @@ HTomb = (function(HTomb) {
           "G: Pick Up, %c{cyan}D: Drop, I: Inventory.",
           " ",
           "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Tutorial.",
-          "Backspace / Delete: Previous tutorial."
+          "A: Achievements, ?: Tutorial."
+          //,"Backspace / Delete: Previous tutorial."
         ];
       }
     },
@@ -958,7 +993,7 @@ HTomb = (function(HTomb) {
           txt[i] = "A: Achievements, %c{cyan}?: Tutorial.";
         }
       }
-      txt.push("Backspace / Delete: Previous tutorial.");
+      //txt.push("Backspace / Delete: Previous tutorial.");
       return txt;
     },
     instructions: [

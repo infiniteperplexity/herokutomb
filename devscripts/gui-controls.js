@@ -595,14 +595,14 @@ HTomb = (function(HTomb) {
       HTomb.GUI.Panels.menu.refresh();
     },
     VK_BACK_SPACE: function() {
-      if (HTomb.Tutorial.enabled) {
-        HTomb.Tutorial.back();
-      }
+      //if (HTomb.Tutorial.enabled) {
+      //  HTomb.Tutorial.rewind();
+      //}
     },
     VK_DELETE: function() {
-      if (HTomb.Tutorial.enabled) {
-        HTomb.Tutorial.back();
-      }
+      //if (HTomb.Tutorial.enabled) {
+      //  HTomb.Tutorial.rewind();
+      //}
     },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: function() {
@@ -829,14 +829,14 @@ HTomb = (function(HTomb) {
       HTomb.GUI.Views.feedback();
     },
     VK_BACK_SPACE: function() {
-      if (HTomb.Tutorial.enabled) {
-        HTomb.Tutorial.back();
-      }
+      //if (HTomb.Tutorial.enabled && HTomb.GUI.Contexts.active === survey) {
+      //  HTomb.Tutorial.rewind();
+      //}
     },
     VK_DELETE: function() {
-      if (HTomb.Tutorial.enabled) {
-        HTomb.Tutorial.back();
-      }
+      //if (HTomb.Tutorial.enabled && HTomb.GUI.Contexts.active === survey) {
+      //  HTomb.Tutorial.rewind();
+      //}
     }
   });
   survey.contextName = "Survey";

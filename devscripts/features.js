@@ -25,6 +25,11 @@ HTomb = (function(HTomb) {
         var x1 = ROT.DIRS[8][i][0]+x;
         var y1 = ROT.DIRS[8][i][1]+y;
         if (HTomb.World.tiles[z][x1][y1].solid!==true) {
+          // don't drop rocks on tombstones, it could confuse new players
+          let f = HTomb.World.features[coord(x1,y1,z)];
+          if (f && f.template==="Tombstone") {
+            continue;
+          }
           if (Math.random()<0.4) {
             var rock = HTomb.Things.Rock();
             rock.item.n = 1;
