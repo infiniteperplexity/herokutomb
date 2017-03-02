@@ -594,6 +594,16 @@ HTomb = (function(HTomb) {
       }
       HTomb.GUI.Panels.menu.refresh();
     },
+    VK_BACK_SPACE: function() {
+      if (HTomb.Tutorial.enabled) {
+        HTomb.Tutorial.back();
+      }
+    },
+    VK_DELETE: function() {
+      if (HTomb.Tutorial.enabled) {
+        HTomb.Tutorial.back();
+      }
+    },
     VK_TAB: function() {Main.surveyMode();},
     VK_SPACE: function() {
         Commands.wait();
@@ -817,6 +827,16 @@ HTomb = (function(HTomb) {
     VK_A: Main.showAchievements,
     VK_F: function() {
       HTomb.GUI.Views.feedback();
+    },
+    VK_BACK_SPACE: function() {
+      if (HTomb.Tutorial.enabled) {
+        HTomb.Tutorial.back();
+      }
+    },
+    VK_DELETE: function() {
+      if (HTomb.Tutorial.enabled) {
+        HTomb.Tutorial.back();
+      }
     }
   });
   survey.contextName = "Survey";

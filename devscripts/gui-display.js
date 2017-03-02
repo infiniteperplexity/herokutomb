@@ -243,6 +243,7 @@ HTomb = (function(HTomb) {
           replace.instructions[i] = "%c{lime}"+replace.instructions[i];
         }
       }
+      
       menuTop = replace.controls.concat([" "],replace.instructions);
       menuMiddle = replace.middle;
       menuBottom = replace.bottom;

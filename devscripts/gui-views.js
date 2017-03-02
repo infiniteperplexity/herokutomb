@@ -31,6 +31,18 @@ HTomb = (function(HTomb) {
   var Views = GUI.Views;
   let menu = GUI.Panels.menu;
 
+  Views.manual = function() {
+    HTomb.Time.stopTime();
+    let url = window.location.href;
+    let pat = /[^/]+$/;
+    let match = pat.exec(url);
+    let feedback = "manual.html"
+    if (match===null) {
+      window.open(url+feedback);
+    } else {
+      window.open(url.replace(match,feedback));
+    };
+  }
   Views.feedback = function() {
     HTomb.Time.stopTime();
     let url = window.location.href;
@@ -72,6 +84,7 @@ HTomb = (function(HTomb) {
       "N) New game.",
       "R) Restore game.",
       "F) Submit feedback or bug report.",
+      "M) Read a detailed manual.",
       "Q) Quit.",
       "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ];
@@ -107,7 +120,8 @@ HTomb = (function(HTomb) {
       Views.System.restore();
     },
     VK_Q: function() {Views.System.quit();},
-    VK_F: function() {Views.feedback();}
+    VK_F: function() {Views.feedback();},
+    VK_M: function() {Views.manual();}
   });
   GUI.Contexts.startup.clickOverlay = function() {};
 
@@ -123,6 +137,7 @@ HTomb = (function(HTomb) {
       "R) Restore game.",
       "D) Delete current game('" + HTomb.Save.currentGame +"').",
       "Q) Quit game.",
+      "M) Read a detailed manual.",
       "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ]);
   };
@@ -132,7 +147,8 @@ HTomb = (function(HTomb) {
     VK_S: function() {Views.System.save();},
     VK_R: function() {HTomb.GUI.Views.parentView = HTomb.GUI.Views.systemView; Views.System.restore();},
     VK_Q: function() {Views.System.quit();},
-    VK_D: function() {Views.System.delete();}
+    VK_D: function() {Views.System.delete();},
+    VK_M: function() {Views.manual();}
   });
   Views.System = {};
   Views.System.save = function() {

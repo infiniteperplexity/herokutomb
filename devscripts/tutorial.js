@@ -1,6 +1,15 @@
 HTomb = (function(HTomb) {
   "use strict";
 
+
+  /* specify...so, if we roll back to the way things used to be, what exceptions do we need?
+    - Skip to the past the first three zombie tasks if you're already waiting for the zombie.
+    - Skip past
+
+
+
+
+  */
   HTomb.Tutorial = {
     enabled: true,
     active: 0,
@@ -9,10 +18,19 @@ HTomb = (function(HTomb) {
     finish: function() {
       this.active = this.tutorials.length-1;
     },
+    back: function() {
+      while (this.active>0) {
+        this.active-=1;
+        if (this.tutorials[this.active].skipMe!==true) {
+          break;
+        }
+      }
+      HTomb.GUI.Panels.menu.render();
+    },
     reset: function() {
       this.active = 0;
       for (let i=0; i<this.tutorials.length; i++) {
-        this.tutorials[i].complete = false;
+        this.tutorials[i].completed = false;
         this.tutorials[i].tracking = {};
       }
     },
@@ -21,6 +39,7 @@ HTomb = (function(HTomb) {
         let completed = this.tutorials[this.active].trigger(event);
         if (completed) {
           console.log("Completed tutorial: "+this.tutorials[this.active].template);
+          this.tutorials[this.active].completed = true;
           this.tutorials[this.active].onComplete();
           if (this.active<this.tutorials.length-1) {
             this.active+=1;
@@ -102,9 +121,15 @@ HTomb = (function(HTomb) {
     goto: function(arg) {
       if (typeof(arg)==="number") {
         this.active = arg;
+        this.tutorials[this.active].tracking = {};
+        console.log("Beginning tutorial: "+this.tutorials[this.active].template);
+        this.tutorials[this.active].onBegin();
       } else if (typeof(arg)==="string") {
         let template = this.templates[arg];
         this.active = this.tutorials.indexOf(template);
+        this.tutorials[this.active].tracking = {};
+        console.log("Beginning tutorial: "+this.tutorials[this.active].template);
+        this.tutorials[this.active].onBegin();
       }
     }
   };
@@ -118,6 +143,7 @@ HTomb = (function(HTomb) {
     this.controls = args.controls || null;
     this.instructions = args.instructions || null;
     this.backupInstructions = args.backupInstructions || null;
+    this.completed = false;
     this.skip = args.skip || null;
     this.rewind = args.rewind || null;
     this.middle = args.middle || null;
@@ -178,7 +204,8 @@ HTomb = (function(HTomb) {
       "%c{cyan}Move: NumPad/Arrows.",
       "(Control+Arrows for diagonal.)",
       " ",
-      "?: Toggle tutorial."
+      "?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}You walk amongst the tombstones of a hillside graveyard, searching for the site upon which you will build your mighty fortress.",
@@ -223,7 +250,8 @@ HTomb = (function(HTomb) {
       "Move: NumPad/Arrows, %c{cyan}</>: Up/Down.",
       "(Control+Arrows for diagonal.)",
       " ",
-      "?: Toggle tutorial."
+      "?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}You scramble up and down the slopes for a better view of the area.",
@@ -267,7 +295,8 @@ HTomb = (function(HTomb) {
       " ",
       "%c{cyan}Z: Cast spell.",
       " ",
-      "?: Toggle tutorial."
+      "?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}Enough of this pointless wandering - it is time to summon an undead servant.",
@@ -326,6 +355,11 @@ HTomb = (function(HTomb) {
     rewind: "RaisingAZombieStepOne",
     trigger: function(event) {
       return (event.spell.template==="RaiseZombie");
+    },
+    onComplete: function() {
+      HTomb.Tutorial.templates.RaisingAZombieStepOne.skipMe = true;
+      HTomb.Tutorial.templates.RaisingAZombieStepTwo.skipMe = true;
+      HTomb.Tutorial.templates.RaisingAZombieStepThree.skipMe = true;
     }
   });
 
@@ -344,7 +378,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell.",
       " ",
       "%c{cyan}PageUp/Down: Scroll messages.",
-      "%c{cyan}A: Achievements, %c{}?: Toggle tutorial."
+      "%c{cyan}A: Achievements, %c{}?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}Forbidden runes swirl around you as you call forth a corpse from its grave.",
@@ -385,7 +420,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial."
+      "A: Achievements, ?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}You wait, smiling grimly as your undead thrall claws its way out of its grave.",
@@ -398,6 +434,9 @@ HTomb = (function(HTomb) {
     skip: "AssignAJob",
     trigger: function(event) {
       return (event.task && event.task.template==="ZombieEmergeTask");
+    },
+    onComplete: function() {
+      HTomb.Tutorial.templates.WaitingForTheZombie.skipMe = true;
     }
   });
 
@@ -417,7 +456,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial."
+      "A: Achievements, ?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}Your minion bursts forth from the ground!",
@@ -458,7 +498,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, %c{cyan}J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial."
+      "A: Achievements, ?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}You close your eyes and concentrate, formulating a task for your unthinking slave.",
@@ -533,7 +574,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial."
+      "A: Achievements, ?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}The zombie shuffles dutifully to complete its task.",
@@ -575,7 +617,8 @@ HTomb = (function(HTomb) {
           "%c{cyan}Z: Cast spell, %c{}J: Assign job.",
           " ",
           "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Toggle tutorial."
+          "A: Achievements, ?: Toggle tutorial.",
+          "Backspace / Delete: Previous tutorial."
         ];
       } else if (context==="ShowSpells") {
         txt[2] = "%c{cyan}"+txt[2];
@@ -595,6 +638,9 @@ HTomb = (function(HTomb) {
     skip: "WaitForSecondZombie",
     trigger: function(event) {
       return (event.spell.template==="RaiseZombie");
+    },
+    onComplete: function() {
+      HTomb.Tutorial.templates.RaiseASecondZombie.skipMe = true;
     }
   });
 
@@ -614,7 +660,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, %c{}J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial."
+      "A: Achievements, ?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}This decaying wretch is but the beginning - soon, you will command an undead horde.",
@@ -627,6 +674,9 @@ HTomb = (function(HTomb) {
     skip: "WaitingForHarvest",
     trigger: function(event) {
       return (event.task && event.task.template==="ZombieEmergeTask" && HTomb.Player.master.minions.length>=2);
+    },
+    onComplete: function() {
+      HTomb.Tutorial.templates.WaitForSecondZombie.skipMe = true;
     }
   });
 
@@ -647,7 +697,8 @@ HTomb = (function(HTomb) {
       "Z: Cast spell, J: Assign job.",
       " ",
       "PageUp/Down: Scroll messages.",
-      "A: Achievements, ?: Toggle tutorial."
+      "A: Achievements, ?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "%c{white}These mindless servants shall be your hands, eyes, and ears.",
@@ -682,6 +733,7 @@ HTomb = (function(HTomb) {
       " ",
       "PageUp/Down: Scroll messages.",
       "A: Achievements, ?: Toggle tutorial.",
+      "Backspace / Delete: Previous tutorial."
     ],
     instructions: [
       "Now you are in navigation mode.",
@@ -822,6 +874,7 @@ HTomb = (function(HTomb) {
           " ",
           "PageUp/Down: Scroll messages.",
           "A: Achievements, ?: Tutorial.",
+          "Backspace / Delete: Previous tutorial."
         ];
       } else {
         return txt;
@@ -873,7 +926,8 @@ HTomb = (function(HTomb) {
           "G: Pick Up, %c{cyan}D: Drop, I: Inventory.",
           " ",
           "PageUp/Down: Scroll messages.",
-          "A: Achievements, ?: Tutorial."
+          "A: Achievements, ?: Tutorial.",
+          "Backspace / Delete: Previous tutorial."
         ];
       }
     },
@@ -904,6 +958,7 @@ HTomb = (function(HTomb) {
           txt[i] = "A: Achievements, %c{cyan}?: Tutorial.";
         }
       }
+      txt.push("Backspace / Delete: Previous tutorial.");
       return txt;
     },
     instructions: [

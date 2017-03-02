@@ -69,7 +69,7 @@ var HTomb = (function() {
         " ",
         "%c{cyan}Once the game begins, follow the in-game tutorial instructions on the right-hand panel, or press ? to turn off the messages.",
         " ",
-        "%c{cyan}(Press Space Bar to continue.)"
+        "%c{cyan}%b{DarkRed}(Press Space Bar to continue.)"
       ]);
     }, 500);
   };
