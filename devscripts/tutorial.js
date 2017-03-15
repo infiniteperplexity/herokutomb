@@ -179,15 +179,15 @@ HTomb = (function(HTomb) {
       " ",
       "%c{lime}This symbol is you: %c{magenta}@",
       " ",
-      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
+      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys.  One turn will pass for each step you take."
     ],
     listens: ["Command"],
     skip: "RaisingAZombieStepOne",
     onBegin: function() {
       if (HTomb.Tutorial.enabled) {
-        HTomb.Time.slowDown();
-        HTomb.Time.slowDown();
-        //HTomb.GUI.autopause = true;
+        //HTomb.Time.slowDown();
+        //HTomb.Time.slowDown();
+        HTomb.GUI.autopause = true;
       }
     },
     trigger: function(event) {
@@ -227,15 +227,15 @@ HTomb = (function(HTomb) {
       " ",
       "- Letters such as 's' or 'b' are wild animals, mostly harmless for now.",
       " ",
-      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
+      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys.  One turn will pass for each step you take."
     ],
     listens: ["Command"],
     skip: "RaisingAZombieStepOne",
-    onBegin: function() {
-      if (HTomb.Tutorial.enabled) {
-        HTomb.GUI.autopause = true;
-      }
-    },
+    //onBegin: function() {
+      //if (HTomb.Tutorial.enabled) {
+      //  HTomb.GUI.autopause = true;
+      //}
+    //},
     trigger: function(event) {
       if (!this.tracking.moves) {
         this.tracking.moves = 0;
@@ -496,11 +496,11 @@ HTomb = (function(HTomb) {
       " ",
       "Notice the word 'Paused' above the right-hand side of the message bar.  The game is currently auto-paused - one turn will pass for each action you take.",
       " ",
-      "Press Enter / Return to toggle auto-pause.  If you turn it off, turns will pass in realtime.",
+      "Press Enter / Return to toggle auto-pause.  If you turn it off, turns will pass in realtime even if you take no actions.",
       " ",
       "Press + or - to make time pass faster or slower.",
       " ",
-      "%c{cyan}%b{DarkRed}Wait for some time to pass, using the 'wait' (5 or Space) button if you wish.  Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
+      "%c{cyan}%b{DarkRed}Wait for several turns to pass, using the 'wait' (5 or Space) button if you wish.  Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
     ],
     listens: ["TurnBegin"],
     skip: "AssignAJob",

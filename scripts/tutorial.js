@@ -179,15 +179,15 @@ HTomb = (function(HTomb) {
       " ",
       "%c{lime}This symbol is you: %c{magenta}@",
       " ",
-      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
+      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys.  One turn will pass for each step you take."
     ],
     listens: ["Command"],
     skip: "RaisingAZombieStepOne",
     onBegin: function() {
       if (HTomb.Tutorial.enabled) {
-        HTomb.Time.slowDown();
-        HTomb.Time.slowDown();
-        //HTomb.GUI.autopause = true;
+        //HTomb.Time.slowDown();
+        //HTomb.Time.slowDown();
+        HTomb.GUI.autopause = true;
       }
     },
     trigger: function(event) {
@@ -227,15 +227,15 @@ HTomb = (function(HTomb) {
       " ",
       "- Letters such as 's' or 'b' are wild animals, mostly harmless for now.",
       " ",
-      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys."
+      "%c{cyan}%b{DarkRed}Try walking around using the numeric keypad.  If your keyboard has no keypad, use the arrow keys.  One turn will pass for each step you take."
     ],
     listens: ["Command"],
     skip: "RaisingAZombieStepOne",
-    onBegin: function() {
-      if (HTomb.Tutorial.enabled) {
-        HTomb.GUI.autopause = true;
-      }
-    },
+    //onBegin: function() {
+      //if (HTomb.Tutorial.enabled) {
+      //  HTomb.GUI.autopause = true;
+      //}
+    //},
     trigger: function(event) {
       if (!this.tracking.moves) {
         this.tracking.moves = 0;
@@ -456,7 +456,7 @@ HTomb = (function(HTomb) {
       " ",
       "The orange background around the tombstone indicates that there is a task assigned in that square.",
       " ",
-      "%c{cyan}%b{DarkRed}Press 5 on the numeric keypad several times, until your zombie emerges.  If you have no numeric keypad, press Space to wait."
+      '%c{cyan}%b{DarkRed}Press 5 on the numeric keypad several times, to pass turns ("wait") until your zombie emerges.  If you have no numeric keypad, press Space to wait.'
     ],
     listens: ["Complete"],
     skip: "AssignAJob",
@@ -496,11 +496,11 @@ HTomb = (function(HTomb) {
       " ",
       "Notice the word 'Paused' above the right-hand side of the message bar.  The game is currently auto-paused - one turn will pass for each action you take.",
       " ",
-      "Press Enter / Return to toggle auto-pause.  If you turn it off, turns will pass in realtime.",
+      "Press Enter / Return to toggle auto-pause.  If you turn it off, turns will pass in realtime even if you take no actions.",
       " ",
       "Press + or - to make time pass faster or slower.",
       " ",
-      "%c{cyan}%b{DarkRed}Wait for some time to pass, using the Wait button if you wish.  Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
+      "%c{cyan}%b{DarkRed}Wait for several turns to pass, using the 'wait' (5 or Space) button if you wish.  Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
     ],
     listens: ["TurnBegin"],
     skip: "AssignAJob",
@@ -612,7 +612,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}The zombie shuffles dutifully to complete its task.",
       " ",
-      "%c{cyan}%b{DarkRed}Now wait for your zombie to dig.",
+      "%c{cyan}%b{DarkRed}Now wait (pass turns) while your zombie digs.",
       " ",
       "There is a chance that you will unlock one or more additional achievements, depending on where your zombie digs and what it finds."
     ],
@@ -666,7 +666,7 @@ HTomb = (function(HTomb) {
       " ",
       "Every zombie under your control raises the mana cost of the 'raise zombie' spell.  Your current mana is listed above the left-hand side of the message bar.",
       " ",
-      "%c{cyan}%b{DarkRed}Wait until you have 15 mana, then raise a second zombie and wait for it to emerge."
+      "%c{cyan}%b{DarkRed}Wait (pass turns) until you have 15 mana, then raise a second zombie and wait for it to emerge.  Press Z to cast a spell, press A to choose 'raise zombie', and then select a tombstone."
     ],
     listens: ["Cast"],
     skip: "WaitForSecondZombie",
@@ -702,7 +702,7 @@ HTomb = (function(HTomb) {
       " ",
       "Every zombie under your control raises the mana cost of the 'raise zombie' spell.  Your current mana is listed above the left-hand side of the message bar.",
       " ",
-      "%c{cyan}%b{DarkRed}Wait for your second zombie to emerge."
+      "%c{cyan}%b{DarkRed}Wait (pass turns) until your zombie emerges."
     ],
     listens: ["Complete"],
     skip: "WaitingForHarvest",
