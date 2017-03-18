@@ -494,23 +494,23 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}Your minion bursts forth from the ground!",
       " ",
-      "Notice the word 'Paused' above the right-hand side of the message bar.  The game is currently auto-paused - one turn will pass for each action you take.",
+      "The word 'Paused' above the right-hand side of the message bar.  The game is currently auto-paused - one turn will pass for each action you take.  If you turn auto-pause off, turns will pass in realtime even if you take no actions.  You can press + or - to make time pass faster or slower.",
       " ",
-      "Press Enter / Return to toggle auto-pause.  If you turn it off, turns will pass in realtime even if you take no actions.",
+      "%c{cyan}%b{DarkRed}Press Enter / Return to turn off auto-pause, then wait for several turns to pass.",
       " ",
-      "Press + or - to make time pass faster or slower.",
-      " ",
-      "%c{cyan}%b{DarkRed}Wait for several turns to pass, using the 'wait' (5 or Space) button if you wish.  Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
+      "Your zombie will wander a short distance from you.  If it seems to disappear, it probably went up or down a slope."
     ],
-    listens: ["TurnBegin"],
+    listens: ["TurnBegin","Command"],
     skip: "AssignAJob",
     trigger: function(event) {
+      if (event.type==="Command" && event.command==="UnPause") {
+        this.tracking.unpaused = true;
+      }
       if (!this.tracking.turns) {
         this.tracking.turns = 0;
       }
       this.tracking.turns+=1;
-      let split = HTomb.Time.getSpeed().split("/");
-      return ((this.tracking.turns>=10  && ((split[1]/split[0])>=1 || HTomb.GUI.autopause===true)) || this.tracking.turns>=20);
+      return (this.tracking.turns>=15 && this.tracking.unpaused);
     }
   });
 
@@ -536,7 +536,9 @@ HTomb = (function(HTomb) {
     instructions: [
       "%c{white}You close your eyes and concentrate, formulating a task for your unthinking slave.",
       " ",
-      "%c{cyan}%b{DarkRed}Press J to assign a job, and then press A to make your zombie dig.  You can assign a job from any distance."
+      "%c{cyan}%b{DarkRed}Press J to assign a job, and then press A to make your zombie dig.  You can assign a job from any distance.",
+      " ",
+      "(Remember, if auto-pause is turned off, you can turn it back on by pressing Enter / Return.)"
     ],
     listens: ["Command"],
     skip: "WaitingForDig",
