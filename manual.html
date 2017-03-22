@@ -3,11 +3,108 @@
 <head>
 <meta charset="utf-8"/>
 <title>HellaTomb Manual</title>
-
 </head>
 <style>
 </style>
 <body>
-(insert manual here)
+<h>
+HellaTomb: The bare-bones manual
+</h>
+<p>
+HellaTomb is a rogue-like fortress-building game, inspired by the likes of Dwarf Fortress (link_ and KeeperRL (link.) The current version is something like a demo - it has the game's core functionality and a full tutorial, but the content is limited to the minimum necessary to test the game's appeal.  In this game, you play the role of a necromancer, raising zombies to build a fortress.  You will gather resources, build structures and goods, and defend your fortress from wandering monsters, adventurers, rival necromancers, and the like.
+</p>
+<h>
+What am I looking at?
+</h>
+<p>
+HellaTomb is a takes place on a three-dimensional grid of tiles.  The x-axis represents east/west (or left/right) and the y-axis represents north/south (up and down on the screen.)  The z-axis represents depth/elevation/altitude; you can only clearly see one z-layer at a time, but you can imagine them as being deeper into the screen or closer to your eyes.  You can see a limited ways "downward"; if there is empty space on your z-level, you can see the next z-level down with as darkened tiles.  Instead of graphics, HellaTomb uses unicode characters.  The character might represent a terrain type, or it may represent a creature, a landscape feature, or an object lying on the ground, depending on what's in that tile.  A tile that you or one of your minions can see, that is in area with good lighting, may have a colorful foreground.  Tiles have not explored are solid black.  Tiles you have explored but can't currently see ("fog of war") have gray foregrounds, and tiles in the dark have black foregrounds.
+</p>
+<h>
+How do I do stuff?
+</h>
+<p>
+HellaTomb uses mostly keyboard inputs, with optional mouse functionality for some tasks.  Your necromancer can walk around, using the number pad or the arrow keys.  To travel between different z-levels, you'll typically need to use a slope.  To go up or down a slope, press < /, or >/.  In most cases, if you try to walk into or walk off a cliff, you'll automatically go up or down the slope instead.  Walking diagonally is easy on keyboards with a numerical keypad.  On keyboards without, hold down the Control button, then press two arrows to move diagonally.
+</p>
+<p>
+The most important thing for your necromancer to do is summon zombies and assign tasks.  Summon a zombie by pressing Z to cast a spell, press A to select raise zombie, and then use either the mouse or directional keys to select a tile that contains a corpse or a tombstone.  The spell currently has infinite range, so long as you can see the target; you don't need to be standing next to it.  You do need to have the view on the same z-level as the tombstone or corpse; for example, you may be able to dimly see a tombstone from two levels above, but you'll have to zoom down a level in order to cast a spell on it.
+</p>
+<p>
+Tasks are assigned in a similar way - press J to select a job, press a letter key to select the task, and then use the mouse or direction keys to select the target(s).  Some tasks target a single square, some target a creature, and some target a box of fixed size, and some target a rectangular area of variable size, selected by choosing two corners one after the other.
+</p>
+<h>
+What other controls are available?
+</h>
+<p>
+HellaTomb is a turn-based game.  Depending on your taste and the circumstance, you might want time (turns) to pass only when you take an action, or you might want them to pass in realtime.  To adjust this, turn "auto-pause" on or off, using the Return/Enter key.  You can also adjust the speed that turns pass when auto-pause is off using the _/- or +/= keys.  You can always force a turn to pass by hitting the "wait" button, which is either "5" (if you have a numeric keypad) or space.
+</p>
+<p>
+Sometimes, especially late in the game when you have many zombies serving you, you might wish to leave your necromancer behind and move your viewing window across your domain.  Do this using Navigation mode, which you can toggle by pressing Tab.  In navigation mode, the direction and up/down keys moving the viewing window, not the necromancer.  You cxan still press Space in navigation mode to pass turns, although it is safer to press Control-Space, because Space alone doubles as a selection button in navigation mode.  The controls for navigation mode also temporarily become active when you are targeting a spell or job.
+</p>
+<p>
+Moving the mouse around the screen hovers your cursor and reveals information about the tile you are hovering over, plus the tiles immediately above and below it.  Clicking the mouse button allows certain kinds of "select" actions in various modes, but in many cases it does nothing at all.
+</p>
+<h>
+Other Controls:
+</h>
+<p>
+Page Up and Page Down scroll your messages; Function Up and Function Down do this on most Mac keyboards.  Pressing M or S allows you to Tab through detailed information about your minions or structures.  The U button shows an overall summary of your minions, structures, and tasks.  The A button shows you your achievements.  ? toggles the tutorial on or off.  F opens a page that allows you to submit feedback on the game.  Escape takes you to a system view, where you can save, quit, restore a game, or open this manual.
+</p>
+<h>
+Saved Games:
+</h>
+<p>
+Unlock a typical roguelike game, the demo version of HerokuTomb does not feature permadeath - if you die, you can restore from an old saved game.  However, there's another twist - in order to make playtesting easy and avoid the hassle of logins, saved games are global - any player can restore or overwrite your saved games!  Don't get too attached; but do be polite and try not to save over other players' games.
+</p>
+<h>
+Spells:
+</h>
+<p>
+Spells are cast by pressing Z, selecting a spell, and possibly selecting a target.  They use a resource called mana, which is shown in the bottom-left corner of the main screen.  In the demo, the most important spell is raise zombie.  If you control no zombies, the spell costs 10 mana; if you control one zombie, it costs 15 mana, and if you already control two zombies, the spell costs all 20 of your starting mana.  That means you can raise a maximum of three zombies at a time in the demo.  If one dies, the cost drops back down.  Mana regenerates over time (turns.)
+</p>
+<h>
+Tasks:
+</h>
+<p>
+Various tasks can be assigned by pressing J.
+</p>
+<h3>
+A) Dig
+</h3>
+<p>
+The dig task has different effects based on the type of tile you assign it on.  If you assign it on a wall tile, your zombies will dig a roofed corridor.  If you assign it on an upward slope, your zombies will level the slope into a floor tile.  If you assign it on a floor tile, your zombies will dig a downward slope (if there is solid rock below) or dig a hole in the floor (if there is a corridor below.)  If you assign it on a downward slope, your zombies will dig away the slope on the floor below.  Lastly, if you dig in a wall tile that can only be accessed from a slope directly below it, your zombies will dig upward.
+</p>
+<h3>
+B) Build
+</h3>
+<p>
+The build task, like the dig task, has different effects on different tile types.  On a floor tile, your zombies will build an upward slope.  On an upward slope, your zombies will build a wall.  On an empty tile or a downward slope, your zombies will build a floor.
+</p>
+<h3>
+C) Create a structure
+</h3>
+<p>
+This task presents a menu of available structures.  Some structures are squares of fixed size, whereas others are adjustable rectangles.  At the carpenter, you can set up a queue of goods for your zombies to produce.  At the warehouse, you can designate certain types of goods for your zombies to stockpile.  At the farm, you can designate certain kinds of seeds to plant and grow as crops.
+</p>
+<h3>
+D) Harvest or remove
+</h3>
+<p>
+This task removes a special landscape feature or fixture, like a shrub, torch, et cetera.  Certain features, such as trees or crops, will be harvested to yield resources.
+</p>
+<h3>
+E) Patrol
+</h3>
+<p>
+This task designates a square that a single zombie will patrol around.
+</p>
+<h3>
+F) Furnish
+</h3>
+This task takes 
+
+  G) Undesignate taksk.
+
+  H) Declare hostility.
+
 </body>
 </html>
