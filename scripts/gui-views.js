@@ -84,7 +84,7 @@ HTomb = (function(HTomb) {
       "N) New game.",
       "R) Restore game.",
       "F) Submit feedback or bug report.",
-      "M) Read a detailed manual.",
+      "M) Read the manual.",
       "Q) Quit.",
       "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ];
@@ -137,7 +137,7 @@ HTomb = (function(HTomb) {
       "R) Restore game.",
       "D) Delete current game('" + HTomb.Save.currentGame +"').",
       "Q) Quit game.",
-      "M) Read a detailed manual.",
+      "M) Read the manual.",
       "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ]);
   };

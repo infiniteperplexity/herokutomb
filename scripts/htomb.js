@@ -1,5 +1,6 @@
 // This is the object whose scope will enclose all the tools used by the game
 var HTomb = (function() {
+//GNU General Public License v3.0
 
 "use strict";
   // Set a number of useful constants
