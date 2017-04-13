@@ -253,7 +253,7 @@ HTomb = (function(HTomb) {
     controls: [
       "Esc: System view.",
       " ",
-      "Move: NumPad/Arrows, %c{cyan}</>: Up/Down.",
+      "Move: NumPad/Arrows, %c{cyan},/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       " ",
       "?: Toggle tutorial."
@@ -266,7 +266,7 @@ HTomb = (function(HTomb) {
       " ",
       "- The game world is a 3D grid of tiles.  Slopes provide access to different elevation levels.",
       " ",
-      "- You can climb up or down a slope by standing on it and pressing < or >.",
+      "- You can climb up or down a slope by standing on it and pressing . (<) or , (>).",
       " ",
       "- If you try to walk sideways off a cliff or into a wall, you will automatically climb a slope instead if possible.",
       " ",
@@ -309,7 +309,7 @@ HTomb = (function(HTomb) {
     controls: [
       "Esc: System view.",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       " ",
       "%c{cyan}Z: Cast spell.",
@@ -358,7 +358,7 @@ HTomb = (function(HTomb) {
       "%c{orange}**Esc: Cancel.**",
       "%c{yellow}Select a square with keys or mouse.",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       " ",
       "%c{cyan}Click / Space: Select.",
@@ -388,7 +388,7 @@ HTomb = (function(HTomb) {
     controls: [
       "Esc: System view.",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       " ",
       "Enter: Enable auto-pause.",
@@ -441,7 +441,7 @@ HTomb = (function(HTomb) {
     controls: [
       "Esc: System view.",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       "%c{cyan}Wait: NumPad 5 / Space.",
       " ",
@@ -478,7 +478,7 @@ HTomb = (function(HTomb) {
     controls: [
       "Esc: System view.",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       "Wait: NumPad 5 / Space.",
       " ",
@@ -520,7 +520,7 @@ HTomb = (function(HTomb) {
     controls: [
       "Esc: System view.",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       "Wait: NumPad 5 / Space.",
       " ",
@@ -598,7 +598,7 @@ HTomb = (function(HTomb) {
     controls: [
       "Esc: System view.",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       "%c{cyan}Wait: NumPad 5 / Space.",
       " ",
@@ -643,7 +643,7 @@ HTomb = (function(HTomb) {
         return [
           "Esc: System view.",
           " ",
-          "Move: NumPad/Arrows, </>: Up/Down.",
+          "Move: NumPad/Arrows, ,/.: Up/Down.",
           "(Control+Arrows for diagonal.)",
           "%c{cyan}Wait: NumPad 5 / Space.",
           " ",
@@ -672,6 +672,14 @@ HTomb = (function(HTomb) {
     ],
     listens: ["Cast"],
     skip: "WaitForSecondZombie",
+    onBegin: function() {
+      if (HTomb.Player.master.minions.length>=2) {
+        //skip to something else?
+        this.nopeat = true;
+        HTomb.Tutorial.templates.WaitForSecondZombie.norepeat = true;
+        HTomb.Tutorial.goto("NavigationModeStepOne");
+      }
+    },
     trigger: function(event) {
       return (event.spell.template==="RaiseZombie");
     },
@@ -686,7 +694,7 @@ HTomb = (function(HTomb) {
     controls: [
       "Esc: System view.",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       "%c{cyan}Wait: NumPad 5 / Space.",
       " ",
@@ -724,7 +732,7 @@ HTomb = (function(HTomb) {
       "Esc: System view.",
       "%c{cyan}Avatar mode (Tab: Navigation mode)",
       " ",
-      "Move: NumPad/Arrows, </>: Up/Down.",
+      "Move: NumPad/Arrows, ,/.: Up/Down.",
       "(Control+Arrows for diagonal.)",
       "Wait: NumPad 5 / Space.",
       " ",
@@ -759,7 +767,7 @@ HTomb = (function(HTomb) {
       "Esc: System view.",
       "%c{cyan}Navigation mode (Tab: Avatar mode)",
       " ",
-      "%c{cyan}Move: NumPad/Arrows, </>: Up/Down",
+      "%c{cyan}Move: NumPad/Arrows, ,/.: Up/Down",
       "%c{cyan}(Control+Arrows for diagonal.)",
       "%c{cyan}Wait: NumPad 5 / Control+Space.",
       " ",
@@ -775,7 +783,7 @@ HTomb = (function(HTomb) {
     instructions: [
       "Now you are in navigation mode.",
       " ",
-      "Move the screen around using the keypad or arrows.  Hold Shift to move multiple spaces at a time.  Also try pressing < or > to move the view up or down a level.  To wait in Navigation Mode, press 5 on the keypad, or Control+Space.",
+      "Move the screen around using the keypad or arrows.  Hold Shift to move multiple spaces at a time.  Also try pressing . or , to move the view up or down a level.  To wait in Navigation Mode, press 5 on the keypad, or Control+Space.",
       " ",
       "%c{cyan}%b{DarkRed}Press Tab to return to 'Avatar Mode' and recenter the screen, putting you in direct control of the necromancer."
     ],
@@ -899,7 +907,7 @@ HTomb = (function(HTomb) {
           "Esc: System view.",
           "%c{yellow}Avatar mode (Tab: Navigation mode)",
           " ",
-          "Move: NumPad/Arrows, </>: Up/Down.",
+          "Move: NumPad/Arrows, ,/.: Up/Down.",
           "(Control+Arrows for diagonal.)",
           "Wait: NumPad 5 / Space.",
           " ",
@@ -952,7 +960,7 @@ HTomb = (function(HTomb) {
           "Esc: System view.",
           "%c{yellow}Avatar mode (Tab: Navigation mode)",
           " ",
-          "Move: NumPad/Arrows, </>: Up/Down.",
+          "Move: NumPad/Arrows, ,/.: Up/Down.",
           "(Control+Arrows for diagonal.)",
           "Wait: NumPad 5 / Space.",
           " ",

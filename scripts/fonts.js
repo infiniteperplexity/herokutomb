@@ -18,7 +18,7 @@ HTomb = (function(HTomb) {
   var SCREENH = Constants.SCREENH = Math.floor(GAMEH/CHARHEIGHT);
   console.log("Playing area will be " + SCREENW + "x" + SCREENH + ".");
 
-  font = "Lucida Console, Monaco, Courier New, Courier, monospace";
+  font = "Open Sans, Lucida Console, Monaco, Courier New, Courier, monospace";
   size = 15;
   var TEXTFONT = Constants.TEXTFONT = font;
   var TEXTSIZE = Constants.TEXTSIZE = size;
