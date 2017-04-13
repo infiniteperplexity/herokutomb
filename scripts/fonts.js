@@ -2,7 +2,8 @@ HTomb = (function(HTomb) {
   "use strict";
   var Constants = HTomb.Constants;
 
-  var font = "Verdana, Trebuchet MS, Helvetica, Arial, sans-serif";
+  //var font = "Verdana, Trebuchet MS, Helvetica, Arial, sans-serif";
+  var font = "Verdana";
   var size = 18;
   var FONTFAMILY = Constants.FONTFAMILY = font;
   var FONTSIZE = Constants.FONTSIZE = size;
@@ -18,8 +19,9 @@ HTomb = (function(HTomb) {
   var SCREENH = Constants.SCREENH = Math.floor(GAMEH/CHARHEIGHT);
   console.log("Playing area will be " + SCREENW + "x" + SCREENH + ".");
 
-  font = "Open Sans, Lucida Console, Monaco, Courier New, Courier, monospace";
-  size = 15;
+  //font = "Lucida Console, Monaco, Courier New, Courier, monospace";
+  font = "Roboto Mono";
+  size = 16;
   var TEXTFONT = Constants.TEXTFONT = font;
   var TEXTSIZE = Constants.TEXTSIZE = size;
   var TEXTWIDTH = Constants.TEXTWIDTH = 10;

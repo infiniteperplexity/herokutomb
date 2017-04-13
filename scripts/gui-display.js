@@ -243,7 +243,7 @@ HTomb = (function(HTomb) {
           replace.instructions[i] = "%c{lime}"+replace.instructions[i];
         }
       }
-      
+
       menuTop = replace.controls.concat([" "],replace.instructions);
       menuMiddle = replace.middle;
       menuBottom = replace.bottom;
@@ -364,7 +364,7 @@ HTomb = (function(HTomb) {
     "Esc: System view.",
     "%c{yellow}Avatar mode (Tab: Navigation mode)",
     " ",
-    "Move: NumPad/Arrows, </>: Up/Down.",
+    "Move: NumPad/Arrows, ,/.: Up/Down.",
     "(Control+Arrows for diagonal.)",
     "Wait: NumPad 5 / Space.",
     " ",
