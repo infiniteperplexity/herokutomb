@@ -21,7 +21,7 @@ HTomb = (function(HTomb) {
 
   //font = "Lucida Console, Monaco, Courier New, Courier, monospace";
   font = "Roboto Mono";
-  size = 16;
+  size = 15;
   var TEXTFONT = Constants.TEXTFONT = font;
   var TEXTSIZE = Constants.TEXTSIZE = size;
   var TEXTWIDTH = Constants.TEXTWIDTH = 10;
