@@ -20,7 +20,13 @@ HTomb = (function(HTomb) {
   console.log("Playing area will be " + SCREENW + "x" + SCREENH + ".");
 
   //font = "Lucida Console, Monaco, Courier New, Courier, monospace";
-  font = "Roboto Mono";
+  //font = "Roboto Mono";
+  //font = "Eagle Lake";
+  //font = "Open Sans";
+  //font = "Roboto";
+  //font = "Inconsolata";
+  //font = "VT323";
+  font = "PT Mono";
   size = 15;
   var TEXTFONT = Constants.TEXTFONT = font;
   var TEXTSIZE = Constants.TEXTSIZE = size;
@@ -33,7 +39,7 @@ HTomb = (function(HTomb) {
   var MENUH = Constants.MENUH = parseInt(TOTALH/TEXTSIZE);
   var STATUSH = Constants.STATUSH = 2;
   var SCROLLH = Constants.SCROLLH = 6;
-  var SCROLLW = Constants.SCROLLW = GAMEW/TEXTWIDTH;
+  var SCROLLW = Constants.SCROLLW = 50;
 
   HTomb.Fonts = {};
   HTomb.Fonts.lookupSymbol = {};

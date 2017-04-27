@@ -45,12 +45,16 @@ HTomb = (function(HTomb) {
     let split = speeds[speed].split("/");
     clearInterval(timePassing);
     timePassing = setInterval(HTomb.Time.passTime,1000*split[1]/split[0]);
-    HTomb.GUI.Panels.scroll.render();
+    if (HTomb.Time.initialPaused===false) {
+      HTomb.GUI.Panels.scroll.render();
+    }
   };
   HTomb.Time.stopTime = function() {
     clearInterval(timePassing);
     timePassing = null;
-    HTomb.GUI.Panels.scroll.render();
+    if (HTomb.Time.initialPaused===false) {
+      HTomb.GUI.Panels.scroll.render();
+    }
   };
 
   // this needs to work correctly in all conditions
@@ -283,7 +287,8 @@ HTomb = (function(HTomb) {
         }
       }
     },
-    sunlight: {symbol: "\u263C"},
+    //sunlight: {symbol: "\u263C"},
+    sunlight: {symbol: "\u2600"},
     waning: {symbol: "\u263E", light: 32},
     twilight: {symbol: "\u25D2"},
     fullMoon: {symbol: "\u26AA", light: 64},

@@ -68,20 +68,20 @@ HTomb = (function(HTomb) {
     div.id = "main";
     var game = document.createElement("div");
     game.id = "game";
-    var menu = document.createElement("div");
-    menu.id = "menu";
     var scroll = document.createElement("div");
     scroll.id = "scroll";
+    var menu = document.createElement("div");
+    menu.id = "menu";
     var overlay = document.createElement("div");
     overlay.id = "overlay";
     body.appendChild(div);
     div.appendChild(game);
-    div.appendChild(menu);
     div.appendChild(scroll);
+    div.appendChild(menu);
     div.appendChild(overlay);
     game.appendChild(display.getContainer());
-    menu.appendChild(menuDisplay.getContainer());
     scroll.appendChild(scrollDisplay.getContainer());
+    menu.appendChild(menuDisplay.getContainer());
     overlay.appendChild(overlayDisplay.getContainer());
   };
 
@@ -277,6 +277,10 @@ HTomb = (function(HTomb) {
   }
   // Set up event listeners
   setTimeout(function() {
+    //fix spacing for cross-browser compatibility
+    menuDisplay._backend._spacingX = 9;
+    scrollDisplay._backend._spacingX = 9;
+    overlayDisplay._backend._spacingX = 9;
     window.addEventListener("keydown",keydown);
     window.addEventListener("keyup",keyup);
     window.addEventListener("beforeunload", handleUnload);

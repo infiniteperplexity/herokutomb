@@ -162,25 +162,38 @@ HTomb = (function(HTomb) {
     //black out the entire line with solid blocks
     var cursor = 0;
     let p = (HTomb.Player.player) ? HTomb.Player.player.delegate : HTomb.Player;
+    let x = String(p.x);
+    let y = String(p.y);
+    let z = String(gameScreen.z);
+    let day  = String(HTomb.Time.dailyCycle.day);
+    let hour = String(HTomb.Time.dailyCycle.hour);
+    let minute  = String(HTomb.Time.dailyCycle.minute);
+    while(x.length<3) {
+      x = "0"+x;
+    }
+    while(y.length<3) {
+      y = "0"+y;
+    }
+    while(z.length<3) {
+      z = "0"+z;
+    }
+    while(day.length<5) {
+      day = " "+day;
+    }
+    while(hour.length<2) {
+      hour = "0"+hour;
+    }
+    while(minute.length<2) {
+      minute = "0"+minute;
+    }
+    let txt = "X:"+x+" Y:"+y+" Z:"+z+" "+HTomb.Time.dailyCycle.getPhase().symbol+day+":"+hour+":"+minute;
     if (p.caster) {
-      scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Mana:" + HTomb.Player.player.delegate.caster.mana + "/" + p.caster.maxmana);
+      txt = "Mana: " + HTomb.Player.player.delegate.caster.mana + "/" + p.caster.maxmana + " " + txt;
     }
-    cursor+=12;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"X:" + p.x);
-    cursor+=6;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Y:" + p.y);
-    cursor+=6;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,"Z:" + gameScreen.z);
-    cursor+=7;
-    scrollDisplay.drawText(this.x0+cursor,this.y0+1,
-      HTomb.Time.dailyCycle.getPhase().symbol + " "
-      + HTomb.Time.dailyCycle.day + ":"
-      + HTomb.Time.dailyCycle.hour + ":"
-      + HTomb.Time.dailyCycle.minute);
-    cursor+=11;
     if (HTomb.Time.isPaused()===true || HTomb.GUI.autopause===true) {
-      scrollDisplay.drawText(this.x0+cursor,this.y0+1,"%c{yellow}Paused");
+      txt = txt + " %c{yellow}Paused";
     }
+    scrollDisplay.drawText(scroll.x0, scroll.y0, txt);
   };
   scroll.bufferMax = 100;
   scroll.buffer = [];
@@ -193,14 +206,14 @@ HTomb = (function(HTomb) {
     status.render();
     for (let s=0; s<SCROLLH; s++) {
       if (s+this.bufferIndex>this.buffer.length) {
-        return;
+        break;
       }
       let message = this.buffer[this.buffer.length-s-this.bufferIndex];
       if (s+this.bufferIndex === 1) {
         if (message.substr(0,3)!=="%c{") {
           message = "%c{cyan}"+message;
+          scrollDisplay.drawText(this.x0,this.y0+s+1,message);
         }
-        scrollDisplay.drawText(this.x0,this.y0+s+1,message);
       } else {
         scrollDisplay.drawText(this.x0,this.y0+s+1,message);
       }
