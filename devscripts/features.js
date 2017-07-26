@@ -63,6 +63,16 @@ HTomb = (function(HTomb) {
   });
 
   HTomb.Things.defineFeature({
+    template: "Reeds",
+    name: "reeds",
+    symbol: "\u2ADD",
+    plural: true,
+    fg: "#779922",
+    randomColor: 15
+  });
+  //      symbol: ["\u2225","\u290B","\u2980","\u2ADD","\u2A08","\u2A56"],
+
+  HTomb.Things.defineFeature({
     template: "Seaweed",
     name: "seaweed",
     plural: true,
@@ -359,6 +369,20 @@ HTomb = (function(HTomb) {
     liquid: true,
     fg: "#FF8833",
     bg: "#DD4411"
+  });
+
+  HTomb.Types.defineCover({
+    template: "Silt",
+    name: "silt",
+    symbol: "~",
+    fg: "#665544",
+    bg: "#443322",
+    darken: function() {
+      var bg = ROT.Color.fromString(this.bg);
+      bg = ROT.Color.multiply(bg,[72,128,128]);
+      bg = ROT.Color.toHex(bg);
+      return bg;
+    }
   });
 
   HTomb.Types.defineCover({

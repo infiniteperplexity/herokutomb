@@ -111,6 +111,8 @@ timeIt("elevation", function() {
     growPlants({template: "MandrakePlant", p: 0.001});
     growPlants({template: "WormwoodPlant", p: 0.001});
     growPlants({template: "BloodwortPlant", p: 0.001});
+});  timeIt("beaches", function() {
+    beaches();
 }); timeIt("graveyards", function() {
     graveyards();
 }); timeIt("critters", function() {
@@ -198,6 +200,32 @@ timeIt("elevation", function() {
               //HTomb.Entity.create("UpSlope").place(x,y,z);
               tiles[z][x][y] = HTomb.Tiles.UpSlopeTile;
               tiles[z+1][x][y] = HTomb.Tiles.DownSlopeTile;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function beaches() {
+    //does two things, places silt and reeds
+    //silt goes...on submerged downward slopes over water tiles?  is it a cover?
+    //reeds go on shores?
+    for (let x=1; x<LEVELW-1; x++) {
+      for (let y=1; y<LEVELH-1; y++) {
+        for (let z=1; z<NLEVELS-1; z++) {
+          if (  HTomb.World.tiles[z][x][y]===HTomb.Tiles.DownSlopeTile
+                && HTomb.World.covers[z][x][y]===HTomb.Covers.NoCover
+                && HTomb.World.covers[z-1][x][y]===HTomb.Covers.Water) {
+            HTomb.World.covers[z][x][y]=HTomb.Covers.Silt;
+          }
+          if (  HTomb.World.tiles[z][x][y]===HTomb.Tiles.FloorTile
+                && HTomb.World.covers[z][x][y]!==HTomb.Covers.Water
+                && HTomb.Tiles.countNeighborsWhere(x,y,z,function(x1,y1,z1) {
+                  return (HTomb.World.tiles[z1][x1][y1]===HTomb.Tiles.DownSlopeTile && HTomb.World.covers[z1-1][x1][y1]===HTomb.Covers.Water);
+                })>=1) {
+            if (HTomb.Utils.dice(1,6)<=3) {
+              placement.stack(HTomb.Things.Reeds(),x,y,z);
             }
           }
         }

@@ -1,0 +1,6 @@
+{
+  "name": "helloworld",
+  "main": "index.html",
+  "version": "1.0",
+  "manifest_version": 2
+}
