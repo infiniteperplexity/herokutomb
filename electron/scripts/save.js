@@ -1,3 +1,4 @@
+const fs = require('fs');
 // This submodule handles saving the game
 HTomb = (function(HTomb) {
   "use strict";
@@ -7,60 +8,7 @@ HTomb = (function(HTomb) {
   let coord = HTomb.Utils.coord;
   // Global value for the name of the current game
   HTomb.Save.currentGame = "mySaveGame";
-  // a function that takes a text-or-promise-returning function, plus fetch args, and then returns a fetch promise.
-  function fetchText(textFunc, url, args) {
-    let val = textFunc();
-    // if we got actual text...
-    if (typeof(val)==="string") {
-      args.body = JSON.stringify({json: val});
-      console.log(url + " length is " + args.body.length);
-      // ...return a fetch promise using that text
-      return fetch(url, args);
-    } else if (val.then) {
-      // if we got a promise of text...
-      return val.then(function(res) {
-        args.body = JSON.stringify({json: res});
-        // ...chain to a fetch promise
-        console.log(url + " length is " + args.body.length);
-        return fetch(url, args);
-      });
-    }
-  };
-  // stringifies the things list asynchronously and resolves to a text value
-  function promiseThings() {
-    let totalN = HTomb.World.things.length;
-    return new Promise(function(resolve, reject) {
-      batchMap(
-        function(v, i, a) {
-          let thing = HTomb.Save.stringifyThing(v, true);
-          return thing;
-        },
-        HTomb.World.things,
-        {
-          splitby: 1000,
-          progress: function(i) {
-            if (parseInt(100*i/totalN)>=98) {
-              HTomb.GUI.Views.progressView(["Waiting for server response..."]);
-            } else {
-              console.log(parseInt(100*i/totalN).toString() + "% complete (" + i + " entities.)");
-              HTomb.GUI.Views.progressView(["Stringifying things:",parseInt(100*i/totalN).toString() + "% complete"]);
-            }
-          },
-          then: function(rslt) {
-            HTomb.GUI.pushMessage("Finished stringifying " + rslt.length + " entities.");
-            // this is one place we could add the "depedent things concept"
-            let things = rslt.join(',');
-            things = '['.concat(things,']');
-            console.log(things.substr(0,500));
-            resolve(things);
-          },
-          killif: function() {
-            return killsave;
-          }
-        }
-      );
-    });
-  };
+  
   // synchronously stringify other stuff
   function stringifyOther() {
     let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
@@ -107,99 +55,42 @@ HTomb = (function(HTomb) {
   }
 
   var killsave = false;
+  //!!!Changed to file system!!!
   HTomb.Save.saveGame = function(name) {
     HTomb.Time.lockTime();
     HTomb.GUI.Contexts.locked=true;
     name = name || HTomb.Save.currentGame;
     HTomb.Save.currentGame = name;
-    let headers = new Headers();
-    headers.append("Content-Type", "application/json;charset=UTF-8");
-    let args = {
-      method: "POST",
-      headers: headers,
-      credentials: "include"
-    }
     killsave = false;
     for (let i=0; i<HTomb.World.things.length; i++) {
       HTomb.World.things[i].thingId = i;
     }
-    console.log(HTomb.World.things[0]);
-    let promises = [
-      fetchText(stringifyTiles(0,7),"/saves/tiles0/"+name+"/",args),
-      fetchText(stringifyTiles(8,15),"/saves/tiles8/"+name+"/",args),
-      fetchText(stringifyTiles(16,23),"/saves/tiles16/"+name+"/",args),
-      fetchText(stringifyTiles(24,31),"/saves/tiles24/"+name+"/",args),
-      fetchText(stringifyTiles(32,39),"/saves/tiles32/"+name+"/",args),
-      fetchText(stringifyTiles(40,47),"/saves/tiles40/"+name+"/",args),
-      fetchText(stringifyTiles(48,55),"/saves/tiles48/"+name+"/",args),
-      fetchText(stringifyTiles(56,63),"/saves/tiles56/"+name+"/",args),
-      fetchText(stringifyCovers(0,7),"/saves/covers0/"+name+"/",args),
-      fetchText(stringifyCovers(8,15),"/saves/covers8/"+name+"/",args),
-      fetchText(stringifyCovers(16,23),"/saves/covers16/"+name+"/",args),
-      fetchText(stringifyCovers(24,31),"/saves/covers24/"+name+"/",args),
-      fetchText(stringifyCovers(32,39),"/saves/covers32/"+name+"/",args),
-      fetchText(stringifyCovers(40,47),"/saves/covers40/"+name+"/",args),
-      fetchText(stringifyCovers(48,55),"/saves/covers48/"+name+"/",args),
-      fetchText(stringifyCovers(56,63),"/saves/covers56/"+name+"/",args),
-      fetchText(stringifyOther,"/saves/other/"+name+"/",args),
-      fetchText(promiseThings,"/saves/things/"+name+"/",args)
-    ];
-    Promise.all(promises).then(
-      function(values) {
-        for (let i=0; i<values.length; i++) {
-          if (values[i].ok===false) {
-            console.log("response to " + values[i].url + " not ok");
-            HTomb.GUI.splash(["Failed to save "+"'"+name+"'."]);
-            HTomb.GUI.Contexts.locked=false;
-            HTomb.Time.unlockTime();
-            return;
-          }
-        }
-        console.log("succeeded: " + values);
-        HTomb.GUI.splash(["Finished saving "+"'"+name+"'."]);
-        for (let i=0; i<HTomb.World.things.length; i++) {
-          delete HTomb.World.things[i].thingId;
-        }
-        HTomb.GUI.Contexts.locked=false;
-        HTomb.Time.unlockTime();
-      },
-      function(reason) {
-        killsave = true;
-        console.log("failed: " + reason);
-        HTomb.GUI.splash(["Failed to save "+"'"+name+"'."]);
-        HTomb.GUI.Contexts.locked=false;
-        HTomb.Time.unlockTime();
-      }
-    )
+    let tiles = stringifyTiles(0,63)();
+    let covers = stringifyCovers(0,63)();
+    let other = stringifyOther();
+    let things = [];
+    let totalN = HTomb.World.things.length;
+    for (let i=0; i<HTomb.World.things.length; i++) {
+      let thing = HTomb.World.things[i];
+      thing = HTomb.Save.stringifyThing(thing, true);
+      things.push(thing);
+    }
+    things = things.join(",");
+    things = "[" + things + "]";
+    let json = "{" +
+                  '"tiles": ' + tiles + ", " +
+                  '"covers": ' + covers + ", " +
+                  '"things": ' + things + ", " +
+                  '"other": ' + other + "}";
+    fs.writeFileSync("./saves/"+name,json);
+    HTomb.GUI.splash(["Finished saving "+"'"+name+"'."]);
+    for (let i=0; i<HTomb.World.things.length; i++) {
+      delete HTomb.World.things[i].thingId;
+    }
+    HTomb.GUI.Contexts.locked=false;
+    HTomb.Time.unlockTime();
   };
-  // Helper function to split job and unlock DOM
-  function batchMap(func, arr, options) {
-    options = options || {};
-    let splitby = options.splitby || 1;
-    let then = options.then || function() {};
-    let progress = options.progress || function(i) {console.log(i);};
-    let killif = options.killif || function() {return false};
-    let retn = [];
-    let count = 0;
-    let recurse = function() {
-      for (; count<arr.length; count++) {
-        if (killif()===true) {
-          return;
-        }
-        retn.push(func(arr[count], count, arr));
-        if (count>=arr.length-1) {
-          then(retn);
-        }
-        if (count>0 && count%splitby===0) {
-          progress(count,retn);
-          count++;
-          setTimeout(recurse);
-          break;
-        }
-      }
-    };
-    recurse();
-  }
+
   // Custom JSON encoding
   HTomb.Save.stringifyThing = function(obj, topLevel) {
     try {
@@ -249,30 +140,16 @@ HTomb = (function(HTomb) {
   };
   // End code for saving games
 
-  // Code for listing saved games in directory
+  //!!!Changed to file system!!!!
   HTomb.Save.getDir = function(callback) {
-    getDir(callback);
-  };
-  function getDir(callback) {
     console.time("get request");
-    var file = '/saves';
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (xhttp.readyState == XMLHttpRequest.DONE) {
-        if (xhttp.status == 200) {
-          callback(xhttp.responseText);
-          console.timeEnd("get request");
-        } else if (xhttp.status == 400) {
-          console.log("There was an error 400");
-        } else {
-          console.log("Something other than 200 was returned.");
-        }
-        HTomb.Time.unlockTime();
-      }
-    };
-    xhttp.open("GET", file, true);
-    xhttp.send();
-  }
+    var path = './saves/';
+    fs.readdir(path, function(err, items) {
+      console.log(items);
+      callback(JSON.stringify(items));
+      HTomb.Time.unlockTime();
+    });
+  };
 
   function restoreThings(json) {
     //length of crashed save was >43 million characters.
@@ -459,123 +336,56 @@ HTomb = (function(HTomb) {
     }
   }
 
+  //!!!Change to file system!!!!
   HTomb.Save.deleteGame = function(name) {
-    let headers = new Headers();
-    headers.append("Content-Type", "application/json;charset=UTF-8");
-    let args = {
-      method: "GET",
-      headers: headers,
-      credentials: "include"
-    }
-    fetch("/delete/" + name, args).then(
-      function(res) {
-        HTomb.Time.unlockTime();
-        HTomb.GUI.Contexts.locked=false;
-        HTomb.GUI.Views.parentView = HTomb.GUI.Views.startup;
-        HTomb.GUI.splash(["'" + name + "' deleted."]);
-      },
-      function(reason) {
-        HTomb.Time.unlockTime();
-        HTomb.GUI.Contexts.locked=false;
-        console.log("failed to delete with " + reason);
-        HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.reset;
-        HTomb.GUI.splash(["failed to delete " + name]);
-      }
-    );
+    fs.unlinkSync("./saves/name");
+    HTomb.Time.unlockTime();
+    HTomb.GUI.Contexts.locked=false;
+    HTomb.GUI.Views.parentView = HTomb.GUI.Views.startup;
+    HTomb.GUI.splash(["'" + name + "' deleted."]);
   };
 
-  function fetchParse(url, args, func) {
-    //This is a truly ridiculous hack to pass along the response.ok = false value...
-    return fetch(url, args)
-      .then(function(res) {
-        if (res.ok===false) {
-          return res;
-        }
-        HTomb.GUI.Views.progressView(["Parsing saved data from " + url + "."]);
-        return res.text();
-      })
-      .then(function(txt) {
-        if (txt.ok===false) {
-          return txt;
-        }
-        func(txt);
-      });
-  }
+  //!!!Change to file system!!!!
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
     HTomb.GUI.Contexts.locked=true;
-    let headers = new Headers();
-    headers.append("Content-Type", "application/json;charset=UTF-8");
-    let args = {
-      method: "GET",
-      headers: headers
+    HTomb.GUI.quietUnload = false;
+    let content = fs.readFileSync("./saves/"+name);
+    let json = JSON.parse(content);
+    let things = JSON.stringify(json.things);
+    let tiles = JSON.stringify(json.tiles);
+    let covers = JSON.stringify(json.covers);
+    let other = JSON.stringify(json.other);
+    restoreTiles(tiles);
+    restoreCovers(covers);
+    restoreThings(things);
+    restoreOther(other);
+    finalSwap();
+    HTomb.Save.currentGame = name;
+    HTomb.Path.reset();
+    HTomb.Tutorial.finish();
+    HTomb.Tutorial.enabled = false;
+    HTomb.Types.templates.Team.hostilityMatrix.reset();
+    HTomb.World.validate.reset();
+    HTomb.World.validate.all();
+    HTomb.FOV.resetVisible();
+    if (HTomb.Player.sight) {
+      HTomb.FOV.findVisible(HTomb.Player.x, HTomb.Player.y, HTomb.Player.z, HTomb.Player.sight.range);
     }
-    let promises = [
-      fetchParse("/saves/tiles0/" + name + "/", args, restoreTiles(0,7)),
-      fetchParse("/saves/tiles8/" + name + "/", args, restoreTiles(8,15)),
-      fetchParse("/saves/tiles16/" + name + "/", args, restoreTiles(16,23)),
-      fetchParse("/saves/tiles24/" + name + "/", args, restoreTiles(24,31)),
-      fetchParse("/saves/tiles32/" + name + "/", args, restoreTiles(32,39)),
-      fetchParse("/saves/tiles40/" + name + "/", args, restoreTiles(40,47)),
-      fetchParse("/saves/tiles48/" + name + "/", args, restoreTiles(48,55)),
-      fetchParse("/saves/tiles56/" + name + "/", args, restoreTiles(56,63)),
-      fetchParse("/saves/covers0/" + name + "/", args, restoreCovers(0,7)),
-      fetchParse("/saves/covers8/" + name + "/", args, restoreCovers(8,15)),
-      fetchParse("/saves/covers16/" + name + "/", args, restoreCovers(16,23)),
-      fetchParse("/saves/covers24/" + name + "/", args, restoreCovers(24,31)),
-      fetchParse("/saves/covers32/" + name + "/", args, restoreCovers(32,39)),
-      fetchParse("/saves/covers40/" + name + "/", args, restoreCovers(40,47)),
-      fetchParse("/saves/covers48/" + name + "/", args, restoreCovers(48,55)),
-      fetchParse("/saves/covers56/" + name + "/", args, restoreCovers(56,63)),
-      fetchParse("/saves/things/" + name + "/", args, restoreThings),
-      fetchParse("/saves/other/" + name + "/", args, restoreOther)
-    ];
-    Promise.all(promises).then(
-      function(values) {
-        for (let i=0; i<values.length; i++) {
-          if (values[i] && values[i].ok===false) {
-            console.log("response for " + values[i].url + " not ok");
-            HTomb.Time.unlockTime();
-            HTomb.GUI.Contexts.locked=false;
-            HTomb.GUI.Views.parentView = HTomb.GUI.Views.startup;
-            return;
-          }
-        }
-        HTomb.GUI.quietUnload = false;
-        finalSwap();
-        HTomb.Save.currentGame = name;
-        HTomb.Path.reset();
-        HTomb.Tutorial.finish();
-        HTomb.Tutorial.enabled = false;
-        HTomb.Types.templates.Team.hostilityMatrix.reset();
-        HTomb.World.validate.reset();
-        HTomb.World.validate.all();
-        HTomb.FOV.resetVisible();
-        if (HTomb.Player.sight) {
-          HTomb.FOV.findVisible(HTomb.Player.x, HTomb.Player.y, HTomb.Player.z, HTomb.Player.sight.range);
-        }
-        HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
-        HTomb.Time.unlockTime();
-        HTomb.Time.stopTime();
-        HTomb.Time.initialPaused = true;
-        HTomb.GUI.Contexts.locked=false;
-        HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.reset;
-        HTomb.GUI.Panels.scroll.reset();
-        HTomb.GUI.splash(["Game restored."]);
-        HTomb.GUI.Panels.gameScreen.recenter();
-        if (HTomb.GUI.Views.Main.inSurveyMode) {
-          HTomb.GUI.Contexts.survey.saveX = HTomb.GUI.Panels.gameScreen.xoffset;
-          HTomb.GUI.Contexts.survey.saveY = HTomb.GUI.Panels.gameScreen.yoffset;
-          HTomb.GUI.Contexts.survey.saveZ = HTomb.GUI.Panels.gameScreen.z;
-        }
-      },
-      function(reason) {
-        HTomb.Time.unlockTime();
-        HTomb.GUI.Contexts.locked=false;
-        console.log("failed with " + reason);
-        HTomb.GUI.Views.parentView = HTomb.GUI.Views.startup;
-      }
-    );
+    HTomb.GUI.Panels.gameScreen.center(HTomb.Player.x,HTomb.Player.y);
+    HTomb.Time.unlockTime();
+    HTomb.Time.stopTime();
+    HTomb.Time.initialPaused = true;
+    HTomb.GUI.Contexts.locked=false;
+    HTomb.GUI.Views.parentView = HTomb.GUI.Views.Main.reset;
+    HTomb.GUI.Panels.scroll.reset();
+    HTomb.GUI.splash(["Game restored."]);
+    HTomb.GUI.Panels.gameScreen.recenter();
+    if (HTomb.GUI.Views.Main.inSurveyMode) {
+      HTomb.GUI.Contexts.survey.saveX = HTomb.GUI.Panels.gameScreen.xoffset;
+      HTomb.GUI.Contexts.survey.saveY = HTomb.GUI.Panels.gameScreen.yoffset;
+      HTomb.GUI.Contexts.survey.saveZ = HTomb.GUI.Panels.gameScreen.z;
+    }
   };
 
   function fillListFrom(fromList, toList, callb) {
@@ -619,33 +429,3 @@ HTomb = (function(HTomb) {
   return HTomb;
 
 })(HTomb);
-
-/*
-
-This function can help diagnose what went wrong while saving.
-
-function examine() {
-  let seen = new Set();
-  for (let i=0; i<HTomb.World.things.length; i++) {
-    let t = HTomb.World.things[i].template;
-    if (seen.has(t)===false) {
-      console.log("First saw " + t + " at " + i);
-      seen.add(t);
-    }
-  }
-}
-*/
-/*
-for (let i=0; i<HTomb.World.things.length; i++) {
-  if (HTomb.World.things[i].template==="PointLight") {
-    console.log(i);
-  }
-}
-for (let i=0; i<HTomb.World.things.length; i++) {
-  if (HTomb.World.things[i]===null) {
-    console.log(i);
-  }
-}
-128136 - where the light actually is
-128141 - the thing that actually ended up in there
-*/

@@ -14,9 +14,10 @@ var HTomb = (function() {
   try{eval("let letSupported = true;");} catch(e) {alert("Please update to a newer browser version.");}
 
 
-  if (document.cookie==="") {
-    fetch("/cookie",{credentials: "include"}).then(function(res) {console.log("Cookie: " + document.cookie);});
-  }
+  // **** Not used for desktop version *******
+  //if (document.cookie==="") {
+  //  fetch("/cookie",{credentials: "include"}).then(function(res) {console.log("Cookie: " + document.cookie);});
+  //}
   // Begin the game
   var init = function() {
     // Initialize the DOM
