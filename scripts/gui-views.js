@@ -43,18 +43,8 @@ HTomb = (function(HTomb) {
       window.open(url.replace(match,feedback));
     };
   }
-  Views.feedback = function() {
-    HTomb.Time.stopTime();
-    let url = window.location.href;
-    let pat = /[^/]+$/;
-    let match = pat.exec(url);
-    let feedback = "feedback.html"
-    if (match===null) {
-      window.open(url+feedback);
-    } else {
-      window.open(url.replace(match,feedback));
-    }
-  };
+
+
 
   // ***** Code for various "frozen" views
   GUI.Contexts.frozen = GUI.Contexts.new({});
@@ -124,6 +114,7 @@ HTomb = (function(HTomb) {
     VK_M: function() {Views.manual();}
   });
   GUI.Contexts.startup.clickOverlay = function() {};
+
 
   // ******* System View *********
   Views.systemView = function() {

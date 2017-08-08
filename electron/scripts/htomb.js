@@ -49,7 +49,7 @@ var HTomb = (function() {
       console.time("worldInit");
       // Initialize the world
       World.init();
-      GUI.quietUnload = false;
+      //GUI.quietUnload = false;
       console.timeEnd("worldInit");
       // Prepare the GUI and throw up an intro screen
       GUI.Views.parentView = GUI.Views.Main.reset;
@@ -60,7 +60,7 @@ var HTomb = (function() {
       HTomb.Time.turn();
       HTomb.Tutorial.tutorials[0].onBegin();
       GUI.delaySplash([
-        "%c{yellow}Welcome to HellaTomb!",
+        "%c{yellow}Welcome to Hecatomb!",
         " ",
         "%c{white}You are a necromancer: A despised sorceror who reanimates the dead to do your bidding.  Cast out from society, you flee to the hills to plot your revenge and pursue the forbidden secrets of immortality.",
         " ",

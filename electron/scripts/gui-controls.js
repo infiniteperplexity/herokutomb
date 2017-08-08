@@ -642,10 +642,11 @@ HTomb = (function(HTomb) {
     },
     VK_A: function() {
       Main.showAchievements();
-    },
-    VK_F: function() {
-      HTomb.GUI.Views.feedback();
     }
+    //,
+    //VK_F: function() {
+    //  HTomb.GUI.Views.feedback();
+    //}
   });
   main.contextName = "Main";
 
@@ -825,9 +826,9 @@ HTomb = (function(HTomb) {
       }
     },
     VK_A: Main.showAchievements,
-    VK_F: function() {
-      HTomb.GUI.Views.feedback();
-    },
+    //VK_F: function() {
+    //  HTomb.GUI.Views.feedback();
+    //},
     VK_BACK_SPACE: function() {
       //if (HTomb.Tutorial.enabled && HTomb.GUI.Contexts.active === survey) {
       //  HTomb.Tutorial.rewind();
@@ -856,8 +857,9 @@ HTomb = (function(HTomb) {
     "M: Minions, S: Structures, U: Summary.",
     " ",
     "PageUp/Down: Scroll messages.",
-    "A: Achievements, ?: Toggle tutorial.",
-    "F: Submit Feedback."
+    "A: Achievements, ?: Toggle tutorial."
+    //,
+    //"F: Submit Feedback."
   ];
 
   survey.clickAt = function() {

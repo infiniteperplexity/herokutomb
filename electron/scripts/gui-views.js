@@ -83,10 +83,11 @@ HTomb = (function(HTomb) {
       "Welcome to HellaTomb!",
       "N) New game.",
       "R) Restore game.",
-      "F) Submit feedback or bug report.",
+      //"F) Submit feedback or bug report.",
       "M) Read the manual.",
-      "Q) Quit.",
-      "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
+      "Q) Quit."
+      //,
+      //"%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ];
     GUI.Panels.overlay.update(txt);
     let yoffset = txt.length+4;
@@ -120,11 +121,78 @@ HTomb = (function(HTomb) {
       Views.System.restore();
     },
     VK_Q: function() {Views.System.quit();},
-    VK_F: function() {Views.feedback();},
+  //  VK_F: function() {Views.feedback();},
     VK_M: function() {Views.manual();}
   });
   GUI.Contexts.startup.clickOverlay = function() {};
 
+
+  Views.promptView = function(prompt, callback) {
+    GUI.Contexts.active = GUI.Contexts.textInput;
+    GUI.Contexts.textInput.prompt = prompt;
+    GUI.Contexts.textInput.callback = callback;
+    GUI.Panels.overlay.update([
+      GUI.Contexts.textInput.prompt,
+      GUI.Contexts.textInput.currentText+"...",
+      "Esc) Cancel.     Enter) Okay."
+    ]);
+  }
+  let textInputControls = {
+    VK_ESCAPE: function() {
+      GUI.Contexts.textInput.currentText = "";
+      HTomb.GUI.reset();
+    }
+  };
+  let alpha = "abcdefghijklmnopqrstuvwxyz";
+  for (let i=0; i<alpha.length; i++) {
+    textInputControls["VK_"+alpha[i].toUpperCase()] = function() {
+      if (HTomb.GUI.shiftDown()) {
+        GUI.Contexts.textInput.currentText+alpha[i].toUpperCase();
+      } else {
+        GUI.Contexts.textInput.currentText+=alpha[i];
+      }
+      GUI.Panels.overlay.update([
+        GUI.Contexts.textInput.prompt,
+        GUI.Contexts.textInput.currentText+"...",
+        "Esc) Cancel.     Enter) Okay."
+      ]);
+    }
+  }
+  let numeric = "0123456789";
+  for (let i=0; i<alpha.length; i++) {
+    textInputControls["VK_"+numeric] = function() {
+      GUI.Contexts.textInput.currentText+=numeric[i];
+      GUI.Panels.overlay.update([
+        GUI.Contexts.textInput.prompt,
+        GUI.Contexts.textInput.currentText+"...",
+        "Esc) Cancel.     Enter) Okay."
+      ]);
+    }
+  }
+  textInputControls["VK_SPACE"] = function() {
+    GUI.Contexts.textInput.currentText+="_";
+    GUI.Panels.overlay.update([
+      GUI.Contexts.textInput.prompt,
+      GUI.Contexts.textInput.currentText+"...",
+      "Esc) Cancel.     Enter) Okay."
+    ]);
+  }
+  textInputControls["VK_UNDERSCORE"] = textInputControls["VK_SPACE"];
+  textInputControls["VK_BACK_SPACE"] = function() {
+    GUI.Contexts.textInput.currentText = GUI.Contexts.textInput.currentText.slice(0, -1);
+    GUI.Panels.overlay.update([
+      GUI.Contexts.textInput.prompt,
+      GUI.Contexts.textInput.currentText+"...",
+      "Esc) Cancel.     Enter) Okay."
+    ]);
+  }
+  textInputControls["VK_RETURN"] = function() {
+    GUI.Contexts.textInput.callback(GUI.Contexts.textInput.currentText);
+    GUI.Contexts.textInput.currentText = "";
+  }
+  textInputControls["VK_ENTER"] = textInputControls["VK_RETURN"];
+  GUI.Contexts.textInput = GUI.Contexts.new(textInputControls);
+  GUI.Contexts.textInput.currentText = "";
   // ******* System View *********
   Views.systemView = function() {
     HTomb.Time.stopTime();
@@ -136,9 +204,11 @@ HTomb = (function(HTomb) {
       "A) Save game as...",
       "R) Restore game.",
       "D) Delete current game('" + HTomb.Save.currentGame +"').",
+      "N) New game.",
       "Q) Quit game.",
-      "M) Read the manual.",
-      "%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
+      "M) Read the manual."
+      //,
+      ///"%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games."
     ]);
   };
   GUI.Contexts.system = GUI.Contexts.new({
@@ -148,7 +218,8 @@ HTomb = (function(HTomb) {
     VK_R: function() {HTomb.GUI.Views.parentView = HTomb.GUI.Views.systemView; Views.System.restore();},
     VK_Q: function() {Views.System.quit();},
     VK_D: function() {Views.System.delete();},
-    VK_M: function() {Views.manual();}
+    VK_M: function() {Views.manual();},
+    VK_N: function() {HTomb.World.newGame();}
   });
   Views.System = {};
   Views.System.save = function() {
@@ -164,6 +235,7 @@ HTomb = (function(HTomb) {
       Views.systemView();
     }
   };
+
   Views.System.saveAs = function() {
     HTomb.Time.stopTime();
     HTomb.GUI.Views.parentView = HTomb.GUI.Views.systemView;
@@ -191,12 +263,18 @@ HTomb = (function(HTomb) {
       saves.unshift("Choose a save file to overwrite:");
       saves.push(alpha[saves.length-1]+") ...new save...");
       controls["VK_"+alpha[saves.length-2].toUpperCase()] = function() {
-        let entered = prompt();
-        entered = entered.replace(/[.,\/#!$%\^&\*;:{}=\-`~()]/g,"");
-        HTomb.GUI.Views.progressView(["Saving game..."]);
-        setTimeout(HTomb.Save.saveGame, 500, entered);
+        GUI.Views.promptView("Name your saved game:",function(entered) {
+          console.log("trying to save!");
+          entered = entered.replace(/[.,\/#!$%\^&\*;:{}=\-`~()]/g,"");
+          if (entered==="") {
+            HTomb.GUI.reset();
+          } else {
+            HTomb.GUI.Views.progressView(["Saving game..."]);
+            setTimeout(HTomb.Save.saveGame, 500, entered);
+          }
+        });
       };
-      saves.push("%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
+      //saves.push("%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
       GUI.Contexts.active = GUI.Contexts.new(controls);
       GUI.Panels.overlay.update(saves);
     });
@@ -206,7 +284,8 @@ HTomb = (function(HTomb) {
     HTomb.Save.getDir(function(arg) {
       let saves = [];
       if (arg===" ") {
-        HTomb.GUI.splash(["No saved games exist on the server."]);
+        //HTomb.GUI.splash(["No saved games exist on the server."]);
+        HTomb.GUI.splash(["No saved games exist."]);
         return;
       } else {
         saves = JSON.parse(arg);
@@ -225,7 +304,7 @@ HTomb = (function(HTomb) {
         saves[i] = alpha[i]+") " + saves[i];
       }
       saves.unshift("Choose a save file to restore:");
-      saves.push("%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
+      //saves.push("%c{yellow}!!!Warning: During playtest, all players can see, save over, and restore all other players' saved games.");
       GUI.Contexts.active = GUI.Contexts.new(controls);
       GUI.Panels.overlay.update(saves);
     });
@@ -233,7 +312,8 @@ HTomb = (function(HTomb) {
   Views.System.quit = function() {
     HTomb.Time.stopTime();
     if (confirm("Really quit?")) {
-      Views.startup();
+      //Views.startup();
+      remote.getCurrentWindow().close();
     }
   };
 

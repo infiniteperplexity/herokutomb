@@ -8,7 +8,7 @@ HTomb = (function(HTomb) {
   let coord = HTomb.Utils.coord;
   // Global value for the name of the current game
   HTomb.Save.currentGame = "mySaveGame";
-  
+
   // synchronously stringify other stuff
   function stringifyOther() {
     let explored = HTomb.Save.stringifyThing(HTomb.World.explored, false);
@@ -338,7 +338,7 @@ HTomb = (function(HTomb) {
 
   //!!!Change to file system!!!!
   HTomb.Save.deleteGame = function(name) {
-    fs.unlinkSync("./saves/name");
+    fs.unlinkSync("./saves/"+name);
     HTomb.Time.unlockTime();
     HTomb.GUI.Contexts.locked=false;
     HTomb.GUI.Views.parentView = HTomb.GUI.Views.startup;
@@ -349,15 +349,15 @@ HTomb = (function(HTomb) {
   HTomb.Save.restoreGame = function(name) {
     HTomb.Time.lockTime();
     HTomb.GUI.Contexts.locked=true;
-    HTomb.GUI.quietUnload = false;
+    //HTomb.GUI.quietUnload = false;
     let content = fs.readFileSync("./saves/"+name);
     let json = JSON.parse(content);
     let things = JSON.stringify(json.things);
     let tiles = JSON.stringify(json.tiles);
     let covers = JSON.stringify(json.covers);
     let other = JSON.stringify(json.other);
-    restoreTiles(tiles);
-    restoreCovers(covers);
+    restoreTiles(0,63)(tiles);
+    restoreCovers(0,63)(covers);
     restoreThings(things);
     restoreOther(other);
     finalSwap();

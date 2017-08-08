@@ -389,8 +389,9 @@ HTomb = (function(HTomb) {
     "G: Pick Up, D: Drop, I: Inventory.",
     " ",
     "PageUp/Down: Scroll messages.",
-    "A: Achievements, ?: Toggle tutorial.",
-    "F: Submit Feedback."
+    "A: Achievements, ?: Toggle tutorial."
+    //,
+    //"F: Submit Feedback."
   ];
   menu.defaultMiddle = [];
   menu.defaultBottom = [];

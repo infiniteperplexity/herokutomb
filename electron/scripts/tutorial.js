@@ -173,7 +173,7 @@ HTomb = (function(HTomb) {
       "?: Toggle tutorial."
     ],
     instructions: [
-      "%c{yellow}Welcome to the HellaTomb in-game tutorial.  Follow the instructions on this panel to proceed through the tutorial, or press ? to turn off these messages and play without the tutorial.",
+      "%c{yellow}Welcome to the Hecatomb in-game tutorial.  Follow the instructions on this panel to proceed through the tutorial, or press ? to turn off these messages and play without the tutorial.",
       " ",
       "%c{white}You walk amongst the tombstones of a hillside graveyard, searching for the site upon which you will build your mighty fortress.",
       " ",
