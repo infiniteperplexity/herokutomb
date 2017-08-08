@@ -1,5 +1,6 @@
 // The lowest-level GUI functionality, interacting with the DOM directly or through ROT.js.
 HTomb = (function(HTomb) {
+  const remote = require('electron').remote;
   "use strict";
   // break out constants
   var SCREENW = HTomb.Constants.SCREENW;
@@ -80,7 +81,7 @@ HTomb = (function(HTomb) {
   };
   function introTick() {
     let txt = [
-      "Welcome to HellaTomb!",
+      "Welcome to Hecatomb!",
       "N) New game.",
       "R) Restore game.",
       //"F) Submit feedback or bug report.",
@@ -146,8 +147,11 @@ HTomb = (function(HTomb) {
   let alpha = "abcdefghijklmnopqrstuvwxyz";
   for (let i=0; i<alpha.length; i++) {
     textInputControls["VK_"+alpha[i].toUpperCase()] = function() {
+      if (GUI.Contexts.textInput.currentText.length>=25) {
+        return;
+      }
       if (HTomb.GUI.shiftDown()) {
-        GUI.Contexts.textInput.currentText+alpha[i].toUpperCase();
+        GUI.Contexts.textInput.currentText+=(alpha[i].toUpperCase());
       } else {
         GUI.Contexts.textInput.currentText+=alpha[i];
       }
@@ -159,8 +163,11 @@ HTomb = (function(HTomb) {
     }
   }
   let numeric = "0123456789";
-  for (let i=0; i<alpha.length; i++) {
-    textInputControls["VK_"+numeric] = function() {
+  for (let i=0; i<numeric.length; i++) {
+    textInputControls["VK_"+numeric[i]] = function() {
+      if (GUI.Contexts.textInput.currentText.length>=25) {
+        return;
+      }
       GUI.Contexts.textInput.currentText+=numeric[i];
       GUI.Panels.overlay.update([
         GUI.Contexts.textInput.prompt,
@@ -170,6 +177,9 @@ HTomb = (function(HTomb) {
     }
   }
   textInputControls["VK_SPACE"] = function() {
+    if (GUI.Contexts.textInput.currentText.length>=25) {
+      return;
+    }
     GUI.Contexts.textInput.currentText+="_";
     GUI.Panels.overlay.update([
       GUI.Contexts.textInput.prompt,
@@ -178,6 +188,7 @@ HTomb = (function(HTomb) {
     ]);
   }
   textInputControls["VK_UNDERSCORE"] = textInputControls["VK_SPACE"];
+  textInputControls["VK_HYPHEN_MINUS"] = textInputControls["VK_SPACE"];
   textInputControls["VK_BACK_SPACE"] = function() {
     GUI.Contexts.textInput.currentText = GUI.Contexts.textInput.currentText.slice(0, -1);
     GUI.Panels.overlay.update([
@@ -283,7 +294,7 @@ HTomb = (function(HTomb) {
     HTomb.Time.stopTime();
     HTomb.Save.getDir(function(arg) {
       let saves = [];
-      if (arg===" ") {
+      if (arg==="[]") {
         //HTomb.GUI.splash(["No saved games exist on the server."]);
         HTomb.GUI.splash(["No saved games exist."]);
         return;
